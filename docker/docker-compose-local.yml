@@ -13,9 +13,15 @@ services:
     volumes:
       - ./postgres_data:/var/lib/postgresql/data
 
-  adminer:
-    image: adminer:4.8.1-standalone
-    container_name: hrm_adminer
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin4_container
     restart: unless-stopped
+    user: '$UID:$GID'
     ports:
-      - "8079:8080"
+      - "8079:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: dev@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: Abcd1234
+    volumes:
+      - ./pgadmin-data:/var/lib/pgadmin
