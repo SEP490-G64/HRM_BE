@@ -1,0 +1,22 @@
+# App custom configs
+hrm-config:
+  jwt:
+    secret: soUicqC3yUtp0lq1st57RVt5g36048StY291PwPIMyI=
+    expiration: 86400000
+
+  mail:
+    subject: "OTP for authentication in GoldenView"
+    content: "Do not send this OTP to anyone for security protection. Your otp is: "
+
+spring:
+  datasource:
+    #TODO old config for db of docker service
+    #url: jdbc:postgresql://postgres:5432/dsd
+    # config for public db
+    url: jdbc:postgresql://aninfosys.asia:5433/dsd
+    username: lpdev
+    password: Abcd1234
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate.ddl-auto: update
+    show-sql: false
