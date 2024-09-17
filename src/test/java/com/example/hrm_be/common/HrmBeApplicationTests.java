@@ -1,4 +1,4 @@
-package com.example.hrm_be;
+package com.example.hrm_be.common;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
