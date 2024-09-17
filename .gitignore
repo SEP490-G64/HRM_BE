@@ -34,3 +34,4 @@ build/
 
 docker/postgres_data
 docker/pgadmin-data
+/docker/docker/
