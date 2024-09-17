@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
   public class TestcontainersConfiguration extends PostgreSQLContainer<TestcontainersConfiguration> {
-  private static final String IMAGE_VERISON = "postgres:16.0";
+  private static final String IMAGE_VERISON = "postgres:16.4-alpine3.20";
   private static TestcontainersConfiguration container;
 
   private TestcontainersConfiguration() {
