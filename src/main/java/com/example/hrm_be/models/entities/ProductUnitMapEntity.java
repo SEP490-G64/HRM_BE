@@ -1,6 +1,5 @@
 package com.example.hrm_be.models.entities;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -26,8 +25,8 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder(toBuilder = true)
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(name = "product_ingredient_map")
-public class ProductIngredientMapEntity extends CommonEntity {
+@Table(name = "product_unit_map")
+public class ProductUnitMapEntity extends CommonEntity {
   @ToString.Exclude
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "p_id", foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
@@ -35,6 +34,6 @@ public class ProductIngredientMapEntity extends CommonEntity {
 
   @ToString.Exclude
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "pi_id", foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
-  ProductIngredientEntity ingredient;
+  @JoinColumn(name = "unit_id", foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
+  ProductUnitEntity unit;
 }

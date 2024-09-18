@@ -9,7 +9,9 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.ForeignKey;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -29,9 +31,9 @@ import org.hibernate.engine.jdbc.batch.spi.Batch;
 @SuperBuilder(toBuilder = true)
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(name = "role")
+@Table(name = "product")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-public class ProductEntity extends  CommonEntity{
+public class ProductEntity extends CommonEntity {
 
   @Column(name = "name")
   String name;
@@ -47,7 +49,33 @@ public class ProductEntity extends  CommonEntity{
 
   @ToString.Exclude
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "b_id", foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
+  @JoinColumn(name = "batch_id", foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
   BatchEntity batch;
 
+  @ToString.Exclude
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "tax_id", foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
+  TaxEntity tax;
+
+  @ToString.Exclude
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "sup_id", foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
+  SupplierEntity supplier;
+
+  @ToString.Exclude
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "o_id", foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
+  OriginEntity origin;
+
+  @ToString.Exclude
+  @OneToMany(mappedBy = "product")
+  List<ProductUnitMapEntity> userUnitMap;
+ @ToString.Exclude
+
+  @OneToMany(mappedBy = "product")
+  List<ProductIngredientMapEntity> productIngredientMap;
+
+  @ToString.Exclude
+  @OneToMany(mappedBy = "product")
+  List<ProductCategoryMapEntity> userCateMap;
 }
