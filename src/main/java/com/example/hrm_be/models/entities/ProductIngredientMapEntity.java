@@ -20,7 +20,11 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder(toBuilder = true)
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(name = "product_type_map")
-public class ProductTypeMap extends  CommonEntity {
+@Table(name = "product_ingredient_map")
+public class ProductIngredientMapEntity extends CommonEntity {
+  @Column(name = "name")
+  String name;
 
+  @Column(name = "description")
+  String description;
 }

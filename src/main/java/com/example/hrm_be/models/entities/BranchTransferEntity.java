@@ -22,6 +22,6 @@ import lombok.experimental.SuperBuilder;
 @Entity
 @Table(name = "branch_transfer_record")
 public class BranchTransferEntity extends CommonEntity {
-  @Column(name= "quantity")
+  @Column(name = "quantity")
   Integer quantity;
 }

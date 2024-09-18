@@ -2,13 +2,16 @@ package com.example.hrm_be.models.entities;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.util.Date;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
@@ -28,4 +31,9 @@ public class BatchEntity extends CommonEntity {
 
   @Column(name = "expired_date")
   Date expiredDate;
+
+  @ToString.Exclude
+  @OneToMany(mappedBy = "batch")
+  List<ProductEntity> productEntities;
+
 }

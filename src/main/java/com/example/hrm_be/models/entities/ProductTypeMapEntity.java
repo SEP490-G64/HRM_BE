@@ -1,6 +1,5 @@
 package com.example.hrm_be.models.entities;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
@@ -20,11 +19,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder(toBuilder = true)
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(name = "product_ingredient_map")
-public class ProductIngredientMap extends CommonEntity {
-  @Column(name = "name")
-  String name;
+@Table(name = "product_type_map")
+public class ProductTypeMapEntity extends  CommonEntity {
 
-  @Column(name = "description")
-  String description;
 }
