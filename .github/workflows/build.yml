@@ -32,6 +32,7 @@ jobs:
           key: "${{ runner.os }}-Postgres-Image"
 
       - name: Load cache image
+        if: steps.cache.outputs.cache-hit == 'true'
         run: docker load -i ${{ env.DOCKER_CACHE_PATH }}
 
       - name: Run Unit Testing with Junit
