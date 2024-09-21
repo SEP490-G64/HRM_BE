@@ -32,18 +32,18 @@ jobs:
           key: "${{ runner.os }}-Postgres-Image"
 
       - name: Load cache image
-        if: steps.cache.outputs.cache-hit == 'true'
+        if: steps.cache.outputs.cache-image-restore == 'true'
         run: docker load -i ${{ env.DOCKER_CACHE_PATH }}
 
       - name: Run Unit Testing with Junit
         run: mvn clean test -fae
 
       - name: Init cache postgres image
-        if: steps.cache.outputs.cache-hit != 'true'
+        if: steps.cache.outputs.cache-image-restore != 'true'
         run: docker save ${{ env.IMAGE_VERSION }} -o ${{ env.DOCKER_CACHE_PATH }}
 
       - name: Cache docker build
-        if: steps.cache.outputs.cache-hit != 'true'
+        if: steps.cache.outputs.cache-image-restore != 'true'
         uses: actions/cache/save@v4
         with:
           path: ${{ env.DOCKER_CACHE_PATH }}
