@@ -31,7 +31,7 @@ jobs:
           key: "${{ runner.os }}-${{ hashFiles(env.DOCKER_CACHE_PATH) }}"
 
       - name: Run Unit Testing with Junit
-        run: mvn test -fae -Dspring.profiles.active=local
+        run: mvn clean test -fae
 
       - name: Init cache postgres image
         if: steps.cache.outputs.cache-hit != 'true'
