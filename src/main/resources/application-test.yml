@@ -31,9 +31,6 @@ spring:
     username: lpdev
     password: Abcd1234
     driver-class-name: org.postgresql.Driver
-#  sql:
-#    init:
-#      mode: never
   jpa:
 #    hibernate.ddl-auto: none
 #    show-sql: true
@@ -44,7 +41,3 @@ spring:
 #          allow_jdbc_metadata_access: false
     hibernate.ddl-auto: update
     show-sql: true
-    properties:
-      hibernate:
-        boot:
-          allow_jdbc_metadata_access: false
