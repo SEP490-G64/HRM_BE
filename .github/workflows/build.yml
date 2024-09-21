@@ -1,0 +1,50 @@
+name: GitHub Actions CI
+run-name: CI for Spring Boot
+on: [pull_request]
+jobs:
+  Spring-Boot-Build:
+    env:
+      DOCKER_CACHE_PATH: postgres-image.tar
+      IMAGE_VERSION: postgres:16.4-alpine3.20
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: "21"
+          distribution: "temurin"
+          cache: maven
+
+      - name: Login to docker hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Restore cached image
+        id: cache-image-restore
+        uses: actions/cache/restore@v4
+        with:
+          path: ${{ env.DOCKER_CACHE_PATH }}
+          key: "${{ runner.os }}-Postgres-Image"
+
+      - name: Load cache image
+        if: steps.cache-image-restore.outputs.cache-hit == 'true'
+        run: docker load -i ${{ env.DOCKER_CACHE_PATH }}
+
+      - name: Run Unit Testing with Junit
+        run: mvn clean test -fae
+
+      - name: Init cache postgres image
+        if: steps.cache-image-restore.outputs.cache-hit != 'true'
+        run: docker save ${{ env.IMAGE_VERSION }} -o ${{ env.DOCKER_CACHE_PATH }}
+
+      - name: Cache docker build
+        if: steps.cache-image-restore.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ env.DOCKER_CACHE_PATH }}
+          key: "${{ runner.os }}-Postgres-Image"
