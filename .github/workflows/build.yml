@@ -4,7 +4,8 @@ on: [pull_request]
 jobs:
   Spring-Boot-Build:
     env:
-      DOCKER_CACHE_PATH: ./postgres-image.tar
+      DOCKER_CACHE_PATH: postgres-image.tar
+      IMAGE_VERSION: postgres:16.4-alpine3.20
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository code
@@ -28,21 +29,21 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: ${{ env.DOCKER_CACHE_PATH }}
-          key: "${{ runner.os }}-${{ hashFiles(env.DOCKER_CACHE_PATH) }}"
-      
+          key: "${{ runner.os }}-Postgres-Image"
+
       - name: Load cache image
-        run: docker load -i postgres-image.tar
+        run: docker load -i ${{ env.DOCKER_CACHE_PATH }}
 
       - name: Run Unit Testing with Junit
         run: mvn clean test -fae
 
       - name: Init cache postgres image
         if: steps.cache.outputs.cache-hit != 'true'
-        run: docker save postgres:16.4-alpine3.20 -o postgres-image.tar
+        run: docker save ${{ env.IMAGE_VERSION }} -o ${{ env.DOCKER_CACHE_PATH }}
 
       - name: Cache docker build
         if: steps.cache.outputs.cache-hit != 'true'
         uses: actions/cache/save@v4
         with:
           path: ${{ env.DOCKER_CACHE_PATH }}
-          key: "${{ runner.os }}-${{ hashFiles(env.DOCKER_CACHE_PATH) }}"
+          key: "${{ runner.os }}-Postgres-Image"
