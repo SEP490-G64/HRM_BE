@@ -29,6 +29,9 @@ jobs:
         with:
           path: ${{ env.DOCKER_CACHE_PATH }}
           key: "${{ runner.os }}-${{ hashFiles(env.DOCKER_CACHE_PATH) }}"
+      
+      - name: Load cache image
+        run: docker load -i postgres-image.tar
 
       - name: Run Unit Testing with Junit
         run: mvn clean test -fae
