@@ -17,7 +17,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = HrmBeApplication.class)
 @Import(SecurityConfig.class)
-@ActiveProfiles("local")
+@ActiveProfiles("test")
 class HrmBeApplicationTests {
   @Container
   public static PostgreSQLContainer<TestcontainersConfiguration> postgreSQLContainer =
