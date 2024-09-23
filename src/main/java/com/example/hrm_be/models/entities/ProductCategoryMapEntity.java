@@ -25,7 +25,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder(toBuilder = true)
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(name = "product_type_map")
+@Table(name = "product_category")
 public class ProductCategoryMapEntity extends  CommonEntity {
   @ToString.Exclude
   @ManyToOne(fetch = FetchType.LAZY)

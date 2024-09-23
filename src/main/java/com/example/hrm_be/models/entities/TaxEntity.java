@@ -1,10 +1,11 @@
 package com.example.hrm_be.models.entities;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,6 +15,7 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -23,12 +25,17 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder(toBuilder = true)
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(name = "taxes")
+@Table(name = "tax")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class TaxEntity extends CommonEntity {
-  @Column(name = "percent")
-  float percent;
+
+  @Column(name = "tax_name")
+  String taxName;
+
+  @Column(name = "tax_rate")
+  double taxRate;
 
   @ToString.Exclude
   @OneToMany(mappedBy = "tax")
-  List<ProductEntity> productEntities;
+  List<ProductEntity> products;
 }

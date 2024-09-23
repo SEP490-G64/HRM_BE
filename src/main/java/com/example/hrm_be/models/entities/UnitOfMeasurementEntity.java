@@ -1,5 +1,7 @@
 package com.example.hrm_be.models.entities;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.Column;
 import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
@@ -26,21 +28,21 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder(toBuilder = true)
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(name = "product_ingredient_map")
-public class ProductIngredientMapEntity extends CommonEntity {
+@Table(name = "unit_of_measurement")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+public class UnitOfMeasurementEntity extends CommonEntity {
+
+  @Column(name = "unit_name", length = 100)
+  String unitName;
+
+  @Column(name = "conversion_factor")
+  double conversionFactor;
+
+  @Column(name = "price_per_unit")
+  double pricePerUnit;
+
   @ToString.Exclude
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "p_id", foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
+  @JoinColumn(name = "product_id", foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
   ProductEntity product;
-
-  @ToString.Exclude
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "pi_id", foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
-  ProductIngredientEntity ingredient;
-
-  @Column(name = "amount")
-  Double amount;
-
-  @Column(name = "unit_of_measurement")
-  String unitOfMeasurement;
 }

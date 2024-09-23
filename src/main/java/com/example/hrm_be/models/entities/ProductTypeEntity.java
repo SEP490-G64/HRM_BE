@@ -2,12 +2,15 @@ package com.example.hrm_be.models.entities;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
@@ -20,8 +23,12 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder(toBuilder = true)
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(name = "branch_transfer_record")
-public class BranchTransferEntity extends CommonEntity {
-  @Column(name = "quantity")
-  Integer quantity;
+@Table(name = "types")
+public class ProductTypeEntity extends  CommonEntity {
+  @Column(name = "category_name")
+  String categoryName;
+
+  @ToString.Exclude
+  @OneToMany(mappedBy = "type")
+  List<ProductTypeMapEntity> productsTypeMapEntities;
 }

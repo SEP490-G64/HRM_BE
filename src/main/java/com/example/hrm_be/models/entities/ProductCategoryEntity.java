@@ -28,12 +28,12 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder(toBuilder = true)
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(name = "product_categories")
+@Table(name = "categories")
 public class ProductCategoryEntity extends  CommonEntity {
-  @Column(name="name")
-  String name;
+  @Column(name = "category_name")
+  String categoryName;
 
   @ToString.Exclude
   @OneToMany(mappedBy = "category")
-  List<ProductCategoryMapEntity> categoryMapEntities;
+  List<ProductCategoryMapEntity> products;
 }

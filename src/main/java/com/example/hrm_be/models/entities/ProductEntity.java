@@ -21,7 +21,6 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
-import org.hibernate.engine.jdbc.batch.spi.Batch;
 
 @Data
 @NoArgsConstructor
@@ -38,6 +37,9 @@ public class ProductEntity extends CommonEntity {
   @Column(name = "name")
   String name;
 
+  @Column(name = "price")
+  Double price; 
+
   @Column(name = "description")
   String description;
 
@@ -46,6 +48,11 @@ public class ProductEntity extends CommonEntity {
 
   @Column(name = "barcode_image")
   String barcodeImage;
+
+  @ToString.Exclude
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "branch_id", foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
+  BranchEntity branch;
 
   @ToString.Exclude
   @ManyToOne(fetch = FetchType.LAZY)
@@ -59,13 +66,8 @@ public class ProductEntity extends CommonEntity {
 
   @ToString.Exclude
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "sup_id", foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
+  @JoinColumn(name = "supplier_id", foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
   SupplierEntity supplier;
-
-  @ToString.Exclude
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "o_id", foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
-  OriginEntity origin;
 
   @ToString.Exclude
   @OneToMany(mappedBy = "product")
@@ -78,4 +80,19 @@ public class ProductEntity extends CommonEntity {
   @ToString.Exclude
   @OneToMany(mappedBy = "product")
   List<ProductCategoryMapEntity> userCateMap;
+
+  @ToString.Exclude
+  @OneToMany(mappedBy = "product")
+  List<InventoryEntity> inventoryEntities;
+  @ToString.Exclude
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "manufacturer_id",foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
+  ManufacturerEntity manufacturer;
+
+  @ToString.Exclude
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "special_condition_id", foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
+  SpecialConditionEntity specialCondition;
+
+
 }

@@ -1,12 +1,9 @@
 package com.example.hrm_be.models.entities;
 
-import com.example.hrm_be.commons.enums.BranchType;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
@@ -29,19 +26,12 @@ import java.util.List;
 @SuperBuilder(toBuilder = true)
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(name = "branch")
+@Table(name = "manufacturer")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-public class BranchEntity extends CommonEntity {
+public class ManufacturerEntity extends CommonEntity {
 
-  @Column(name = "branch_name", length = 255)
-  String branchName;
-
-  @Enumerated(EnumType.STRING)
-  @Column(name = "branch_type")
-  BranchType branchType;
-
-  @Column(name = "location", length = 255)
-  String location;
+  @Column(name = "manufacturer_name", length = 255)
+  String manufacturerName;
 
   @Column(name = "contact_person", length = 255)
   String contactPerson;
@@ -49,17 +39,16 @@ public class BranchEntity extends CommonEntity {
   @Column(name = "phone_number", length = 50)
   String phoneNumber;
 
-  @Column(name = "capacity")
-  Integer capacity;
+  @Column(name = "email", length = 255)
+  String email;
 
-  @Column(name = "active_status")
-  Boolean activeStatus;
+  @Column(name = "address", length = 255)
+  String address;
+
+  @Column(name = "origin", length = 45)
+  String origin;
 
   @ToString.Exclude
-  @OneToMany(mappedBy = "branch")
-  List<UserEntity> users;
-
-  @ToString.Exclude
-  @OneToMany(mappedBy = "branch")
-  List<InventoryEntity> inventoryEntities;
+  @OneToMany(mappedBy = "manufacturer")
+  List<ProductEntity> products;
 }

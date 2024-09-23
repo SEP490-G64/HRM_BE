@@ -42,4 +42,9 @@ public class UserEntity extends CommonEntity {
   @OneToMany(mappedBy = "user")
   List<UserRoleMapEntity> userRoleMap;
 
+  @ToString.Exclude
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "branch_id", foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
+  BranchEntity branch;
+
 }

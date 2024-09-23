@@ -1,6 +1,7 @@
 package com.example.hrm_be.models.entities;
 
-import com.example.hrm_be.commons.enums.ProductUnitType;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
@@ -24,12 +25,23 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder(toBuilder = true)
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(name = "product_units")
-public class ProductUnitEntity extends CommonEntity {
-  @Column(name = "pu_type")
-  ProductUnitType type;
+@Table(name = "special_condition")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+public class SpecialConditionEntity extends CommonEntity {
+
+  @Column(name = "condition_type", length = 100)
+  String conditionType;
+
+  @Column(name = "min_temperature")
+  double minTemperature;
+
+  @Column(name = "max_temperature")
+  double maxTemperature;
+
+  @Column(name = "handling_instruction", columnDefinition = "TEXT")
+  String handlingInstruction;
 
   @ToString.Exclude
-  @OneToMany(mappedBy = "unit")
-  List<ProductUnitMapEntity> productUnitEntities;
+  @OneToMany(mappedBy = "specialCondition")
+  List<ProductEntity> products;
 }

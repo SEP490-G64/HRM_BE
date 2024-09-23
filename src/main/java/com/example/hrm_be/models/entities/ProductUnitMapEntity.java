@@ -25,7 +25,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder(toBuilder = true)
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(name = "product_unit_map")
+@Table(name = "product_unit")
 public class ProductUnitMapEntity extends CommonEntity {
   @ToString.Exclude
   @ManyToOne(fetch = FetchType.LAZY)
@@ -35,5 +35,5 @@ public class ProductUnitMapEntity extends CommonEntity {
   @ToString.Exclude
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "unit_id", foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
-  ProductUnitEntity unit;
+  UnitOfMeasurementEntity unit;
 }

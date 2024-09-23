@@ -23,7 +23,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder(toBuilder = true)
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(name = "product_ingredients")
+@Table(name = "ingredients")
 public class ProductIngredientEntity extends CommonEntity {
   @Column(name = "pi_name")
   String name;
