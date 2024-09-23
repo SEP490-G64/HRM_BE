@@ -28,7 +28,7 @@ import com.example.hrm_be.configs.SecurityConfig;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = HrmBeApplication.class)
 @Import(SecurityConfig.class)
-@ActiveProfiles("local")
+@ActiveProfiles("test")
 @Testcontainers
 class UserRoleMapEntityTest {
 

@@ -24,7 +24,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = HrmBeApplication.class)
 @Import(SecurityConfig.class)
-@ActiveProfiles("local")
+@ActiveProfiles("test")
 @Testcontainers
 class RoleEntityTest {
 
