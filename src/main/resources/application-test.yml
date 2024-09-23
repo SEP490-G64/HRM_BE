@@ -27,7 +27,7 @@ spring:
           starttls:
             enable: true
   datasource:
-    url: jdbc:postgresql://localhost:32769/test
+    url: jdbc:postgresql://localhost:5555/test
     username: test
     password: test
     driver-class-name: org.postgresql.Driver
