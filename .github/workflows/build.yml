@@ -1,6 +1,6 @@
 name: GitHub Actions CI
 run-name: CI for Spring Boot
-on: [pull_request]
+on: [pull_request, workflow_dispatch]
 jobs:
   Spring-Boot-Build:
     env:
