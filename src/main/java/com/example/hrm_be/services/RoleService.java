@@ -1,6 +1,5 @@
 package com.example.hrm_be.services;
 
-
 import com.example.hrm_be.models.dtos.Role;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -17,11 +16,15 @@ public interface RoleService {
 
   void delete(Long id);
 
-  Role getUserRole();
+  Role createManagerRole();
 
-  Role createUserRole();
+  Role getManagerRole();
 
-  Role getAdminRole();
+  Role createStaffRole();
+
+  Role getStaffRole();
 
   Role createAdminRole();
+
+  Role getAdminRole();
 }

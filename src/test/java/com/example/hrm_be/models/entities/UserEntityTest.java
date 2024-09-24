@@ -52,7 +52,7 @@ class UserEntityTest {
         adminUserEntity.getUserRoleMap().stream()
             .filter(Objects::nonNull)
             .filter(urm -> urm.getRole() != null)
-            .filter(urm -> urm.getRole().getType().isUser())
+            .filter(urm -> urm.getRole().getType().isStaff())
             .findFirst());
     // admin should have admin role
     assertNotNull(
