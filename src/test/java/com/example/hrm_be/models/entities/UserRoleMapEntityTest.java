@@ -53,12 +53,12 @@ class UserRoleMapEntityTest {
     List<UserRoleMapEntity> adminRoleMapEntities =
         userRoleMapRepository.findByUser(adminUserEntity);
     assertNotNull(adminRoleMapEntities);
-    // admin should have user role
+    // admin should have staff role
     assertNotNull(
         adminRoleMapEntities.stream()
             .filter(Objects::nonNull)
             .filter(urm -> urm.getRole() != null)
-            .filter(urm -> urm.getRole().getType().isUser())
+            .filter(urm -> urm.getRole().getType().isStaff())
             .findFirst());
     // admin should have admin role
     assertNotNull(
