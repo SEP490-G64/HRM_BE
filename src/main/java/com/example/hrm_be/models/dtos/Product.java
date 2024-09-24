@@ -39,19 +39,19 @@ public class Product implements Serializable {
 
   String barcodeImage;
 
-  BranchEntity branch;
+  Branch branch;
 
-  BatchEntity batch;
+  Batch batch;
 
-  TaxEntity tax;
+  Tax tax;
 
   Supplier supplier;
 
-  List<ProductUnitMap> userUnitMap;
+  List<ProductUnitMap> productUnitMaps;
 
   List<ProductIngredientMap> productIngredientMap;
 
-  List<ProductCategoryMap> userCateMap;
+  List<ProductCategoryMap> productCateMap;
 
   List<Inventory> inventory;
 

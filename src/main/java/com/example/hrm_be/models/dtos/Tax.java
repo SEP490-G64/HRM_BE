@@ -27,8 +27,7 @@ import lombok.extern.jackson.Jacksonized;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Tax implements Serializable {
 
-  @Serial
-  private static final long serialVersionUID = -5091437236538926125L;
+  @Serial private static final long serialVersionUID = -5091437236538926125L;
   Long id;
   String taxName;
 

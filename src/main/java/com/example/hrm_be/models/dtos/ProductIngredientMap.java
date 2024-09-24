@@ -33,9 +33,9 @@ public class ProductIngredientMap implements Serializable {
 
   @Serial private static final long serialVersionUID = -3328495976906911346L;
   Long id;
-  ProductEntity product;
+  Product product;
 
-  ProductIngredientEntity ingredient;
+  ProductIngredient ingredient;
 
   Double amount;
 

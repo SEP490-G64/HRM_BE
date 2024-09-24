@@ -30,8 +30,7 @@ import lombok.extern.jackson.Jacksonized;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ProductTypeMap implements Serializable {
 
-  @Serial
-  private static final long serialVersionUID = -2042368325937200647L;
+  @Serial private static final long serialVersionUID = -2042368325937200647L;
   Long id;
   Product product;
 

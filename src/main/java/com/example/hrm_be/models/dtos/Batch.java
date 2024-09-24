@@ -31,5 +31,5 @@ public class Batch  implements Serializable {
 
   Date batchExpiredDate;
 
-  List<ProductEntity> products;
+  List<Product> products;
 }

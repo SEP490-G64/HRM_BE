@@ -27,8 +27,7 @@ import lombok.extern.jackson.Jacksonized;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Supplier implements Serializable {
 
-  @Serial
-  private static final long serialVersionUID = -7897405320289391094L;
+  @Serial private static final long serialVersionUID = -7897405320289391094L;
   Long id;
   String supplierName;
 
@@ -40,5 +39,5 @@ public class Supplier implements Serializable {
 
   String address;
 
-  List<ProductEntity> products;
+  List<Product> products;
 }

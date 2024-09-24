@@ -27,8 +27,7 @@ import lombok.extern.jackson.Jacksonized;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SpecialCondition implements Serializable {
 
-  @Serial
-  private static final long serialVersionUID = -1987151935331723994L;
+  @Serial private static final long serialVersionUID = -1987151935331723994L;
   Long id;
 
   String conditionType;
@@ -39,5 +38,5 @@ public class SpecialCondition implements Serializable {
 
   String handlingInstruction;
 
-  List<ProductEntity> products;
+  List<Product> products;
 }

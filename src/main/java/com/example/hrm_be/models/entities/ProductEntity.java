@@ -71,7 +71,7 @@ public class ProductEntity extends CommonEntity {
 
   @ToString.Exclude
   @OneToMany(mappedBy = "product")
-  List<ProductUnitMapEntity> userUnitMap;
+  List<ProductUnitMapEntity> productUnitMap;
  @ToString.Exclude
 
   @OneToMany(mappedBy = "product")
@@ -79,7 +79,7 @@ public class ProductEntity extends CommonEntity {
 
   @ToString.Exclude
   @OneToMany(mappedBy = "product")
-  List<ProductCategoryMapEntity> userCateMap;
+  List<ProductCategoryMapEntity> productCateMap;
 
   @ToString.Exclude
   @OneToMany(mappedBy = "product")

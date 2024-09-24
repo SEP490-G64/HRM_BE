@@ -30,8 +30,7 @@ import lombok.extern.jackson.Jacksonized;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UnitOfMeasurement implements Serializable {
 
-  @Serial
-  private static final long serialVersionUID = -3547890033004808244L;
+  @Serial private static final long serialVersionUID = -3547890033004808244L;
   Long id;
 
   String unitName;
@@ -40,5 +39,5 @@ public class UnitOfMeasurement implements Serializable {
 
   Double pricePerUnit;
 
-  ProductEntity product;
+  Product product;
 }

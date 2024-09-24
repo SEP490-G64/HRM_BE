@@ -32,7 +32,7 @@ public class ProductCategoryMap implements Serializable {
 
   @Serial private static final long serialVersionUID = 8469722676064597009L;
   Long id;
-  @ToString.Exclude Product product;
+  Product product;
 
   ProductCategory category;
 }

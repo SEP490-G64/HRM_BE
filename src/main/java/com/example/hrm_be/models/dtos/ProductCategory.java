@@ -32,5 +32,5 @@ public class ProductCategory implements Serializable {
 
   String categoryName;
 
-  List<ProductCategory> products;
+  List<ProductCategoryMap> products;
 }
