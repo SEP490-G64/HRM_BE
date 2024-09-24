@@ -39,11 +39,11 @@ class RoleEntityTest {
   @Test
   @Transactional
   void shouldInitUserRole() {
-    RoleEntity userRoleEntity = roleRepository.findByType(RoleType.USER).orElse(null);
+    RoleEntity userRoleEntity = roleRepository.findByType(RoleType.MANAGER).orElse(null);
     assertNotNull(userRoleEntity);
     assertNotNull(userRoleEntity.getId());
     assertNotNull(userRoleEntity.getType());
-    assertTrue(userRoleEntity.getType().isUser());
+    assertTrue(userRoleEntity.getType().isManager());
   }
 
   @Test

@@ -1,6 +1,5 @@
 package com.example.hrm_be.configs;
 
-
 import com.example.hrm_be.commons.enums.RoleType;
 import com.example.hrm_be.components.JwtAuthenticationEntryPoint;
 import com.example.hrm_be.configs.filters.JwtRequestFilter;
@@ -32,10 +31,8 @@ import org.springframework.web.filter.CorsFilter;
 @EnableMethodSecurity
 public class SecurityConfig {
 
-
   private final JwtRequestFilter jwtRequestFilter;
   private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
-
 
   @Bean
   public AuthenticationProvider authenticationProvider() {
@@ -85,11 +82,14 @@ public class SecurityConfig {
                     .requestMatchers("/swagger/**", "/api/v1/auth/**", "/api/v1/public/**")
                     .permitAll()
                     .requestMatchers("api/v1/admin/**")
+                    .hasAnyAuthority(RoleType.ADMIN.getValue())
+                    .requestMatchers("api/v1/manager/**")
+                    .hasAnyAuthority(RoleType.ADMIN.getValue(), RoleType.MANAGER.getValue())
+                    .requestMatchers("api/v1/signed/**")
                     .hasAnyAuthority(
                         RoleType.ADMIN.getValue(),
-                        RoleType.USER.getValue()) // TODO REMOVE USER LATER
-                    .requestMatchers("api/v1/signed/**")
-                    .hasAnyAuthority(RoleType.ADMIN.getValue(), RoleType.USER.getValue())
+                        RoleType.STAFF.getValue(),
+                        RoleType.MANAGER.getValue())
                     .anyRequest()
                     .authenticated())
         .exceptionHandling(
