@@ -29,7 +29,8 @@ public class ProductType implements Serializable {
 
   @Serial private static final long serialVersionUID = -7518279758614895465L;
   Long id;
-  String categoryName;
+  String typeName;
+  String typeDescription;
 
   List<ProductTypeMap> productsTypeMap;
 }

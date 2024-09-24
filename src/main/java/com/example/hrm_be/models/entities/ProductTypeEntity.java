@@ -25,8 +25,11 @@ import lombok.experimental.SuperBuilder;
 @Entity
 @Table(name = "types")
 public class ProductTypeEntity extends  CommonEntity {
-  @Column(name = "category_name")
-  String categoryName;
+  @Column(name = "type_name")
+  String typeName;
+
+  @Column(name = "type_description")
+  String typeDescription;
 
   @ToString.Exclude
   @OneToMany(mappedBy = "type")

@@ -33,6 +33,9 @@ public class ProductCategoryEntity extends  CommonEntity {
   @Column(name = "category_name")
   String categoryName;
 
+  @Column(name = "category_description")
+  String categoryDescription;
+
   @ToString.Exclude
   @OneToMany(mappedBy = "category")
   List<ProductCategoryMapEntity> products;
