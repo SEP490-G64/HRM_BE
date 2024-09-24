@@ -8,6 +8,8 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.ForeignKey;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import java.io.Serial;
+import java.io.Serializable;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -26,7 +28,10 @@ import lombok.extern.jackson.Jacksonized;
 @EqualsAndHashCode
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ProductCategoryMap {
+public class ProductCategoryMap implements Serializable {
+
+  @Serial private static final long serialVersionUID = 8469722676064597009L;
+  Long id;
   @ToString.Exclude Product product;
 
   ProductCategory category;

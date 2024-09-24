@@ -4,6 +4,8 @@ import com.example.hrm_be.models.entities.ProductCategoryMapEntity;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.Column;
 import jakarta.persistence.OneToMany;
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.Data;
@@ -23,10 +25,12 @@ import lombok.extern.jackson.Jacksonized;
 @EqualsAndHashCode
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ProductCategory {
+public class ProductCategory implements Serializable {
+
+  @Serial private static final long serialVersionUID = 4614936309974935814L;
+  Long id;
 
   String categoryName;
-
 
   List<ProductCategory> products;
 }

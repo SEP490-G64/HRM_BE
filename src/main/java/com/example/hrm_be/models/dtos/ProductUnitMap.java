@@ -3,6 +3,8 @@ package com.example.hrm_be.models.dtos;
 import com.example.hrm_be.models.entities.ProductEntity;
 import com.example.hrm_be.models.entities.UnitOfMeasurementEntity;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import java.io.Serial;
+import java.io.Serializable;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -20,7 +22,11 @@ import lombok.extern.jackson.Jacksonized;
 @EqualsAndHashCode
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ProductUnitMap {
+public class ProductUnitMap implements Serializable {
+
+  @Serial
+  private static final long serialVersionUID = 3323128777155332557L;
+  Long id;
   Product product;
 
   UnitOfMeasurement unit;

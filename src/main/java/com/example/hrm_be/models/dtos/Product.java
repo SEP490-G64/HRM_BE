@@ -2,28 +2,16 @@ package com.example.hrm_be.models.dtos;
 
 import com.example.hrm_be.models.entities.BatchEntity;
 import com.example.hrm_be.models.entities.BranchEntity;
-import com.example.hrm_be.models.entities.InventoryEntity;
-import com.example.hrm_be.models.entities.ManufacturerEntity;
-import com.example.hrm_be.models.entities.ProductCategoryMapEntity;
-import com.example.hrm_be.models.entities.ProductIngredientMapEntity;
-import com.example.hrm_be.models.entities.ProductUnitMapEntity;
-import com.example.hrm_be.models.entities.SpecialConditionEntity;
-import com.example.hrm_be.models.entities.SupplierEntity;
 import com.example.hrm_be.models.entities.TaxEntity;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.Column;
-import jakarta.persistence.ConstraintMode;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.ForeignKey;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
@@ -37,8 +25,10 @@ import lombok.extern.jackson.Jacksonized;
 @EqualsAndHashCode
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Product {
-  @Column(name = "name")
+public class Product implements Serializable {
+
+  @Serial private static final long serialVersionUID = -3105002269033600248L;
+  Long id;
   String name;
 
   Double price;

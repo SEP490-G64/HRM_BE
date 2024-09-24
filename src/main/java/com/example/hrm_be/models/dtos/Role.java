@@ -2,7 +2,6 @@ package com.example.hrm_be.models.dtos;
 
 import com.example.hrm_be.commons.enums.RoleType;
 import com.fasterxml.jackson.annotation.JsonInclude;
-
 import java.io.Serial;
 import java.io.Serializable;
 import lombok.*;

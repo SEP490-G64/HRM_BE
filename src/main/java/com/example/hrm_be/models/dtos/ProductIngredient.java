@@ -4,6 +4,8 @@ import com.example.hrm_be.models.entities.ProductIngredientMapEntity;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.Column;
 import jakarta.persistence.OneToMany;
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.Data;
@@ -23,10 +25,12 @@ import lombok.extern.jackson.Jacksonized;
 @EqualsAndHashCode
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ProductIngredient {
+public class ProductIngredient implements Serializable {
+
+  @Serial private static final long serialVersionUID = 7774158709568136034L;
+  Long id;
   String name;
   String description;
-
 
   List<ProductIngredientMap> productIngredientMap;
 }
