@@ -33,7 +33,7 @@ public class TaxEntity extends CommonEntity {
   String taxName;
 
   @Column(name = "tax_rate")
-  double taxRate;
+  Double taxRate;
 
   @ToString.Exclude
   @OneToMany(mappedBy = "tax")
