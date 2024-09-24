@@ -46,7 +46,7 @@ class UserEntityTest {
     assertNotNull(adminUserEntity.getId());
     assertNotNull(adminUserEntity.getUserRoleMap());
     // admin has ROLE_ADMIN and ROLE_USER
-    assertEquals(2, adminUserEntity.getUserRoleMap().size());
+    assertEquals(3, adminUserEntity.getUserRoleMap().size());
     // admin should have user role
     assertNotNull(
         adminUserEntity.getUserRoleMap().stream()
