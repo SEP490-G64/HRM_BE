@@ -3,6 +3,7 @@ package com.example.hrm_be.components;
 import com.example.hrm_be.models.dtos.ProductCategoryMap;
 import com.example.hrm_be.models.entities.ProductCategoryMapEntity;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -10,8 +11,9 @@ import java.util.Optional;
 @Component
 public class ProductCategoryMapMapper {
 
-  @Autowired private ProductMapper productMapper;
-  @Autowired private ProductCategoryMapper productCategoryMapper;
+  @Autowired @Lazy  private ProductMapper productMapper;
+  @Autowired @Lazy
+  private ProductCategoryMapper productCategoryMapper;
 
   // Convert ProductCategoryMapEntity to ProductCategoryMap DTO
   public ProductCategoryMap toDTO(ProductCategoryMapEntity entity) {

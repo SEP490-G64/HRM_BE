@@ -2,25 +2,26 @@ package com.example.hrm_be.components;
 
 import com.example.hrm_be.models.dtos.Product;
 import com.example.hrm_be.models.entities.ProductEntity;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import java.util.Optional;
 import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Component;
 
 @Component
 public class ProductMapper {
 
-  @Autowired private BranchMapper branchMapper;
-  @Autowired private BatchMapper batchMapper;
-  @Autowired private TaxMapper taxMapper;
-  @Autowired private SupplierMapper supplierMapper;
-  @Autowired private ProductUnitMapMapper productUnitMapMapper;
-  @Autowired private ProductIngredientMapMapper productIngredientMapMapper;
-  @Autowired private ProductCategoryMapMapper productCategoryMapMapper;
-  @Autowired private InventoryMapper inventoryMapper;
-  @Autowired private ManufacturerMapper manufacturerMapper;
-  @Autowired private SpecialConditionMapper specialConditionMapper;
+  @Autowired @Lazy  private BranchMapper branchMapper;
+  @Autowired @Lazy private BatchMapper batchMapper;
+  @Autowired @Lazy private TaxMapper taxMapper;
+  @Autowired @Lazy private SupplierMapper supplierMapper;
+  @Autowired @Lazy private ProductUnitMapMapper productUnitMapMapper;
+  @Autowired @Lazy private ProductIngredientMapMapper productIngredientMapMapper;
+  @Autowired @Lazy private ProductCategoryMapMapper productCategoryMapMapper;
+  @Autowired @Lazy private InventoryMapper inventoryMapper;
+  @Autowired @Lazy private ManufacturerMapper manufacturerMapper;
+  @Autowired @Lazy
+  private SpecialConditionMapper specialConditionMapper;
 
   // Convert ProductEntity to Product DTO
   public Product toDTO(ProductEntity entity) {

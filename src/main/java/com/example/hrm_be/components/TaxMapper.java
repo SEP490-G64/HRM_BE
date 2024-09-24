@@ -3,6 +3,7 @@ package com.example.hrm_be.components;
 import com.example.hrm_be.models.dtos.Tax;
 import com.example.hrm_be.models.entities.TaxEntity;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -11,7 +12,8 @@ import java.util.stream.Collectors;
 @Component
 public class TaxMapper {
 
-  @Autowired private ProductMapper productMapper;
+  @Autowired @Lazy
+  private ProductMapper productMapper;
 
   // Convert TaxEntity to Tax DTO
   public Tax toDTO(TaxEntity entity) {
