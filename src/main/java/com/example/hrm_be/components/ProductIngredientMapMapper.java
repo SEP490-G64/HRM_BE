@@ -3,6 +3,7 @@ package com.example.hrm_be.components;
 import com.example.hrm_be.models.dtos.ProductIngredientMap;
 import com.example.hrm_be.models.entities.ProductIngredientMapEntity;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -10,8 +11,9 @@ import java.util.Optional;
 @Component
 public class ProductIngredientMapMapper {
 
-  @Autowired private ProductMapper productMapper;
-  @Autowired private ProductIngredientMapper productIngredientMapper;
+  @Autowired @Lazy
+  private ProductMapper productMapper;
+  @Autowired @Lazy private ProductIngredientMapper productIngredientMapper;
 
   // Convert ProductIngredientMapEntity to ProductIngredientMap DTO
   public ProductIngredientMap toDTO(ProductIngredientMapEntity entity) {

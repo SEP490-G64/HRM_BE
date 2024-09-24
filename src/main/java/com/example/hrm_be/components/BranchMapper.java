@@ -3,6 +3,7 @@ package com.example.hrm_be.components;
 import com.example.hrm_be.models.dtos.Branch;
 import com.example.hrm_be.models.entities.BranchEntity;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -11,8 +12,9 @@ import java.util.stream.Collectors;
 @Component
 public class BranchMapper {
 
-  @Autowired private UserMapper userMapper;
-  @Autowired private InventoryMapper inventoryMapper;
+  @Autowired @Lazy private InventoryMapper inventoryMapper;
+  @Autowired @Lazy
+  private UserMapper userMapper;
 
   // Convert BranchEntity to Branch DTO
   public Branch toDTO(BranchEntity entity) {
