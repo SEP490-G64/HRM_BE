@@ -11,6 +11,7 @@ import com.example.hrm_be.models.requests.RegisterRequest;
 import com.example.hrm_be.models.responses.AccessToken;
 import com.example.hrm_be.models.responses.BaseOutput;
 import com.example.hrm_be.services.UserService;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -71,7 +72,8 @@ public class AuthenticationController {
   }
 
   @PostMapping("/verify-user/{id}")
-  public ResponseEntity<BaseOutput<User>> verifyUser(@PathVariable Long id) {
+  public ResponseEntity<BaseOutput<User>> verifyUser(
+      @PathVariable("id")  Long id) {
     if (id == null) {
       throw new HrmCommonException(REQUEST.INVALID_PATH_VARIABLE);
     }
