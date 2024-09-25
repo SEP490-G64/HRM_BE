@@ -1,6 +1,5 @@
 package com.example.hrm_be.services.impl;
 
-
 import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.commons.constants.HrmConstant.ERROR.USER;
 import com.example.hrm_be.commons.enums.RoleType;
@@ -11,6 +10,7 @@ import com.example.hrm_be.models.dtos.Role;
 import com.example.hrm_be.models.dtos.User;
 import com.example.hrm_be.models.entities.UserEntity;
 import com.example.hrm_be.models.entities.UserRoleMapEntity;
+import com.example.hrm_be.models.requests.RegisterRequest;
 import com.example.hrm_be.repositories.UserRepository;
 import com.example.hrm_be.repositories.UserRoleMapRepository;
 import com.example.hrm_be.services.UserRoleMapService;
@@ -40,19 +40,13 @@ import org.springframework.util.StringUtils;
 @Transactional
 public class UserServiceImpl implements UserService {
 
-  @Lazy @Autowired
-  UserRepository userRepository;
-  @Lazy @Autowired
-  UserMapper userMapper;
+  @Lazy @Autowired UserRepository userRepository;
+  @Lazy @Autowired UserMapper userMapper;
 
-  @Lazy @Autowired
-  RoleMapper roleMapper;
+  @Lazy @Autowired RoleMapper roleMapper;
 
-  @Lazy @Autowired
-  UserRoleMapService userRoleMapService;
-  @Lazy @Autowired
-  UserRoleMapRepository userRoleMapRepository;
-
+  @Lazy @Autowired UserRoleMapService userRoleMapService;
+  @Lazy @Autowired UserRoleMapRepository userRoleMapRepository;
 
   @Override
   public String getAuthenticatedUserEmail() throws UsernameNotFoundException {
@@ -111,7 +105,7 @@ public class UserServiceImpl implements UserService {
         .map(userRepository::save)
         .map(
             e -> {
-              userRoleMapService.setUserRoleForUser(e.getId());
+              userRoleMapService.setStaffRoleForUser(e.getId());
               return e;
             })
         .map(userMapper::toDTO)
@@ -216,5 +210,47 @@ public class UserServiceImpl implements UserService {
   @Override
   public List<Role> findRolesByEmail(@NonNull String email) {
     return userRepository.findRolesByEmail(email).stream().map(r -> roleMapper.toDTO(r)).toList();
+  }
+
+  @Override
+  public User register(RegisterRequest registerRequest) {
+    Optional<UserEntity> userEntity = userRepository.findByEmail(registerRequest.getEmail());
+    if (userEntity.isPresent()) {
+      throw new HrmCommonException(USER.EXIST);
+    }
+    return Optional.ofNullable(registerRequest)
+        .map(
+            e ->
+                User.builder()
+                    .userName(e.getUserName())
+                    .email(e.getEmail())
+                    .phone(e.getPhone())
+                    .password(e.getPassword())
+                    .firstName(e.getFirstName())
+                    .lastName(e.getLastName())
+                    .isVerified(false)
+                    .build())
+        .map(userMapper::toEntity)
+        .map(userRepository::save)
+        .map(
+            e -> {
+              userRoleMapService.setStaffRoleForUser(e.getId());
+              return e;
+            })
+        .map(userMapper::toDTO)
+        .orElse(null);
+  }
+
+  @Override
+  public User verifyUser(Long userId) {
+    UserEntity verifyUser = userRepository.findById(userId).orElse(null);
+    if (verifyUser == null) {
+      throw new HrmCommonException(USER.NOT_EXIST);
+    }
+    return Optional.ofNullable(verifyUser)
+        .map(e -> e.setIsVerified(true))
+        .map(userRepository::save)
+        .map(userMapper::toDTO)
+        .orElse(null);
   }
 }

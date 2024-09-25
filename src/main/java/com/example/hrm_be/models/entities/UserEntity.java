@@ -20,7 +20,7 @@ import lombok.experimental.SuperBuilder;
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class UserEntity extends CommonEntity {
 
-  @Column(name = "username", unique = true)
+  @Column(name = "username")
   String userName;
 
   @Column(name = "email", unique = true)
@@ -38,6 +38,9 @@ public class UserEntity extends CommonEntity {
   @Column(name = "last_name")
   String lastName;
 
+  @Column(name = "is_verified")
+  Boolean isVerified = false;
+
   @ToString.Exclude
   @OneToMany(mappedBy = "user")
   List<UserRoleMapEntity> userRoleMap;
@@ -46,5 +49,4 @@ public class UserEntity extends CommonEntity {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "branch_id", foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
   BranchEntity branch;
-
 }
