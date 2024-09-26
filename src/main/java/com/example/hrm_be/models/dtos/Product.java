@@ -43,8 +43,6 @@ public class Product implements Serializable {
 
   Batch batch;
 
-  Tax tax;
-
   Supplier supplier;
 
   List<ProductUnitMap> productUnitMaps;

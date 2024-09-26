@@ -24,7 +24,7 @@ public class TaxMapper {
                     .id(e.getId())
                     .taxName(e.getTaxName())
                     .taxRate(e.getTaxRate())
-                    .products(
+                    .(
                         e.getProducts() != null
                             ? e.getProducts().stream()
                             .map(productMapper::toDTO)
@@ -43,9 +43,9 @@ public class TaxMapper {
                     .id(e.getId())
                     .taxName(e.getTaxName())
                     .taxRate(e.getTaxRate())
-                    .products(
-                        e.getProducts() != null
-                            ? e.getProducts().stream()
+                    .taxTypeMapEntities(
+                        e.getTaxTypeMap() != null
+                            ? e.getTaxTypeMap().stream()
                             .map(productMapper::toEntity)
                             .collect(Collectors.toList())
                             : null)

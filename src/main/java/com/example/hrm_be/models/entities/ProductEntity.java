@@ -61,11 +61,6 @@ public class ProductEntity extends CommonEntity {
 
   @ToString.Exclude
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "tax_id", foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
-  TaxEntity tax;
-
-  @ToString.Exclude
-  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "supplier_id", foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
   SupplierEntity supplier;
 
