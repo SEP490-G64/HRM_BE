@@ -20,11 +20,11 @@ import lombok.extern.jackson.Jacksonized;
 @EqualsAndHashCode
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ProductTypeMap implements Serializable {
+public class TypeTaxMap implements Serializable {
 
-  @Serial private static final long serialVersionUID = -2042368325937200647L;
+  @Serial private static final long serialVersionUID = -1436122270709151207L;
   Long id;
-  Product product;
+  Tax tax;
 
-  ProductType type;
+  Type type;
 }

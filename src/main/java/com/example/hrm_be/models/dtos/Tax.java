@@ -28,6 +28,5 @@ public class Tax implements Serializable {
   String taxName;
 
   Double taxRate;
-
-  List<Product> products;
+  List<TypeTaxMap> typeTaxMap;
 }
