@@ -6,13 +6,13 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface BranchService {
-    Branch getById(Long id);
+  Branch getById(Long id);
 
-    Page<Branch> getByPaging(int pageNo, int pageSize, String sortBy);
+  Page<Branch> getByPaging(int pageNo, int pageSize, String sortBy);
 
-    Branch create(Branch branch);
+  Branch create(Branch branch);
 
-    Branch update(Branch branch);
+  Branch update(Branch branch);
 
-    void delete(Long id);
+  void delete(Long id);
 }

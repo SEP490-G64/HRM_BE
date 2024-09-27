@@ -22,62 +22,61 @@ import java.util.Optional;
 @Transactional
 public class BranchSeviceImpl implements BranchService {
 
-    @Autowired
-    private BranchRepository branchRepository;
-    @Autowired private BranchMapper branchMapper;
+  @Autowired private BranchRepository branchRepository;
+  @Autowired private BranchMapper branchMapper;
 
-    @Override
-    public Branch getById(Long id) {
-        return Optional.ofNullable(id)
-                .flatMap(e -> branchRepository.findById(e).map(b -> branchMapper.toDTO(b)))
-                .orElse(null);
+  @Override
+  public Branch getById(Long id) {
+    return Optional.ofNullable(id)
+        .flatMap(e -> branchRepository.findById(e).map(b -> branchMapper.toDTO(b)))
+        .orElse(null);
+  }
+
+  @Override
+  public Page<Branch> getByPaging(int pageNo, int pageSize, String sortBy) {
+    Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(sortBy).ascending());
+    return branchRepository.findAll(pageable).map(dao -> branchMapper.toDTO(dao));
+  }
+
+  @Override
+  public Branch create(Branch branch) {
+    if (branch == null || branchRepository.existsByLocation(branch.getLocation())) {
+      throw new HrmCommonException(HrmConstant.ERROR.BRANCH.EXIST);
     }
+    return Optional.ofNullable(branch)
+        .map(e -> branchMapper.toEntity(e))
+        .map(e -> branchRepository.save(e))
+        .map(e -> branchMapper.toDTO(e))
+        .orElse(null);
+  }
 
-    @Override
-    public Page<Branch> getByPaging(int pageNo, int pageSize, String sortBy) {
-        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(sortBy).ascending());
-        return branchRepository.findAll(pageable).map(dao -> branchMapper.toDTO(dao));
+  @Override
+  public Branch update(Branch branch) {
+    BranchEntity oldBranchEntity = branchRepository.findById(branch.getId()).orElse(null);
+    if (oldBranchEntity == null) {
+      throw new HrmCommonException(HrmConstant.ERROR.BRANCH.NOT_EXIST);
     }
+    return Optional.ofNullable(oldBranchEntity)
+        .map(
+            op ->
+                op.toBuilder()
+                    .branchName(branch.getBranchName())
+                    .branchType(branch.getBranchType())
+                    .capacity(branch.getCapacity())
+                    .contactPerson(branch.getContactPerson())
+                    .phoneNumber(branch.getPhoneNumber())
+                    .location(branch.getLocation())
+                    .build())
+        .map(branchRepository::save)
+        .map(branchMapper::toDTO)
+        .orElse(null);
+  }
 
-    @Override
-    public Branch create(Branch branch) {
-        if (branch == null || branchRepository.existsByLocation(branch.getLocation())) {
-            throw new HrmCommonException(HrmConstant.ERROR.BRANCH.EXIST);
-        }
-        return Optional.ofNullable(branch)
-                .map(e -> branchMapper.toEntity(e))
-                .map(e -> branchRepository.save(e))
-                .map(e -> branchMapper.toDTO(e))
-                .orElse(null);
+  @Override
+  public void delete(Long id) {
+    if (StringUtils.isBlank(id.toString())) {
+      return;
     }
-
-    @Override
-    public Branch update(Branch branch) {
-        BranchEntity oldBranchEntity = branchRepository.findById(branch.getId()).orElse(null);
-        if (oldBranchEntity == null) {
-            throw new HrmCommonException(HrmConstant.ERROR.BRANCH.NOT_EXIST);
-        }
-        return Optional.ofNullable(oldBranchEntity)
-                .map(op -> op.toBuilder()
-                        .branchName(branch.getBranchName())
-                        .branchType(branch.getBranchType())
-                        .capacity(branch.getCapacity())
-                        .contactPerson(branch.getContactPerson())
-                        .phoneNumber(branch.getPhoneNumber())
-                        .location(branch.getLocation())
-                        .build())
-                .map(branchRepository::save)
-                .map(branchMapper::toDTO)
-                .orElse(null);
-    }
-
-    @Override
-    public void delete(Long id) {
-        if (StringUtils.isBlank(id.toString())) {
-            return;
-        }
-        branchRepository.deleteById(id);
-    }
-
-
+    branchRepository.deleteById(id);
+  }
 }

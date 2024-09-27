@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface BranchRepository extends JpaRepository<BranchEntity, Long> {
-    boolean existsByLocation(String location);
-    Page<BranchEntity> findBy(String branchName, String branchAddress, Pageable pageable);
+  boolean existsByLocation(String location);
+
+  Page<BranchEntity> findBy(String branchName, String branchAddress, Pageable pageable);
 }
