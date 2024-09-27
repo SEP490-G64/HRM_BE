@@ -1,9 +1,8 @@
 package com.example.hrm_be.components;
 
-import com.example.hrm_be.models.dtos.ProductType;
-import com.example.hrm_be.models.dtos.ProductTypeMap;
+import com.example.hrm_be.models.dtos.TypeTaxMap;
 import com.example.hrm_be.models.dtos.UserRoleMap;
-import com.example.hrm_be.models.entities.TaxEntity;
+import com.example.hrm_be.models.entities.TypeTaxMapEntity;
 import com.example.hrm_be.models.entities.UserRoleMapEntity;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,28 +14,28 @@ public class TypeTaxMapMapper {
   @Lazy
   @Autowired
   private TaxMapper taxMapper;
-  @Lazy @Autowired private ProductTypeMap roleMapper;
+  @Lazy @Autowired private TypeMapper typeMapper;
 
-  public UserRoleMap toDTO(UserRoleMapEntity entity) {
+  public TypeTaxMap toDTO(TypeTaxMapEntity entity) {
     return Optional.ofNullable(entity)
         .map(
             e ->
-                UserRoleMap.builder()
+                TypeTaxMap.builder()
                     .id(e.getId())
-                    .user(userMapper.toDTO(e.getUser()))
-                    .role(roleMapper.toDTO(e.getRole()))
+                    .tax(taxMapper.toDTO(e.getTax()))
+                    .type(typeMapper.toDTO(e.getType()))
                     .build())
         .orElse(null);
   }
 
-  public UserRoleMapEntity toEntity(UserRoleMap dto) {
+  public TypeTaxMapEntity toEntity(TypeTaxMap dto) {
     return Optional.ofNullable(dto)
         .map(
             e ->
-                UserRoleMapEntity.builder()
+                TypeTaxMapEntity.builder()
                     .id(e.getId())
-                    .user(userMapper.toEntity(e.getUser()))
-                    .role(roleMapper.toEntity(e.getRole()))
+                    .tax(taxMapper.toEntity(e.getTax()))
+                    .type(typeMapper.toEntity(e.getType()))
                     .build())
         .orElse(null);
   }

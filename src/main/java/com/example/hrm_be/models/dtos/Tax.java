@@ -1,10 +1,6 @@
 package com.example.hrm_be.models.dtos;
 
-import com.example.hrm_be.models.entities.ProductEntity;
-import com.example.hrm_be.models.entities.TaxTypeMapEntity;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import jakarta.persistence.Column;
-import jakarta.persistence.OneToMany;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
@@ -12,7 +8,6 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
@@ -33,5 +28,5 @@ public class Tax implements Serializable {
   String taxName;
 
   Double taxRate;
-  List<TaxTypeMap> taxTypeMap;
+  List<TypeTaxMap> typeTaxMap;
 }

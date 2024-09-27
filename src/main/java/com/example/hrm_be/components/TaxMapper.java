@@ -1,6 +1,7 @@
 package com.example.hrm_be.components;
 
 import com.example.hrm_be.models.dtos.Tax;
+import com.example.hrm_be.models.dtos.TypeTaxMap;
 import com.example.hrm_be.models.entities.TaxEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -12,25 +13,12 @@ import java.util.stream.Collectors;
 @Component
 public class TaxMapper {
 
-  @Autowired @Lazy
-  private ProductMapper productMapper;
+  @Autowired @Lazy private TypeTaxMapMapper typeTaxMapMapper;
 
   // Convert TaxEntity to Tax DTO
   public Tax toDTO(TaxEntity entity) {
     return Optional.ofNullable(entity)
-        .map(
-            e ->
-                Tax.builder()
-                    .id(e.getId())
-                    .taxName(e.getTaxName())
-                    .taxRate(e.getTaxRate())
-                    .(
-                        e.getProducts() != null
-                            ? e.getProducts().stream()
-                            .map(productMapper::toDTO)
-                            .collect(Collectors.toList())
-                            : null)
-                    .build())
+        .map(this::convertToDto)
         .orElse(null);
   }
 
@@ -38,18 +26,35 @@ public class TaxMapper {
   public TaxEntity toEntity(Tax dto) {
     return Optional.ofNullable(dto)
         .map(
-            e ->
-                TaxEntity.builder()
-                    .id(e.getId())
-                    .taxName(e.getTaxName())
-                    .taxRate(e.getTaxRate())
-                    .taxTypeMapEntities(
-                        e.getTaxTypeMap() != null
-                            ? e.getTaxTypeMap().stream()
-                            .map(productMapper::toEntity)
-                            .collect(Collectors.toList())
-                            : null)
-                    .build())
+            e -> TaxEntity.builder()
+                .id(e.getId())
+                .taxName(e.getTaxName())
+                .taxRate(e.getTaxRate())
+                .typeTaxMapEntities(
+                    e.getTypeTaxMap() != null
+                        ? e.getTypeTaxMap().stream()
+                        .map(typeTaxMapMapper::toEntity)
+                        .collect(Collectors.toList())
+                        : null)
+                .build())
+        .orElse(null);
+  }
+
+  // Helper method to map TaxEntity to Tax DTO
+  private Tax convertToDto(TaxEntity entity) {
+    return Optional.ofNullable(entity)
+        .map(
+            e -> Tax.builder()
+                .id(e.getId())
+                .taxName(e.getTaxName())
+                .taxRate(e.getTaxRate())
+                .typeTaxMap(
+                    e.getTypeTaxMapEntities() != null
+                        ? e.getTypeTaxMapEntities().stream()
+                        .map(typeTaxMapMapper::toDTO)
+                        .collect(Collectors.toList())
+                        : null)
+                .build())
         .orElse(null);
   }
 }

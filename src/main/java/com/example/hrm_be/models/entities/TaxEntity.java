@@ -37,5 +37,5 @@ public class TaxEntity extends CommonEntity {
 
   @ToString.Exclude
   @OneToMany(mappedBy = "tax")
-  List<TaxTypeMapEntity> taxTypeMapEntities;
+  List<TypeTaxMapEntity> typeTaxMapEntities;
 }
