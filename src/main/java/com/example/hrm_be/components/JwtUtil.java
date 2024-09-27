@@ -1,6 +1,7 @@
 package com.example.hrm_be.components;
 
 import com.example.hrm_be.configs.objects.HrmJwtProp;
+import com.example.hrm_be.models.dtos.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -23,7 +24,13 @@ public class JwtUtil {
 
   public String generateToken(UserDetails userDetails) {
     Map<String, Object> claims = new HashMap<>();
+    claims.put("information","");
     return doGenerateToken(claims, userDetails.getUsername());
+  }
+  public String generateToken(User userDetails) {
+    Map<String, Object> claims = new HashMap<>();
+    claims.put("information",userDetails);
+    return doGenerateToken(claims, userDetails.getEmail());
   }
 
   public String generateToken(String email) {

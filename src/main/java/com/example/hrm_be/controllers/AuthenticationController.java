@@ -45,7 +45,7 @@ public class AuthenticationController {
       throw new JwtAuthenticationException("error.auth.invalid.credentials");
     }
 
-    UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmail());
+    User userDetails = userService.getByEmail(request.getEmail());
     String jwt = jwtUtil.generateToken(userDetails);
     AccessToken accessToken = AccessToken.builder().accessToken(jwt).build();
     BaseOutput<AccessToken> response =
