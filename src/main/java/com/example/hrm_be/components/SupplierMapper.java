@@ -12,8 +12,7 @@ import java.util.stream.Collectors;
 @Component
 public class SupplierMapper {
 
-  @Autowired @Lazy
-  private ProductMapper productMapper;
+  @Autowired @Lazy private ProductMapper productMapper;
 
   // Convert SupplierEntity to Supplier DTO
   public Supplier toDTO(SupplierEntity entity) {
@@ -30,8 +29,8 @@ public class SupplierMapper {
                     .products(
                         e.getProducts() != null
                             ? e.getProducts().stream()
-                            .map(productMapper::toDTO)
-                            .collect(Collectors.toList())
+                                .map(productMapper::toDTO)
+                                .collect(Collectors.toList())
                             : null)
                     .build())
         .orElse(null);
@@ -52,8 +51,8 @@ public class SupplierMapper {
                     .products(
                         e.getProducts() != null
                             ? e.getProducts().stream()
-                            .map(productMapper::toEntity)
-                            .collect(Collectors.toList())
+                                .map(productMapper::toEntity)
+                                .collect(Collectors.toList())
                             : null)
                     .build())
         .orElse(null);

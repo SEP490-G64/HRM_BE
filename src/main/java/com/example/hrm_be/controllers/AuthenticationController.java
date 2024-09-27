@@ -1,6 +1,5 @@
 package com.example.hrm_be.controllers;
 
-import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.commons.constants.HrmConstant.ERROR.REQUEST;
 import com.example.hrm_be.components.JwtUtil;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
@@ -11,7 +10,6 @@ import com.example.hrm_be.models.requests.RegisterRequest;
 import com.example.hrm_be.models.responses.AccessToken;
 import com.example.hrm_be.models.responses.BaseOutput;
 import com.example.hrm_be.services.UserService;
-import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -19,7 +17,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -47,7 +44,7 @@ public class AuthenticationController {
       throw new JwtAuthenticationException("error.auth.invalid.credentials");
     }
 
-    UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmail());
+    User userDetails = userService.getByEmail(request.getEmail());
     String jwt = jwtUtil.generateToken(userDetails);
     AccessToken accessToken = AccessToken.builder().accessToken(jwt).build();
     BaseOutput<AccessToken> response =
@@ -72,8 +69,7 @@ public class AuthenticationController {
   }
 
   @PostMapping("/verify-user/{id}")
-  public ResponseEntity<BaseOutput<User>> verifyUser(
-      @PathVariable("id")  Long id) {
+  public ResponseEntity<BaseOutput<User>> verifyUser(@PathVariable("id") Long id) {
     if (id == null) {
       throw new HrmCommonException(REQUEST.INVALID_PATH_VARIABLE);
     }

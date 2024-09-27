@@ -27,9 +27,9 @@ import lombok.experimental.SuperBuilder;
 public class ProductIngredientEntity extends CommonEntity {
   @Column(name = "pi_name")
   String name;
+
   @Column(name = "pi_description")
   String description;
-
 
   @ToString.Exclude
   @OneToMany(mappedBy = "ingredient")

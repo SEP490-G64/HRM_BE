@@ -5,6 +5,4 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Getter
-public enum ProductUnitType {
-
-}
+public enum ProductUnitType {}

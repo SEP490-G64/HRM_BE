@@ -12,8 +12,7 @@ import java.util.stream.Collectors;
 @Component
 public class ProductCategoryMapper {
 
-  @Autowired @Lazy
-  private ProductCategoryMapMapper productCategoryMapMapper;
+  @Autowired @Lazy private ProductCategoryMapMapper productCategoryMapMapper;
 
   // Convert ProductCategoryEntity to ProductCategory DTO
   public ProductCategory toDTO(ProductCategoryEntity entity) {
@@ -26,8 +25,8 @@ public class ProductCategoryMapper {
                     .products(
                         e.getProducts() != null
                             ? e.getProducts().stream()
-                            .map(productCategoryMapMapper::toDTO)
-                            .collect(Collectors.toList())
+                                .map(productCategoryMapMapper::toDTO)
+                                .collect(Collectors.toList())
                             : null)
                     .build())
         .orElse(null);
@@ -44,8 +43,8 @@ public class ProductCategoryMapper {
                     .products(
                         e.getProducts() != null
                             ? e.getProducts().stream()
-                            .map(productCategoryMapMapper::toEntity)
-                            .collect(Collectors.toList())
+                                .map(productCategoryMapMapper::toEntity)
+                                .collect(Collectors.toList())
                             : null)
                     .build())
         .orElse(null);

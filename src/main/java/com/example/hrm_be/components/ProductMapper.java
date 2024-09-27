@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ProductMapper {
 
-  @Autowired @Lazy  private BranchMapper branchMapper;
+  @Autowired @Lazy private BranchMapper branchMapper;
   @Autowired @Lazy private BatchMapper batchMapper;
   @Autowired @Lazy private TaxMapper taxMapper;
   @Autowired @Lazy private SupplierMapper supplierMapper;
@@ -20,8 +20,7 @@ public class ProductMapper {
   @Autowired @Lazy private ProductCategoryMapMapper productCategoryMapMapper;
   @Autowired @Lazy private InventoryMapper inventoryMapper;
   @Autowired @Lazy private ManufacturerMapper manufacturerMapper;
-  @Autowired @Lazy
-  private SpecialConditionMapper specialConditionMapper;
+  @Autowired @Lazy private SpecialConditionMapper specialConditionMapper;
 
   // Convert ProductEntity to Product DTO
   public Product toDTO(ProductEntity entity) {
@@ -48,26 +47,26 @@ public class ProductMapper {
                     .productUnitMap(
                         e.getProductUnitMaps() != null
                             ? e.getProductUnitMaps().stream()
-                            .map(productUnitMapMapper::toEntity)
-                            .collect(Collectors.toList())
+                                .map(productUnitMapMapper::toEntity)
+                                .collect(Collectors.toList())
                             : null)
                     .productIngredientMap(
                         e.getProductIngredientMap() != null
                             ? e.getProductIngredientMap().stream()
-                            .map(productIngredientMapMapper::toEntity)
-                            .collect(Collectors.toList())
+                                .map(productIngredientMapMapper::toEntity)
+                                .collect(Collectors.toList())
                             : null)
                     .productCateMap(
                         e.getProductCateMap() != null
                             ? e.getProductCateMap().stream()
-                            .map(productCategoryMapMapper::toEntity)
-                            .collect(Collectors.toList())
+                                .map(productCategoryMapMapper::toEntity)
+                                .collect(Collectors.toList())
                             : null)
                     .inventoryEntities(
                         e.getInventory() != null
                             ? e.getInventory().stream()
-                            .map(inventoryMapper::toEntity)
-                            .collect(Collectors.toList())
+                                .map(inventoryMapper::toEntity)
+                                .collect(Collectors.toList())
                             : null)
                     .build())
         .orElse(null);
@@ -93,26 +92,26 @@ public class ProductMapper {
                     .productUnitMaps(
                         e.getProductUnitMap() != null
                             ? e.getProductUnitMap().stream()
-                            .map(productUnitMapMapper::toDTO)
-                            .collect(Collectors.toList())
+                                .map(productUnitMapMapper::toDTO)
+                                .collect(Collectors.toList())
                             : null)
                     .productIngredientMap(
                         e.getProductIngredientMap() != null
                             ? e.getProductIngredientMap().stream()
-                            .map(productIngredientMapMapper::toDTO)
-                            .collect(Collectors.toList())
+                                .map(productIngredientMapMapper::toDTO)
+                                .collect(Collectors.toList())
                             : null)
                     .productCateMap(
                         e.getProductCateMap() != null
                             ? e.getProductCateMap().stream()
-                            .map(productCategoryMapMapper::toDTO)
-                            .collect(Collectors.toList())
+                                .map(productCategoryMapMapper::toDTO)
+                                .collect(Collectors.toList())
                             : null)
                     .inventory(
                         e.getInventoryEntities() != null
                             ? e.getInventoryEntities().stream()
-                            .map(inventoryMapper::toDTO)
-                            .collect(Collectors.toList())
+                                .map(inventoryMapper::toDTO)
+                                .collect(Collectors.toList())
                             : null)
                     .build())
         .orElse(null);

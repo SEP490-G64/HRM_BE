@@ -1,6 +1,5 @@
 package com.example.hrm_be.controllers.role;
 
-
 import com.example.hrm_be.commons.constants.HrmConstant.ERROR.REQUEST;
 import com.example.hrm_be.commons.enums.ResponseStatus;
 import com.example.hrm_be.models.dtos.Role;
@@ -28,10 +27,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/admin/role")
-
 public class AdminRoleController {
   private final RoleService roleService;
-
 
   @GetMapping("")
   protected ResponseEntity<BaseOutput<List<Role>>> getByPaging(
@@ -52,7 +49,6 @@ public class AdminRoleController {
             .build();
     return ResponseEntity.ok(response);
   }
-
 
   @GetMapping("/{id}")
   protected ResponseEntity<BaseOutput<Role>> getById(
@@ -75,7 +71,6 @@ public class AdminRoleController {
             .build();
     return ResponseEntity.ok(response);
   }
-
 
   @PostMapping
   protected ResponseEntity<BaseOutput<Role>> create(
@@ -100,7 +95,6 @@ public class AdminRoleController {
     return ResponseEntity.ok(response);
   }
 
-
   @PutMapping("/{id}")
   protected ResponseEntity<BaseOutput<Role>> update(
       @PathVariable("id") @NotBlank(message = "error.id.invalid") Long id,
@@ -123,7 +117,6 @@ public class AdminRoleController {
             .build();
     return ResponseEntity.ok(response);
   }
-
 
   @DeleteMapping("/{id}")
   protected ResponseEntity<BaseOutput<String>> delete(
