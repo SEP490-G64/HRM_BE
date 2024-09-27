@@ -8,8 +8,15 @@ jobs:
       IMAGE_VERSION: postgres:16.4-alpine3.20
     runs-on: ubuntu-latest
     steps:
-      - name: Check out repository code
+      - name: Check out repository code in base branch
+        if: github.event_name != 'pull_request'
         uses: actions/checkout@v4
+
+      - name: Check out repository code in a pull request
+        if: github.event_name == 'pull_request'
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
 
       - name: Set up JDK 21
         uses: actions/setup-java@v4
