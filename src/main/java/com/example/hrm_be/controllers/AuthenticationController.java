@@ -82,8 +82,7 @@ public class AuthenticationController {
   }
 
   @PostMapping("/verify-user/{id}")
-  public ResponseEntity<BaseOutput<User>> verifyUser(
-      @PathVariable("id")  Long id) {
+  public ResponseEntity<BaseOutput<User>> verifyUser(@PathVariable("id") Long id) {
     if (id == null) {
       throw new HrmCommonException(REQUEST.INVALID_PATH_VARIABLE);
     }

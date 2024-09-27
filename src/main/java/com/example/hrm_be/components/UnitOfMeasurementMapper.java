@@ -11,8 +11,7 @@ import java.util.Optional;
 @Component
 public class UnitOfMeasurementMapper {
 
-  @Autowired @Lazy
-  private ProductMapper productMapper;
+  @Autowired @Lazy private ProductMapper productMapper;
 
   // Convert UnitOfMeasurementEntity to UnitOfMeasurement DTO
   public UnitOfMeasurement toDTO(UnitOfMeasurementEntity entity) {

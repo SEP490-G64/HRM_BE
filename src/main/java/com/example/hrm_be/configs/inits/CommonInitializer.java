@@ -1,6 +1,5 @@
 package com.example.hrm_be.configs.inits;
 
-
 import com.example.hrm_be.models.dtos.Role;
 import com.example.hrm_be.models.dtos.User;
 import com.example.hrm_be.services.RoleService;

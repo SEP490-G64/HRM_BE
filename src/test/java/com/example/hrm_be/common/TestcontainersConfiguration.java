@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
-  public class TestcontainersConfiguration extends PostgreSQLContainer<TestcontainersConfiguration> {
+public class TestcontainersConfiguration extends PostgreSQLContainer<TestcontainersConfiguration> {
   private static final String IMAGE_VERSION = "postgres:16.4-alpine3.20";
   private static TestcontainersConfiguration container;
 

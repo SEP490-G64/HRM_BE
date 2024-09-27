@@ -1,17 +1,7 @@
 package com.example.hrm_be.models.dtos;
 
 import com.example.hrm_be.commons.enums.InventoryStatus;
-import com.example.hrm_be.models.entities.BranchEntity;
-import com.example.hrm_be.models.entities.ProductEntity;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import jakarta.persistence.Column;
-import jakarta.persistence.ConstraintMode;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.ForeignKey;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;

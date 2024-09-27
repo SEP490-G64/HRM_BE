@@ -1,6 +1,5 @@
 package com.example.hrm_be.services.impl;
 
-
 import com.example.hrm_be.commons.enums.RoleType;
 import com.example.hrm_be.components.UserMapper;
 import com.example.hrm_be.components.UserRoleMapMapper;
@@ -46,7 +45,7 @@ public class UserRoleMapServiceImpl implements UserRoleMapService {
 
   @Override
   public void setManagerRoleForUser(Long userId) {
-    setRoleForUserByRoleList(userId, List.of(RoleType.MANAGER,RoleType.STAFF));
+    setRoleForUserByRoleList(userId, List.of(RoleType.MANAGER, RoleType.STAFF));
   }
 
   @Override

@@ -1,6 +1,5 @@
 package com.example.hrm_be.repositories;
 
-
 import com.example.hrm_be.models.entities.RoleEntity;
 import com.example.hrm_be.models.entities.UserEntity;
 import java.util.List;
@@ -24,7 +23,6 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
   @Query("SELECT u FROM UserEntity u WHERE u.userName LIKE %:keyword% OR u.email LIKE %:keyword%")
   Page<UserEntity> findByKeyword(String keyword, Pageable pageable);
-
 
   @Modifying
   @Transactional

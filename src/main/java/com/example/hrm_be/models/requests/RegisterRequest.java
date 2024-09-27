@@ -24,8 +24,7 @@ import lombok.extern.jackson.Jacksonized;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class RegisterRequest implements Serializable {
 
-  @Serial
-  private static final long serialVersionUID = 4604423436127249181L;
+  @Serial private static final long serialVersionUID = 4604423436127249181L;
 
   String userName;
 
@@ -38,5 +37,4 @@ public class RegisterRequest implements Serializable {
   String firstName;
 
   String lastName;
-
 }

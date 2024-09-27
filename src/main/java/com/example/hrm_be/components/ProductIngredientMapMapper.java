@@ -11,8 +11,7 @@ import java.util.Optional;
 @Component
 public class ProductIngredientMapMapper {
 
-  @Autowired @Lazy
-  private ProductMapper productMapper;
+  @Autowired @Lazy private ProductMapper productMapper;
   @Autowired @Lazy private ProductIngredientMapper productIngredientMapper;
 
   // Convert ProductIngredientMapEntity to ProductIngredientMap DTO

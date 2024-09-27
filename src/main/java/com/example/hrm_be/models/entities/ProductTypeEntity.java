@@ -24,7 +24,7 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "types")
-public class ProductTypeEntity extends  CommonEntity {
+public class ProductTypeEntity extends CommonEntity {
   @Column(name = "type_name")
   String typeName;
 
