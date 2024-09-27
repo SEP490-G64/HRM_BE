@@ -1,12 +1,7 @@
 package com.example.hrm_be.models.entities;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.ForeignKey;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.util.List;
@@ -29,7 +24,7 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "categories")
-public class ProductCategoryEntity extends  CommonEntity {
+public class ProductCategoryEntity extends CommonEntity {
   @Column(name = "category_name")
   String categoryName;
 

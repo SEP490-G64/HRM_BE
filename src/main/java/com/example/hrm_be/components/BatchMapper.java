@@ -1,9 +1,7 @@
 package com.example.hrm_be.components;
 
 import com.example.hrm_be.models.dtos.Batch;
-import com.example.hrm_be.models.dtos.Product;
 import com.example.hrm_be.models.entities.BatchEntity;
-import com.example.hrm_be.models.entities.ProductEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -14,8 +12,7 @@ import java.util.stream.Collectors;
 @Component
 public class BatchMapper {
 
-  @Autowired @Lazy
-  private ProductMapper productMapper;
+  @Autowired @Lazy private ProductMapper productMapper;
 
   // Convert BatchEntity to Batch DTO
   public Batch toDTO(BatchEntity entity) {
@@ -34,8 +31,8 @@ public class BatchMapper {
                     .products(
                         e.getProducts() != null
                             ? e.getProducts().stream()
-                            .map(productMapper::toEntity)
-                            .collect(Collectors.toList())
+                                .map(productMapper::toEntity)
+                                .collect(Collectors.toList())
                             : null)
                     .build())
         .orElse(null);
@@ -53,8 +50,8 @@ public class BatchMapper {
                     .products(
                         e.getProducts() != null
                             ? e.getProducts().stream()
-                            .map(productMapper::toDTO)
-                            .collect(Collectors.toList())
+                                .map(productMapper::toDTO)
+                                .collect(Collectors.toList())
                             : null)
                     .build())
         .orElse(null);

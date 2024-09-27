@@ -26,7 +26,7 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "product_category")
-public class ProductCategoryMapEntity extends  CommonEntity {
+public class ProductCategoryMapEntity extends CommonEntity {
   @ToString.Exclude
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "p_id", foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))

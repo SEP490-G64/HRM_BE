@@ -38,12 +38,9 @@ class UserRoleMapEntityTest {
 
   @Autowired PasswordEncoder passwordEncoder;
 
-  @Autowired
-  UserRoleMapRepository userRoleMapRepository;
-  @Autowired
-  UserRepository userRepository;
-  @Autowired
-  RoleRepository roleRepository;
+  @Autowired UserRoleMapRepository userRoleMapRepository;
+  @Autowired UserRepository userRepository;
+  @Autowired RoleRepository roleRepository;
 
   @Test
   @Transactional

@@ -1,10 +1,6 @@
 package com.example.hrm_be.models.dtos;
 
-import com.example.hrm_be.models.entities.BatchEntity;
-import com.example.hrm_be.models.entities.BranchEntity;
-import com.example.hrm_be.models.entities.TaxEntity;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import jakarta.persistence.Column;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;

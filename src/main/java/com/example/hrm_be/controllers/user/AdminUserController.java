@@ -1,6 +1,5 @@
 package com.example.hrm_be.controllers.user;
 
-
 import com.example.hrm_be.commons.constants.HrmConstant.ERROR.REQUEST;
 import com.example.hrm_be.models.dtos.User;
 import com.example.hrm_be.models.responses.BaseOutput;
@@ -8,7 +7,7 @@ import com.example.hrm_be.services.UserService;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
-  import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -20,11 +19,9 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/admin/user")
-
-public class  AdminUserController {
+public class AdminUserController {
 
   private final UserService userService;
-
 
   @GetMapping("")
   public ResponseEntity<BaseOutput<List<User>>> getAllByPaging(
@@ -46,7 +43,6 @@ public class  AdminUserController {
             .build();
     return ResponseEntity.ok(response);
   }
-
 
   @GetMapping("/{id}")
   public ResponseEntity<BaseOutput<User>> getById(
@@ -70,27 +66,20 @@ public class  AdminUserController {
     return ResponseEntity.ok(response);
   }
 
-
   @GetMapping("/email/{email}")
   public ResponseEntity<BaseOutput<User>> getByEmail(
       @PathVariable("email") @NotBlank(message = REQUEST.INVALID_PATH_VARIABLE) String email) {
     if (StringUtils.isAllBlank(email)) {
       BaseOutput<User> response =
-          BaseOutput.<User>builder()
-              .errors(List.of(REQUEST.INVALID_PATH_VARIABLE))
-              .build();
+          BaseOutput.<User>builder().errors(List.of(REQUEST.INVALID_PATH_VARIABLE)).build();
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
     User user = userService.getByEmail(email);
 
     BaseOutput<User> response =
-        BaseOutput.<User>builder()
-            .message(HttpStatus.OK.toString())
-            .data(user)
-            .build();
+        BaseOutput.<User>builder().message(HttpStatus.OK.toString()).data(user).build();
     return ResponseEntity.ok(response);
   }
-
 
   @PostMapping
   public ResponseEntity<BaseOutput<User>> create(
@@ -98,21 +87,15 @@ public class  AdminUserController {
 
     if (user == null) {
       BaseOutput<User> response =
-          BaseOutput.<User>builder()
-              .errors(List.of(REQUEST.INVALID_BODY))
-              .build();
+          BaseOutput.<User>builder().errors(List.of(REQUEST.INVALID_BODY)).build();
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
     User createdUser = userService.create(user);
     BaseOutput<User> response =
-        BaseOutput.<User>builder()
-            .message(HttpStatus.OK.toString())
-            .data(createdUser)
-            .build();
+        BaseOutput.<User>builder().message(HttpStatus.OK.toString()).data(createdUser).build();
     return ResponseEntity.ok(response);
   }
-
 
   @PutMapping("/{id}")
   public ResponseEntity<BaseOutput<User>> update(
@@ -120,18 +103,13 @@ public class  AdminUserController {
       @RequestBody @NotNull(message = "error.request.body.invalid") User user) {
     if (id == null) {
       BaseOutput<User> response =
-          BaseOutput.<User>builder()
-              .errors(List.of(REQUEST.INVALID_PATH_VARIABLE))
-              .build();
+          BaseOutput.<User>builder().errors(List.of(REQUEST.INVALID_PATH_VARIABLE)).build();
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
     user.setId(id);
     User createdBid = userService.update(user);
     BaseOutput<User> response =
-        BaseOutput.<User>builder()
-            .message(HttpStatus.OK.toString())
-            .data(createdBid)
-            .build();
+        BaseOutput.<User>builder().message(HttpStatus.OK.toString()).data(createdBid).build();
     return ResponseEntity.ok(response);
   }
 
@@ -140,18 +118,12 @@ public class  AdminUserController {
       @PathVariable("id") @NotBlank(message = "error.request.path.variable.id.invalid") Long id) {
     if (id <= 0) {
       BaseOutput<String> response =
-          BaseOutput.<String>builder()
-              .errors(List.of(REQUEST.INVALID_PATH_VARIABLE))
-              .build();
+          BaseOutput.<String>builder().errors(List.of(REQUEST.INVALID_PATH_VARIABLE)).build();
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
     userService.delete(id);
-    return ResponseEntity.ok(
-        BaseOutput.<String>builder()
-            .data(HttpStatus.OK.toString())
-            .build());
+    return ResponseEntity.ok(BaseOutput.<String>builder().data(HttpStatus.OK.toString()).build());
   }
-
 
   @DeleteMapping()
   public ResponseEntity<BaseOutput<String>> deleteByIds(
@@ -166,8 +138,6 @@ public class  AdminUserController {
     }
     userService.deleteByIds(ids);
     return ResponseEntity.ok(
-        BaseOutput.<String>builder()
-            .message(HttpStatus.OK.toString())
-            .build());
+        BaseOutput.<String>builder().message(HttpStatus.OK.toString()).build());
   }
 }

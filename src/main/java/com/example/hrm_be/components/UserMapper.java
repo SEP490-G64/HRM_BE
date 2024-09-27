@@ -1,6 +1,5 @@
 package com.example.hrm_be.components;
 
-
 import com.example.hrm_be.models.dtos.User;
 import com.example.hrm_be.models.entities.UserEntity;
 import com.example.hrm_be.models.entities.UserRoleMapEntity;
@@ -23,7 +22,6 @@ public class UserMapper {
   public User toDTO(UserEntity entity) {
     return Optional.ofNullable(entity).map(this::convertToDto).orElse(null);
   }
-
 
   public UserEntity toEntity(User dto) {
     return Optional.ofNullable(dto)
