@@ -24,12 +24,13 @@ public class JwtUtil {
 
   public String generateToken(UserDetails userDetails) {
     Map<String, Object> claims = new HashMap<>();
-    claims.put("information","");
+    claims.put("information", "");
     return doGenerateToken(claims, userDetails.getUsername());
   }
+
   public String generateToken(User userDetails) {
     Map<String, Object> claims = new HashMap<>();
-    claims.put("information",userDetails);
+    claims.put("information", userDetails);
     return doGenerateToken(claims, userDetails.getEmail());
   }
 
