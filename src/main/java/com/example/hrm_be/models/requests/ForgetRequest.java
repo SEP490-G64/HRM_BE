@@ -10,7 +10,6 @@ import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
-
 import java.io.Serial;
 import java.io.Serializable;
 
@@ -24,9 +23,9 @@ import java.io.Serializable;
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ForgetRequest implements Serializable {
-    @Serial
-    private static final long serialVersionUID = -6307248331023272494L;
-    @NotBlank(message = HrmConstant.ERROR.REQUEST.INVALID_BODY_EMAIL)
-    @Email(message = HrmConstant.ERROR.REQUEST.INVALID_BODY_EMAIL)
-    String email;
+  @Serial private static final long serialVersionUID = -6307248331023272494L;
+
+  @NotBlank(message = HrmConstant.ERROR.REQUEST.INVALID_BODY_EMAIL)
+  @Email(message = HrmConstant.ERROR.REQUEST.INVALID_BODY_EMAIL)
+  String email;
 }

@@ -12,13 +12,13 @@ import java.util.Date;
 @RequiredArgsConstructor
 @Component
 public class DateUtil {
-    public Date addHours(int hours) {
-        LocalDateTime now = LocalDateTime.now();
+  public Date addHours(int hours) {
+    LocalDateTime now = LocalDateTime.now();
 
-        // Add one hour to the current time
-        LocalDateTime oneHourAhead = now.plusHours(hours);
+    // Add one hour to the current time
+    LocalDateTime oneHourAhead = now.plusHours(hours);
 
-        // Convert LocalDateTime to Date
-        return Date.from(oneHourAhead.atZone(ZoneId.systemDefault()).toInstant());
-    }
+    // Convert LocalDateTime to Date
+    return Date.from(oneHourAhead.atZone(ZoneId.systemDefault()).toInstant());
+  }
 }

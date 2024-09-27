@@ -13,30 +13,28 @@ import java.util.Optional;
 @Service
 @Transactional
 public class PasswordTokenImpl implements PasswordTokenService {
-    @Autowired
-    private PasswordTokenRepository passwordTokenRepository;
+  @Autowired private PasswordTokenRepository passwordTokenRepository;
 
-    @Override
-    public boolean create(PasswordResetTokenEntity passwordResetTokenEntity) {
-        if (findByEmail(passwordResetTokenEntity.getUserEmail()) != null) {
-            delete(passwordResetTokenEntity.getId());
-        }
-        PasswordResetTokenEntity entity = Optional.of(passwordResetTokenEntity)
-                .map(passwordTokenRepository::save)
-                .orElse(null);
-        return entity != null;
+  @Override
+  public boolean create(PasswordResetTokenEntity passwordResetTokenEntity) {
+    if (findByEmail(passwordResetTokenEntity.getUserEmail()) != null) {
+      delete(passwordResetTokenEntity.getId());
     }
+    PasswordResetTokenEntity entity =
+        Optional.of(passwordResetTokenEntity).map(passwordTokenRepository::save).orElse(null);
+    return entity != null;
+  }
 
-    @Override
-    public PasswordResetTokenEntity findByEmail(String email) {
-        return passwordTokenRepository.findByEmailAddress(email).orElse(null);
-    }
+  @Override
+  public PasswordResetTokenEntity findByEmail(String email) {
+    return passwordTokenRepository.findByEmailAddress(email).orElse(null);
+  }
 
-    @Override
-    public void delete(Long id) {
-        if (StringUtils.isBlank(id.toString())) {
-            return;
-        }
-        passwordTokenRepository.deleteById(id);
+  @Override
+  public void delete(Long id) {
+    if (StringUtils.isBlank(id.toString())) {
+      return;
     }
+    passwordTokenRepository.deleteById(id);
+  }
 }

@@ -21,9 +21,9 @@ import java.util.Date;
 @Entity
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class PasswordResetTokenEntity extends CommonEntity {
-    private String token;
+  private String token;
 
-    private String userEmail;
+  private String userEmail;
 
-    private Date expiryDate;
+  private Date expiryDate;
 }
