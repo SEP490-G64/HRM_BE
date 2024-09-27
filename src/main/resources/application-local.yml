@@ -19,7 +19,7 @@ spring:
     host: smtp.gmail.com
     port: 587
     username: duongcdhe176312@gmail.com
-    password: ahihidongoc123
+    password: Ahihidongoc123
     properties:
       mail:
         smtp:
@@ -32,5 +32,5 @@ spring:
     password: Abcd1234
     driver-class-name: org.postgresql.Driver
   jpa:
-    hibernate.ddl-auto: create-drop
+    hibernate.ddl-auto: update
     show-sql: true
