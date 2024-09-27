@@ -17,6 +17,14 @@ jobs:
           java-version: "21"
           distribution: "temurin"
           cache: maven
+      
+      - name: Linting for Java - Using Google
+        uses: axel-op/googlejavaformat-action@v3
+        with:
+          args: "--skip-sorting-imports --replace"
+      
+      - name: Print diffs
+        run: git --no-pager diff
 
       - name: Login to docker hub
         uses: docker/login-action@v3
