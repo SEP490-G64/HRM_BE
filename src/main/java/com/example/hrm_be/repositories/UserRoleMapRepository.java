@@ -1,6 +1,5 @@
 package com.example.hrm_be.repositories;
 
-
 import com.example.hrm_be.commons.enums.RoleType;
 import com.example.hrm_be.models.entities.UserEntity;
 import com.example.hrm_be.models.entities.UserRoleMapEntity;
@@ -18,7 +17,8 @@ public interface UserRoleMapRepository extends JpaRepository<UserRoleMapEntity, 
   List<UserRoleMapEntity> findByUser(UserEntity user);
 
   @Query(
-      "SELECT COUNT(ur)>0 FROM UserRoleMapEntity ur WHERE ur.user.email = :userEmail AND ur.role.type = :roleType ")
+      "SELECT COUNT(ur)>0 FROM UserRoleMapEntity ur WHERE ur.user.email = :userEmail AND"
+          + " ur.role.type = :roleType ")
   Boolean existsByEmailAndRole(String userEmail, RoleType roleType);
 
   @Modifying

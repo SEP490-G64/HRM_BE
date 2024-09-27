@@ -38,7 +38,7 @@ public class ProductEntity extends CommonEntity {
   String name;
 
   @Column(name = "price")
-  Double price; 
+  Double price;
 
   @Column(name = "description")
   String description;
@@ -72,8 +72,8 @@ public class ProductEntity extends CommonEntity {
   @ToString.Exclude
   @OneToMany(mappedBy = "product")
   List<ProductUnitMapEntity> productUnitMap;
- @ToString.Exclude
 
+  @ToString.Exclude
   @OneToMany(mappedBy = "product")
   List<ProductIngredientMapEntity> productIngredientMap;
 
@@ -84,15 +84,18 @@ public class ProductEntity extends CommonEntity {
   @ToString.Exclude
   @OneToMany(mappedBy = "product")
   List<InventoryEntity> inventoryEntities;
+
   @ToString.Exclude
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "manufacturer_id",foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
+  @JoinColumn(
+      name = "manufacturer_id",
+      foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
   ManufacturerEntity manufacturer;
 
   @ToString.Exclude
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "special_condition_id", foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
+  @JoinColumn(
+      name = "special_condition_id",
+      foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
   SpecialConditionEntity specialCondition;
-
-
 }

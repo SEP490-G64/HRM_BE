@@ -1,6 +1,5 @@
 package com.example.hrm_be.common.utils;
 
-
 import com.example.hrm_be.commons.enums.RoleType;
 import com.example.hrm_be.models.entities.RoleEntity;
 import com.example.hrm_be.models.entities.UserEntity;

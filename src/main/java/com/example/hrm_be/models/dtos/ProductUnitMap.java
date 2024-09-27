@@ -1,7 +1,5 @@
 package com.example.hrm_be.models.dtos;
 
-import com.example.hrm_be.models.entities.ProductEntity;
-import com.example.hrm_be.models.entities.UnitOfMeasurementEntity;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.io.Serial;
 import java.io.Serializable;

@@ -13,8 +13,7 @@ import java.util.stream.Collectors;
 public class BranchMapper {
 
   @Autowired @Lazy private InventoryMapper inventoryMapper;
-  @Autowired @Lazy
-  private UserMapper userMapper;
+  @Autowired @Lazy private UserMapper userMapper;
 
   // Convert BranchEntity to Branch DTO
   public Branch toDTO(BranchEntity entity) {
@@ -38,14 +37,14 @@ public class BranchMapper {
                     .users(
                         e.getUsers() != null
                             ? e.getUsers().stream()
-                            .map(userMapper::toEntity)
-                            .collect(Collectors.toList())
+                                .map(userMapper::toEntity)
+                                .collect(Collectors.toList())
                             : null)
                     .inventoryEntities(
                         e.getInventoryEntities() != null
                             ? e.getInventoryEntities().stream()
-                            .map(inventoryMapper::toEntity)
-                            .collect(Collectors.toList())
+                                .map(inventoryMapper::toEntity)
+                                .collect(Collectors.toList())
                             : null)
                     .build())
         .orElse(null);
@@ -68,14 +67,14 @@ public class BranchMapper {
                     .users(
                         e.getUsers() != null
                             ? e.getUsers().stream()
-                            .map(userMapper::toDTO)
-                            .collect(Collectors.toList())
+                                .map(userMapper::toDTO)
+                                .collect(Collectors.toList())
                             : null)
                     .inventoryEntities(
                         e.getInventoryEntities() != null
                             ? e.getInventoryEntities().stream()
-                            .map(inventoryMapper::toDTO)
-                            .collect(Collectors.toList())
+                                .map(inventoryMapper::toDTO)
+                                .collect(Collectors.toList())
                             : null)
                     .build())
         .orElse(null);

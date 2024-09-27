@@ -11,8 +11,7 @@ import java.util.Optional;
 @Component
 public class InventoryMapper {
 
-  @Autowired @Lazy
-  private BranchMapper branchMapper;
+  @Autowired @Lazy private BranchMapper branchMapper;
   @Autowired @Lazy private ProductMapper productMapper;
 
   // Convert InventoryEntity to Inventory DTO

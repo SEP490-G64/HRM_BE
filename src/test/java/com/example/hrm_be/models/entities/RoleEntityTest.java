@@ -2,7 +2,6 @@ package com.example.hrm_be.models.entities;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-
 import com.example.hrm_be.HrmBeApplication;
 import com.example.hrm_be.common.TestcontainersConfiguration;
 import com.example.hrm_be.common.utils.TestUtils;
@@ -32,9 +31,7 @@ class RoleEntityTest {
   public static PostgreSQLContainer<TestcontainersConfiguration> postgreSQLContainer =
       TestcontainersConfiguration.getInstance();
 
-  @Autowired
-  RoleRepository roleRepository;
-
+  @Autowired RoleRepository roleRepository;
 
   @Test
   @Transactional
