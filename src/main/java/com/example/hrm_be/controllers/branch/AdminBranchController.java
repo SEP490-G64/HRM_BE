@@ -18,8 +18,8 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v1/staff/branch")
-public class StaffBranchController {
+@RequestMapping("/api/v1/admin/branch")
+public class AdminBranchController {
   private final BranchService branchService;
 
   @GetMapping("")
