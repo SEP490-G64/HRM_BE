@@ -7,7 +7,6 @@ import com.example.hrm_be.models.dtos.ProductIngredient;
 import com.example.hrm_be.models.entities.ProductIngredientEntity;
 import com.example.hrm_be.repositories.ProductIngredientRepository;
 import com.example.hrm_be.services.ProductIngredientService;
-import io.micrometer.common.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -57,10 +56,12 @@ public class ProductIngredientServiceImpl implements ProductIngredientService {
       throw new HrmCommonException(HrmConstant.ERROR.INGREDIENT.NOT_EXIST);
     }
     return Optional.ofNullable(oldIngredientEntity)
-        .map(op -> op.toBuilder()
-                .name(ingredient.getName())
-                .description(ingredient.getDescription())
-                .build())
+        .map(
+            op ->
+                op.toBuilder()
+                    .name(ingredient.getName())
+                    .description(ingredient.getDescription())
+                    .build())
         .map(ingredientRepository::save)
         .map(ingredientMapper::toDTO)
         .orElse(null);

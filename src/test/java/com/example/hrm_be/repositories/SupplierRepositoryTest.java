@@ -20,93 +20,95 @@ import static org.junit.jupiter.api.Assertions.*;
 @Transactional
 class SupplierRepositoryTest {
 
-    @Autowired
-    private SupplierRepository supplierRepository;
+  @Autowired private SupplierRepository supplierRepository;
 
-    private SupplierEntity supplier;
+  private SupplierEntity supplier;
 
-    @BeforeEach
-    void setup() {
-        supplier = createTestSupplier("Test Supplier", "123 Main Street");
-    }
+  @BeforeEach
+  void setup() {
+    supplier = createTestSupplier("Test Supplier", "123 Main Street");
+  }
 
-    private SupplierEntity createTestSupplier(String name, String address) {
-        SupplierEntity testSupplier = new SupplierEntity();
-        testSupplier.setSupplierName(name);
-        testSupplier.setAddress(address);
-        return testSupplier;
-    }
+  private SupplierEntity createTestSupplier(String name, String address) {
+    SupplierEntity testSupplier = new SupplierEntity();
+    testSupplier.setSupplierName(name);
+    testSupplier.setAddress(address);
+    return testSupplier;
+  }
 
-    @Test
-    void shouldCreateSupplier() {
-        SupplierEntity savedSupplier = supplierRepository.save(supplier);
+  @Test
+  void shouldCreateSupplier() {
+    SupplierEntity savedSupplier = supplierRepository.save(supplier);
 
-        assertNotNull(savedSupplier);
-        assertNotNull(savedSupplier.getId());
-        assertEquals(supplier.getSupplierName(), savedSupplier.getSupplierName());
-        assertEquals(supplier.getAddress(), savedSupplier.getAddress());
-    }
+    assertNotNull(savedSupplier);
+    assertNotNull(savedSupplier.getId());
+    assertEquals(supplier.getSupplierName(), savedSupplier.getSupplierName());
+    assertEquals(supplier.getAddress(), savedSupplier.getAddress());
+  }
 
-    @Test
-    void shouldListAllSuppliers() {
-        supplierRepository.save(supplier);
+  @Test
+  void shouldListAllSuppliers() {
+    supplierRepository.save(supplier);
 
-        SupplierEntity anotherSupplier = createTestSupplier("Another Supplier", "456 Another Street");
-        supplierRepository.save(anotherSupplier);
+    SupplierEntity anotherSupplier = createTestSupplier("Another Supplier", "456 Another Street");
+    supplierRepository.save(anotherSupplier);
 
-        List<SupplierEntity> suppliers = supplierRepository.findAll();
+    List<SupplierEntity> suppliers = supplierRepository.findAll();
 
-        assertFalse(suppliers.isEmpty());
-        assertEquals(2, suppliers.size());
-    }
+    assertFalse(suppliers.isEmpty());
+    assertEquals(2, suppliers.size());
+  }
 
-    @Test
-    void shouldFindSupplierById() {
-        SupplierEntity savedSupplier = supplierRepository.save(supplier);
+  @Test
+  void shouldFindSupplierById() {
+    SupplierEntity savedSupplier = supplierRepository.save(supplier);
 
-        Optional<SupplierEntity> foundSupplier = supplierRepository.findById(savedSupplier.getId());
+    Optional<SupplierEntity> foundSupplier = supplierRepository.findById(savedSupplier.getId());
 
-        assertTrue(foundSupplier.isPresent());
-        assertEquals(savedSupplier.getId(), foundSupplier.get().getId());
-    }
+    assertTrue(foundSupplier.isPresent());
+    assertEquals(savedSupplier.getId(), foundSupplier.get().getId());
+  }
 
-    @Test
-    void shouldUpdateSupplier() {
-        SupplierEntity savedSupplier = supplierRepository.save(supplier);
+  @Test
+  void shouldUpdateSupplier() {
+    SupplierEntity savedSupplier = supplierRepository.save(supplier);
 
-        savedSupplier.setSupplierName("Updated Supplier");
-        savedSupplier.setAddress("456 Updated Street");
-        SupplierEntity updatedSupplier = supplierRepository.save(savedSupplier);
+    savedSupplier.setSupplierName("Updated Supplier");
+    savedSupplier.setAddress("456 Updated Street");
+    SupplierEntity updatedSupplier = supplierRepository.save(savedSupplier);
 
-        assertEquals("Updated Supplier", updatedSupplier.getSupplierName());
-        assertEquals("456 Updated Street", updatedSupplier.getAddress());
-    }
+    assertEquals("Updated Supplier", updatedSupplier.getSupplierName());
+    assertEquals("456 Updated Street", updatedSupplier.getAddress());
+  }
 
-    @Test
-    void shouldDeleteSupplier() {
-        SupplierEntity savedSupplier = supplierRepository.save(supplier);
+  @Test
+  void shouldDeleteSupplier() {
+    SupplierEntity savedSupplier = supplierRepository.save(supplier);
 
-        supplierRepository.deleteById(savedSupplier.getId());
+    supplierRepository.deleteById(savedSupplier.getId());
 
-        Optional<SupplierEntity> deletedSupplier = supplierRepository.findById(savedSupplier.getId());
-        assertFalse(deletedSupplier.isPresent());
-    }
+    Optional<SupplierEntity> deletedSupplier = supplierRepository.findById(savedSupplier.getId());
+    assertFalse(deletedSupplier.isPresent());
+  }
 
-    @Test
-    void shouldCheckIfSupplierExistsByNameAndAddress() {
-        supplierRepository.save(supplier);
+  @Test
+  void shouldCheckIfSupplierExistsByNameAndAddress() {
+    supplierRepository.save(supplier);
 
-        boolean exists = supplierRepository.existsBySupplierNameAndAddress("Test Supplier", "123 Main Street");
+    boolean exists =
+        supplierRepository.existsBySupplierNameAndAddress("Test Supplier", "123 Main Street");
 
-        assertTrue(exists);
-    }
+    assertTrue(exists);
+  }
 
-    @Test
-    void shouldReturnFalseIfSupplierDoesNotExistByNameAndAddress() {
-        supplierRepository.save(supplier);
+  @Test
+  void shouldReturnFalseIfSupplierDoesNotExistByNameAndAddress() {
+    supplierRepository.save(supplier);
 
-        boolean exists = supplierRepository.existsBySupplierNameAndAddress("Non-existent Supplier", "999 Non-existent Street");
+    boolean exists =
+        supplierRepository.existsBySupplierNameAndAddress(
+            "Non-existent Supplier", "999 Non-existent Street");
 
-        assertFalse(exists);
-    }
+    assertFalse(exists);
+  }
 }
