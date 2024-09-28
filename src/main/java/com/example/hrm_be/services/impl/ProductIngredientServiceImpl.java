@@ -57,7 +57,10 @@ public class ProductIngredientServiceImpl implements ProductIngredientService {
       throw new HrmCommonException(HrmConstant.ERROR.INGREDIENT.NOT_EXIST);
     }
     return Optional.ofNullable(oldIngredientEntity)
-        .map(op -> op.toBuilder().name(ingredient.getName()).build())
+        .map(op -> op.toBuilder()
+                .name(ingredient.getName())
+                .description(ingredient.getDescription())
+                .build())
         .map(ingredientRepository::save)
         .map(ingredientMapper::toDTO)
         .orElse(null);
@@ -65,7 +68,7 @@ public class ProductIngredientServiceImpl implements ProductIngredientService {
 
   @Override
   public void delete(Long id) {
-    if (StringUtils.isBlank(id.toString())) {
+    if (id == null) {
       return;
     }
     ingredientRepository.deleteById(id);
