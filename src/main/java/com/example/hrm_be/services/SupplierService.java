@@ -6,13 +6,13 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface SupplierService {
-    Supplier getById(Long id);
+  Supplier getById(Long id);
 
-    Page<Supplier> getByPaging(int pageNo, int pageSize, String sortBy);
+  Page<Supplier> getByPaging(int pageNo, int pageSize, String sortBy);
 
-    Supplier create(Supplier supplier);
+  Supplier create(Supplier supplier);
 
-    Supplier update(Supplier supplier);
+  Supplier update(Supplier supplier);
 
-    void delete(Long id);
+  void delete(Long id);
 }
