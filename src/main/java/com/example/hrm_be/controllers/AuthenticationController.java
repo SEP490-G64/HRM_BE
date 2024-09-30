@@ -8,7 +8,6 @@ import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.configs.exceptions.JwtAuthenticationException;
 import com.example.hrm_be.models.dtos.User;
 import com.example.hrm_be.models.entities.PasswordResetTokenEntity;
-import com.example.hrm_be.models.entities.UserEntity;
 import com.example.hrm_be.models.requests.AuthRequest;
 import com.example.hrm_be.models.requests.RegisterRequest;
 import com.example.hrm_be.models.responses.AccessToken;
@@ -31,8 +30,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -82,8 +79,7 @@ public class AuthenticationController {
   }
 
   @PostMapping("/verify-user/{id}")
-  public ResponseEntity<BaseOutput<User>> verifyUser(
-      @PathVariable("id")  Long id) {
+  public ResponseEntity<BaseOutput<User>> verifyUser(@PathVariable("id") Long id) {
     if (id == null) {
       throw new HrmCommonException(REQUEST.INVALID_PATH_VARIABLE);
     }
@@ -94,7 +90,8 @@ public class AuthenticationController {
   }
 
   @PostMapping("/forget-password")
-  public ResponseEntity<BaseOutput<String>> forgetPassword(HttpServletRequest request, @RequestBody String email) {
+  public ResponseEntity<BaseOutput<String>> forgetPassword(
+      HttpServletRequest request, @RequestBody String email) {
     User user = userService.getByEmail(email);
     if (user == null) {
       throw new HrmCommonException("Not found user regarding the email, please check again");
@@ -104,12 +101,10 @@ public class AuthenticationController {
     JavaMailSender mailSender = mailUtil.getJavaMailSender();
     PasswordResetTokenEntity prt = new PasswordResetTokenEntity(token, email, dateUtil.addHours(1));
     passwordTokenService.create(prt);
-    mailSender.send(mailUtil.constructResetTokenEmail(request.getContextPath(),
-            token, user.getEmail()));
+    mailSender.send(
+        mailUtil.constructResetTokenEmail(request.getContextPath(), token, user.getEmail()));
     BaseOutput<String> response =
-            BaseOutput.<String>builder()
-                    .message(HttpStatus.OK.toString())
-                    .build();
+        BaseOutput.<String>builder().message(HttpStatus.OK.toString()).build();
     return ResponseEntity.ok(response);
   }
 }

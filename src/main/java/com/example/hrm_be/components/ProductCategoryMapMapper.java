@@ -11,9 +11,8 @@ import java.util.Optional;
 @Component
 public class ProductCategoryMapMapper {
 
-  @Autowired @Lazy  private ProductMapper productMapper;
-  @Autowired @Lazy
-  private ProductCategoryMapper productCategoryMapper;
+  @Autowired @Lazy private ProductMapper productMapper;
+  @Autowired @Lazy private ProductCategoryMapper productCategoryMapper;
 
   // Convert ProductCategoryMapEntity to ProductCategoryMap DTO
   public ProductCategoryMap toDTO(ProductCategoryMapEntity entity) {

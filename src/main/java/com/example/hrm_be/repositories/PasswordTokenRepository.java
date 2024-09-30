@@ -9,6 +9,6 @@ import java.util.Optional;
 
 @Repository
 public interface PasswordTokenRepository extends JpaRepository<PasswordResetTokenEntity, Long> {
-    @Query("select p from PasswordResetTokenEntity p where p.userEmail = ?1")
-    Optional<PasswordResetTokenEntity> findByEmailAddress(String emailAddress);
+  @Query("select p from PasswordResetTokenEntity p where p.userEmail = ?1")
+  Optional<PasswordResetTokenEntity> findByEmailAddress(String emailAddress);
 }

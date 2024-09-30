@@ -12,8 +12,7 @@ import java.util.stream.Collectors;
 @Component
 public class TaxMapper {
 
-  @Autowired @Lazy
-  private ProductMapper productMapper;
+  @Autowired @Lazy private ProductMapper productMapper;
 
   // Convert TaxEntity to Tax DTO
   public Tax toDTO(TaxEntity entity) {
@@ -27,8 +26,8 @@ public class TaxMapper {
                     .products(
                         e.getProducts() != null
                             ? e.getProducts().stream()
-                            .map(productMapper::toDTO)
-                            .collect(Collectors.toList())
+                                .map(productMapper::toDTO)
+                                .collect(Collectors.toList())
                             : null)
                     .build())
         .orElse(null);
@@ -46,8 +45,8 @@ public class TaxMapper {
                     .products(
                         e.getProducts() != null
                             ? e.getProducts().stream()
-                            .map(productMapper::toEntity)
-                            .collect(Collectors.toList())
+                                .map(productMapper::toEntity)
+                                .collect(Collectors.toList())
                             : null)
                     .build())
         .orElse(null);

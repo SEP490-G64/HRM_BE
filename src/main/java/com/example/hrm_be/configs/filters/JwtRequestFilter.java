@@ -1,6 +1,5 @@
 package com.example.hrm_be.configs.filters;
 
-
 import com.example.hrm_be.components.JwtUtil;
 import com.example.hrm_be.services.impl.JwtUserDetailsServiceImpl;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -24,11 +23,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
 
-  @Autowired
-  JwtUtil jwtUtil;
+  @Autowired JwtUtil jwtUtil;
 
-  @Autowired
-  JwtUserDetailsServiceImpl jwtUserDetailsService;
+  @Autowired JwtUserDetailsServiceImpl jwtUserDetailsService;
 
   @Override
   protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {

@@ -1,6 +1,5 @@
 package com.example.hrm_be.configs.exceptions;
 
-
 import com.example.hrm_be.commons.constants.HrmConstant.ERROR.AUTH;
 import com.example.hrm_be.commons.constants.HrmConstant.ERROR.SERVER;
 import com.example.hrm_be.commons.enums.ResponseStatus;

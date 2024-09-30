@@ -12,8 +12,7 @@ import java.util.stream.Collectors;
 @Component
 public class ProductIngredientMapper {
 
-  @Autowired @Lazy
-  private ProductIngredientMapMapper productIngredientMapMapper;
+  @Autowired @Lazy private ProductIngredientMapMapper productIngredientMapMapper;
 
   // Convert ProductIngredientEntity to ProductIngredient DTO
   public ProductIngredient toDTO(ProductIngredientEntity entity) {
@@ -27,8 +26,8 @@ public class ProductIngredientMapper {
                     .productIngredientMap(
                         e.getProductIngredientMapEntities() != null
                             ? e.getProductIngredientMapEntities().stream()
-                            .map(productIngredientMapMapper::toDTO)
-                            .collect(Collectors.toList())
+                                .map(productIngredientMapMapper::toDTO)
+                                .collect(Collectors.toList())
                             : null)
                     .build())
         .orElse(null);
@@ -46,8 +45,8 @@ public class ProductIngredientMapper {
                     .productIngredientMapEntities(
                         e.getProductIngredientMap() != null
                             ? e.getProductIngredientMap().stream()
-                            .map(productIngredientMapMapper::toEntity)
-                            .collect(Collectors.toList())
+                                .map(productIngredientMapMapper::toEntity)
+                                .collect(Collectors.toList())
                             : null)
                     .build())
         .orElse(null);
