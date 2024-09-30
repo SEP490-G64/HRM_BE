@@ -16,10 +16,10 @@ import java.util.Properties;
 @RequiredArgsConstructor
 @Component
 public class MailUtil {
-  public JavaMailSender getJavaMailSender() {
-    JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-    mailSender.setHost("smtp.gmail.com");
-    mailSender.setPort(587);
+    public JavaMailSender getJavaMailSender() {
+        JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+        mailSender.setHost("smtp.gmail.com");
+        mailSender.setPort(587);
 
         mailSender.setUsername("duongcdhe176312@gmail.com");
         mailSender.setPassword("acmt nape xjip palj");

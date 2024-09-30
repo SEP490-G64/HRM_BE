@@ -37,4 +37,8 @@ public interface UserService {
   User register(RegisterRequest registerRequest);
 
   User verifyUser(Long userId);
+
+  User changeUserPassword(User user, String newPassword);
+
+  User getUserByPasswordResetToken(String token);
 }

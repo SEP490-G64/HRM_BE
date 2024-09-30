@@ -1,11 +1,14 @@
 package com.example.hrm_be.controllers;
 
+import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.commons.constants.HrmConstant.ERROR.REQUEST;
+import com.example.hrm_be.commons.constants.HrmConstant.ERROR.USER;
 import com.example.hrm_be.components.DateUtil;
 import com.example.hrm_be.components.JwtUtil;
 import com.example.hrm_be.components.MailUtil;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.configs.exceptions.JwtAuthenticationException;
+import com.example.hrm_be.models.dtos.PasswordDTO;
 import com.example.hrm_be.models.dtos.User;
 import com.example.hrm_be.models.entities.PasswordResetTokenEntity;
 import com.example.hrm_be.models.requests.AuthRequest;
@@ -15,6 +18,8 @@ import com.example.hrm_be.models.responses.BaseOutput;
 import com.example.hrm_be.services.PasswordTokenService;
 import com.example.hrm_be.services.UserService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
+import java.util.Locale;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -100,10 +105,33 @@ public class AuthenticationController {
     JavaMailSender mailSender = mailUtil.getJavaMailSender();
     PasswordResetTokenEntity prt = new PasswordResetTokenEntity(token, email, dateUtil.addHours(1));
     passwordTokenService.create(prt);
+    String fullUrl = request.getScheme() + "://" + request.getServerName()
+        + ":" + request.getServerPort() + request.getContextPath();
     mailSender.send(
-        mailUtil.constructResetTokenEmail(request.getContextPath(), token, user.getEmail()));
+        mailUtil.constructResetTokenEmail(fullUrl, token, user.getEmail()));
     BaseOutput<String> response =
         BaseOutput.<String>builder().message(HttpStatus.OK.toString()).build();
     return ResponseEntity.ok(response);
   }
+  @PostMapping("/savePassword")
+  public ResponseEntity<BaseOutput<String>>  savePassword(@RequestBody PasswordDTO passwordDto) {
+
+    String result = jwtUtil.validatePasswordResetToken(passwordDto.getToken());
+
+    if(result != null) {
+      BaseOutput<String> response =
+          BaseOutput.<String>builder().message( "auth.message." + result).build();
+      return ResponseEntity.ok(response);
+    }
+
+    User user = userService.getUserByPasswordResetToken(passwordDto.getToken());
+    if(user==null) {
+      throw new HrmCommonException(USER.NOT_EXIST);
+  }
+    userService.changeUserPassword(user, passwordDto.getNewPassword());
+    BaseOutput<String> response =
+        BaseOutput.<String>builder().message(HttpStatus.OK.toString()).build();
+    return ResponseEntity.ok(response);
+
+}
 }

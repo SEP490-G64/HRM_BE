@@ -8,9 +8,11 @@ import com.example.hrm_be.components.UserMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.Role;
 import com.example.hrm_be.models.dtos.User;
+import com.example.hrm_be.models.entities.PasswordResetTokenEntity;
 import com.example.hrm_be.models.entities.UserEntity;
 import com.example.hrm_be.models.entities.UserRoleMapEntity;
 import com.example.hrm_be.models.requests.RegisterRequest;
+import com.example.hrm_be.repositories.PasswordTokenRepository;
 import com.example.hrm_be.repositories.UserRepository;
 import com.example.hrm_be.repositories.UserRoleMapRepository;
 import com.example.hrm_be.services.UserRoleMapService;
@@ -44,9 +46,10 @@ public class UserServiceImpl implements UserService {
   @Lazy @Autowired UserMapper userMapper;
 
   @Lazy @Autowired RoleMapper roleMapper;
-
+  @Lazy @Autowired  PasswordTokenRepository passwordTokenRepository;
   @Lazy @Autowired UserRoleMapService userRoleMapService;
   @Lazy @Autowired UserRoleMapRepository userRoleMapRepository;
+
 
   @Override
   public String getAuthenticatedUserEmail() throws UsernameNotFoundException {
@@ -252,5 +255,26 @@ public class UserServiceImpl implements UserService {
         .map(userRepository::save)
         .map(userMapper::toDTO)
         .orElse(null);
+  }
+
+  @Override
+  public User changeUserPassword(User user, String newPassword) {
+    return Optional.ofNullable(user)
+        .map(e->e.setPassword(newPassword))
+        .map(userMapper::toEntity)
+        .map(userRepository::save)
+        .map(userMapper::toDTO)
+        .orElse(null);
+  }
+
+  @Override
+  public User getUserByPasswordResetToken(String token) {
+    PasswordResetTokenEntity passwordResetToken = passwordTokenRepository.findByToken(token);
+
+    if (passwordResetToken == null) {
+      return null;
+    }
+    Optional<UserEntity> userEntity = userRepository.findByEmail(passwordResetToken.getUserEmail());
+    return userEntity.map(userMapper::toDTO).orElse(null);
   }
 }
