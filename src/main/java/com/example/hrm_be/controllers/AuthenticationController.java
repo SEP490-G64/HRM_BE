@@ -23,7 +23,6 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -54,7 +53,7 @@ public class AuthenticationController {
       throw new JwtAuthenticationException("error.auth.invalid.credentials");
     }
 
-    UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmail());
+    User userDetails = userService.getByEmail(request.getEmail());
     String jwt = jwtUtil.generateToken(userDetails);
     AccessToken accessToken = AccessToken.builder().accessToken(jwt).build();
     BaseOutput<AccessToken> response =

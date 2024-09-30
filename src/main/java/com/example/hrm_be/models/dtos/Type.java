@@ -21,12 +21,12 @@ import lombok.extern.jackson.Jacksonized;
 @EqualsAndHashCode
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ProductType implements Serializable {
+public class Type implements Serializable {
 
   @Serial private static final long serialVersionUID = -7518279758614895465L;
   Long id;
   String typeName;
   String typeDescription;
 
-  List<ProductTypeMap> productsTypeMap;
+  List<TypeTaxMap> typeTaxMaps;
 }

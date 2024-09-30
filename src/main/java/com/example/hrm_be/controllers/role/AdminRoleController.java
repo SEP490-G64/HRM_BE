@@ -32,7 +32,7 @@ public class AdminRoleController {
 
   @GetMapping("")
   protected ResponseEntity<BaseOutput<List<Role>>> getByPaging(
-      @RequestParam(defaultValue = "1") int page,
+      @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "5") int size,
       @RequestParam(required = false, defaultValue = "id") String sortBy) {
     Page<Role> rolesPage = roleService.getByPaging(page, size, sortBy);
