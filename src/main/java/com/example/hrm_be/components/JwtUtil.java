@@ -24,8 +24,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtUtil {
 
-  @Autowired
-  PasswordTokenRepository passwordTokenRepository;
+  @Autowired PasswordTokenRepository passwordTokenRepository;
   private final HrmJwtProp hrmJwtProp;
 
   public String generateToken(UserDetails userDetails) {
@@ -86,9 +85,7 @@ public class JwtUtil {
   public String validatePasswordResetToken(String token) {
     final PasswordResetTokenEntity passToken = passwordTokenRepository.findByToken(token);
 
-    return !isTokenFound(passToken) ? "invalidToken"
-        : isTokenExpired(passToken) ? "expired"
-            : null;
+    return !isTokenFound(passToken) ? "invalidToken" : isTokenExpired(passToken) ? "expired" : null;
   }
 
   private boolean isTokenFound(PasswordResetTokenEntity passToken) {

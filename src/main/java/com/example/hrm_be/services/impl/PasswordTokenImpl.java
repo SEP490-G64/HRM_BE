@@ -17,7 +17,7 @@ public class PasswordTokenImpl implements PasswordTokenService {
 
   @Override
   public boolean create(PasswordResetTokenEntity passwordResetTokenEntity) {
-    PasswordResetTokenEntity dummy= findByEmail(passwordResetTokenEntity.getUserEmail());
+    PasswordResetTokenEntity dummy = findByEmail(passwordResetTokenEntity.getUserEmail());
     if (dummy != null) {
       delete(dummy.getId());
     }

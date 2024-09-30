@@ -21,7 +21,7 @@ import lombok.extern.jackson.Jacksonized;
 public class PasswordDTO {
   private String oldPassword;
 
-  private  String token;
+  private String token;
 
   private String newPassword;
 }

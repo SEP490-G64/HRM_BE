@@ -46,10 +46,9 @@ public class UserServiceImpl implements UserService {
   @Lazy @Autowired UserMapper userMapper;
 
   @Lazy @Autowired RoleMapper roleMapper;
-  @Lazy @Autowired  PasswordTokenRepository passwordTokenRepository;
+  @Lazy @Autowired PasswordTokenRepository passwordTokenRepository;
   @Lazy @Autowired UserRoleMapService userRoleMapService;
   @Lazy @Autowired UserRoleMapRepository userRoleMapRepository;
-
 
   @Override
   public String getAuthenticatedUserEmail() throws UsernameNotFoundException {
@@ -260,7 +259,7 @@ public class UserServiceImpl implements UserService {
   @Override
   public User changeUserPassword(User user, String newPassword) {
     return Optional.ofNullable(user)
-        .map(e->e.setPassword(newPassword))
+        .map(e -> e.setPassword(newPassword))
         .map(userMapper::toEntity)
         .map(userRepository::save)
         .map(userMapper::toDTO)

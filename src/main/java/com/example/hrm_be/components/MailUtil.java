@@ -1,7 +1,5 @@
 package com.example.hrm_be.components;
 
-import com.example.hrm_be.models.dtos.User;
-import com.example.hrm_be.models.entities.UserEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.SimpleMailMessage;
@@ -9,20 +7,19 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Component;
 
-import java.util.Locale;
 import java.util.Properties;
 
 @Slf4j
 @RequiredArgsConstructor
 @Component
 public class MailUtil {
-    public JavaMailSender getJavaMailSender() {
-        JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-        mailSender.setHost("smtp.gmail.com");
-        mailSender.setPort(587);
+  public JavaMailSender getJavaMailSender() {
+    JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+    mailSender.setHost("smtp.gmail.com");
+    mailSender.setPort(587);
 
-        mailSender.setUsername("duongcdhe176312@gmail.com");
-        mailSender.setPassword("acmt nape xjip palj");
+    mailSender.setUsername("duongcdhe176312@gmail.com");
+    mailSender.setPassword("acmt nape xjip palj");
 
     Properties props = mailSender.getJavaMailProperties();
     props.put("mail.transport.protocol", "smtp");
