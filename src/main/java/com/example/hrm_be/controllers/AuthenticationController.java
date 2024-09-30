@@ -1,5 +1,6 @@
 package com.example.hrm_be.controllers;
 
+
 import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.commons.constants.HrmConstant.ERROR.REQUEST;
 import com.example.hrm_be.commons.constants.HrmConstant.ERROR.USER;
@@ -29,10 +30,13 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
@@ -114,7 +118,7 @@ public class AuthenticationController {
     return ResponseEntity.ok(response);
   }
   @PostMapping("/savePassword")
-  public ResponseEntity<BaseOutput<String>>  savePassword(@RequestBody PasswordDTO passwordDto) {
+  public ResponseEntity<BaseOutput<String>> savePassword(@RequestBody PasswordDTO passwordDto) {
 
     String result = jwtUtil.validatePasswordResetToken(passwordDto.getToken());
 
