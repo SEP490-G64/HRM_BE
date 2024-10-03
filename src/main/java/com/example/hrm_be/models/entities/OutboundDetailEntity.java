@@ -19,7 +19,6 @@ import lombok.experimental.Accessors;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

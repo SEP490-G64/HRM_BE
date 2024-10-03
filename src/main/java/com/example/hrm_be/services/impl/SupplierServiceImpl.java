@@ -36,10 +36,10 @@ public class SupplierServiceImpl implements SupplierService {
     Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(sortBy).descending());
 
     // Tìm kiếm theo tên
-    return supplierRepository.findBySupplierNameContainsIgnoreCase(name, pageable)
-            .map(dao -> supplierMapper.toDTO(dao));
+    return supplierRepository
+        .findBySupplierNameContainsIgnoreCase(name, pageable)
+        .map(dao -> supplierMapper.toDTO(dao));
   }
-
 
   @Override
   public Supplier create(Supplier supplier) {
