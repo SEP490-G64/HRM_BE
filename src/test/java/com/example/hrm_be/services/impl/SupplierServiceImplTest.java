@@ -27,14 +27,11 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class) // Sử dụng Mockito để test
 class SupplierServiceImplTest {
 
-  @Mock
-  private SupplierRepository supplierRepository;
+  @Mock private SupplierRepository supplierRepository;
 
-  @Mock
-  private SupplierMapper supplierMapper;
+  @Mock private SupplierMapper supplierMapper;
 
-  @InjectMocks
-  private SupplierServiceImpl supplierService;
+  @InjectMocks private SupplierServiceImpl supplierService;
 
   private SupplierEntity supplierEntity; // Đối tượng SupplierEntity dùng để test
   private Supplier supplierDTO; // Đối tượng Supplier DTO dùng để test
@@ -79,7 +76,8 @@ class SupplierServiceImplTest {
   @Test
   void shouldGetByPaging() {
     Page<SupplierEntity> page = new PageImpl<>(List.of(supplierEntity));
-    when(supplierRepository.findBySupplierNameContainsIgnoreCase(anyString(), any(Pageable.class))).thenReturn(page);
+    when(supplierRepository.findBySupplierNameContainsIgnoreCase(anyString(), any(Pageable.class)))
+        .thenReturn(page);
     when(supplierMapper.toDTO(any(SupplierEntity.class))).thenReturn(supplierDTO);
 
     Page<Supplier> result = supplierService.getByPaging(0, 10, "supplierName", "");
@@ -87,13 +85,15 @@ class SupplierServiceImplTest {
     assertNotNull(result);
     assertEquals(1, result.getTotalElements());
     assertEquals("Test Supplier", result.getContent().get(0).getSupplierName());
-    verify(supplierRepository, times(1)).findBySupplierNameContainsIgnoreCase(anyString(), any(Pageable.class));
+    verify(supplierRepository, times(1))
+        .findBySupplierNameContainsIgnoreCase(anyString(), any(Pageable.class));
   }
 
   @Test
   void shouldCreateSupplier() {
     when(supplierMapper.toEntity(any(Supplier.class))).thenReturn(supplierEntity);
-    when(supplierRepository.existsBySupplierNameAndAddress(anyString(), anyString())).thenReturn(false);
+    when(supplierRepository.existsBySupplierNameAndAddress(anyString(), anyString()))
+        .thenReturn(false);
     when(supplierRepository.save(any(SupplierEntity.class))).thenReturn(supplierEntity);
     when(supplierMapper.toDTO(any(SupplierEntity.class))).thenReturn(supplierDTO);
 
@@ -106,9 +106,11 @@ class SupplierServiceImplTest {
 
   @Test
   void shouldThrowExceptionWhenCreatingExistingSupplier() {
-    when(supplierRepository.existsBySupplierNameAndAddress(anyString(), anyString())).thenReturn(true);
+    when(supplierRepository.existsBySupplierNameAndAddress(anyString(), anyString()))
+        .thenReturn(true);
 
-    HrmCommonException exception = assertThrows(HrmCommonException.class, () -> supplierService.create(supplierDTO));
+    HrmCommonException exception =
+        assertThrows(HrmCommonException.class, () -> supplierService.create(supplierDTO));
 
     assertEquals(HrmConstant.ERROR.ROLE.EXIST, exception.getMessage());
     verify(supplierRepository, never()).save(any(SupplierEntity.class));
@@ -131,7 +133,8 @@ class SupplierServiceImplTest {
   void shouldThrowExceptionWhenUpdatingNonExistentSupplier() {
     when(supplierRepository.findById(anyLong())).thenReturn(Optional.empty());
 
-    HrmCommonException exception = assertThrows(HrmCommonException.class, () -> supplierService.update(supplierDTO));
+    HrmCommonException exception =
+        assertThrows(HrmCommonException.class, () -> supplierService.update(supplierDTO));
 
     assertEquals(HrmConstant.ERROR.ROLE.NOT_EXIST, exception.getMessage());
     verify(supplierRepository, never()).save(any(SupplierEntity.class));
