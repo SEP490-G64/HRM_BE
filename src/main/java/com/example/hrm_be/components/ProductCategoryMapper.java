@@ -2,51 +2,53 @@ package com.example.hrm_be.components;
 
 import com.example.hrm_be.models.dtos.ProductCategory;
 import com.example.hrm_be.models.entities.ProductCategoryEntity;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-import java.util.Optional;
-import java.util.stream.Collectors;
-
 @Component
 public class ProductCategoryMapper {
 
-  @Autowired @Lazy private ProductCategoryMapMapper productCategoryMapMapper;
+  @Autowired @Lazy private ProductMapper productMapper;
 
-  // Convert ProductCategoryEntity to ProductCategory DTO
+  // Convert ProductCategoryEntity to ProductCategoryDTO
   public ProductCategory toDTO(ProductCategoryEntity entity) {
-    return Optional.ofNullable(entity)
+    return Optional.ofNullable(entity).map(this::convertToDTO).orElse(null);
+  }
+
+  // Convert ProductCategoryDTO to ProductCategoryEntity
+  public ProductCategoryEntity toEntity(ProductCategory dto) {
+    return Optional.ofNullable(dto)
         .map(
-            e ->
-                ProductCategory.builder()
-                    .id(e.getId())
-                    .categoryName(e.getCategoryName())
+            d ->
+                ProductCategoryEntity.builder()
+                    .categoryName(d.getCategoryName())
+                    .categoryDescription(d.getCategoryDescription())
+                    .taxRate(d.getTaxRate())
                     .products(
-                        e.getProducts() != null
-                            ? e.getProducts().stream()
-                                .map(productCategoryMapMapper::toDTO)
+                        d.getProducts() != null
+                            ? d.getProducts().stream()
+                                .map(productMapper::toEntity)
                                 .collect(Collectors.toList())
                             : null)
                     .build())
         .orElse(null);
   }
 
-  // Convert ProductCategory DTO to ProductCategoryEntity
-  public ProductCategoryEntity toEntity(ProductCategory dto) {
-    return Optional.ofNullable(dto)
-        .map(
-            e ->
-                ProductCategoryEntity.builder()
-                    .id(e.getId())
-                    .categoryName(e.getCategoryName())
-                    .products(
-                        e.getProducts() != null
-                            ? e.getProducts().stream()
-                                .map(productCategoryMapMapper::toEntity)
-                                .collect(Collectors.toList())
-                            : null)
-                    .build())
-        .orElse(null);
+  // Helper method to convert ProductCategoryEntity to ProductCategoryDTO
+  private ProductCategory convertToDTO(ProductCategoryEntity entity) {
+    return ProductCategory.builder()
+        .categoryName(entity.getCategoryName())
+        .categoryDescription(entity.getCategoryDescription())
+        .taxRate(entity.getTaxRate())
+        .products(
+            entity.getProducts() != null
+                ? entity.getProducts().stream()
+                    .map(productMapper::toDTO)
+                    .collect(Collectors.toList())
+                : null)
+        .build();
   }
 }

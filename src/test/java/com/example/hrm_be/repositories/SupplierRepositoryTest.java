@@ -1,15 +1,14 @@
 package com.example.hrm_be.repositories;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
 import com.example.hrm_be.models.entities.SupplierEntity;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 class SupplierRepositoryTest {
 
@@ -26,7 +25,6 @@ class SupplierRepositoryTest {
         SupplierEntity.builder()
             .id(1L)
             .supplierName("Tech Supplies")
-            .contactPerson("John Doe")
             .phoneNumber("123456789")
             .email("contact@techsupplies.com")
             .address("123 Tech Street")
@@ -45,7 +43,6 @@ class SupplierRepositoryTest {
     assertNotNull(savedEntity);
     assertEquals("Tech Supplies", savedEntity.getSupplierName());
     assertEquals("123 Tech Street", savedEntity.getAddress());
-    assertEquals("John Doe", savedEntity.getContactPerson());
     assertEquals("123456789", savedEntity.getPhoneNumber());
     assertEquals("contact@techsupplies.com", savedEntity.getEmail());
 
@@ -65,7 +62,6 @@ class SupplierRepositoryTest {
     assertTrue(foundEntity.isPresent());
     assertEquals("Tech Supplies", foundEntity.get().getSupplierName());
     assertEquals("123 Tech Street", foundEntity.get().getAddress());
-    assertEquals("John Doe", foundEntity.get().getContactPerson());
     assertEquals("123456789", foundEntity.get().getPhoneNumber());
     assertEquals("contact@techsupplies.com", foundEntity.get().getEmail());
 

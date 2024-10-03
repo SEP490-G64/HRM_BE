@@ -2,39 +2,38 @@ package com.example.hrm_be.components;
 
 import com.example.hrm_be.models.dtos.Manufacturer;
 import com.example.hrm_be.models.entities.ManufacturerEntity;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
-
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Component
 public class ManufacturerMapper {
 
   @Autowired @Lazy private ProductMapper productMapper;
 
-  // Convert ManufacturerEntity to Manufacturer DTO
+  // Convert ManufacturerEntity to ManufacturerDTO
   public Manufacturer toDTO(ManufacturerEntity entity) {
-    return Optional.ofNullable(entity).map(this::convertToDto).orElse(null);
+    return Optional.ofNullable(entity).map(this::convertToDTO).orElse(null);
   }
 
-  // Convert Manufacturer DTO to ManufacturerEntity
+  // Convert ManufacturerDTO to ManufacturerEntity
   public ManufacturerEntity toEntity(Manufacturer dto) {
     return Optional.ofNullable(dto)
         .map(
-            e ->
+            d ->
                 ManufacturerEntity.builder()
-                    .id(e.getId())
-                    .manufacturerName(e.getManufacturerName())
-                    .contactPerson(e.getContactPerson())
-                    .phoneNumber(e.getPhoneNumber())
-                    .email(e.getEmail())
-                    .address(e.getAddress())
-                    .origin(e.getOrigin())
+                    .manufacturerName(d.getManufacturerName())
+                    .address(d.getAddress())
+                    .email(d.getEmail())
+                    .phoneNumber(d.getPhoneNumber())
+                    .taxCode(d.getTaxCode())
+                    .origin(d.getOrigin())
+                    .status(d.getStatus())
                     .products(
-                        e.getProducts() != null
-                            ? e.getProducts().stream()
+                        d.getProducts() != null
+                            ? d.getProducts().stream()
                                 .map(productMapper::toEntity)
                                 .collect(Collectors.toList())
                             : null)
@@ -42,26 +41,22 @@ public class ManufacturerMapper {
         .orElse(null);
   }
 
-  // Helper method to map ManufacturerEntity to Manufacturer DTO
-  private Manufacturer convertToDto(ManufacturerEntity entity) {
-    return Optional.ofNullable(entity)
-        .map(
-            e ->
-                Manufacturer.builder()
-                    .id(e.getId())
-                    .manufacturerName(e.getManufacturerName())
-                    .contactPerson(e.getContactPerson())
-                    .phoneNumber(e.getPhoneNumber())
-                    .email(e.getEmail())
-                    .address(e.getAddress())
-                    .origin(e.getOrigin())
-                    .products(
-                        e.getProducts() != null
-                            ? e.getProducts().stream()
-                                .map(productMapper::toDTO)
-                                .collect(Collectors.toList())
-                            : null)
-                    .build())
-        .orElse(null);
+  // Helper method to convert ManufacturerEntity to ManufacturerDTO
+  private Manufacturer convertToDTO(ManufacturerEntity entity) {
+    return Manufacturer.builder()
+        .manufacturerName(entity.getManufacturerName())
+        .address(entity.getAddress())
+        .email(entity.getEmail())
+        .phoneNumber(entity.getPhoneNumber())
+        .taxCode(entity.getTaxCode())
+        .origin(entity.getOrigin())
+        .status(entity.getStatus())
+        .products(
+            entity.getProducts() != null
+                ? entity.getProducts().stream()
+                    .map(productMapper::toDTO)
+                    .collect(Collectors.toList())
+                : null)
+        .build();
   }
 }

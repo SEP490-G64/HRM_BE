@@ -2,6 +2,7 @@ package com.example.hrm_be.models.entities;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
@@ -9,7 +10,9 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.ForeignKey;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -36,13 +39,21 @@ public class UnitOfMeasurementEntity extends CommonEntity {
   String unitName;
 
   @Column(name = "conversion_factor")
-  double conversionFactor;
+  Double conversionFactor;
 
   @Column(name = "price_per_unit")
-  double pricePerUnit;
+  Double pricePerUnit;
 
   @ToString.Exclude
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "product_id", foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
   ProductEntity product;
+
+  @ToString.Exclude
+  @OneToMany(mappedBy = "largerUnit", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  List<UnitConversionEntity> largerUnitConversions; // 1-N with UnitConversion as larger unit
+
+  @ToString.Exclude
+  @OneToMany(mappedBy = "smallerUnit", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  List<UnitConversionEntity> smallerUnitConversions;
 }
