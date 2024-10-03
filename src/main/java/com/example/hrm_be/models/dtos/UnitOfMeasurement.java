@@ -1,9 +1,9 @@
 package com.example.hrm_be.models.dtos;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import java.io.Serial;
-import java.io.Serializable;
+import java.util.List;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -14,17 +14,15 @@ import lombok.extern.jackson.Jacksonized;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 @Accessors(chain = true)
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @SuperBuilder(toBuilder = true)
 @EqualsAndHashCode
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class UnitOfMeasurement implements Serializable {
-
-  @Serial private static final long serialVersionUID = -3547890033004808244L;
+public class UnitOfMeasurement {
   Long id;
-
   String unitName;
 
   Double conversionFactor;
@@ -32,4 +30,8 @@ public class UnitOfMeasurement implements Serializable {
   Double pricePerUnit;
 
   Product product;
+
+  List<UnitConversion> largerUnitConversions; // 1-N with UnitConversion as larger unit
+
+  List<UnitConversion> smallerUnitConversions;
 }

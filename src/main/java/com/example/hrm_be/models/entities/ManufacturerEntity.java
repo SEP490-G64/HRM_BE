@@ -30,23 +30,26 @@ import java.util.List;
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class ManufacturerEntity extends CommonEntity {
 
-  @Column(name = "manufacturer_name", length = 255)
+  @Column(name = "manufacturer_name", nullable = false, length = 100)
   String manufacturerName;
 
-  @Column(name = "contact_person", length = 255)
-  String contactPerson;
-
-  @Column(name = "phone_number", length = 50)
-  String phoneNumber;
-
-  @Column(name = "email", length = 255)
-  String email;
-
-  @Column(name = "address", length = 255)
+  @Column(name = "address", nullable = false, length = 200)
   String address;
 
-  @Column(name = "origin", length = 45)
+  @Column(name = "email", length = 100)
+  String email;
+
+  @Column(name = "phone_number", nullable = false, length = 11)
+  String phoneNumber;
+
+  @Column(name = "tax_code", length = 13)
+  String taxCode;
+
+  @Column(name = "origin", length = 20)
   String origin;
+
+  @Column(name = "status", nullable = false)
+  Boolean status;
 
   @ToString.Exclude
   @OneToMany(mappedBy = "manufacturer")

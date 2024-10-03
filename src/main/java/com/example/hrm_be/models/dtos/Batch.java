@@ -1,11 +1,11 @@
 package com.example.hrm_be.models.dtos;
 
+import com.example.hrm_be.models.entities.CommonEntity;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import java.io.Serial;
-import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -16,18 +16,28 @@ import lombok.extern.jackson.Jacksonized;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 @Accessors(chain = true)
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @SuperBuilder(toBuilder = true)
 @EqualsAndHashCode
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Batch implements Serializable {
-  @Serial private static final long serialVersionUID = 6490778995839320597L;
+public class Batch extends CommonEntity {
   Long id;
-  String batchNumber;
+  String batchCode;
 
-  Date batchExpiredDate;
+  LocalDateTime produceDate;
 
-  List<Product> products;
+  LocalDateTime expireDate;
+
+  List<UnitConversion> unitConversions; // 1-N with UnitConversion
+
+  List<OutboundDetail> outboundDetails; // 1-N with OutboundDetails
+
+  List<BranchBatch> branchBatches; // 1-N with BranchBatch
+
+  InboundBatchDetail inboundBatchDetail;
+
+  Product product;
 }

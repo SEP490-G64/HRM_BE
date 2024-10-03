@@ -3,10 +3,12 @@ package com.example.hrm_be.models.entities;
 import com.example.hrm_be.commons.enums.BranchType;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
@@ -56,10 +58,34 @@ public class BranchEntity extends CommonEntity {
   Boolean activeStatus;
 
   @ToString.Exclude
-  @OneToMany(mappedBy = "branch")
-  List<UserEntity> users;
+  @OneToMany(mappedBy = "branch", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  List<BranchBatchEntity> branchBatches; // 1-N with BranchBatch
 
   @ToString.Exclude
-  @OneToMany(mappedBy = "branch")
-  List<InventoryEntity> inventoryEntities;
+  @OneToMany(mappedBy = "toBranch", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  List<InboundEntity> fromBranchInbound;
+
+  @ToString.Exclude
+  @OneToMany(mappedBy = "fromBranch", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  List<InboundEntity> toBranchInbound; // 1-N with Inbound
+
+  @ToString.Exclude
+  @OneToMany(mappedBy = "branch", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  List<BranchProductEntity> branchProducts; // 1-N with BranchProduct
+
+  @ToString.Exclude
+  @OneToMany(mappedBy = "toBranch", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  List<OutboundEntity> toBranchOutbound;
+
+  @ToString.Exclude
+  @OneToMany(mappedBy = "fromBranch", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  List<OutboundEntity> fromBranchOutbound;
+
+  @ToString.Exclude
+  @OneToMany(mappedBy = "branch", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  List<InventoryCheckEntity> inventoryChecks; // 1-N with InventoryCheck
+
+  @ToString.Exclude
+  @OneToMany(mappedBy = "branch", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  List<UserEntity> users;
 }

@@ -12,17 +12,21 @@ import java.util.stream.Collectors;
 @Component
 public class BranchMapper {
 
-  @Autowired @Lazy private InventoryMapper inventoryMapper;
+  @Autowired @Lazy private BranchBatchMapper branchBatchMapper;
+  @Autowired @Lazy private InboundMapper inboundMapper;
+  @Autowired @Lazy private BranchProductMapper branchProductMapper;
+  @Autowired @Lazy private OutboundMapper outboundMapper;
+  @Autowired @Lazy private InventoryCheckMapper inventoryCheckMapper;
   @Autowired @Lazy private UserMapper userMapper;
 
-  // Convert BranchEntity to Branch DTO
+  // Convert BranchEntity to Branch
   public Branch toDTO(BranchEntity entity) {
-    return Optional.ofNullable(entity).map(this::convertToDto).orElse(null);
+    return Optional.ofNullable(entity).map(this::convertToDTO).orElse(null);
   }
 
-  // Convert Branch DTO to BranchEntity
-  public BranchEntity toEntity(Branch dto) {
-    return Optional.ofNullable(dto)
+  // Convert Branch to BranchEntity
+  public BranchEntity toEntity(Branch model) {
+    return Optional.ofNullable(model)
         .map(
             e ->
                 BranchEntity.builder()
@@ -34,24 +38,36 @@ public class BranchMapper {
                     .phoneNumber(e.getPhoneNumber())
                     .capacity(e.getCapacity())
                     .activeStatus(e.getActiveStatus())
+                    .branchBatches(
+                        e.getBranchBatches() != null
+                            ? e.getBranchBatches().stream()
+                                .map(branchBatchMapper::toEntity)
+                                .collect(Collectors.toList())
+                            : null)
+                    .branchProducts(
+                        e.getBranchProducts() != null
+                            ? e.getBranchProducts().stream()
+                                .map(branchProductMapper::toEntity)
+                                .collect(Collectors.toList())
+                            : null)
+                    .inventoryChecks(
+                        e.getInventoryChecks() != null
+                            ? e.getInventoryChecks().stream()
+                                .map(inventoryCheckMapper::toEntity)
+                                .collect(Collectors.toList())
+                            : null)
                     .users(
                         e.getUsers() != null
                             ? e.getUsers().stream()
                                 .map(userMapper::toEntity)
                                 .collect(Collectors.toList())
                             : null)
-                    .inventoryEntities(
-                        e.getInventoryEntities() != null
-                            ? e.getInventoryEntities().stream()
-                                .map(inventoryMapper::toEntity)
-                                .collect(Collectors.toList())
-                            : null)
                     .build())
         .orElse(null);
   }
 
-  // Helper method to map BranchEntity to Branch DTO
-  private Branch convertToDto(BranchEntity entity) {
+  // Helper method to map BranchEntity to Branch
+  private Branch convertToDTO(BranchEntity entity) {
     return Optional.ofNullable(entity)
         .map(
             e ->
@@ -64,16 +80,28 @@ public class BranchMapper {
                     .phoneNumber(e.getPhoneNumber())
                     .capacity(e.getCapacity())
                     .activeStatus(e.getActiveStatus())
+                    .branchBatches(
+                        e.getBranchBatches() != null
+                            ? e.getBranchBatches().stream()
+                                .map(branchBatchMapper::toDTO)
+                                .collect(Collectors.toList())
+                            : null)
+                    .branchProducts(
+                        e.getBranchProducts() != null
+                            ? e.getBranchProducts().stream()
+                                .map(branchProductMapper::toDTO)
+                                .collect(Collectors.toList())
+                            : null)
+                    .inventoryChecks(
+                        e.getInventoryChecks() != null
+                            ? e.getInventoryChecks().stream()
+                                .map(inventoryCheckMapper::toDTO)
+                                .collect(Collectors.toList())
+                            : null)
                     .users(
                         e.getUsers() != null
                             ? e.getUsers().stream()
                                 .map(userMapper::toDTO)
-                                .collect(Collectors.toList())
-                            : null)
-                    .inventoryEntities(
-                        e.getInventoryEntities() != null
-                            ? e.getInventoryEntities().stream()
-                                .map(inventoryMapper::toDTO)
                                 .collect(Collectors.toList())
                             : null)
                     .build())

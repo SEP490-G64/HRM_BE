@@ -1,10 +1,11 @@
 package com.example.hrm_be.models.dtos;
 
+import com.example.hrm_be.commons.enums.ProductStatus;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import java.io.Serial;
-import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -15,41 +16,50 @@ import lombok.extern.jackson.Jacksonized;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 @Accessors(chain = true)
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @SuperBuilder(toBuilder = true)
 @EqualsAndHashCode
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Product implements Serializable {
-
-  @Serial private static final long serialVersionUID = -3105002269033600248L;
+public class Product {
   Long id;
-  String name;
+  String productName;
 
-  Double price;
+  String productCode;
 
-  String description;
+  String registrationCode;
 
-  String image;
-
-  String barcodeImage;
-
-  Branch branch;
-
-  Batch batch;
-
-  Supplier supplier;
-
-  List<ProductUnitMap> productUnitMaps;
-
-  List<ProductIngredientMap> productIngredientMap;
-
-  List<ProductCategoryMap> productCateMap;
-
-  List<Inventory> inventory;
+  String urlImage;
 
   Manufacturer manufacturer;
 
-  SpecialCondition specialCondition;
+  ProductCategory category;
+
+  ProductType type;
+
+  String activeIngredient;
+
+  String excipient;
+
+  String formulation;
+
+  BigDecimal sellPrice;
+
+  ProductStatus status;
+
+  UnitOfMeasurement baseUnit;
+
+  List<InboundDetails> inboundDetails;
+
+  List<SpecialCondition> specialConditions;
+
+  List<Batch> batches;
+
+  List<BranchProduct> branchProducs;
+
+  List<InventoryCheckDetails> inventoryCheckDetails;
+
+  List<ProductSuppliers> productSuppliers;
 }

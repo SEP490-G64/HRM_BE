@@ -1,16 +1,21 @@
 package com.example.hrm_be.models.entities;
 
+import com.example.hrm_be.commons.enums.ProductStatus;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ForeignKey;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.math.BigDecimal;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -34,63 +39,84 @@ import lombok.experimental.SuperBuilder;
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class ProductEntity extends CommonEntity {
 
-  @Column(name = "name")
-  String name;
+  @Column(name = "product_name", length = 50, nullable = false)
+  String productName;
 
-  @Column(name = "price")
-  Double price;
+  @Column(name = "product_code", length = 30, nullable = false)
+  String productCode;
 
-  @Column(name = "description")
-  String description;
+  @Column(name = "registration_code", length = 30, nullable = false)
+  String registrationCode;
 
-  @Column(name = "image")
-  String image;
+  @Column(name = "url_image", length = 255, nullable = true)
+  String urlImage;
 
-  @Column(name = "barcode_image")
-  String barcodeImage;
-
-  @ToString.Exclude
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "branch_id", foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
-  BranchEntity branch;
-
-  @ToString.Exclude
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "batch_id", foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
-  BatchEntity batch;
-
-  @ToString.Exclude
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "supplier_id", foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
-  SupplierEntity supplier;
-
-  @ToString.Exclude
-  @OneToMany(mappedBy = "product")
-  List<ProductUnitMapEntity> productUnitMap;
-
-  @ToString.Exclude
-  @OneToMany(mappedBy = "product")
-  List<ProductIngredientMapEntity> productIngredientMap;
-
-  @ToString.Exclude
-  @OneToMany(mappedBy = "product")
-  List<ProductCategoryMapEntity> productCateMap;
-
-  @ToString.Exclude
-  @OneToMany(mappedBy = "product")
-  List<InventoryEntity> inventoryEntities;
-
-  @ToString.Exclude
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(
       name = "manufacturer_id",
-      foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
+      nullable = false,
+      foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   ManufacturerEntity manufacturer;
 
-  @ToString.Exclude
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(
-      name = "special_condition_id",
-      foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
-  SpecialConditionEntity specialCondition;
+      name = "category_id",
+      nullable = false,
+      foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+  ProductCategoryEntity category;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(
+      name = "type_id",
+      nullable = false,
+      foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+  ProductTypeEntity type;
+
+  @Column(name = "active_ingredient", length = 255, nullable = true)
+  String activeIngredient;
+
+  @Column(name = "excipient", length = 255, nullable = true)
+  String excipient;
+
+  @Column(name = "formulation", length = 255, nullable = true)
+  String formulation;
+
+  @Column(name = "sell_price", nullable = false)
+  BigDecimal sellPrice;
+
+  @Enumerated(EnumType.STRING)
+  @Column(name = "status", nullable = false)
+  ProductStatus status; // Enum for "Còn hàng", "Hết hàng", "Ngừng kinh doanh"
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(
+      name = "base_unit_id",
+      nullable = false,
+      foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+  UnitOfMeasurementEntity baseUnit;
+
+  // One-to-Many Relationships
+  @ToString.Exclude
+  @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  List<InboundDetailsEntity> inboundDetails; // 1-N with InboundDetails
+
+  @ToString.Exclude
+  @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  List<SpecialConditionEntity> specialConditions; // 1-N with SpecialCondition
+
+  @ToString.Exclude
+  @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  List<BatchEntity> batches;
+
+  @ToString.Exclude
+  @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  List<BranchProductEntity> branchProducs; // 1-N with Batch
+
+  @ToString.Exclude
+  @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  List<InventoryCheckDetailsEntity> inventoryCheckDetails; // 1-N with InventoryCheckDetails
+
+  @ToString.Exclude
+  @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  List<ProductSuppliersEntity> productSuppliers; // 1-N with ProductSuppliers
 }

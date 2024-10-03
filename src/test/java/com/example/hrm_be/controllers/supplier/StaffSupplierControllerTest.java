@@ -38,7 +38,6 @@ class StaffSupplierControllerTest {
             .setId(1L)
             .setSupplierName("Supplier1")
             .setAddress("Address1")
-            .setContactPerson("Contact1")
             .setPhoneNumber("123456789");
 
     Page<Supplier> page = new PageImpl<>(Collections.singletonList(supplier));
@@ -63,7 +62,6 @@ class StaffSupplierControllerTest {
             .setId(1L)
             .setSupplierName("Supplier1")
             .setAddress("Address1")
-            .setContactPerson("Contact1")
             .setPhoneNumber("123456789");
 
     when(supplierService.getById(1L)).thenReturn(supplier);
@@ -84,7 +82,6 @@ class StaffSupplierControllerTest {
         new Supplier()
             .setSupplierName("Supplier1")
             .setAddress("Address1")
-            .setContactPerson("Contact1")
             .setPhoneNumber("123456789");
 
     Supplier createdSupplier =
@@ -92,7 +89,6 @@ class StaffSupplierControllerTest {
             .setId(1L)
             .setSupplierName("Supplier1")
             .setAddress("Address1")
-            .setContactPerson("Contact1")
             .setPhoneNumber("123456789");
 
     when(supplierService.create(supplier)).thenReturn(createdSupplier);
@@ -114,7 +110,6 @@ class StaffSupplierControllerTest {
             .setId(1L)
             .setSupplierName("Updated Supplier")
             .setAddress("Updated Address")
-            .setContactPerson("Updated Contact")
             .setPhoneNumber("987654321");
 
     when(supplierService.update(supplier)).thenReturn(supplier);
