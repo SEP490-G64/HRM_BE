@@ -1,10 +1,22 @@
 package com.example.hrm_be.models.dtos;
 
+import com.example.hrm_be.commons.enums.ConditionType;
+import com.example.hrm_be.models.entities.CommonEntity;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import java.io.Serial;
-import java.io.Serializable;
-import java.util.List;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import jakarta.persistence.Column;
+import jakarta.persistence.ConstraintMode;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -15,24 +27,21 @@ import lombok.extern.jackson.Jacksonized;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 @Accessors(chain = true)
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @SuperBuilder(toBuilder = true)
 @EqualsAndHashCode
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class SpecialCondition implements Serializable {
+public class SpecialCondition   {
 
-  @Serial private static final long serialVersionUID = -1987151935331723994L;
   Long id;
+  Product product;
 
-  String conditionType;
 
-  Double minTemperature;
+  ConditionType conditionType;
 
-  Double maxTemperature;
 
   String handlingInstruction;
-
-  List<Product> products;
 }

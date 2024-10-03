@@ -65,7 +65,6 @@ public class SupplierServiceImpl implements SupplierService {
                     .phoneNumber(supplier.getPhoneNumber())
                     .email(supplier.getEmail())
                     .address(supplier.getAddress())
-                    .contactPerson(supplier.getContactPerson())
                     .build())
         .map(supplierRepository::save)
         .map(supplierMapper::toDTO)

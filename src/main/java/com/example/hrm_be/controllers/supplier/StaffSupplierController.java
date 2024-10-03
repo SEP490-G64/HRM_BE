@@ -2,7 +2,6 @@ package com.example.hrm_be.controllers.supplier;
 
 import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.commons.enums.ResponseStatus;
-import com.example.hrm_be.models.dtos.Supplier;
 import com.example.hrm_be.models.responses.BaseOutput;
 import com.example.hrm_be.services.SupplierService;
 import jakarta.validation.constraints.NotNull;

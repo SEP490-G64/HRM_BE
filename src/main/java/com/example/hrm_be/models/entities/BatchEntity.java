@@ -2,11 +2,19 @@ package com.example.hrm_be.models.entities;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import java.util.Date;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,7 +24,6 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
-import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -29,14 +36,36 @@ import java.util.List;
 @Table(name = "batch")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class BatchEntity extends CommonEntity {
+  @Column(name = "batch_code", length = 30, nullable = false)
+  String batchCode;
 
-  @Column(name = "batch_number")
-  String batchNumber;
+  @Column(name = "produce_date", nullable = false)
+  LocalDateTime produceDate;
 
-  @Column(name = "batch_expired_date")
-  Date batchExpiredDate;
+  @Column(name = "expire_date", nullable = false)
+  LocalDateTime expireDate;
+
+  @Column(name = "inbound_price", precision = 5, scale = 2, nullable = false)
+  BigDecimal inboundPrice;
+  @ToString.Exclude
+  @OneToMany(mappedBy = "batch", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  List<UnitConversionEntity> unitConversions; // 1-N with UnitConversion
 
   @ToString.Exclude
-  @OneToMany(mappedBy = "batch")
-  List<ProductEntity> products;
+  @OneToMany(mappedBy = "batch", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  List<OutboundDetailEntity> outboundDetails; // 1-N with OutboundDetails
+
+  @ToString.Exclude
+  @OneToMany(mappedBy = "batch", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  List<BranchBatchEntity> branchBatches; // 1-N with BranchBatch
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "inbound_batch_detail_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+  InboundBatchDetailEntity inboundBatchDetail;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "product_id", nullable = false, foreignKey =
+  @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+  ProductEntity product;
+
 }

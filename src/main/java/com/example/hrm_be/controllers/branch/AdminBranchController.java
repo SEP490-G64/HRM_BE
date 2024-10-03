@@ -2,7 +2,6 @@ package com.example.hrm_be.controllers.branch;
 
 import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.commons.enums.ResponseStatus;
-import com.example.hrm_be.models.dtos.Branch;
 import com.example.hrm_be.models.responses.BaseOutput;
 import com.example.hrm_be.services.BranchService;
 import jakarta.validation.constraints.NotNull;

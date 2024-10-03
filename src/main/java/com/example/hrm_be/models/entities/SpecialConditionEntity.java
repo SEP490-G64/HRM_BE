@@ -1,9 +1,17 @@
 package com.example.hrm_be.models.entities;
 
+import com.example.hrm_be.commons.enums.ConditionType;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.Column;
+import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.util.List;
@@ -29,19 +37,14 @@ import lombok.experimental.SuperBuilder;
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class SpecialConditionEntity extends CommonEntity {
 
-  @Column(name = "condition_type", length = 100)
-  String conditionType;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "product_id", nullable = false, foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
+  ProductEntity product;
 
-  @Column(name = "min_temperature")
-  double minTemperature;
+  @Enumerated(EnumType.STRING)
+  @Column(name = "condition_type", nullable = false)
+  ConditionType conditionType;
 
-  @Column(name = "max_temperature")
-  double maxTemperature;
-
-  @Column(name = "handling_instruction", columnDefinition = "TEXT")
+  @Column(name = "handling_instruction", nullable = false, columnDefinition = "TEXT")
   String handlingInstruction;
-
-  @ToString.Exclude
-  @OneToMany(mappedBy = "specialCondition")
-  List<ProductEntity> products;
 }

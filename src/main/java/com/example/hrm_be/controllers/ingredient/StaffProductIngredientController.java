@@ -2,9 +2,7 @@ package com.example.hrm_be.controllers.ingredient;
 
 import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.commons.enums.ResponseStatus;
-import com.example.hrm_be.models.dtos.ProductIngredient;
 import com.example.hrm_be.models.responses.BaseOutput;
-import com.example.hrm_be.services.ProductIngredientService;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

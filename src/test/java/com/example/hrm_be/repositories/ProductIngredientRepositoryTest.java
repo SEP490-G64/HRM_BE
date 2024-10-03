@@ -1,7 +1,5 @@
 package com.example.hrm_be.repositories;
 
-import com.example.hrm_be.models.entities.ProductIngredientEntity;
-import com.example.hrm_be.services.impl.ProductIngredientServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
