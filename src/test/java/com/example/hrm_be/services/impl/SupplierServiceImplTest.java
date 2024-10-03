@@ -92,7 +92,7 @@ class SupplierServiceImplTest {
     when(supplierMapper.toDTO(any(SupplierEntity.class))).thenReturn(supplierDTO);
 
     // Gọi phương thức getByPaging
-    Page<Supplier> result = supplierService.getByPaging(0, 10, "supplierName");
+    Page<Supplier> result = supplierService.getByPaging(0, 10, "supplierName", "");
 
     // Kiểm tra kết quả
     assertNotNull(result);
