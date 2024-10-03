@@ -45,7 +45,7 @@ public class UnitConversionEntity extends CommonEntity {
       foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   UnitOfMeasurementEntity smallerUnit;
 
-  @Column(name = "factor_conversion", precision = 5, scale = 2, nullable = false)
+  @Column(name = "factor_conversion", nullable = false)
   Double factorConversion;
 
   @ManyToOne(fetch = FetchType.LAZY)

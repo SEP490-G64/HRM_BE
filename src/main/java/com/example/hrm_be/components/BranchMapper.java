@@ -44,24 +44,14 @@ public class BranchMapper {
                     .map(branchBatchMapper::toEntity)
                     .collect(Collectors.toList())
                     : null)
-            .inbounds(
-                e.getInbounds() != null
-                    ? e.getInbounds().stream()
-                    .map(inboundMapper::toEntity)
-                    .collect(Collectors.toList())
-                    : null)
+
             .branchProducts(
                 e.getBranchProducts() != null
                     ? e.getBranchProducts().stream()
                     .map(branchProductMapper::toEntity)
                     .collect(Collectors.toList())
                     : null)
-            .outbounds(
-                e.getOutbounds() != null
-                    ? e.getOutbounds().stream()
-                    .map(outboundMapper::toEntity)
-                    .collect(Collectors.toList())
-                    : null)
+
             .inventoryChecks(
                 e.getInventoryChecks() != null
                     ? e.getInventoryChecks().stream()
@@ -96,24 +86,14 @@ public class BranchMapper {
                     .map(branchBatchMapper::toDTO)
                     .collect(Collectors.toList())
                     : null)
-            .inbounds(
-                e.getInbounds() != null
-                    ? e.getInbounds().stream()
-                    .map(inboundMapper::toDTO)
-                    .collect(Collectors.toList())
-                    : null)
+
             .branchProducts(
                 e.getBranchProducts() != null
                     ? e.getBranchProducts().stream()
                     .map(branchProductMapper::toDTO)
                     .collect(Collectors.toList())
                     : null)
-            .outbounds(
-                e.getOutbounds() != null
-                    ? e.getOutbounds().stream()
-                    .map(outboundMapper::toDTO)
-                    .collect(Collectors.toList())
-                    : null)
+
             .inventoryChecks(
                 e.getInventoryChecks() != null
                     ? e.getInventoryChecks().stream()

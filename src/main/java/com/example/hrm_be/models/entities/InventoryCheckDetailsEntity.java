@@ -44,6 +44,6 @@ public class InventoryCheckDetailsEntity extends CommonEntity{
   @Column(name = "difference", nullable = false)
   Integer difference;
 
-  @Column(name = "reason", columnDefinition = "TEXT", nullable = true)
+  @Column(name = "reason",  nullable = true)
   String reason;
 }

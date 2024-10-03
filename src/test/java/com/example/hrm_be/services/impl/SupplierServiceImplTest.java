@@ -3,6 +3,7 @@ package com.example.hrm_be.services.impl;
 import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.components.SupplierMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
+import com.example.hrm_be.models.dtos.Supplier;
 import com.example.hrm_be.models.entities.SupplierEntity;
 import com.example.hrm_be.repositories.SupplierRepository;
 import org.junit.jupiter.api.BeforeEach;

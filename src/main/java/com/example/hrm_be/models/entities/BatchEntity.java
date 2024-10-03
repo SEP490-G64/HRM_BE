@@ -45,7 +45,7 @@ public class BatchEntity extends CommonEntity {
   @Column(name = "expire_date", nullable = false)
   LocalDateTime expireDate;
 
-  @Column(name = "inbound_price", precision = 5, scale = 2, nullable = false)
+  @Column(name = "inbound_price", nullable = false)
   BigDecimal inboundPrice;
   @ToString.Exclude
   @OneToMany(mappedBy = "batch", fetch = FetchType.LAZY, cascade = CascadeType.ALL)

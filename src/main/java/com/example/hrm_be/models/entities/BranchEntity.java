@@ -62,16 +62,26 @@ public class BranchEntity extends CommonEntity {
   List<BranchBatchEntity> branchBatches; // 1-N with BranchBatch
 
   @ToString.Exclude
-  @OneToMany(mappedBy = "branch", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-  List<InboundEntity> inbounds; // 1-N with Inbound
+  @OneToMany(mappedBy = "toBranch", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  List<InboundEntity> fromBranchInbound;
+
+  @ToString.Exclude
+  @OneToMany(mappedBy = "fromBranch", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  List<InboundEntity> toBranchInbound; // 1-N with Inbound
 
   @ToString.Exclude
   @OneToMany(mappedBy = "branch", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   List<BranchProductEntity> branchProducts; // 1-N with BranchProduct
 
   @ToString.Exclude
-  @OneToMany(mappedBy = "branch", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-  List<OutboundEntity> outbounds; // 1-N with Outbound
+  @OneToMany(mappedBy = "toBranch", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  List<OutboundEntity> toBranchOutbound;
+
+  @ToString.Exclude
+  @OneToMany(mappedBy = "fromBranch", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  List<OutboundEntity> fromBranchOutbound;
+
+
 
   @ToString.Exclude
   @OneToMany(mappedBy = "branch", fetch = FetchType.LAZY, cascade = CascadeType.ALL)

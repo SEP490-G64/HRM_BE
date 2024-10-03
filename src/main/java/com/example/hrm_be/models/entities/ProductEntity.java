@@ -72,7 +72,7 @@ public class ProductEntity extends CommonEntity {
   @Column(name = "formulation", length = 255, nullable = true)
   String formulation;
 
-  @Column(name = "sell_price", precision = 5, scale = 2, nullable = false)
+  @Column(name = "sell_price",  nullable = false)
   BigDecimal sellPrice;
 
   @Enumerated(EnumType.STRING)

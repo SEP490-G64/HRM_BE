@@ -41,7 +41,5 @@ public class SpecialCondition   {
 
 
   ConditionType conditionType;
-
-
   String handlingInstruction;
 }

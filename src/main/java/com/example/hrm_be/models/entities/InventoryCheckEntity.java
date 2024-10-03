@@ -60,7 +60,7 @@ public class InventoryCheckEntity extends  CommonEntity {
   @Column(name = "status", nullable = false)
   InventoryCheckStatus status; // Enum for 'Đang kiểm', 'Chờ duyệt', 'Đã cân bằng'
 
-  @Column(name = "note", columnDefinition = "TEXT", nullable = true)
+  @Column(name = "note", nullable = true)
   String note;
 
   @ToString.Exclude
