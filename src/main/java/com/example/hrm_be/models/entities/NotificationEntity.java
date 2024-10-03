@@ -31,11 +31,11 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "notification")
-  @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class NotificationEntity extends CommonEntity {
   @Enumerated(EnumType.STRING)
   @Column(name = "noti_type", nullable = false)
-  NotificationType notiType;  // Enum for notification types like "Gần hết hạn", "Hết hạn", etc.
+  NotificationType notiType; // Enum for notification types like "Gần hết hạn", "Hết hạn", etc.
 
   @Column(name = "noti_name", length = 200, nullable = false)
   String notiName;
@@ -44,6 +44,9 @@ public class NotificationEntity extends CommonEntity {
   String message;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "branchbatch_id", nullable = true, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+  @JoinColumn(
+      name = "branchbatch_id",
+      nullable = true,
+      foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   BranchBatchEntity branchBatch;
 }

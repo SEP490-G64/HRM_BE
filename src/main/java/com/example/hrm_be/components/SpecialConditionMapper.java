@@ -15,23 +15,20 @@ public class SpecialConditionMapper {
 
   // Convert SpecialConditionEntity to SpecialConditionDTO
   public SpecialCondition toDTO(SpecialConditionEntity entity) {
-    return Optional.ofNullable(entity)
-        .map(this::convertToDTO)
-        .orElse(null);
+    return Optional.ofNullable(entity).map(this::convertToDTO).orElse(null);
   }
 
   // Convert SpecialConditionDTO to SpecialConditionEntity
   public SpecialConditionEntity toEntity(SpecialCondition dto) {
     return Optional.ofNullable(dto)
-        .map(d -> SpecialConditionEntity.builder()
-            .id(d.getId())
-            .product(
-                d.getProduct() != null
-                    ? productMapper.toEntity(d.getProduct())
-                    : null)
-            .conditionType(d.getConditionType())
-            .handlingInstruction(d.getHandlingInstruction())
-            .build())
+        .map(
+            d ->
+                SpecialConditionEntity.builder()
+                    .id(d.getId())
+                    .product(d.getProduct() != null ? productMapper.toEntity(d.getProduct()) : null)
+                    .conditionType(d.getConditionType())
+                    .handlingInstruction(d.getHandlingInstruction())
+                    .build())
         .orElse(null);
   }
 
@@ -39,13 +36,9 @@ public class SpecialConditionMapper {
   private SpecialCondition convertToDTO(SpecialConditionEntity entity) {
     return SpecialCondition.builder()
         .id(entity.getId())
-        .product(
-            entity.getProduct() != null
-                ? productMapper.toDTO(entity.getProduct())
-                : null)
+        .product(entity.getProduct() != null ? productMapper.toDTO(entity.getProduct()) : null)
         .conditionType(entity.getConditionType())
         .handlingInstruction(entity.getHandlingInstruction())
         .build();
   }
 }
-

@@ -28,15 +28,24 @@ import lombok.experimental.SuperBuilder;
 @Table(name = "inbound_batch_details")
 public class BranchProductEntity extends CommonEntity {
   @ManyToOne(fetch = FetchType.LAZY)
-@JoinColumn(name = "product_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-ProductEntity product;
+  @JoinColumn(
+      name = "product_id",
+      nullable = false,
+      foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+  ProductEntity product;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "branch_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+  @JoinColumn(
+      name = "branch_id",
+      nullable = false,
+      foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   BranchEntity branch;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "location_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+  @JoinColumn(
+      name = "location_id",
+      nullable = false,
+      foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   StorageLocationEntity storageLocation;
 
   @Column(name = "min_quantity", nullable = false)
@@ -46,4 +55,5 @@ ProductEntity product;
   Integer maxQuantity;
 
   @Column(name = "quantity", nullable = false)
-  Integer quantity;}
+  Integer quantity;
+}

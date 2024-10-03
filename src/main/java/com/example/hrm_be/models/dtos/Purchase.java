@@ -1,15 +1,6 @@
 package com.example.hrm_be.models.dtos;
 
-import com.example.hrm_be.models.entities.CommonEntity;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import jakarta.persistence.Column;
-import jakarta.persistence.ConstraintMode;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.ForeignKey;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
@@ -31,7 +22,7 @@ import lombok.extern.jackson.Jacksonized;
 @EqualsAndHashCode
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Purchase   {
+public class Purchase {
 
   Long id;
   Supplier supplier;
@@ -41,5 +32,4 @@ public class Purchase   {
   LocalDateTime purchaseDate;
 
   BigDecimal remainDebt;
-
 }

@@ -31,7 +31,10 @@ import lombok.experimental.SuperBuilder;
 public class PurchaseEntity extends CommonEntity {
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "supplier_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+  @JoinColumn(
+      name = "supplier_id",
+      nullable = false,
+      foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   SupplierEntity supplier;
 
   @Column(name = "amount", precision = 5, scale = 2, nullable = false)
@@ -42,5 +45,4 @@ public class PurchaseEntity extends CommonEntity {
 
   @Column(name = "remain_debt", precision = 5, scale = 2, nullable = false)
   BigDecimal remainDebt;
-
 }

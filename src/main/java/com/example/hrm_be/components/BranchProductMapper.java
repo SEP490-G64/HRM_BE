@@ -17,32 +17,26 @@ public class BranchProductMapper {
 
   // Convert BranchProductEntity to BranchProductDTO
   public BranchProduct toDTO(BranchProductEntity entity) {
-    return Optional.ofNullable(entity)
-        .map(this::convertToDTO)
-        .orElse(null);
+    return Optional.ofNullable(entity).map(this::convertToDTO).orElse(null);
   }
 
   // Convert BranchProductDTO to BranchProductEntity
   public BranchProductEntity toEntity(BranchProduct dto) {
     return Optional.ofNullable(dto)
-        .map(d -> BranchProductEntity.builder()
-            .id(d.getId())
-            .product(
-                d.getProduct() != null
-                    ? productMapper.toEntity(d.getProduct())
-                    : null)
-            .branch(
-                d.getBranch() != null
-                    ? branchMapper.toEntity(d.getBranch())
-                    : null)
-            .storageLocation(
-                d.getStorageLocation() != null
-                    ? storageLocationMapper.toEntity(d.getStorageLocation())
-                    : null)
-            .minQuantity(d.getMinQuantity())
-            .maxQuantity(d.getMaxQuantity())
-            .quantity(d.getQuantity())
-            .build())
+        .map(
+            d ->
+                BranchProductEntity.builder()
+                    .id(d.getId())
+                    .product(d.getProduct() != null ? productMapper.toEntity(d.getProduct()) : null)
+                    .branch(d.getBranch() != null ? branchMapper.toEntity(d.getBranch()) : null)
+                    .storageLocation(
+                        d.getStorageLocation() != null
+                            ? storageLocationMapper.toEntity(d.getStorageLocation())
+                            : null)
+                    .minQuantity(d.getMinQuantity())
+                    .maxQuantity(d.getMaxQuantity())
+                    .quantity(d.getQuantity())
+                    .build())
         .orElse(null);
   }
 
@@ -50,14 +44,8 @@ public class BranchProductMapper {
   private BranchProduct convertToDTO(BranchProductEntity entity) {
     return BranchProduct.builder()
         .id(entity.getId())
-        .product(
-            entity.getProduct() != null
-                ? productMapper.toDTO(entity.getProduct())
-                : null)
-        .branch(
-            entity.getBranch() != null
-                ? branchMapper.toDTO(entity.getBranch())
-                : null)
+        .product(entity.getProduct() != null ? productMapper.toDTO(entity.getProduct()) : null)
+        .branch(entity.getBranch() != null ? branchMapper.toDTO(entity.getBranch()) : null)
         .storageLocation(
             entity.getStorageLocation() != null
                 ? storageLocationMapper.toDTO(entity.getStorageLocation())
@@ -68,4 +56,3 @@ public class BranchProductMapper {
         .build();
   }
 }
-

@@ -16,25 +16,25 @@ public class ProductTypeMapper {
 
   // Convert ProductTypeEntity to ProductTypeDTO
   public ProductType toDTO(ProductTypeEntity entity) {
-    return Optional.ofNullable(entity)
-        .map(this::convertToDTO)
-        .orElse(null);
+    return Optional.ofNullable(entity).map(this::convertToDTO).orElse(null);
   }
 
   // Convert ProductTypeDTO to ProductTypeEntity
   public ProductTypeEntity toEntity(ProductType dto) {
     return Optional.ofNullable(dto)
-        .map(d -> ProductTypeEntity.builder()
-            .id(d.getId())
-            .typeName(d.getTypeName())
-            .typeDescription(d.getTypeDescription())
-            .products(
-                d.getProducts() != null
-                    ? d.getProducts().stream()
-                    .map(productMapper::toEntity)
-                    .collect(Collectors.toList())
-                    : null)
-            .build())
+        .map(
+            d ->
+                ProductTypeEntity.builder()
+                    .id(d.getId())
+                    .typeName(d.getTypeName())
+                    .typeDescription(d.getTypeDescription())
+                    .products(
+                        d.getProducts() != null
+                            ? d.getProducts().stream()
+                                .map(productMapper::toEntity)
+                                .collect(Collectors.toList())
+                            : null)
+                    .build())
         .orElse(null);
   }
 
@@ -47,10 +47,9 @@ public class ProductTypeMapper {
         .products(
             entity.getProducts() != null
                 ? entity.getProducts().stream()
-                .map(productMapper::toDTO)
-                .collect(Collectors.toList())
+                    .map(productMapper::toDTO)
+                    .collect(Collectors.toList())
                 : null)
         .build();
   }
 }
-

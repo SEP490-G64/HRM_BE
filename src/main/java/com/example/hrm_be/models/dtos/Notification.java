@@ -1,20 +1,7 @@
 package com.example.hrm_be.models.dtos;
 
 import com.example.hrm_be.commons.enums.NotificationType;
-import com.example.hrm_be.models.entities.CommonEntity;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import jakarta.persistence.Column;
-import jakarta.persistence.ConstraintMode;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.ForeignKey;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -34,8 +21,9 @@ import lombok.extern.jackson.Jacksonized;
 @EqualsAndHashCode
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Notification  { Long id;
-  NotificationType notiType;  // Enum for notification types like "Gần hết hạn", "Hết hạn", etc.
+public class Notification {
+  Long id;
+  NotificationType notiType; // Enum for notification types like "Gần hết hạn", "Hết hạn", etc.
 
   String notiName;
 

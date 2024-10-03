@@ -24,25 +24,20 @@ import lombok.extern.jackson.Jacksonized;
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Batch extends CommonEntity {
-  Long id ;
+  Long id;
   String batchCode;
 
   LocalDateTime produceDate;
 
   LocalDateTime expireDate;
 
-
   List<UnitConversion> unitConversions; // 1-N with UnitConversion
-
 
   List<OutboundDetail> outboundDetails; // 1-N with OutboundDetails
 
-
   List<BranchBatch> branchBatches; // 1-N with BranchBatch
-
 
   InboundBatchDetail inboundBatchDetail;
 
   Product product;
-
 }

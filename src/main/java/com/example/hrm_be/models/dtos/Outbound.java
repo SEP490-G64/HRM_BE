@@ -2,23 +2,7 @@ package com.example.hrm_be.models.dtos;
 
 import com.example.hrm_be.commons.enums.OutboundStatus;
 import com.example.hrm_be.commons.enums.OutboundType;
-import com.example.hrm_be.models.entities.CommonEntity;
-import com.example.hrm_be.models.entities.UserEntity;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.ConstraintMode;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.ForeignKey;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -27,7 +11,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
@@ -42,13 +25,11 @@ import lombok.extern.jackson.Jacksonized;
 @EqualsAndHashCode
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Outbound  {
+public class Outbound {
   Long id;
   OutboundType outboundType; // Assume this is an Enum with values like "Bán hàng", "Trả hàng", etc.
 
-
   Branch fromBranch;
-
 
   Supplier supplier;
 
@@ -60,20 +41,15 @@ public class Outbound  {
 
   Boolean isApproved;
 
-
   User approvedBy;
 
-
   OutboundStatus status; // Assume this is an Enum for "Chờ duyệt", "Đang xử lý", etc.
-
 
   Boolean taxable;
 
   String note;
 
-
   User createdBy;
-
 
   List<OutboundDetail> outboundDetails;
 }

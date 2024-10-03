@@ -16,29 +16,29 @@ public class ManufacturerMapper {
 
   // Convert ManufacturerEntity to ManufacturerDTO
   public Manufacturer toDTO(ManufacturerEntity entity) {
-    return Optional.ofNullable(entity)
-        .map(this::convertToDTO)
-        .orElse(null);
+    return Optional.ofNullable(entity).map(this::convertToDTO).orElse(null);
   }
 
   // Convert ManufacturerDTO to ManufacturerEntity
   public ManufacturerEntity toEntity(Manufacturer dto) {
     return Optional.ofNullable(dto)
-        .map(d -> ManufacturerEntity.builder()
-            .manufacturerName(d.getManufacturerName())
-            .address(d.getAddress())
-            .email(d.getEmail())
-            .phoneNumber(d.getPhoneNumber())
-            .taxCode(d.getTaxCode())
-            .origin(d.getOrigin())
-            .status(d.getStatus())
-            .products(
-                d.getProducts() != null
-                    ? d.getProducts().stream()
-                    .map(productMapper::toEntity)
-                    .collect(Collectors.toList())
-                    : null)
-            .build())
+        .map(
+            d ->
+                ManufacturerEntity.builder()
+                    .manufacturerName(d.getManufacturerName())
+                    .address(d.getAddress())
+                    .email(d.getEmail())
+                    .phoneNumber(d.getPhoneNumber())
+                    .taxCode(d.getTaxCode())
+                    .origin(d.getOrigin())
+                    .status(d.getStatus())
+                    .products(
+                        d.getProducts() != null
+                            ? d.getProducts().stream()
+                                .map(productMapper::toEntity)
+                                .collect(Collectors.toList())
+                            : null)
+                    .build())
         .orElse(null);
   }
 
@@ -55,8 +55,8 @@ public class ManufacturerMapper {
         .products(
             entity.getProducts() != null
                 ? entity.getProducts().stream()
-                .map(productMapper::toDTO)
-                .collect(Collectors.toList())
+                    .map(productMapper::toDTO)
+                    .collect(Collectors.toList())
                 : null)
         .build();
   }

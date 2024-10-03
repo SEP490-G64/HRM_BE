@@ -32,11 +32,17 @@ import lombok.experimental.SuperBuilder;
 @Table(name = "branch_batch")
 public class BranchBatchEntity extends CommonEntity {
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "batch_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+  @JoinColumn(
+      name = "batch_id",
+      nullable = false,
+      foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   BatchEntity batch;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "branch_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+  @JoinColumn(
+      name = "branch_id",
+      nullable = false,
+      foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   BranchEntity branch;
 
   @Column(name = "quantity", nullable = false)
@@ -45,5 +51,4 @@ public class BranchBatchEntity extends CommonEntity {
   @ToString.Exclude
   @OneToMany(mappedBy = "branchBatch", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   List<NotificationEntity> notifications;
-
 }

@@ -16,26 +16,21 @@ public class OutboundDetailMapper {
 
   // Convert OutboundDetailEntity to OutboundDetailDTO
   public OutboundDetail toDTO(OutboundDetailEntity entity) {
-    return Optional.ofNullable(entity)
-        .map(this::convertToDTO)
-        .orElse(null);
+    return Optional.ofNullable(entity).map(this::convertToDTO).orElse(null);
   }
 
   // Convert OutboundDetailDTO to OutboundDetailEntity
   public OutboundDetailEntity toEntity(OutboundDetail dto) {
     return Optional.ofNullable(dto)
-        .map(d -> OutboundDetailEntity.builder()
-            .id(d.getId())
-            .outbound(
-                d.getOutbound() != null
-                    ? outboundMapper.toEntity(d.getOutbound())
-                    : null)
-            .batch(
-                d.getBatch() != null
-                    ? batchMapper.toEntity(d.getBatch())
-                    : null)
-            .quantity(d.getQuantity())
-            .build())
+        .map(
+            d ->
+                OutboundDetailEntity.builder()
+                    .id(d.getId())
+                    .outbound(
+                        d.getOutbound() != null ? outboundMapper.toEntity(d.getOutbound()) : null)
+                    .batch(d.getBatch() != null ? batchMapper.toEntity(d.getBatch()) : null)
+                    .quantity(d.getQuantity())
+                    .build())
         .orElse(null);
   }
 
@@ -43,16 +38,9 @@ public class OutboundDetailMapper {
   private OutboundDetail convertToDTO(OutboundDetailEntity entity) {
     return OutboundDetail.builder()
         .id(entity.getId())
-        .outbound(
-            entity.getOutbound() != null
-                ? outboundMapper.toDTO(entity.getOutbound())
-                : null)
-        .batch(
-            entity.getBatch() != null
-                ? batchMapper.toDTO(entity.getBatch())
-                : null)
+        .outbound(entity.getOutbound() != null ? outboundMapper.toDTO(entity.getOutbound()) : null)
+        .batch(entity.getBatch() != null ? batchMapper.toDTO(entity.getBatch()) : null)
         .quantity(entity.getQuantity())
         .build();
   }
 }
-

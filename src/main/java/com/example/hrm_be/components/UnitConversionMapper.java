@@ -16,30 +16,27 @@ public class UnitConversionMapper {
 
   // Convert UnitConversionEntity to UnitConversionDTO
   public UnitConversion toDTO(UnitConversionEntity entity) {
-    return Optional.ofNullable(entity)
-        .map(this::convertToDTO)
-        .orElse(null);
+    return Optional.ofNullable(entity).map(this::convertToDTO).orElse(null);
   }
 
   // Convert UnitConversionDTO to UnitConversionEntity
   public UnitConversionEntity toEntity(UnitConversion dto) {
     return Optional.ofNullable(dto)
-        .map(d -> UnitConversionEntity.builder()
-            .id(d.getId())
-            .largerUnit(
-                d.getLargerUnit() != null
-                    ? unitOfMeasurementMapper.toEntity(d.getLargerUnit())
-                    : null)
-            .smallerUnit(
-                d.getSmallerUnit() != null
-                    ? unitOfMeasurementMapper.toEntity(d.getSmallerUnit())
-                    : null)
-            .factorConversion(d.getFactorConversion())
-            .batch(
-                d.getBatch() != null
-                    ? batchMapper.toEntity(d.getBatch())
-                    : null)
-            .build())
+        .map(
+            d ->
+                UnitConversionEntity.builder()
+                    .id(d.getId())
+                    .largerUnit(
+                        d.getLargerUnit() != null
+                            ? unitOfMeasurementMapper.toEntity(d.getLargerUnit())
+                            : null)
+                    .smallerUnit(
+                        d.getSmallerUnit() != null
+                            ? unitOfMeasurementMapper.toEntity(d.getSmallerUnit())
+                            : null)
+                    .factorConversion(d.getFactorConversion())
+                    .batch(d.getBatch() != null ? batchMapper.toEntity(d.getBatch()) : null)
+                    .build())
         .orElse(null);
   }
 
@@ -56,11 +53,7 @@ public class UnitConversionMapper {
                 ? unitOfMeasurementMapper.toDTO(entity.getSmallerUnit())
                 : null)
         .factorConversion(entity.getFactorConversion())
-        .batch(
-            entity.getBatch() != null
-                ? batchMapper.toDTO(entity.getBatch())
-                : null)
+        .batch(entity.getBatch() != null ? batchMapper.toDTO(entity.getBatch()) : null)
         .build();
   }
 }
-

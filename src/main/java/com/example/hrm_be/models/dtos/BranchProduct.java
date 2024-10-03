@@ -1,6 +1,5 @@
 package com.example.hrm_be.models.dtos;
 
-import com.example.hrm_be.models.entities.CommonEntity;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -21,7 +20,7 @@ import lombok.extern.jackson.Jacksonized;
 @EqualsAndHashCode
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class BranchProduct  {
+public class BranchProduct {
   Long id;
   Product product;
 
@@ -33,4 +32,5 @@ public class BranchProduct  {
 
   Integer maxQuantity;
 
-  Integer quantity;}
+  Integer quantity;
+}

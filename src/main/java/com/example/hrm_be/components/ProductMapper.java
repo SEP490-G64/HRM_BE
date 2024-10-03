@@ -25,77 +25,74 @@ public class ProductMapper {
 
   // Convert ProductEntity to ProductDTO
   public Product toDTO(ProductEntity entity) {
-    return Optional.ofNullable(entity)
-        .map(this::convertToDTO)
-        .orElse(null);
+    return Optional.ofNullable(entity).map(this::convertToDTO).orElse(null);
   }
 
   // Convert ProductDTO to ProductEntity
   public ProductEntity toEntity(Product dto) {
     return Optional.ofNullable(dto)
-        .map(d -> ProductEntity.builder()
-            .productName(d.getProductName())
-            .productCode(d.getProductCode())
-            .registrationCode(d.getRegistrationCode())
-            .urlImage(d.getUrlImage())
-            .manufacturer(
-                d.getManufacturer() != null
-                    ? manufacturerMapper.toEntity(d.getManufacturer())
-                    : null)
-            .category(
-                d.getCategory() != null
-                    ? productCategoryMapper.toEntity(d.getCategory())
-                    : null)
-            .type(
-                d.getType() != null
-                    ? productTypeMapper.toEntity(d.getType())
-                    : null)
-            .activeIngredient(d.getActiveIngredient())
-            .excipient(d.getExcipient())
-            .formulation(d.getFormulation())
-            .sellPrice(d.getSellPrice())
-            .status(d.getStatus())
-            .baseUnit(
-                d.getBaseUnit() != null
-                    ? unitOfMeasurementMapper.toEntity(d.getBaseUnit())
-                    : null)
-            .inboundDetails(
-                d.getInboundDetails() != null
-                    ? d.getInboundDetails().stream()
-                    .map(inboundDetailsMapper::toEntity)
-                    .collect(Collectors.toList())
-                    : null)
-            .specialConditions(
-                d.getSpecialConditions() != null
-                    ? d.getSpecialConditions().stream()
-                    .map(specialConditionMapper::toEntity)
-                    .collect(Collectors.toList())
-                    : null)
-            .batches(
-                d.getBatches() != null
-                    ? d.getBatches().stream()
-                    .map(batchMapper::toEntity)
-                    .collect(Collectors.toList())
-                    : null)
-            .branchProducs(
-                d.getBranchProducs() != null
-                    ? d.getBranchProducs().stream()
-                    .map(branchProductMapper::toEntity)
-                    .collect(Collectors.toList())
-                    : null)
-            .inventoryCheckDetails(
-                d.getInventoryCheckDetails() != null
-                    ? d.getInventoryCheckDetails().stream()
-                    .map(inventoryCheckDetailsMapper::toEntity)
-                    .collect(Collectors.toList())
-                    : null)
-            .productSuppliers(
-                d.getProductSuppliers() != null
-                    ? d.getProductSuppliers().stream()
-                    .map(productSuppliersMapper::toEntity)
-                    .collect(Collectors.toList())
-                    : null)
-            .build())
+        .map(
+            d ->
+                ProductEntity.builder()
+                    .productName(d.getProductName())
+                    .productCode(d.getProductCode())
+                    .registrationCode(d.getRegistrationCode())
+                    .urlImage(d.getUrlImage())
+                    .manufacturer(
+                        d.getManufacturer() != null
+                            ? manufacturerMapper.toEntity(d.getManufacturer())
+                            : null)
+                    .category(
+                        d.getCategory() != null
+                            ? productCategoryMapper.toEntity(d.getCategory())
+                            : null)
+                    .type(d.getType() != null ? productTypeMapper.toEntity(d.getType()) : null)
+                    .activeIngredient(d.getActiveIngredient())
+                    .excipient(d.getExcipient())
+                    .formulation(d.getFormulation())
+                    .sellPrice(d.getSellPrice())
+                    .status(d.getStatus())
+                    .baseUnit(
+                        d.getBaseUnit() != null
+                            ? unitOfMeasurementMapper.toEntity(d.getBaseUnit())
+                            : null)
+                    .inboundDetails(
+                        d.getInboundDetails() != null
+                            ? d.getInboundDetails().stream()
+                                .map(inboundDetailsMapper::toEntity)
+                                .collect(Collectors.toList())
+                            : null)
+                    .specialConditions(
+                        d.getSpecialConditions() != null
+                            ? d.getSpecialConditions().stream()
+                                .map(specialConditionMapper::toEntity)
+                                .collect(Collectors.toList())
+                            : null)
+                    .batches(
+                        d.getBatches() != null
+                            ? d.getBatches().stream()
+                                .map(batchMapper::toEntity)
+                                .collect(Collectors.toList())
+                            : null)
+                    .branchProducs(
+                        d.getBranchProducs() != null
+                            ? d.getBranchProducs().stream()
+                                .map(branchProductMapper::toEntity)
+                                .collect(Collectors.toList())
+                            : null)
+                    .inventoryCheckDetails(
+                        d.getInventoryCheckDetails() != null
+                            ? d.getInventoryCheckDetails().stream()
+                                .map(inventoryCheckDetailsMapper::toEntity)
+                                .collect(Collectors.toList())
+                            : null)
+                    .productSuppliers(
+                        d.getProductSuppliers() != null
+                            ? d.getProductSuppliers().stream()
+                                .map(productSuppliersMapper::toEntity)
+                                .collect(Collectors.toList())
+                            : null)
+                    .build())
         .orElse(null);
   }
 
@@ -111,13 +108,8 @@ public class ProductMapper {
                 ? manufacturerMapper.toDTO(entity.getManufacturer())
                 : null)
         .category(
-            entity.getCategory() != null
-                ? productCategoryMapper.toDTO(entity.getCategory())
-                : null)
-        .type(
-            entity.getType() != null
-                ? productTypeMapper.toDTO(entity.getType())
-                : null)
+            entity.getCategory() != null ? productCategoryMapper.toDTO(entity.getCategory()) : null)
+        .type(entity.getType() != null ? productTypeMapper.toDTO(entity.getType()) : null)
         .activeIngredient(entity.getActiveIngredient())
         .excipient(entity.getExcipient())
         .formulation(entity.getFormulation())
@@ -130,38 +122,36 @@ public class ProductMapper {
         .inboundDetails(
             entity.getInboundDetails() != null
                 ? entity.getInboundDetails().stream()
-                .map(inboundDetailsMapper::toDTO)
-                .collect(Collectors.toList())
+                    .map(inboundDetailsMapper::toDTO)
+                    .collect(Collectors.toList())
                 : null)
         .specialConditions(
             entity.getSpecialConditions() != null
                 ? entity.getSpecialConditions().stream()
-                .map(specialConditionMapper::toDTO)
-                .collect(Collectors.toList())
+                    .map(specialConditionMapper::toDTO)
+                    .collect(Collectors.toList())
                 : null)
         .batches(
             entity.getBatches() != null
-                ? entity.getBatches().stream()
-                .map(batchMapper::toDTO)
-                .collect(Collectors.toList())
+                ? entity.getBatches().stream().map(batchMapper::toDTO).collect(Collectors.toList())
                 : null)
         .branchProducs(
             entity.getBranchProducs() != null
                 ? entity.getBranchProducs().stream()
-                .map(branchProductMapper::toDTO)
-                .collect(Collectors.toList())
+                    .map(branchProductMapper::toDTO)
+                    .collect(Collectors.toList())
                 : null)
         .inventoryCheckDetails(
             entity.getInventoryCheckDetails() != null
                 ? entity.getInventoryCheckDetails().stream()
-                .map(inventoryCheckDetailsMapper::toDTO)
-                .collect(Collectors.toList())
+                    .map(inventoryCheckDetailsMapper::toDTO)
+                    .collect(Collectors.toList())
                 : null)
         .productSuppliers(
             entity.getProductSuppliers() != null
                 ? entity.getProductSuppliers().stream()
-                .map(productSuppliersMapper::toDTO)
-                .collect(Collectors.toList())
+                    .map(productSuppliersMapper::toDTO)
+                    .collect(Collectors.toList())
                 : null)
         .build();
   }

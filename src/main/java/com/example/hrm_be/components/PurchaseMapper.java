@@ -15,24 +15,22 @@ public class PurchaseMapper {
 
   // Convert PurchaseEntity to PurchaseDTO
   public Purchase toDTO(PurchaseEntity entity) {
-    return Optional.ofNullable(entity)
-        .map(this::convertToDTO)
-        .orElse(null);
+    return Optional.ofNullable(entity).map(this::convertToDTO).orElse(null);
   }
 
   // Convert PurchaseDTO to PurchaseEntity
   public PurchaseEntity toEntity(Purchase dto) {
     return Optional.ofNullable(dto)
-        .map(d -> PurchaseEntity.builder()
-            .id(d.getId())
-            .supplier(
-                d.getSupplier() != null
-                    ? supplierMapper.toEntity(d.getSupplier())
-                    : null)
-            .amount(d.getAmount())
-            .purchaseDate(d.getPurchaseDate())
-            .remainDebt(d.getRemainDebt())
-            .build())
+        .map(
+            d ->
+                PurchaseEntity.builder()
+                    .id(d.getId())
+                    .supplier(
+                        d.getSupplier() != null ? supplierMapper.toEntity(d.getSupplier()) : null)
+                    .amount(d.getAmount())
+                    .purchaseDate(d.getPurchaseDate())
+                    .remainDebt(d.getRemainDebt())
+                    .build())
         .orElse(null);
   }
 
@@ -40,14 +38,10 @@ public class PurchaseMapper {
   private Purchase convertToDTO(PurchaseEntity entity) {
     return Purchase.builder()
         .id(entity.getId())
-        .supplier(
-            entity.getSupplier() != null
-                ? supplierMapper.toDTO(entity.getSupplier())
-                : null)
+        .supplier(entity.getSupplier() != null ? supplierMapper.toDTO(entity.getSupplier()) : null)
         .amount(entity.getAmount())
         .purchaseDate(entity.getPurchaseDate())
         .remainDebt(entity.getRemainDebt())
         .build();
   }
 }
-

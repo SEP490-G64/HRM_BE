@@ -16,24 +16,24 @@ public class StorageLocationMapper {
 
   // Convert StorageLocationEntity to StorageLocationDTO
   public StorageLocation toDTO(StorageLocationEntity entity) {
-    return Optional.ofNullable(entity)
-        .map(this::convertToDTO)
-        .orElse(null);
+    return Optional.ofNullable(entity).map(this::convertToDTO).orElse(null);
   }
 
   // Convert StorageLocationDTO to StorageLocationEntity
   public StorageLocationEntity toEntity(StorageLocation dto) {
     return Optional.ofNullable(dto)
-        .map(d -> StorageLocationEntity.builder()
-            .id(d.getId())
-            .shelfName(d.getShelfName())
-            .branchProducts(
-                d.getBranchProducts() != null
-                    ? d.getBranchProducts().stream()
-                    .map(branchProductMapper::toEntity)
-                    .collect(Collectors.toList())
-                    : null)
-            .build())
+        .map(
+            d ->
+                StorageLocationEntity.builder()
+                    .id(d.getId())
+                    .shelfName(d.getShelfName())
+                    .branchProducts(
+                        d.getBranchProducts() != null
+                            ? d.getBranchProducts().stream()
+                                .map(branchProductMapper::toEntity)
+                                .collect(Collectors.toList())
+                            : null)
+                    .build())
         .orElse(null);
   }
 
@@ -45,10 +45,9 @@ public class StorageLocationMapper {
         .branchProducts(
             entity.getBranchProducts() != null
                 ? entity.getBranchProducts().stream()
-                .map(branchProductMapper::toDTO)
-                .collect(Collectors.toList())
+                    .map(branchProductMapper::toDTO)
+                    .collect(Collectors.toList())
                 : null)
         .build();
   }
 }
-

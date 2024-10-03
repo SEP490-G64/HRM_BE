@@ -1,14 +1,6 @@
 package com.example.hrm_be.models.dtos;
-import com.example.hrm_be.models.entities.CommonEntity;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
-import jakarta.persistence.Column;
-import jakarta.persistence.ConstraintMode;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.ForeignKey;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -28,15 +20,13 @@ import lombok.extern.jackson.Jacksonized;
 @EqualsAndHashCode
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class InboundDetails  {
+public class InboundDetails {
   Long id;
   Inbound inbound;
-
 
   Product product;
 
   Integer requestQuantity;
-
 
   Integer receiveQuantity;
 }

@@ -20,11 +20,10 @@ import lombok.extern.jackson.Jacksonized;
 @EqualsAndHashCode
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ProductSuppliers  {
-Long id;
+public class ProductSuppliers {
+  Long id;
 
   Product product;
-
 
   Supplier supplier;
 }

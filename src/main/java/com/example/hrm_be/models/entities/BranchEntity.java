@@ -81,8 +81,6 @@ public class BranchEntity extends CommonEntity {
   @OneToMany(mappedBy = "fromBranch", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   List<OutboundEntity> fromBranchOutbound;
 
-
-
   @ToString.Exclude
   @OneToMany(mappedBy = "branch", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   List<InventoryCheckEntity> inventoryChecks; // 1-N with InventoryCheck

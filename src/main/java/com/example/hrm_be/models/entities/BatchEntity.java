@@ -47,6 +47,7 @@ public class BatchEntity extends CommonEntity {
 
   @Column(name = "inbound_price", nullable = false)
   BigDecimal inboundPrice;
+
   @ToString.Exclude
   @OneToMany(mappedBy = "batch", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   List<UnitConversionEntity> unitConversions; // 1-N with UnitConversion
@@ -60,12 +61,16 @@ public class BatchEntity extends CommonEntity {
   List<BranchBatchEntity> branchBatches; // 1-N with BranchBatch
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "inbound_batch_detail_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+  @JoinColumn(
+      name = "inbound_batch_detail_id",
+      nullable = false,
+      foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   InboundBatchDetailEntity inboundBatchDetail;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "product_id", nullable = false, foreignKey =
-  @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+  @JoinColumn(
+      name = "product_id",
+      nullable = false,
+      foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   ProductEntity product;
-
 }

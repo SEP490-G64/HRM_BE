@@ -37,17 +37,26 @@ import lombok.experimental.SuperBuilder;
 @Entity
 @Table(name = "inventory_check")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-public class InventoryCheckEntity extends  CommonEntity {
+public class InventoryCheckEntity extends CommonEntity {
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "branch_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+  @JoinColumn(
+      name = "branch_id",
+      nullable = false,
+      foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   BranchEntity branch; // N-1 with Branch
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "created_by", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+  @JoinColumn(
+      name = "created_by",
+      nullable = false,
+      foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   UserEntity createdBy; // N-1 with User (for the user who created the check)
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "approved_by", nullable = true, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+  @JoinColumn(
+      name = "approved_by",
+      nullable = true,
+      foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   UserEntity approvedBy; // N-1 with User (for the user who approved the check)
 
   @Column(name = "created_date", nullable = false)

@@ -26,13 +26,19 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "inbound_batch_details")
-public class InboundBatchDetailEntity extends  CommonEntity {
+public class InboundBatchDetailEntity extends CommonEntity {
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "inbound_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+  @JoinColumn(
+      name = "inbound_id",
+      nullable = false,
+      foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   InboundEntity inbound;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "batch_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+  @JoinColumn(
+      name = "batch_id",
+      nullable = false,
+      foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   BatchEntity batch;
 
   @Column(name = "quantity", nullable = false)

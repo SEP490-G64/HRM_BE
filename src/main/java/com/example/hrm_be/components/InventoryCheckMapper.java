@@ -18,56 +18,41 @@ public class InventoryCheckMapper {
 
   // Convert InventoryCheckEntity to InventoryCheckDTO
   public InventoryCheck toDTO(InventoryCheckEntity entity) {
-    return Optional.ofNullable(entity)
-        .map(this::convertToDTO)
-        .orElse(null);
+    return Optional.ofNullable(entity).map(this::convertToDTO).orElse(null);
   }
 
   // Convert InventoryCheckDTO to InventoryCheckEntity
   public InventoryCheckEntity toEntity(InventoryCheck dto) {
     return Optional.ofNullable(dto)
-        .map(d -> InventoryCheckEntity.builder()
-            .branch(
-                d.getBranch() != null
-                    ? branchMapper.toEntity(d.getBranch())
-                    : null)
-            .createdBy(
-                d.getCreatedBy() != null
-                    ? userMapper.toEntity(d.getCreatedBy())
-                    : null)
-            .approvedBy(
-                d.getApprovedBy() != null
-                    ? userMapper.toEntity(d.getApprovedBy())
-                    : null)
-            .createdDate(d.getCreatedDate())
-            .isApproved(d.getIsApproved())
-            .status(d.getStatus())
-            .note(d.getNote())
-            .inventoryCheckDetails(
-                d.getInventoryCheckDetails() != null
-                    ? d.getInventoryCheckDetails().stream()
-                    .map(inventoryCheckDetailsMapper::toEntity)
-                    .collect(Collectors.toList())
-                    : null)
-            .build())
+        .map(
+            d ->
+                InventoryCheckEntity.builder()
+                    .branch(d.getBranch() != null ? branchMapper.toEntity(d.getBranch()) : null)
+                    .createdBy(
+                        d.getCreatedBy() != null ? userMapper.toEntity(d.getCreatedBy()) : null)
+                    .approvedBy(
+                        d.getApprovedBy() != null ? userMapper.toEntity(d.getApprovedBy()) : null)
+                    .createdDate(d.getCreatedDate())
+                    .isApproved(d.getIsApproved())
+                    .status(d.getStatus())
+                    .note(d.getNote())
+                    .inventoryCheckDetails(
+                        d.getInventoryCheckDetails() != null
+                            ? d.getInventoryCheckDetails().stream()
+                                .map(inventoryCheckDetailsMapper::toEntity)
+                                .collect(Collectors.toList())
+                            : null)
+                    .build())
         .orElse(null);
   }
 
   // Helper method to convert InventoryCheckEntity to InventoryCheckDTO
   private InventoryCheck convertToDTO(InventoryCheckEntity entity) {
     return InventoryCheck.builder()
-        .branch(
-            entity.getBranch() != null
-                ? branchMapper.toDTO(entity.getBranch())
-                : null)
-        .createdBy(
-            entity.getCreatedBy() != null
-                ? userMapper.toDTO(entity.getCreatedBy())
-                : null)
+        .branch(entity.getBranch() != null ? branchMapper.toDTO(entity.getBranch()) : null)
+        .createdBy(entity.getCreatedBy() != null ? userMapper.toDTO(entity.getCreatedBy()) : null)
         .approvedBy(
-            entity.getApprovedBy() != null
-                ? userMapper.toDTO(entity.getApprovedBy())
-                : null)
+            entity.getApprovedBy() != null ? userMapper.toDTO(entity.getApprovedBy()) : null)
         .createdDate(entity.getCreatedDate())
         .isApproved(entity.getIsApproved())
         .status(entity.getStatus())
@@ -75,10 +60,9 @@ public class InventoryCheckMapper {
         .inventoryCheckDetails(
             entity.getInventoryCheckDetails() != null
                 ? entity.getInventoryCheckDetails().stream()
-                .map(inventoryCheckDetailsMapper::toDTO)
-                .collect(Collectors.toList())
+                    .map(inventoryCheckDetailsMapper::toDTO)
+                    .collect(Collectors.toList())
                 : null)
         .build();
   }
 }
-

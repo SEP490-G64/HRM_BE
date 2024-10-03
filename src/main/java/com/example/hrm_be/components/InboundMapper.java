@@ -19,45 +19,37 @@ public class InboundMapper {
 
   // Convert InboundEntity to InboundDTO
   public Inbound toDTO(InboundEntity entity) {
-    return Optional.ofNullable(entity)
-        .map(this::convertToDTO)
-        .orElse(null);
+    return Optional.ofNullable(entity).map(this::convertToDTO).orElse(null);
   }
 
   // Convert InboundDTO to InboundEntity
   public InboundEntity toEntity(Inbound dto) {
     return Optional.ofNullable(dto)
-        .map(d -> InboundEntity.builder()
-            .inboundType(d.getInboundType())
-            .fromBranch(
-                d.getFromBranch() != null
-                    ? branchMapper.toEntity(d.getFromBranch())
-                    : null)
-            .toBranch(
-                d.getToBranch() != null
-                    ? branchMapper.toEntity(d.getToBranch())
-                    : null)
-            .supplier(
-                d.getSupplier() != null
-                    ? supplierMapper.toEntity(d.getSupplier())
-                    : null)
-            .createdBy(
-                d.getCreatedBy() != null
-                    ? userMapper.toEntity(d.getCreatedBy())
-                    : null)
-            .createdDate(d.getCreatedDate())
-            .totalPrice(d.getTotalPrice())
-            .isApproved(d.getIsApproved())
-            .status(d.getStatus())
-            .taxable(d.getTaxable())
-            .note(d.getNote())
-            .inboundDetails(
-                d.getInboundDetails() != null
-                    ? d.getInboundDetails().stream()
-                    .map(inboundDetailsMapper::toEntity)
-                    .collect(Collectors.toList())
-                    : null)
-            .build())
+        .map(
+            d ->
+                InboundEntity.builder()
+                    .inboundType(d.getInboundType())
+                    .fromBranch(
+                        d.getFromBranch() != null ? branchMapper.toEntity(d.getFromBranch()) : null)
+                    .toBranch(
+                        d.getToBranch() != null ? branchMapper.toEntity(d.getToBranch()) : null)
+                    .supplier(
+                        d.getSupplier() != null ? supplierMapper.toEntity(d.getSupplier()) : null)
+                    .createdBy(
+                        d.getCreatedBy() != null ? userMapper.toEntity(d.getCreatedBy()) : null)
+                    .createdDate(d.getCreatedDate())
+                    .totalPrice(d.getTotalPrice())
+                    .isApproved(d.getIsApproved())
+                    .status(d.getStatus())
+                    .taxable(d.getTaxable())
+                    .note(d.getNote())
+                    .inboundDetails(
+                        d.getInboundDetails() != null
+                            ? d.getInboundDetails().stream()
+                                .map(inboundDetailsMapper::toEntity)
+                                .collect(Collectors.toList())
+                            : null)
+                    .build())
         .orElse(null);
   }
 
@@ -66,21 +58,10 @@ public class InboundMapper {
     return Inbound.builder()
         .inboundType(entity.getInboundType())
         .fromBranch(
-            entity.getFromBranch() != null
-                ? branchMapper.toDTO(entity.getFromBranch())
-                : null)
-        .toBranch(
-            entity.getToBranch() != null
-                ? branchMapper.toDTO(entity.getToBranch())
-                : null)
-        .supplier(
-            entity.getSupplier() != null
-                ? supplierMapper.toDTO(entity.getSupplier())
-                : null)
-        .createdBy(
-            entity.getCreatedBy() != null
-                ? userMapper.toDTO(entity.getCreatedBy())
-                : null)
+            entity.getFromBranch() != null ? branchMapper.toDTO(entity.getFromBranch()) : null)
+        .toBranch(entity.getToBranch() != null ? branchMapper.toDTO(entity.getToBranch()) : null)
+        .supplier(entity.getSupplier() != null ? supplierMapper.toDTO(entity.getSupplier()) : null)
+        .createdBy(entity.getCreatedBy() != null ? userMapper.toDTO(entity.getCreatedBy()) : null)
         .createdDate(entity.getCreatedDate())
         .totalPrice(entity.getTotalPrice())
         .isApproved(entity.getIsApproved())
@@ -90,8 +71,8 @@ public class InboundMapper {
         .inboundDetails(
             entity.getInboundDetails() != null
                 ? entity.getInboundDetails().stream()
-                .map(inboundDetailsMapper::toDTO)
-                .collect(Collectors.toList())
+                    .map(inboundDetailsMapper::toDTO)
+                    .collect(Collectors.toList())
                 : null)
         .build();
   }

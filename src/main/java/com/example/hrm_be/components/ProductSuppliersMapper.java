@@ -16,25 +16,20 @@ public class ProductSuppliersMapper {
 
   // Convert ProductSuppliersEntity to ProductSuppliersDTO
   public ProductSuppliers toDTO(ProductSuppliersEntity entity) {
-    return Optional.ofNullable(entity)
-        .map(this::convertToDTO)
-        .orElse(null);
+    return Optional.ofNullable(entity).map(this::convertToDTO).orElse(null);
   }
 
   // Convert ProductSuppliersDTO to ProductSuppliersEntity
   public ProductSuppliersEntity toEntity(ProductSuppliers dto) {
     return Optional.ofNullable(dto)
-        .map(d -> ProductSuppliersEntity.builder()
-            .id(d.getId())
-            .product(
-                d.getProduct() != null
-                    ? productMapper.toEntity(d.getProduct())
-                    : null)
-            .supplier(
-                d.getSupplier() != null
-                    ? supplierMapper.toEntity(d.getSupplier())
-                    : null)
-            .build())
+        .map(
+            d ->
+                ProductSuppliersEntity.builder()
+                    .id(d.getId())
+                    .product(d.getProduct() != null ? productMapper.toEntity(d.getProduct()) : null)
+                    .supplier(
+                        d.getSupplier() != null ? supplierMapper.toEntity(d.getSupplier()) : null)
+                    .build())
         .orElse(null);
   }
 
@@ -42,15 +37,8 @@ public class ProductSuppliersMapper {
   private ProductSuppliers convertToDTO(ProductSuppliersEntity entity) {
     return ProductSuppliers.builder()
         .id(entity.getId())
-        .product(
-            entity.getProduct() != null
-                ? productMapper.toDTO(entity.getProduct())
-                : null)
-        .supplier(
-            entity.getSupplier() != null
-                ? supplierMapper.toDTO(entity.getSupplier())
-                : null)
+        .product(entity.getProduct() != null ? productMapper.toDTO(entity.getProduct()) : null)
+        .supplier(entity.getSupplier() != null ? supplierMapper.toDTO(entity.getSupplier()) : null)
         .build();
   }
 }
-

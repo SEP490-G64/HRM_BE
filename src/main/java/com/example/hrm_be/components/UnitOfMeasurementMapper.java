@@ -17,36 +17,33 @@ public class UnitOfMeasurementMapper {
 
   // Convert UnitOfMeasurementEntity to UnitOfMeasurementDTO
   public UnitOfMeasurement toDTO(UnitOfMeasurementEntity entity) {
-    return Optional.ofNullable(entity)
-        .map(this::convertToDTO)
-        .orElse(null);
+    return Optional.ofNullable(entity).map(this::convertToDTO).orElse(null);
   }
 
   // Convert UnitOfMeasurementDTO to UnitOfMeasurementEntity
   public UnitOfMeasurementEntity toEntity(UnitOfMeasurement dto) {
     return Optional.ofNullable(dto)
-        .map(d -> UnitOfMeasurementEntity.builder()
-            .id(d.getId())
-            .unitName(d.getUnitName())
-            .conversionFactor(d.getConversionFactor())
-            .pricePerUnit(d.getPricePerUnit())
-            .product(
-                d.getProduct() != null
-                    ? productMapper.toEntity(d.getProduct())
-                    : null)
-            .largerUnitConversions(
-                d.getLargerUnitConversions() != null
-                    ? d.getLargerUnitConversions().stream()
-                    .map(unitConversionMapper::toEntity)
-                    .collect(Collectors.toList())
-                    : null)
-            .smallerUnitConversions(
-                d.getSmallerUnitConversions() != null
-                    ? d.getSmallerUnitConversions().stream()
-                    .map(unitConversionMapper::toEntity)
-                    .collect(Collectors.toList())
-                    : null)
-            .build())
+        .map(
+            d ->
+                UnitOfMeasurementEntity.builder()
+                    .id(d.getId())
+                    .unitName(d.getUnitName())
+                    .conversionFactor(d.getConversionFactor())
+                    .pricePerUnit(d.getPricePerUnit())
+                    .product(d.getProduct() != null ? productMapper.toEntity(d.getProduct()) : null)
+                    .largerUnitConversions(
+                        d.getLargerUnitConversions() != null
+                            ? d.getLargerUnitConversions().stream()
+                                .map(unitConversionMapper::toEntity)
+                                .collect(Collectors.toList())
+                            : null)
+                    .smallerUnitConversions(
+                        d.getSmallerUnitConversions() != null
+                            ? d.getSmallerUnitConversions().stream()
+                                .map(unitConversionMapper::toEntity)
+                                .collect(Collectors.toList())
+                            : null)
+                    .build())
         .orElse(null);
   }
 
@@ -57,23 +54,19 @@ public class UnitOfMeasurementMapper {
         .unitName(entity.getUnitName())
         .conversionFactor(entity.getConversionFactor())
         .pricePerUnit(entity.getPricePerUnit())
-        .product(
-            entity.getProduct() != null
-                ? productMapper.toDTO(entity.getProduct())
-                : null)
+        .product(entity.getProduct() != null ? productMapper.toDTO(entity.getProduct()) : null)
         .largerUnitConversions(
             entity.getLargerUnitConversions() != null
                 ? entity.getLargerUnitConversions().stream()
-                .map(unitConversionMapper::toDTO)
-                .collect(Collectors.toList())
+                    .map(unitConversionMapper::toDTO)
+                    .collect(Collectors.toList())
                 : null)
         .smallerUnitConversions(
             entity.getSmallerUnitConversions() != null
                 ? entity.getSmallerUnitConversions().stream()
-                .map(unitConversionMapper::toDTO)
-                .collect(Collectors.toList())
+                    .map(unitConversionMapper::toDTO)
+                    .collect(Collectors.toList())
                 : null)
         .build();
   }
 }
-

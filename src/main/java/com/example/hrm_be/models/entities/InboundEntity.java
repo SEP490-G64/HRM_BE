@@ -1,5 +1,5 @@
 package com.example.hrm_be.models.entities;
-import com.example.hrm_be.commons.enums.BranchType;
+
 import com.example.hrm_be.commons.enums.InboundStatus;
 import com.example.hrm_be.commons.enums.InboundType;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
@@ -45,17 +45,22 @@ public class InboundEntity extends CommonEntity {
   InboundType inboundType; // Custom enum representing: Nhà cung cấp, Chuyển kho nội bộ
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "from_branch_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+  @JoinColumn(
+      name = "from_branch_id",
+      nullable = false,
+      foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   BranchEntity fromBranch;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "to_branch_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+  @JoinColumn(
+      name = "to_branch_id",
+      nullable = false,
+      foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   BranchEntity toBranch;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "supplier_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   SupplierEntity supplier;
-
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "created_by", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
@@ -64,7 +69,7 @@ public class InboundEntity extends CommonEntity {
   @Column(name = "created_date", nullable = false)
   LocalDateTime createdDate;
 
-  @Column(name = "total_price",  nullable = false)
+  @Column(name = "total_price", nullable = false)
   BigDecimal totalPrice;
 
   @Column(name = "is_approved", nullable = false)

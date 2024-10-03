@@ -15,23 +15,23 @@ public class NotificationMapper {
 
   // Convert NotificationEntity to NotificationDTO
   public Notification toDTO(NotificationEntity entity) {
-    return Optional.ofNullable(entity)
-        .map(this::convertToDTO)
-        .orElse(null);
+    return Optional.ofNullable(entity).map(this::convertToDTO).orElse(null);
   }
 
   // Convert NotificationDTO to NotificationEntity
   public NotificationEntity toEntity(Notification dto) {
     return Optional.ofNullable(dto)
-        .map(d -> NotificationEntity.builder()
-            .notiType(d.getNotiType())
-            .notiName(d.getNotiName())
-            .message(d.getMessage())
-            .branchBatch(
-                d.getBranchBatch() != null
-                    ? branchBatchMapper.toEntity(d.getBranchBatch())
-                    : null)
-            .build())
+        .map(
+            d ->
+                NotificationEntity.builder()
+                    .notiType(d.getNotiType())
+                    .notiName(d.getNotiName())
+                    .message(d.getMessage())
+                    .branchBatch(
+                        d.getBranchBatch() != null
+                            ? branchBatchMapper.toEntity(d.getBranchBatch())
+                            : null)
+                    .build())
         .orElse(null);
   }
 
@@ -48,4 +48,3 @@ public class NotificationMapper {
         .build();
   }
 }
-

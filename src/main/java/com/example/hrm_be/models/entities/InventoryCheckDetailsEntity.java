@@ -26,13 +26,19 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "inventory_check_details")
-public class InventoryCheckDetailsEntity extends CommonEntity{
+public class InventoryCheckDetailsEntity extends CommonEntity {
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "check_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+  @JoinColumn(
+      name = "check_id",
+      nullable = false,
+      foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   InventoryCheckEntity inventoryCheck; // N-1 with InventoryCheckEntity
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "product_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+  @JoinColumn(
+      name = "product_id",
+      nullable = false,
+      foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   ProductEntity product; // N-1 with ProductEntity
 
   @Column(name = "system_quantity", nullable = false)
@@ -44,6 +50,6 @@ public class InventoryCheckDetailsEntity extends CommonEntity{
   @Column(name = "difference", nullable = false)
   Integer difference;
 
-  @Column(name = "reason",  nullable = true)
+  @Column(name = "reason", nullable = true)
   String reason;
 }

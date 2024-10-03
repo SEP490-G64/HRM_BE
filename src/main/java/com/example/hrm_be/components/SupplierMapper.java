@@ -19,48 +19,48 @@ public class SupplierMapper {
 
   // Convert SupplierEntity to SupplierDTO
   public Supplier toDTO(SupplierEntity entity) {
-    return Optional.ofNullable(entity)
-        .map(this::convertToDTO)
-        .orElse(null);
+    return Optional.ofNullable(entity).map(this::convertToDTO).orElse(null);
   }
 
   // Convert SupplierDTO to SupplierEntity
   public SupplierEntity toEntity(Supplier dto) {
     return Optional.ofNullable(dto)
-        .map(d -> SupplierEntity.builder()
-            .id(d.getId())
-            .supplierName(d.getSupplierName())
-            .address(d.getAddress())
-            .email(d.getEmail())
-            .phoneNumber(d.getPhoneNumber())
-            .taxCode(d.getTaxCode())
-            .faxNumber(d.getFaxNumber())
-            .status(d.getStatus())
-            .purchases(
-                d.getPurchases() != null
-                    ? d.getPurchases().stream()
-                    .map(purchaseMapper::toEntity)
-                    .collect(Collectors.toList())
-                    : null)
-            .inbounds(
-                d.getInbounds() != null
-                    ? d.getInbounds().stream()
-                    .map(inboundMapper::toEntity)
-                    .collect(Collectors.toList())
-                    : null)
-            .outbounds(
-                d.getOutbounds() != null
-                    ? d.getOutbounds().stream()
-                    .map(outboundMapper::toEntity)
-                    .collect(Collectors.toList())
-                    : null)
-            .productSuppliers(
-                d.getProductSuppliers() != null
-                    ? d.getProductSuppliers().stream()
-                    .map(productSuppliersMapper::toEntity)
-                    .collect(Collectors.toList())
-                    : null)
-            .build())
+        .map(
+            d ->
+                SupplierEntity.builder()
+                    .id(d.getId())
+                    .supplierName(d.getSupplierName())
+                    .address(d.getAddress())
+                    .email(d.getEmail())
+                    .phoneNumber(d.getPhoneNumber())
+                    .taxCode(d.getTaxCode())
+                    .faxNumber(d.getFaxNumber())
+                    .status(d.getStatus())
+                    .purchases(
+                        d.getPurchases() != null
+                            ? d.getPurchases().stream()
+                                .map(purchaseMapper::toEntity)
+                                .collect(Collectors.toList())
+                            : null)
+                    .inbounds(
+                        d.getInbounds() != null
+                            ? d.getInbounds().stream()
+                                .map(inboundMapper::toEntity)
+                                .collect(Collectors.toList())
+                            : null)
+                    .outbounds(
+                        d.getOutbounds() != null
+                            ? d.getOutbounds().stream()
+                                .map(outboundMapper::toEntity)
+                                .collect(Collectors.toList())
+                            : null)
+                    .productSuppliers(
+                        d.getProductSuppliers() != null
+                            ? d.getProductSuppliers().stream()
+                                .map(productSuppliersMapper::toEntity)
+                                .collect(Collectors.toList())
+                            : null)
+                    .build())
         .orElse(null);
   }
 
@@ -78,28 +78,27 @@ public class SupplierMapper {
         .purchases(
             entity.getPurchases() != null
                 ? entity.getPurchases().stream()
-                .map(purchaseMapper::toDTO)
-                .collect(Collectors.toList())
+                    .map(purchaseMapper::toDTO)
+                    .collect(Collectors.toList())
                 : null)
         .inbounds(
             entity.getInbounds() != null
                 ? entity.getInbounds().stream()
-                .map(inboundMapper::toDTO)
-                .collect(Collectors.toList())
+                    .map(inboundMapper::toDTO)
+                    .collect(Collectors.toList())
                 : null)
         .outbounds(
             entity.getOutbounds() != null
                 ? entity.getOutbounds().stream()
-                .map(outboundMapper::toDTO)
-                .collect(Collectors.toList())
+                    .map(outboundMapper::toDTO)
+                    .collect(Collectors.toList())
                 : null)
         .productSuppliers(
             entity.getProductSuppliers() != null
                 ? entity.getProductSuppliers().stream()
-                .map(productSuppliersMapper::toDTO)
-                .collect(Collectors.toList())
+                    .map(productSuppliersMapper::toDTO)
+                    .collect(Collectors.toList())
                 : null)
         .build();
   }
 }
-

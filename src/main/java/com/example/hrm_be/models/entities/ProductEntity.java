@@ -52,15 +52,24 @@ public class ProductEntity extends CommonEntity {
   String urlImage;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "manufacturer_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+  @JoinColumn(
+      name = "manufacturer_id",
+      nullable = false,
+      foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   ManufacturerEntity manufacturer;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "category_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+  @JoinColumn(
+      name = "category_id",
+      nullable = false,
+      foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   ProductCategoryEntity category;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "type_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+  @JoinColumn(
+      name = "type_id",
+      nullable = false,
+      foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   ProductTypeEntity type;
 
   @Column(name = "active_ingredient", length = 255, nullable = true)
@@ -72,7 +81,7 @@ public class ProductEntity extends CommonEntity {
   @Column(name = "formulation", length = 255, nullable = true)
   String formulation;
 
-  @Column(name = "sell_price",  nullable = false)
+  @Column(name = "sell_price", nullable = false)
   BigDecimal sellPrice;
 
   @Enumerated(EnumType.STRING)
@@ -80,7 +89,10 @@ public class ProductEntity extends CommonEntity {
   ProductStatus status; // Enum for "Còn hàng", "Hết hàng", "Ngừng kinh doanh"
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "base_unit_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+  @JoinColumn(
+      name = "base_unit_id",
+      nullable = false,
+      foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   UnitOfMeasurementEntity baseUnit;
 
   // One-to-Many Relationships
