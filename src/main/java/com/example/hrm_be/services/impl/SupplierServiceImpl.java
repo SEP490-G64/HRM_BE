@@ -32,9 +32,13 @@ public class SupplierServiceImpl implements SupplierService {
   }
 
   @Override
-  public Page<Supplier> getByPaging(int pageNo, int pageSize, String sortBy) {
+  public Page<Supplier> getByPaging(int pageNo, int pageSize, String sortBy, String name) {
     Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(sortBy).descending());
-    return supplierRepository.findAll(pageable).map(dao -> supplierMapper.toDTO(dao));
+
+    // Tìm kiếm theo tên
+    return supplierRepository
+        .findBySupplierNameContainsIgnoreCase(name, pageable)
+        .map(dao -> supplierMapper.toDTO(dao));
   }
 
   @Override
@@ -65,6 +69,9 @@ public class SupplierServiceImpl implements SupplierService {
                     .phoneNumber(supplier.getPhoneNumber())
                     .email(supplier.getEmail())
                     .address(supplier.getAddress())
+                    .taxCode(supplier.getTaxCode())
+                    .faxNumber(supplier.getFaxNumber())
+                    .status(supplier.getStatus())
                     .build())
         .map(supplierRepository::save)
         .map(supplierMapper::toDTO)

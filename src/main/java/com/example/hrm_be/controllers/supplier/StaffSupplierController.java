@@ -26,8 +26,9 @@ public class StaffSupplierController {
   protected ResponseEntity<BaseOutput<List<Supplier>>> getByPaging(
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size,
-      @RequestParam(required = false, defaultValue = "id") String sortBy) {
-    Page<Supplier> supplierPage = supplierService.getByPaging(page, size, sortBy);
+      @RequestParam(required = false, defaultValue = "id") String sortBy,
+      @RequestParam(defaultValue = "") String name) {
+    Page<Supplier> supplierPage = supplierService.getByPaging(page, size, sortBy, name);
 
     BaseOutput<List<Supplier>> response =
         BaseOutput.<List<Supplier>>builder()

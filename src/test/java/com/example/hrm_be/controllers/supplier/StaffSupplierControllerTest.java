@@ -41,11 +41,11 @@ class StaffSupplierControllerTest {
             .setPhoneNumber("123456789");
 
     Page<Supplier> page = new PageImpl<>(Collections.singletonList(supplier));
-    when(supplierService.getByPaging(0, 10, "id")).thenReturn(page);
+    when(supplierService.getByPaging(0, 10, "id", "")).thenReturn(page);
 
     // Act
     ResponseEntity<BaseOutput<List<Supplier>>> response =
-        supplierController.getByPaging(0, 10, "id");
+        supplierController.getByPaging(0, 10, "id", "");
 
     // Assert
     assertEquals(HttpStatus.OK, response.getStatusCode());
