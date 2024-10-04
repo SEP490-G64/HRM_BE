@@ -37,7 +37,7 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
       int pageNo, int pageSize, String sortBy, String keyword) {
     Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(sortBy).ascending());
     return categoryRepository
-        .findByCategoryName(keyword, pageable)
+        .findByCategoryNameContainingIgnoreCase(keyword, pageable)
         .map(dao -> categoryMapper.toDTO(dao));
   }
 
