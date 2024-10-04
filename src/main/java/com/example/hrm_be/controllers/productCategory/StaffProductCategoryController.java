@@ -29,7 +29,7 @@ public class StaffProductCategoryController {
       @RequestParam(required = false, defaultValue = "id") String sortBy,
       @RequestParam(required = false, defaultValue = "") String keyword) {
     Page<ProductCategory> categoryPage =
-        productCategoryService.getByPagingByKeyword(page, size, sortBy, keyword);
+        productCategoryService.getByPaging(page, size, sortBy, keyword);
     BaseOutput<List<ProductCategory>> response =
         BaseOutput.<List<ProductCategory>>builder()
             .message(HttpStatus.OK.toString())

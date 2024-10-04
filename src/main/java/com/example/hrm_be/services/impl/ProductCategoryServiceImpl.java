@@ -33,11 +33,11 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
   }
 
   @Override
-  public Page<ProductCategory> getByPagingByKeyword(
+  public Page<ProductCategory> getByPaging(
       int pageNo, int pageSize, String sortBy, String keyword) {
     Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(sortBy).ascending());
     return categoryRepository
-        .findByKeyword(keyword, pageable)
+        .findByCategoryName(keyword, pageable)
         .map(dao -> categoryMapper.toDTO(dao));
   }
 

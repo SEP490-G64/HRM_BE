@@ -15,5 +15,5 @@ public interface ProductCategoryRepository extends JpaRepository<ProductCategory
   @Query(
       "SELECT p FROM ProductCategoryEntity p WHERE LOWER(p.categoryName) LIKE LOWER(CONCAT('%',"
           + " :keyword, '%'))")
-  Page<ProductCategoryEntity> findByKeyword(@Param("keyword") String keyword, Pageable pageable);
+  Page<ProductCategoryEntity> findByCategoryName(@Param("keyword") String keyword, Pageable pageable);
 }
