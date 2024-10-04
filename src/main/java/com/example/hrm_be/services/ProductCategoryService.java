@@ -6,14 +6,14 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface ProductCategoryService {
-    ProductCategory getById(Long id);
+  ProductCategory getById(Long id);
 
-    Page<ProductCategory> getByPagingByKeyword(int pageNo, int pageSize, String sortBy, String keyWords);
+  Page<ProductCategory> getByPagingByKeyword(
+      int pageNo, int pageSize, String sortBy, String keyWords);
 
-    ProductCategory create(ProductCategory category);
+  ProductCategory create(ProductCategory category);
 
-    ProductCategory update(ProductCategory category);
+  ProductCategory update(ProductCategory category);
 
-    void delete(Long id);
-
+  void delete(Long id);
 }

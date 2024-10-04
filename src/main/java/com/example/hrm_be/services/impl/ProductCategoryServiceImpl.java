@@ -22,58 +22,62 @@ import java.util.Optional;
 @Transactional
 public class ProductCategoryServiceImpl implements ProductCategoryService {
 
-    @Autowired private ProductCategoryRepository categoryRepository;
-    @Autowired private ProductCategoryMapper categoryMapper;
+  @Autowired private ProductCategoryRepository categoryRepository;
+  @Autowired private ProductCategoryMapper categoryMapper;
 
-    @Override
-    public ProductCategory getById(Long id) {
-        return Optional.ofNullable(id)
-                .flatMap(e -> categoryRepository.findById(e).map(b -> categoryMapper.toDTO(b)))
-                .orElse(null);
-    }
+  @Override
+  public ProductCategory getById(Long id) {
+    return Optional.ofNullable(id)
+        .flatMap(e -> categoryRepository.findById(e).map(b -> categoryMapper.toDTO(b)))
+        .orElse(null);
+  }
 
-    @Override
-    public Page<ProductCategory> getByPagingByKeyword(int pageNo, int pageSize, String sortBy, String keyword) {
-        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(sortBy).ascending());
-        return categoryRepository.findByKeyword(keyword,pageable).map(dao -> categoryMapper.toDTO(dao));
-    }
+  @Override
+  public Page<ProductCategory> getByPagingByKeyword(
+      int pageNo, int pageSize, String sortBy, String keyword) {
+    Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(sortBy).ascending());
+    return categoryRepository
+        .findByKeyword(keyword, pageable)
+        .map(dao -> categoryMapper.toDTO(dao));
+  }
 
-    @Override
-    public ProductCategory create(ProductCategory category) {
-        if (category == null || categoryRepository.existsByCategoryName(category.getCategoryName())) {
-            throw new HrmCommonException(HrmConstant.ERROR.BRANCH.EXIST);
-        }
-        return Optional.ofNullable(category)
-                .map(e -> categoryMapper.toEntity(e))
-                .map(e -> categoryRepository.save(e))
-                .map(e -> categoryMapper.toDTO(e))
-                .orElse(null);
+  @Override
+  public ProductCategory create(ProductCategory category) {
+    if (category == null || categoryRepository.existsByCategoryName(category.getCategoryName())) {
+      throw new HrmCommonException(HrmConstant.ERROR.BRANCH.EXIST);
     }
+    return Optional.ofNullable(category)
+        .map(e -> categoryMapper.toEntity(e))
+        .map(e -> categoryRepository.save(e))
+        .map(e -> categoryMapper.toDTO(e))
+        .orElse(null);
+  }
 
-    @Override
-    public ProductCategory update(ProductCategory category) {
-        ProductCategoryEntity oldCategoryEntity = categoryRepository.findById(category.getId()).orElse(null);
-        if (oldCategoryEntity == null) {
-            throw new HrmCommonException(HrmConstant.ERROR.CATEGORY.NOT_EXIST);
-        }
-        return Optional.ofNullable(oldCategoryEntity)
-                .map(
-                        op ->
-                                op.toBuilder()
-                                        .categoryName(category.getCategoryName())
-                                        .categoryDescription(category.getCategoryDescription())
-                                        .taxRate(category.getTaxRate())
-                                        .build())
-                .map(categoryRepository::save)
-                .map(categoryMapper::toDTO)
-                .orElse(null);
+  @Override
+  public ProductCategory update(ProductCategory category) {
+    ProductCategoryEntity oldCategoryEntity =
+        categoryRepository.findById(category.getId()).orElse(null);
+    if (oldCategoryEntity == null) {
+      throw new HrmCommonException(HrmConstant.ERROR.CATEGORY.NOT_EXIST);
     }
+    return Optional.ofNullable(oldCategoryEntity)
+        .map(
+            op ->
+                op.toBuilder()
+                    .categoryName(category.getCategoryName())
+                    .categoryDescription(category.getCategoryDescription())
+                    .taxRate(category.getTaxRate())
+                    .build())
+        .map(categoryRepository::save)
+        .map(categoryMapper::toDTO)
+        .orElse(null);
+  }
 
-    @Override
-    public void delete(Long id) {
-        if (StringUtils.isBlank(id.toString())) {
-            return;
-        }
-        categoryRepository.deleteById(id);
+  @Override
+  public void delete(Long id) {
+    if (StringUtils.isBlank(id.toString())) {
+      return;
     }
+    categoryRepository.deleteById(id);
+  }
 }
