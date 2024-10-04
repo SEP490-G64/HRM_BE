@@ -8,8 +8,7 @@ import org.springframework.stereotype.Service;
 public interface ProductCategoryService {
   ProductCategory getById(Long id);
 
-  Page<ProductCategory> getByPaging(
-      int pageNo, int pageSize, String sortBy, String keyWords);
+  Page<ProductCategory> getByPaging(int pageNo, int pageSize, String sortBy, String keyWords);
 
   ProductCategory create(ProductCategory category);
 
