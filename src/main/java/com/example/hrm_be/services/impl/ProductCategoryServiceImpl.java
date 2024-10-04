@@ -37,8 +37,7 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
 
   // Retrieves a paginated list of ProductCategory entities, allowing sorting and searching by name
   @Override
-  public Page<ProductCategory> getByPaging(
-      int pageNo, int pageSize, String sortBy, String name) {
+  public Page<ProductCategory> getByPaging(int pageNo, int pageSize, String sortBy, String name) {
     Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(sortBy).ascending());
     return categoryRepository
         .findByCategoryNameContainingIgnoreCase(name, pageable)

@@ -9,7 +9,8 @@ public interface ProductCategoryService {
   // Retrieves a ProductCategory by its ID
   ProductCategory getById(Long id);
 
-  // Retrieves a paginated list of ProductCategory objects, allowing sorting and searching by keywords
+  // Retrieves a paginated list of ProductCategory objects, allowing sorting and searching by
+  // keywords
   Page<ProductCategory> getByPaging(int pageNo, int pageSize, String sortBy, String name);
 
   // Creates a new ProductCategory entity and returns the created entity

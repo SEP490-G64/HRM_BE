@@ -36,12 +36,15 @@ public class BranchServiceImpl implements BranchService {
         .orElse(null);
   }
 
-  // Retrieves a paginated list of Branch entities, allowing sorting and searching by name or location and type
+  // Retrieves a paginated list of Branch entities, allowing sorting and searching by name or
+  // location and type
   @Override
-  public Page<Branch> getByPaging(int pageNo, int pageSize, String sortBy, String keyword, BranchType branchType ) {
+  public Page<Branch> getByPaging(
+      int pageNo, int pageSize, String sortBy, String keyword, BranchType branchType) {
     Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(sortBy).ascending());
-    return branchRepository.findByBranchNameAndLocationAndLocation(keyword
-            , branchType, pageable).map(dao -> branchMapper.toDTO(dao));
+    return branchRepository
+        .findByBranchNameAndLocationAndLocation(keyword, branchType, pageable)
+        .map(dao -> branchMapper.toDTO(dao));
   }
 
   // Creates a new Branch

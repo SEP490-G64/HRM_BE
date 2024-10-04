@@ -11,7 +11,8 @@ public interface ProductCategoryRepository extends JpaRepository<ProductCategory
   // Checks if a ProductCategory with the specified name already exists in the database
   boolean existsByCategoryName(String name);
 
-  // Finds a paginated list of ProductCategory entities whose names contain the specified keyword (case-insensitive)
+  // Finds a paginated list of ProductCategory entities whose names contain the specified keyword
+  // (case-insensitive)
   Page<ProductCategoryEntity> findByCategoryNameContainingIgnoreCase(
       String categoryName, Pageable pageable);
 }

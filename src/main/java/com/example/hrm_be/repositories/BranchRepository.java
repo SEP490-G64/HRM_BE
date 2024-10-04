@@ -15,10 +15,11 @@ public interface BranchRepository extends JpaRepository<BranchEntity, Long> {
 
   // User query to find branches based on a keyword for branch name or location,
   // with an optional filter for branch type.
-  @Query("SELECT b FROM BranchEntity b " +
-          "WHERE (LOWER(b.branchName) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
-          "OR LOWER(b.location) LIKE LOWER(CONCAT('%', :keyword, '%'))) " +
-          "AND (:branchType IS NULL OR b.branchType = :branchType)")
-  Page<BranchEntity> findByBranchNameAndLocationAndLocation (
-          String keyword, BranchType branchType, Pageable pageable);
+  @Query(
+      "SELECT b FROM BranchEntity b "
+          + "WHERE (LOWER(b.branchName) LIKE LOWER(CONCAT('%', :keyword, '%')) "
+          + "OR LOWER(b.location) LIKE LOWER(CONCAT('%', :keyword, '%'))) "
+          + "AND (:branchType IS NULL OR b.branchType = :branchType)")
+  Page<BranchEntity> findByBranchNameAndLocationAndLocation(
+      String keyword, BranchType branchType, Pageable pageable);
 }

@@ -11,7 +11,8 @@ public interface BranchService {
   Branch getById(Long id);
 
   // Get a paginated list of branches based on provided filters.
-  Page<Branch> getByPaging(int pageNo, int pageSize, String sortBy, String keyword, BranchType branchType);
+  Page<Branch> getByPaging(
+      int pageNo, int pageSize, String sortBy, String keyword, BranchType branchType);
 
   // Create a new branch.
   Branch create(Branch branch);
