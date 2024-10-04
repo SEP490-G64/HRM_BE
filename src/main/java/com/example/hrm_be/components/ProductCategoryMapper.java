@@ -35,12 +35,6 @@ public class ProductCategoryMapper {
                     .categoryName(d.getCategoryName())
                     .categoryDescription(d.getCategoryDescription())
                     .taxRate(d.getTaxRate())
-                    .products(
-                        d.getProducts() != null
-                            ? d.getProducts().stream()
-                                .map(productMapper::toEntity)
-                                .collect(Collectors.toList())
-                            : null)
                     .build())
         .orElse(null);
   }
@@ -51,12 +45,6 @@ public class ProductCategoryMapper {
         .categoryName(entity.getCategoryName())
         .categoryDescription(entity.getCategoryDescription())
         .taxRate(entity.getTaxRate())
-        .products(
-            entity.getProducts() != null
-                ? entity.getProducts().stream()
-                    .map(productMapper::toDTO)
-                    .collect(Collectors.toList())
-                : null)
         .build();
   }
 }

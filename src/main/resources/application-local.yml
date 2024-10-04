@@ -32,5 +32,5 @@ spring:
     password: Abcd1234
     driver-class-name: org.postgresql.Driver
   jpa:
-    hibernate.ddl-auto: create-drop
+    hibernate.ddl-auto: update
     show-sql: true

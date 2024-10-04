@@ -38,6 +38,6 @@ public class ProductCategoryEntity extends CommonEntity {
   BigDecimal taxRate;
 
   @ToString.Exclude
-  @OneToMany(mappedBy = "category", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "category")
   List<ProductEntity> products;
 }

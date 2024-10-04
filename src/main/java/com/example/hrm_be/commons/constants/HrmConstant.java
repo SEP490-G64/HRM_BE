@@ -65,6 +65,15 @@ public class HrmConstant {
       public static final String NOT_EXIST = "error.category.not_exist";
     }
 
+    public static class PRODUCT {
+      public static final String CREATE = "error.category.create";
+      public static final String UPDATE = "error.category.update";
+      public static final String DELETE = "error.category.delete";
+      public static final String EXIST = "error.category.exist";
+      public static final String NOT_CHILD = "error.category.not_child";
+      public static final String NOT_EXIST = "error.category.not_exist";
+    }
+
     public static class PLAYLIST {
       public static final String CREATE = "error.playlist.create";
       public static final String UPDATE = "error.playlist.update";

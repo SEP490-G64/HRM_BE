@@ -2,12 +2,10 @@ package com.example.hrm_be.components;
 
 import com.example.hrm_be.models.dtos.ProductType;
 import com.example.hrm_be.models.entities.ProductTypeEntity;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
-
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Component
 public class ProductTypeMapper {
@@ -28,12 +26,6 @@ public class ProductTypeMapper {
                     .id(d.getId())
                     .typeName(d.getTypeName())
                     .typeDescription(d.getTypeDescription())
-                    .products(
-                        d.getProducts() != null
-                            ? d.getProducts().stream()
-                                .map(productMapper::toEntity)
-                                .collect(Collectors.toList())
-                            : null)
                     .build())
         .orElse(null);
   }
@@ -44,12 +36,6 @@ public class ProductTypeMapper {
         .id(entity.getId())
         .typeName(entity.getTypeName())
         .typeDescription(entity.getTypeDescription())
-        .products(
-            entity.getProducts() != null
-                ? entity.getProducts().stream()
-                    .map(productMapper::toDTO)
-                    .collect(Collectors.toList())
-                : null)
         .build();
   }
 }
