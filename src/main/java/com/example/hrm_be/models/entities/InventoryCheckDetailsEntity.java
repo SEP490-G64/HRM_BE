@@ -36,10 +36,10 @@ public class InventoryCheckDetailsEntity extends CommonEntity {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(
-      name = "product_id",
+      name = "batch_id",
       nullable = false,
       foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-  ProductEntity product; // N-1 with ProductEntity
+  BatchEntity batch; // N-1 with ProductEntity
 
   @Column(name = "system_quantity", nullable = false)
   Integer systemQuantity;

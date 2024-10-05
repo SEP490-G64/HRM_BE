@@ -73,4 +73,8 @@ public class BatchEntity extends CommonEntity {
       nullable = false,
       foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   ProductEntity product;
+
+  @ToString.Exclude
+  @OneToMany(mappedBy = "batch", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  List<InventoryCheckDetailsEntity> inventoryCheckDetails; // 1-N with InventoryCheckDetails
 }
