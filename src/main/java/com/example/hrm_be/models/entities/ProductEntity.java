@@ -114,9 +114,5 @@ public class ProductEntity extends CommonEntity {
 
   @ToString.Exclude
   @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-  List<InventoryCheckDetailsEntity> inventoryCheckDetails; // 1-N with InventoryCheckDetails
-
-  @ToString.Exclude
-  @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   List<ProductSuppliersEntity> productSuppliers; // 1-N with ProductSuppliers
 }
