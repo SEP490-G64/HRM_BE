@@ -59,6 +59,5 @@ public class Product {
 
   List<BranchProduct> branchProducs;
 
-
   List<ProductSuppliers> productSuppliers;
 }

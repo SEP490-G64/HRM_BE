@@ -80,7 +80,6 @@ public class ProductMapper {
                                 .map(branchProductMapper::toEntity)
                                 .collect(Collectors.toList())
                             : null)
-
                     .productSuppliers(
                         d.getProductSuppliers() != null
                             ? d.getProductSuppliers().stream()
@@ -136,7 +135,6 @@ public class ProductMapper {
                     .map(branchProductMapper::toDTO)
                     .collect(Collectors.toList())
                 : null)
-
         .productSuppliers(
             entity.getProductSuppliers() != null
                 ? entity.getProductSuppliers().stream()

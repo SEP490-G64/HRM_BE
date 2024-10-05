@@ -30,7 +30,8 @@ public class InventoryCheckDetailsMapper {
                         d.getInventoryCheck() != null
                             ? inventoryCheckMapper.toEntity(d.getInventoryCheck())
                             : null)
-                    .batch(d.getInventoryCheck() != null ? batchMapper.toEntity(d.getBatch()) : null)
+                    .batch(
+                        d.getInventoryCheck() != null ? batchMapper.toEntity(d.getBatch()) : null)
                     .systemQuantity(d.getSystemQuantity())
                     .countedQuantity(d.getCountedQuantity())
                     .difference(d.getDifference())

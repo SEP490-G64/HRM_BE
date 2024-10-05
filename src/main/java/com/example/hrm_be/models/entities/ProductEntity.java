@@ -112,8 +112,6 @@ public class ProductEntity extends CommonEntity {
   @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   List<BranchProductEntity> branchProducs; // 1-N with Batch
 
-
-
   @ToString.Exclude
   @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   List<ProductSuppliersEntity> productSuppliers; // 1-N with ProductSuppliers
