@@ -1,5 +1,7 @@
 package com.example.hrm_be.configs;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
 import com.example.hrm_be.commons.enums.RoleType;
 import com.example.hrm_be.components.JwtAuthenticationEntryPoint;
 import com.example.hrm_be.configs.filters.JwtRequestFilter;
@@ -53,7 +55,6 @@ public class SecurityConfig {
     CorsConfiguration corsConfig = new CorsConfiguration();
     corsConfig.setAllowCredentials(true);
     corsConfig.addExposedHeader("Authorization");
-    corsConfig.addAllowedOrigin("http://localhost:3000");
     corsConfig.addAllowedOriginPattern("*"); // Allow all origins
     corsConfig.addAllowedMethod("*"); // Allow all HTTP methods
     corsConfig.addAllowedHeader("*"); // Allow all headers
@@ -76,7 +77,7 @@ public class SecurityConfig {
 
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    return http.csrf(AbstractHttpConfigurer::disable)
+    return http.cors(withDefaults()).csrf(AbstractHttpConfigurer::disable)
         .authorizeHttpRequests(
             aMRMR ->
                 aMRMR
