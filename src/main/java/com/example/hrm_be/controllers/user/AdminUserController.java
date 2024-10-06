@@ -4,6 +4,8 @@ import com.example.hrm_be.commons.constants.HrmConstant.ERROR.REQUEST;
 import com.example.hrm_be.models.dtos.User;
 import com.example.hrm_be.models.responses.BaseOutput;
 import com.example.hrm_be.services.UserService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
@@ -19,6 +21,8 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/admin/user")
+@Tag(name = "Admin-Users API")
+@SecurityRequirement(name = "Authorization")
 public class AdminUserController {
 
   private final UserService userService;

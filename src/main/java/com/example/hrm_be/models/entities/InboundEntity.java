@@ -69,6 +69,9 @@ public class InboundEntity extends CommonEntity {
   @Column(name = "created_date", nullable = false)
   LocalDateTime createdDate;
 
+  @Column(name = "inbound_date", nullable = false)
+  LocalDateTime inboundDate;
+
   @Column(name = "total_price", nullable = false)
   BigDecimal totalPrice;
 

@@ -37,6 +37,8 @@ public class Inbound {
 
   User createdBy;
 
+  LocalDateTime inboundDate;
+
   LocalDateTime createdDate;
 
   BigDecimal totalPrice;

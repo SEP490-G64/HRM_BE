@@ -22,9 +22,12 @@ import java.util.Optional;
 @Transactional
 public class ProductCategoryServiceImpl implements ProductCategoryService {
 
+  // Injects the repository to interact with the database
   @Autowired private ProductCategoryRepository categoryRepository;
+  // Injects the mapper to convert between DTO and Entity objects
   @Autowired private ProductCategoryMapper categoryMapper;
 
+  // Retrieves a ProductCategory by ID
   @Override
   public ProductCategory getById(Long id) {
     return Optional.ofNullable(id)
@@ -32,20 +35,24 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
         .orElse(null);
   }
 
+  // Retrieves a paginated list of ProductCategory entities, allowing sorting and searching by name
   @Override
-  public Page<ProductCategory> getByPaging(
-      int pageNo, int pageSize, String sortBy, String keyword) {
+  public Page<ProductCategory> getByPaging(int pageNo, int pageSize, String sortBy, String name) {
     Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(sortBy).ascending());
     return categoryRepository
-        .findByCategoryNameContainingIgnoreCase(keyword, pageable)
+        .findByCategoryNameContainingIgnoreCase(name, pageable)
         .map(dao -> categoryMapper.toDTO(dao));
   }
 
+  // Creates a new ProductCategory
   @Override
   public ProductCategory create(ProductCategory category) {
+    // Validation: Ensure the category is not null and the name does not already exist
     if (category == null || categoryRepository.existsByCategoryName(category.getCategoryName())) {
-      throw new HrmCommonException(HrmConstant.ERROR.BRANCH.EXIST);
+      throw new HrmCommonException(HrmConstant.ERROR.CATEGORY.EXIST);
     }
+
+    // Convert DTO to entity, save it, then convert the saved entity back to DTO
     return Optional.ofNullable(category)
         .map(e -> categoryMapper.toEntity(e))
         .map(e -> categoryRepository.save(e))
@@ -53,13 +60,17 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
         .orElse(null);
   }
 
+  // Updates an existing ProductCategory
   @Override
   public ProductCategory update(ProductCategory category) {
+    // Retrieve the existing category entity by ID
     ProductCategoryEntity oldCategoryEntity =
         categoryRepository.findById(category.getId()).orElse(null);
     if (oldCategoryEntity == null) {
       throw new HrmCommonException(HrmConstant.ERROR.CATEGORY.NOT_EXIST);
     }
+
+    // Update the fields of the existing category entity, save it, and convert it back to DTO
     return Optional.ofNullable(oldCategoryEntity)
         .map(
             op ->
@@ -73,11 +84,15 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
         .orElse(null);
   }
 
+  // Deletes a ProductCategory by ID
   @Override
   public void delete(Long id) {
+    // Validation: Check if the ID is blank
     if (StringUtils.isBlank(id.toString())) {
       return;
     }
+
+    // Delete the category by ID
     categoryRepository.deleteById(id);
   }
 }

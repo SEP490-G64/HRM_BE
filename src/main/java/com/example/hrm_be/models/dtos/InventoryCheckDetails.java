@@ -24,7 +24,7 @@ public class InventoryCheckDetails {
   Long id;
   InventoryCheck inventoryCheck; // N-1 with InventoryCheckEntity
 
-  Product product;
+  Batch batch;
 
   Integer systemQuantity;
 

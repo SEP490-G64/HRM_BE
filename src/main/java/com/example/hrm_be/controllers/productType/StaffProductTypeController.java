@@ -1,11 +1,10 @@
-package com.example.hrm_be.controllers.branch;
+package com.example.hrm_be.controllers.productType;
 
 import com.example.hrm_be.commons.constants.HrmConstant;
-import com.example.hrm_be.commons.enums.BranchType;
 import com.example.hrm_be.commons.enums.ResponseStatus;
-import com.example.hrm_be.models.dtos.Branch;
+import com.example.hrm_be.models.dtos.ProductType;
 import com.example.hrm_be.models.responses.BaseOutput;
-import com.example.hrm_be.services.BranchService;
+import com.example.hrm_be.services.ProductTypeService;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,124 +18,119 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v1/admin/branch")
-public class AdminBranchController {
-  // Injected service for handling branch operations
-  private final BranchService branchService;
+@RequestMapping("/api/v1/staff/type")
+public class StaffProductTypeController {
+  // Injecting ProductTypeService to handle business logic for ProductType
+  private final ProductTypeService productTypeService;
 
-  // Retrieves a paginated list of Branch entities
-  // with optional sorting and searching by name or location and filter type
+  // Handles GET requests for paginated list of ProductType entities
   @GetMapping("")
-  protected ResponseEntity<BaseOutput<List<Branch>>> getByPaging(
+  protected ResponseEntity<BaseOutput<List<ProductType>>> getByPaging(
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "20") int size,
       @RequestParam(required = false, defaultValue = "id") String sortBy,
-      @RequestParam(required = false, defaultValue = "") String keyword,
-      @RequestParam(required = false, defaultValue = "") BranchType branchType) {
-    Page<Branch> branchPage = branchService.getByPaging(page, size, sortBy, keyword, branchType);
+      @RequestParam(required = false, defaultValue = "") String keyword) {
+    Page<ProductType> categoryPage = productTypeService.getByPaging(page, size, sortBy, keyword);
 
-    // Build the response with pagination details
-    BaseOutput<List<Branch>> response =
-        BaseOutput.<List<Branch>>builder()
+    // Building response object with the retrieved data and pagination details
+    BaseOutput<List<ProductType>> response =
+        BaseOutput.<List<ProductType>>builder()
             .message(HttpStatus.OK.toString())
-            .totalPages(branchPage.getTotalPages())
+            .totalPages(categoryPage.getTotalPages())
             .currentPage(page)
             .pageSize(size)
-            .total(branchPage.getTotalElements())
-            .data(branchPage.getContent())
+            .total(categoryPage.getTotalElements())
+            .data(categoryPage.getContent())
             .status(com.example.hrm_be.commons.enums.ResponseStatus.SUCCESS)
             .build();
     return ResponseEntity.ok(response);
   }
 
-  // Retrieves a Branch by its ID
+  // Handles GET requests to retrieve a single ProductType by ID
   @GetMapping("/{id}")
-  protected ResponseEntity<BaseOutput<Branch>> getById(@PathVariable("id") Long id) {
-    // Validate the path variable ID
+  protected ResponseEntity<BaseOutput<ProductType>> getById(@PathVariable("id") Long id) {
+    // Validation: If the provided ID is invalid, return a bad request response
     if (id <= 0 || id == null) {
-      BaseOutput<Branch> response =
-          BaseOutput.<Branch>builder()
+      BaseOutput<ProductType> response =
+          BaseOutput.<ProductType>builder()
               .status(com.example.hrm_be.commons.enums.ResponseStatus.FAILED)
               .errors(List.of(HrmConstant.ERROR.REQUEST.INVALID_PATH_VARIABLE))
               .build();
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
-    // Fetch branch by ID
-    Branch branch = branchService.getById(id);
+    // Retrieve ProductType by ID
+    ProductType productType = productTypeService.getById(id);
 
-    // Build the response with the found branch data
-    BaseOutput<Branch> response =
-        BaseOutput.<Branch>builder()
+    // Building success response
+    BaseOutput<ProductType> response =
+        BaseOutput.<ProductType>builder()
             .message(HttpStatus.OK.toString())
-            .data(branch)
+            .data(productType)
             .status(com.example.hrm_be.commons.enums.ResponseStatus.SUCCESS)
             .build();
     return ResponseEntity.ok(response);
   }
 
-  // Creates a new Branch
+  // Handles POST requests to create a new ProductType
   @PostMapping()
-  protected ResponseEntity<BaseOutput<Branch>> create(
-      @RequestBody @NotNull(message = "error.request.body.invalid") Branch branch) {
-    // Validate the request body
-    if (branch == null) {
-      BaseOutput<Branch> response =
-          BaseOutput.<Branch>builder()
+  protected ResponseEntity<BaseOutput<ProductType>> create(
+      @RequestBody @NotNull(message = "error.request.body.invalid") ProductType productType) {
+    // Validation: If the request body is null, return a bad request response
+    if (productType == null) {
+      BaseOutput<ProductType> response =
+          BaseOutput.<ProductType>builder()
               .errors(List.of(HrmConstant.ERROR.REQUEST.INVALID_BODY))
               .status(com.example.hrm_be.commons.enums.ResponseStatus.FAILED)
               .build();
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
-    // Create the branch
-    Branch createdBranch = branchService.create(branch);
+    // Create the new ProductType via service
+    ProductType createdType = productTypeService.create(productType);
 
-    // Build the response with the created branch data
-    BaseOutput<Branch> response =
-        BaseOutput.<Branch>builder()
+    // Building success response
+    BaseOutput<ProductType> response =
+        BaseOutput.<ProductType>builder()
             .message(HttpStatus.OK.toString())
-            .data(createdBranch)
+            .data(createdType)
             .status(com.example.hrm_be.commons.enums.ResponseStatus.SUCCESS)
             .build();
     return ResponseEntity.ok(response);
   }
 
-  // Updates an existing Branch
+  // Handles PUT requests to update an existing ProductType by ID
   @PutMapping("/{id}")
-  protected ResponseEntity<BaseOutput<Branch>> update(
+  protected ResponseEntity<BaseOutput<ProductType>> update(
       @PathVariable("id") Long id,
-      @RequestBody @NotNull(message = "error.request.body.invalid") Branch branch) {
-    // Validate the path variable ID
+      @RequestBody @NotNull(message = "error.request.body.invalid") ProductType productType) {
+    // Validation: If the provided ID is invalid, return a bad request response
     if (id <= 0 || id == null) {
-      BaseOutput<Branch> response =
-          BaseOutput.<Branch>builder()
+      BaseOutput<ProductType> response =
+          BaseOutput.<ProductType>builder()
               .status(com.example.hrm_be.commons.enums.ResponseStatus.FAILED)
               .errors(List.of(HrmConstant.ERROR.REQUEST.INVALID_PATH_VARIABLE))
               .build();
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
-    // Set the ID for the branch to update
-    branch.setId(id);
+    // Set the ID to the existing product type before updating
+    productType.setId(id);
+    ProductType updateType = productTypeService.update(productType);
 
-    // Update the branch
-    Branch updateBranch = branchService.update(branch);
-
-    // Build the response with the updated branch data
-    BaseOutput<Branch> response =
-        BaseOutput.<Branch>builder()
+    // Building success response
+    BaseOutput<ProductType> response =
+        BaseOutput.<ProductType>builder()
             .message(HttpStatus.OK.toString())
-            .data(updateBranch)
+            .data(updateType)
             .status(com.example.hrm_be.commons.enums.ResponseStatus.SUCCESS)
             .build();
     return ResponseEntity.ok(response);
   }
 
-  // Deletes a Branch by ID
+  // Handles DELETE requests to remove a ProductType by ID
   @DeleteMapping("/{id}")
   protected ResponseEntity<BaseOutput<String>> delete(@PathVariable("id") Long id) {
-    // Validate the path variable ID
     if (id <= 0 || id == null) {
       BaseOutput<String> response =
           BaseOutput.<String>builder()
@@ -146,10 +140,10 @@ public class AdminBranchController {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
-    // Delete the branch by ID
-    branchService.delete(id);
+    // Delete the ProductType via service
+    productTypeService.delete(id);
 
-    // Build the response indicating success
+    // Building success response after deletion
     return ResponseEntity.ok(
         BaseOutput.<String>builder()
             .data(HttpStatus.OK.toString())
