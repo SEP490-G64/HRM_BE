@@ -4,10 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
-import java.math.BigDecimal;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -48,5 +45,4 @@ public class AllowedProductEntity extends CommonEntity {
 
   @Column(name = "formulation", length = 255, nullable = true)
   String formulation;
-
 }

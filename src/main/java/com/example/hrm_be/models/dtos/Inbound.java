@@ -3,7 +3,6 @@ package com.example.hrm_be.models.dtos;
 import com.example.hrm_be.commons.enums.InboundStatus;
 import com.example.hrm_be.commons.enums.InboundType;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import jakarta.persistence.Column;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
