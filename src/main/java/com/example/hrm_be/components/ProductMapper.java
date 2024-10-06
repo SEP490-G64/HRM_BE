@@ -80,12 +80,6 @@ public class ProductMapper {
                                 .map(branchProductMapper::toEntity)
                                 .collect(Collectors.toList())
                             : null)
-                    .inventoryCheckDetails(
-                        d.getInventoryCheckDetails() != null
-                            ? d.getInventoryCheckDetails().stream()
-                                .map(inventoryCheckDetailsMapper::toEntity)
-                                .collect(Collectors.toList())
-                            : null)
                     .productSuppliers(
                         d.getProductSuppliers() != null
                             ? d.getProductSuppliers().stream()
@@ -139,12 +133,6 @@ public class ProductMapper {
             entity.getBranchProducs() != null
                 ? entity.getBranchProducs().stream()
                     .map(branchProductMapper::toDTO)
-                    .collect(Collectors.toList())
-                : null)
-        .inventoryCheckDetails(
-            entity.getInventoryCheckDetails() != null
-                ? entity.getInventoryCheckDetails().stream()
-                    .map(inventoryCheckDetailsMapper::toDTO)
                     .collect(Collectors.toList())
                 : null)
         .productSuppliers(

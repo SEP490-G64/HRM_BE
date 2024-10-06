@@ -8,6 +8,9 @@ import com.example.hrm_be.models.requests.user.UserUpdateRequest;
 import com.example.hrm_be.models.responses.BaseOutput;
 import com.example.hrm_be.services.UserService;
 import jakarta.validation.constraints.NotNull;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
@@ -22,6 +25,8 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/admin/user")
+@Tag(name = "Admin-Users API")
+@SecurityRequirement(name = "Authorization")
 public class AdminUserController {
 
   private final UserService userService;
