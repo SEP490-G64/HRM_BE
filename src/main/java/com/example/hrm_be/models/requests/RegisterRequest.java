@@ -1,9 +1,6 @@
 package com.example.hrm_be.models.requests;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import java.io.Serial;
-import java.io.Serializable;
-import java.util.List;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

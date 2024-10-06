@@ -87,7 +87,7 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public Page<User> getByPaging(
-          int pageNo, int pageSize, String sortBy, String sortDirection, String keyword) {
+      int pageNo, int pageSize, String sortBy, String sortDirection, String keyword) {
     /** TODO Only allow admin user to call this function */
     // Check if the logged user is an admin
     if (!isAdmin()) {
@@ -96,10 +96,12 @@ public class UserServiceImpl implements UserService {
 
     // Create a pageable request based on provided parameters
     Pageable pageable =
-            PageRequest.of(pageNo, pageSize, Sort.by(Sort.Direction.fromString(sortDirection), sortBy));
+        PageRequest.of(pageNo, pageSize, Sort.by(Sort.Direction.fromString(sortDirection), sortBy));
 
     // Fetch users by keyword and map to DTO
-    return userRepository.searchUsers(keyword, UserStatusType.PENDING, pageable).map(userMapper::toDTO);
+    return userRepository
+        .searchUsers(keyword, UserStatusType.PENDING, pageable)
+        .map(userMapper::toDTO);
   }
 
   @Override
@@ -127,9 +129,9 @@ public class UserServiceImpl implements UserService {
 
     // Retrieve user by ID and map to DTO
     return Optional.ofNullable(id)
-            .flatMap(e -> userRepository.findById(id))
-            .map(userMapper::toDTO)
-            .orElse(null); // Return null if user not found
+        .flatMap(e -> userRepository.findById(id))
+        .map(userMapper::toDTO)
+        .orElse(null); // Return null if user not found
   }
 
   @Override
@@ -142,8 +144,8 @@ public class UserServiceImpl implements UserService {
 
     // Validate user details and check for existing users with the same email or username
     if (user == null
-            || userRepository.existsByEmail(user.getEmail())
-            || userRepository.existsByUserName(user.getUserName())) {
+        || userRepository.existsByEmail(user.getEmail())
+        || userRepository.existsByUserName(user.getUserName())) {
       throw new HrmCommonException(USER.EXIST);
     }
 
@@ -154,14 +156,16 @@ public class UserServiceImpl implements UserService {
     String encodedPassword = passwordEncoder.encode(rawPassword);
 
     return Optional.of(user)
-            .map(userMapper::toEntity)
-            .map(e -> {
+        .map(userMapper::toEntity)
+        .map(
+            e -> {
               e.setStatus(UserStatusType.ACTIVATE);
               e.setCreatedDate(LocalDateTime.now());
               e.setPassword(encodedPassword); // Set the encoded password to the entity
               return userRepository.save(e);
             })
-            .map(e -> {
+        .map(
+            e -> {
               // Check role to assign role for user
               if (user.getRole() != null) {
                 if (user.getRole() == 1) {
@@ -171,25 +175,26 @@ public class UserServiceImpl implements UserService {
                 } else if (user.getRole() == 3) {
                   userRoleMapService.setAdminRoleForUser(e.getId());
                 }
-              }
-              else {
+              } else {
                 userRoleMapService.setStaffRoleForUser(e.getId());
               }
 
               // Send email to user with the generated password
-              emailService.sendEmail(user.getEmail(), "Mật khẩu của tài khoản ứng dụng Quản lí kho của Hệ thống nhà thuốc Long Tâm của bạn",
-                      "Mật khẩu: " + rawPassword);
+              emailService.sendEmail(
+                  user.getEmail(),
+                  "Mật khẩu của tài khoản ứng dụng Quản lí kho của Hệ thống nhà thuốc Long Tâm của"
+                      + " bạn",
+                  "Mật khẩu: " + rawPassword);
 
               return e;
             })
-            .map(userMapper::toDTO)
-            .orElse(null); // Return null if user creation fails
+        .map(userMapper::toDTO)
+        .orElse(null); // Return null if user creation fails
   }
 
   @Override
   public User update(UserUpdateRequest user, boolean profile) {
     /** TODO Only allow admin user to update other users. */
-
     UserEntity oldUserEntity = null;
 
     // Check if the action is Admin update user or User update profile
@@ -198,11 +203,10 @@ public class UserServiceImpl implements UserService {
       if (!isAdmin()) {
         throw new HrmCommonException(HrmConstant.ERROR.ROLE.NOT_ALLOWED);
       }
-      //Find user in current database by id
+      // Find user in current database by id
       oldUserEntity = userRepository.findById(user.getId()).orElse(null);
-    }
-    else {
-      //Get data of logged in user before updating
+    } else {
+      // Get data of logged in user before updating
       String email = this.getAuthenticatedUserEmail();
       oldUserEntity = userMapper.toEntity(this.findLoggedInfoByEmail(email));
     }
@@ -212,19 +216,22 @@ public class UserServiceImpl implements UserService {
       throw new HrmCommonException(USER.NOT_EXIST);
     }
 
-    // Validate user details and check for existing users with the same email or username different from current user
+    // Validate user details and check for existing users with the same email or username different
+    // from current user
     if (user == null
-            || (userRepository.existsByEmail(user.getEmail()) &&
-                !Objects.equals(oldUserEntity.getEmail(), user.getEmail()))
-            || (userRepository.existsByUserName(user.getUserName()) &&
-                !Objects.equals(oldUserEntity.getUserName(), user.getUserName()))) {
+        || (userRepository.existsByEmail(user.getEmail())
+            && !Objects.equals(oldUserEntity.getEmail(), user.getEmail()))
+        || (userRepository.existsByUserName(user.getUserName())
+            && !Objects.equals(oldUserEntity.getUserName(), user.getUserName()))) {
       throw new HrmCommonException(USER.EXIST);
     }
 
     // Update user details and save
     return Optional.of(oldUserEntity)
-            .map(ue -> {
-              UserEntity.UserEntityBuilder builder = ue.toBuilder()
+        .map(
+            ue -> {
+              UserEntity.UserEntityBuilder builder =
+                  ue.toBuilder()
                       .firstName(user.getFirstName())
                       .lastName(user.getLastName())
                       .phone(user.getPhone())
@@ -237,7 +244,8 @@ public class UserServiceImpl implements UserService {
               }
               return builder.build();
             })
-            .map(e -> {
+        .map(
+            e -> {
               // Check role to assign role for user
               if (user.getRole() != null) {
                 if (user.getRole() == 1) {
@@ -250,9 +258,9 @@ public class UserServiceImpl implements UserService {
               }
               return e;
             })
-            .map(userRepository::save)
-            .map(userMapper::toDTO)
-            .orElse(null); // Return null if update fails
+        .map(userRepository::save)
+        .map(userMapper::toDTO)
+        .orElse(null); // Return null if update fails
   }
 
   @Override
@@ -300,20 +308,21 @@ public class UserServiceImpl implements UserService {
   public User createAdmin(User user) {
     // Create and save a new admin user, then assign admin role
     return Optional.ofNullable(user)
-            .map(userMapper::toEntity)
-            .map(userRepository::save)
-            .map(
-                    e -> {
-                      userRoleMapService.setAdminRoleForUser(e.getId()); // Assign admin role
-                      return e;
-                    })
-            .map(userMapper::toDTO)
-            .orElse(null); // Return null if admin creation fails
+        .map(userMapper::toEntity)
+        .map(userRepository::save)
+        .map(
+            e -> {
+              userRoleMapService.setAdminRoleForUser(e.getId()); // Assign admin role
+              return e;
+            })
+        .map(userMapper::toDTO)
+        .orElse(null); // Return null if admin creation fails
   }
 
   @Override
   public User getByEmail(@NonNull String email) {
-    // TODO check admin, if admin, can getByEmail of other user, while not, can only get current user
+    // TODO check admin, if admin, can getByEmail of other user, while not, can only get current
+    // user
     // Retrieve user by email and map to DTO
     return userRepository.findByEmail(email).map(userMapper::toDTO).orElse(null);
   }
@@ -348,23 +357,25 @@ public class UserServiceImpl implements UserService {
   public User register(RegisterRequest registerRequest) {
     // Check if a user with the provided email or username already exists
     if (userRepository.existsByUserName(registerRequest.getUserName())
-            || userRepository.existsByEmail(registerRequest.getEmail())) {
+        || userRepository.existsByEmail(registerRequest.getEmail())) {
       throw new HrmCommonException(USER.EXIST); // Throw exception if user exists
     }
 
-    //Check if confirm password equals to password
+    // Check if confirm password equals to password
     if (!Objects.equals(registerRequest.getPassword(), registerRequest.getConfirmPassword())) {
       throw new HrmCommonException(USER.NOT_MATCH_CONFIRM_PASSWORD);
     }
 
     return Optional.of(registerRequest)
-            .map(userMapper::toEntity)
-            .map(e -> {
+        .map(userMapper::toEntity)
+        .map(
+            e -> {
               e.setStatus(UserStatusType.PENDING);
               e.setCreatedDate(LocalDateTime.now());
               return userRepository.save(e);
             })
-            .map(e -> {
+        .map(
+            e -> {
               // Check role to assign role for user
               if (registerRequest.getRole() != null) {
                 if (registerRequest.getRole() == 1) {
@@ -377,8 +388,8 @@ public class UserServiceImpl implements UserService {
               }
               return e;
             })
-            .map(userMapper::toDTO)
-            .orElse(null); // Return null if registration fails
+        .map(userMapper::toDTO)
+        .orElse(null); // Return null if registration fails
   }
 
   @Override
@@ -396,10 +407,13 @@ public class UserServiceImpl implements UserService {
 
     // Set status based on acceptance and save
     return Optional.ofNullable(verifyUser)
-            .map(accept ? e -> e.setStatus(UserStatusType.ACTIVATE) : e -> e.setStatus(UserStatusType.REJECTED))
-            .map(userRepository::save)
-            .map(userMapper::toDTO)
-            .orElse(null); // Return null if verification fails
+        .map(
+            accept
+                ? e -> e.setStatus(UserStatusType.ACTIVATE)
+                : e -> e.setStatus(UserStatusType.REJECTED))
+        .map(userRepository::save)
+        .map(userMapper::toDTO)
+        .orElse(null); // Return null if verification fails
   }
 
   @Override
@@ -417,11 +431,12 @@ public class UserServiceImpl implements UserService {
 
     // Set status based on account current status and save
     return Optional.ofNullable(verifyUser)
-            .map(Objects.equals(verifyUser.getStatus().toString(), UserStatusType.ACTIVATE.toString()) ?
-                    e -> e.setStatus(UserStatusType.DEACTIVATE) :
-                    e -> e.setStatus(UserStatusType.ACTIVATE))
-            .map(userRepository::save)
-            .map(userMapper::toDTO)
-            .orElse(null); // Return null if verification fails
+        .map(
+            Objects.equals(verifyUser.getStatus().toString(), UserStatusType.ACTIVATE.toString())
+                ? e -> e.setStatus(UserStatusType.DEACTIVATE)
+                : e -> e.setStatus(UserStatusType.ACTIVATE))
+        .map(userRepository::save)
+        .map(userMapper::toDTO)
+        .orElse(null); // Return null if verification fails
   }
 }

@@ -7,8 +7,6 @@ import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -20,17 +18,17 @@ import java.util.List;
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserCreateRequest {
-    String userName;
+  String userName;
 
-    String email;
+  String email;
 
-    String phone;
+  String phone;
 
-    String firstName;
+  String firstName;
 
-    String lastName;
+  String lastName;
 
-    Long role;
+  Long role;
 
-    Long branchId;
+  Long branchId;
 }

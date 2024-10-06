@@ -31,25 +31,25 @@ public class StaffSupplierController {
   // Allows paging, sorting, and searching by name or location
   @GetMapping("")
   protected ResponseEntity<BaseOutput<List<Supplier>>> getByPaging(
-          @RequestParam(defaultValue = "0") int page,
-          @RequestParam(defaultValue = "10") int size,
-          @RequestParam(required = false, defaultValue = "id") String sortBy,
-          @RequestParam(defaultValue = "") String name) {
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int size,
+      @RequestParam(required = false, defaultValue = "id") String sortBy,
+      @RequestParam(defaultValue = "") String name) {
 
     // Retrieve paginated list of suppliers from the service
     Page<Supplier> supplierPage = supplierService.getByPaging(page, size, sortBy, name);
 
     // Construct response object with supplier data and pagination details
     BaseOutput<List<Supplier>> response =
-            BaseOutput.<List<Supplier>>builder()
-                    .message(HttpStatus.OK.toString())
-                    .totalPages(supplierPage.getTotalPages()) // Total number of pages available
-                    .currentPage(page) // Current page number
-                    .pageSize(size) // Size of the current page
-                    .total(supplierPage.getTotalElements()) // Total number of suppliers
-                    .data(supplierPage.getContent()) // List of suppliers in the current page
-                    .status(ResponseStatus.SUCCESS) // Set response status to SUCCESS
-                    .build();
+        BaseOutput.<List<Supplier>>builder()
+            .message(HttpStatus.OK.toString())
+            .totalPages(supplierPage.getTotalPages()) // Total number of pages available
+            .currentPage(page) // Current page number
+            .pageSize(size) // Size of the current page
+            .total(supplierPage.getTotalElements()) // Total number of suppliers
+            .data(supplierPage.getContent()) // List of suppliers in the current page
+            .status(ResponseStatus.SUCCESS) // Set response status to SUCCESS
+            .build();
 
     // Return response with status OK
     return ResponseEntity.ok(response);
@@ -63,11 +63,12 @@ public class StaffSupplierController {
     if (id <= 0 || id == null) {
       // Create response indicating invalid path variable
       BaseOutput<Supplier> response =
-              BaseOutput.<Supplier>builder()
-                      .status(ResponseStatus.FAILED)
-                      .errors(List.of(HrmConstant.ERROR.REQUEST.INVALID_PATH_VARIABLE))
-                      .build();
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response); // Return BAD_REQUEST response
+          BaseOutput.<Supplier>builder()
+              .status(ResponseStatus.FAILED)
+              .errors(List.of(HrmConstant.ERROR.REQUEST.INVALID_PATH_VARIABLE))
+              .build();
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body(response); // Return BAD_REQUEST response
     }
 
     // Retrieve supplier by ID
@@ -75,11 +76,11 @@ public class StaffSupplierController {
 
     // Construct response object with supplier data
     BaseOutput<Supplier> response =
-            BaseOutput.<Supplier>builder()
-                    .message(HttpStatus.OK.toString())
-                    .data(supplier) // Attach supplier data
-                    .status(ResponseStatus.SUCCESS) // Set response status to SUCCESS
-                    .build();
+        BaseOutput.<Supplier>builder()
+            .message(HttpStatus.OK.toString())
+            .data(supplier) // Attach supplier data
+            .status(ResponseStatus.SUCCESS) // Set response status to SUCCESS
+            .build();
 
     // Return response with status OK
     return ResponseEntity.ok(response);
@@ -89,17 +90,18 @@ public class StaffSupplierController {
   // Create new Supplier
   @PostMapping()
   protected ResponseEntity<BaseOutput<Supplier>> create(
-          @RequestBody @NotNull(message = "error.request.body.invalid") Supplier supplier) {
+      @RequestBody @NotNull(message = "error.request.body.invalid") Supplier supplier) {
 
     // Check if the supplier object is null
     if (supplier == null) {
       // Create response indicating invalid request body
       BaseOutput<Supplier> response =
-              BaseOutput.<Supplier>builder()
-                      .errors(List.of(HrmConstant.ERROR.REQUEST.INVALID_BODY))
-                      .status(ResponseStatus.FAILED) // Set response status to FAILED
-                      .build();
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response); // Return BAD_REQUEST response
+          BaseOutput.<Supplier>builder()
+              .errors(List.of(HrmConstant.ERROR.REQUEST.INVALID_BODY))
+              .status(ResponseStatus.FAILED) // Set response status to FAILED
+              .build();
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body(response); // Return BAD_REQUEST response
     }
 
     // Call service to create a new supplier
@@ -107,11 +109,11 @@ public class StaffSupplierController {
 
     // Construct response object with created supplier data
     BaseOutput<Supplier> response =
-            BaseOutput.<Supplier>builder()
-                    .message(HttpStatus.OK.toString())
-                    .data(createdSupplier) // Attach newly created supplier data
-                    .status(ResponseStatus.SUCCESS) // Set response status to SUCCESS
-                    .build();
+        BaseOutput.<Supplier>builder()
+            .message(HttpStatus.OK.toString())
+            .data(createdSupplier) // Attach newly created supplier data
+            .status(ResponseStatus.SUCCESS) // Set response status to SUCCESS
+            .build();
 
     // Return response with status OK
     return ResponseEntity.ok(response);
@@ -121,18 +123,19 @@ public class StaffSupplierController {
   // Update Supplier
   @PutMapping("/{id}")
   protected ResponseEntity<BaseOutput<Supplier>> update(
-          @PathVariable("id") Long id,
-          @RequestBody @NotNull(message = "error.request.body.invalid") Supplier supplier) {
+      @PathVariable("id") Long id,
+      @RequestBody @NotNull(message = "error.request.body.invalid") Supplier supplier) {
 
     // Check if the provided ID is less than or equal to zero
     if (id <= 0 || id == null) {
       // Create response indicating invalid path variable
       BaseOutput<Supplier> response =
-              BaseOutput.<Supplier>builder()
-                      .status(ResponseStatus.FAILED)
-                      .errors(List.of(HrmConstant.ERROR.REQUEST.INVALID_PATH_VARIABLE))
-                      .build();
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response); // Return BAD_REQUEST response
+          BaseOutput.<Supplier>builder()
+              .status(ResponseStatus.FAILED)
+              .errors(List.of(HrmConstant.ERROR.REQUEST.INVALID_PATH_VARIABLE))
+              .build();
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body(response); // Return BAD_REQUEST response
     }
 
     supplier.setId(id); // Set the ID of the supplier to update
@@ -141,11 +144,11 @@ public class StaffSupplierController {
 
     // Construct response object with updated supplier data
     BaseOutput<Supplier> response =
-            BaseOutput.<Supplier>builder()
-                    .message(HttpStatus.OK.toString())
-                    .data(updatedSupplier) // Attach updated supplier data
-                    .status(ResponseStatus.SUCCESS) // Set response status to SUCCESS
-                    .build();
+        BaseOutput.<Supplier>builder()
+            .message(HttpStatus.OK.toString())
+            .data(updatedSupplier) // Attach updated supplier data
+            .status(ResponseStatus.SUCCESS) // Set response status to SUCCESS
+            .build();
 
     // Return response with status OK
     return ResponseEntity.ok(response);
@@ -159,11 +162,12 @@ public class StaffSupplierController {
     if (id <= 0 || id == null) {
       // Create response indicating invalid path variable
       BaseOutput<String> response =
-              BaseOutput.<String>builder()
-                      .status(ResponseStatus.FAILED)
-                      .errors(List.of(HrmConstant.ERROR.REQUEST.INVALID_PATH_VARIABLE))
-                      .build();
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response); // Return BAD_REQUEST response
+          BaseOutput.<String>builder()
+              .status(ResponseStatus.FAILED)
+              .errors(List.of(HrmConstant.ERROR.REQUEST.INVALID_PATH_VARIABLE))
+              .build();
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body(response); // Return BAD_REQUEST response
     }
 
     // Call service to delete the supplier by ID
@@ -171,10 +175,9 @@ public class StaffSupplierController {
 
     // Construct response object indicating successful deletion
     return ResponseEntity.ok(
-            BaseOutput.<String>builder()
-                    .data(HttpStatus.OK.toString()) // Response data
-                    .status(ResponseStatus.SUCCESS) // Set response status to SUCCESS
-                    .build());
+        BaseOutput.<String>builder()
+            .data(HttpStatus.OK.toString()) // Response data
+            .status(ResponseStatus.SUCCESS) // Set response status to SUCCESS
+            .build());
   }
-
 }

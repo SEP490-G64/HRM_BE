@@ -10,7 +10,6 @@ import com.example.hrm_be.services.UserService;
 import jakarta.validation.constraints.NotNull;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
@@ -35,25 +34,29 @@ public class AdminUserController {
   // Retrieve a list of users with paging, sorting, and searching by name
   @GetMapping("")
   public ResponseEntity<BaseOutput<List<User>>> getAllByPaging(
-          @RequestParam(defaultValue = "0") int page, // Page number for pagination
-          @RequestParam(defaultValue = "10") int size, // Size of each page
-          @RequestParam(required = false, defaultValue = "id") String sortBy, // Sort by specified field
-          @RequestParam(required = false, defaultValue = "ASC") String sortDirection, // Sort direction (ASC or DESC)
-          @RequestParam(required = false, defaultValue = "") String keyword) { // Search keyword for filtering
+      @RequestParam(defaultValue = "0") int page, // Page number for pagination
+      @RequestParam(defaultValue = "10") int size, // Size of each page
+      @RequestParam(required = false, defaultValue = "id") String sortBy, // Sort by specified field
+      @RequestParam(required = false, defaultValue = "ASC")
+          String sortDirection, // Sort direction (ASC or DESC)
+      @RequestParam(required = false, defaultValue = "")
+          String keyword) { // Search keyword for filtering
     // Call the user service to get paginated user data
     Page<User> userPage = userService.getByPaging(page, size, sortBy, sortDirection, keyword);
 
     // Create a response object containing the user data and metadata
     BaseOutput<List<User>> response =
-            BaseOutput.<List<User>>builder()
-                    .message(HttpStatus.OK.toString()) // Set response message to OK
-                    .totalPages(userPage.getTotalPages()) // Total number of pages
-                    .currentPage(page) // Current page number
-                    .pageSize(size) // Size of the page
-                    .total(userPage.getTotalElements()) // Total number of users
-                    .data(userPage.getContent()) // List of users in the current page
-                    .status(com.example.hrm_be.commons.enums.ResponseStatus.SUCCESS) // Set response status to SUCCESS
-                    .build();
+        BaseOutput.<List<User>>builder()
+            .message(HttpStatus.OK.toString()) // Set response message to OK
+            .totalPages(userPage.getTotalPages()) // Total number of pages
+            .currentPage(page) // Current page number
+            .pageSize(size) // Size of the page
+            .total(userPage.getTotalElements()) // Total number of users
+            .data(userPage.getContent()) // List of users in the current page
+            .status(
+                com.example.hrm_be.commons.enums.ResponseStatus
+                    .SUCCESS) // Set response status to SUCCESS
+            .build();
 
     // Return the response entity with a status of OK
     return ResponseEntity.ok(response);
@@ -62,20 +65,23 @@ public class AdminUserController {
   // GET: /api/v1/admin/user
   // Retrieve a list of registration requests
   @GetMapping("/registration-requests")
-  public ResponseEntity<BaseOutput<List<User>>> getRegistrationRequests(@RequestParam(defaultValue = "0") int page) {
+  public ResponseEntity<BaseOutput<List<User>>> getRegistrationRequests(
+      @RequestParam(defaultValue = "0") int page) {
     // Call the user service to get paginated registration request data
     Page<User> userPage = userService.getRegistrationRequests();
 
     // Create a response object containing the registration request data and metadata
     BaseOutput<List<User>> response =
-            BaseOutput.<List<User>>builder()
-                    .message(HttpStatus.OK.toString()) // Set response message to OK
-                    .totalPages(userPage.getTotalPages()) // Total number of pages
-                    .currentPage(page) // Current page number
-                    .total(userPage.getTotalElements()) // Total number of registration requests
-                    .data(userPage.getContent()) // List of registration requests in the current page
-                    .status(com.example.hrm_be.commons.enums.ResponseStatus.SUCCESS) // Set response status to SUCCESS
-                    .build();
+        BaseOutput.<List<User>>builder()
+            .message(HttpStatus.OK.toString()) // Set response message to OK
+            .totalPages(userPage.getTotalPages()) // Total number of pages
+            .currentPage(page) // Current page number
+            .total(userPage.getTotalElements()) // Total number of registration requests
+            .data(userPage.getContent()) // List of registration requests in the current page
+            .status(
+                com.example.hrm_be.commons.enums.ResponseStatus
+                    .SUCCESS) // Set response status to SUCCESS
+            .build();
 
     // Return the response entity with a status of OK
     return ResponseEntity.ok(response);
@@ -85,14 +91,18 @@ public class AdminUserController {
   // Retrieve a user by their ID
   @GetMapping("/{id}")
   public ResponseEntity<BaseOutput<User>> getById(
-          @PathVariable("id") @NotNull(message = "error.request.path.variable.id.invalid") Long id) { // Validate ID input
+      @PathVariable("id") @NotNull(message = "error.request.path.variable.id.invalid")
+          Long id) { // Validate ID input
     if (id == null) { // Check if ID is null
       BaseOutput<User> response =
-              BaseOutput.<User>builder()
-                      .status(com.example.hrm_be.commons.enums.ResponseStatus.FAILED.FAILED) // Set response status to FAILED
-                      .errors(List.of(REQUEST.INVALID_PATH_VARIABLE)) // Add error message for invalid ID
-                      .build();
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response); // Return BAD_REQUEST status
+          BaseOutput.<User>builder()
+              .status(
+                  com.example.hrm_be.commons.enums.ResponseStatus.FAILED
+                      .FAILED) // Set response status to FAILED
+              .errors(List.of(REQUEST.INVALID_PATH_VARIABLE)) // Add error message for invalid ID
+              .build();
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body(response); // Return BAD_REQUEST status
     }
 
     // Call user service to get user by ID
@@ -100,11 +110,13 @@ public class AdminUserController {
 
     // Create response object containing the retrieved user
     BaseOutput<User> response =
-            BaseOutput.<User>builder()
-                    .message(HttpStatus.OK.toString()) // Set response message to OK
-                    .data(user) // Attach the user data
-                    .status(com.example.hrm_be.commons.enums.ResponseStatus.SUCCESS) // Set response status to SUCCESS
-                    .build();
+        BaseOutput.<User>builder()
+            .message(HttpStatus.OK.toString()) // Set response message to OK
+            .data(user) // Attach the user data
+            .status(
+                com.example.hrm_be.commons.enums.ResponseStatus
+                    .SUCCESS) // Set response status to SUCCESS
+            .build();
 
     // Return the response entity with a status of OK
     return ResponseEntity.ok(response);
@@ -114,11 +126,15 @@ public class AdminUserController {
   // Admin retrieves a user by their email
   @GetMapping("/email/{email}")
   public ResponseEntity<BaseOutput<User>> getByEmail(
-          @PathVariable("email") @NotNull(message = REQUEST.INVALID_PATH_VARIABLE) String email) { // Validate email input
+      @PathVariable("email") @NotNull(message = REQUEST.INVALID_PATH_VARIABLE)
+          String email) { // Validate email input
     if (StringUtils.isAllBlank(email)) { // Check if email is blank
       BaseOutput<User> response =
-              BaseOutput.<User>builder().errors(List.of(REQUEST.INVALID_PATH_VARIABLE)).build(); // Create error response
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response); // Return BAD_REQUEST status
+          BaseOutput.<User>builder()
+              .errors(List.of(REQUEST.INVALID_PATH_VARIABLE))
+              .build(); // Create error response
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body(response); // Return BAD_REQUEST status
     }
 
     // Call user service to get user by email
@@ -126,7 +142,7 @@ public class AdminUserController {
 
     // Create response object containing the retrieved user
     BaseOutput<User> response =
-            BaseOutput.<User>builder().message(HttpStatus.OK.toString()).data(user).build();
+        BaseOutput.<User>builder().message(HttpStatus.OK.toString()).data(user).build();
 
     // Return the response entity with a status of OK
     return ResponseEntity.ok(response);
@@ -136,11 +152,15 @@ public class AdminUserController {
   // Admin creates a new user
   @PostMapping
   public ResponseEntity<BaseOutput<User>> create(
-          @RequestBody @NotNull(message = "error.request.body.invalid") UserCreateRequest user) { // Validate user object
+      @RequestBody @NotNull(message = "error.request.body.invalid")
+          UserCreateRequest user) { // Validate user object
     if (user == null) { // Check if user is null
       BaseOutput<User> response =
-              BaseOutput.<User>builder().errors(List.of(REQUEST.INVALID_BODY)).build(); // Create error response
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response); // Return BAD_REQUEST status
+          BaseOutput.<User>builder()
+              .errors(List.of(REQUEST.INVALID_BODY))
+              .build(); // Create error response
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body(response); // Return BAD_REQUEST status
     }
 
     // Call user service to create a new user
@@ -148,7 +168,7 @@ public class AdminUserController {
 
     // Create response object containing the created user
     BaseOutput<User> response =
-            BaseOutput.<User>builder().message(HttpStatus.OK.toString()).data(createdUser).build();
+        BaseOutput.<User>builder().message(HttpStatus.OK.toString()).data(createdUser).build();
 
     // Return the response entity with a status of OK
     return ResponseEntity.ok(response);
@@ -158,12 +178,16 @@ public class AdminUserController {
   // Admin updates a user by ID
   @PutMapping("/{id}")
   public ResponseEntity<BaseOutput<User>> update(
-          @PathVariable("id") @NotNull(message = "error.request.path.variable.id.invalid") Long id,
-          @RequestBody @NotNull(message = "error.request.body.invalid") UserUpdateRequest user) { // Validate user object
+      @PathVariable("id") @NotNull(message = "error.request.path.variable.id.invalid") Long id,
+      @RequestBody @NotNull(message = "error.request.body.invalid")
+          UserUpdateRequest user) { // Validate user object
     if (id == null) { // Check if ID is null
       BaseOutput<User> response =
-              BaseOutput.<User>builder().errors(List.of(REQUEST.INVALID_PATH_VARIABLE)).build(); // Create error response
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response); // Return BAD_REQUEST status
+          BaseOutput.<User>builder()
+              .errors(List.of(REQUEST.INVALID_PATH_VARIABLE))
+              .build(); // Create error response
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body(response); // Return BAD_REQUEST status
     }
 
     // Set the user ID for the update operation
@@ -174,7 +198,7 @@ public class AdminUserController {
 
     // Create response object containing the updated user
     BaseOutput<User> response =
-            BaseOutput.<User>builder().message(HttpStatus.OK.toString()).data(createdBid).build();
+        BaseOutput.<User>builder().message(HttpStatus.OK.toString()).data(createdBid).build();
 
     // Return the response entity with a status of OK
     return ResponseEntity.ok(response);
@@ -184,11 +208,15 @@ public class AdminUserController {
   // Admin deletes a user by ID
   @DeleteMapping("/{id}")
   public ResponseEntity<BaseOutput<String>> delete(
-          @PathVariable("id") @NotNull(message = "error.request.path.variable.id.invalid") Long id) { // Validate ID input
+      @PathVariable("id") @NotNull(message = "error.request.path.variable.id.invalid")
+          Long id) { // Validate ID input
     if (id <= 0) { // Check if ID is less than or equal to zero
       BaseOutput<String> response =
-              BaseOutput.<String>builder().errors(List.of(REQUEST.INVALID_PATH_VARIABLE)).build(); // Create error response
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response); // Return BAD_REQUEST status
+          BaseOutput.<String>builder()
+              .errors(List.of(REQUEST.INVALID_PATH_VARIABLE))
+              .build(); // Create error response
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body(response); // Return BAD_REQUEST status
     }
 
     // Call user service to delete the user by ID
@@ -202,14 +230,15 @@ public class AdminUserController {
   // Admin deletes multiple users by IDs
   @DeleteMapping()
   public ResponseEntity<BaseOutput<String>> deleteByIds(
-          @RequestBody @NotNull(message = "error.id.invalid") List<Long> ids) { // Validate list of IDs
+      @RequestBody @NotNull(message = "error.id.invalid") List<Long> ids) { // Validate list of IDs
     if (ids == null) { // Check if IDs list is null
       BaseOutput<String> response =
-              BaseOutput.<String>builder()
-                      .message("error.id.invalid") // Set error message
-                      .errors(List.of(REQUEST.INVALID_BODY)) // Add error for invalid body
-                      .build();
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response); // Return BAD_REQUEST status
+          BaseOutput.<String>builder()
+              .message("error.id.invalid") // Set error message
+              .errors(List.of(REQUEST.INVALID_BODY)) // Add error for invalid body
+              .build();
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body(response); // Return BAD_REQUEST status
     }
 
     // Call user service to delete multiple users by IDs
@@ -217,7 +246,7 @@ public class AdminUserController {
 
     // Create response object confirming deletion
     return ResponseEntity.ok(
-            BaseOutput.<String>builder().message(HttpStatus.OK.toString()).build());
+        BaseOutput.<String>builder().message(HttpStatus.OK.toString()).build());
   }
 
   // POST: /api/v1/admin/user/activate/{id}
@@ -236,10 +265,10 @@ public class AdminUserController {
 
     // Create a response object containing the verified user
     BaseOutput<User> response =
-            BaseOutput.<User>builder()
-                    .message(HttpStatus.OK.toString()) // Set the response message to OK
-                    .data(activateUser) // Attach the activate user data
-                    .build();
+        BaseOutput.<User>builder()
+            .message(HttpStatus.OK.toString()) // Set the response message to OK
+            .data(activateUser) // Attach the activate user data
+            .build();
 
     // Return a response entity with status OK and the activate/deactivate user data
     return ResponseEntity.ok(response);
@@ -248,8 +277,8 @@ public class AdminUserController {
   // POST: /api/v1/auth/verify-user/{id}
   // Admin approve user registration request
   @PostMapping("/verify-user/{id}")
-  public ResponseEntity<BaseOutput<User>> verifyUser(@PathVariable("id") Long id,
-                                                     @RequestParam boolean accept) {
+  public ResponseEntity<BaseOutput<User>> verifyUser(
+      @PathVariable("id") Long id, @RequestParam boolean accept) {
 
     // Check if the provided user ID is null
     if (id == null) {
@@ -262,13 +291,12 @@ public class AdminUserController {
 
     // Create a response object containing the verified user
     BaseOutput<User> response =
-            BaseOutput.<User>builder()
-                    .message(HttpStatus.OK.toString()) // Set the response message to OK
-                    .data(verifiedUser) // Attach the verified user data
-                    .build();
+        BaseOutput.<User>builder()
+            .message(HttpStatus.OK.toString()) // Set the response message to OK
+            .data(verifiedUser) // Attach the verified user data
+            .build();
 
     // Return a response entity with status OK and the verified user data
     return ResponseEntity.ok(response);
   }
-
 }

@@ -41,7 +41,7 @@ public class AuthenticationController {
     try {
       // Authenticate user credentials
       authenticationManager.authenticate(
-              new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+          new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
     } catch (BadCredentialsException e) {
       // Throw exception if credentials are invalid
       throw new JwtAuthenticationException("error.auth.invalid.credentials");
@@ -53,14 +53,15 @@ public class AuthenticationController {
     // Check if user not has admin role and account status not activate
     if (!userDetails.getRoles().stream()
             .anyMatch(role -> role.getType() != null && role.getType().isAdmin())
-            && !Objects.equals(userDetails.getStatus(), UserStatusType.ACTIVATE.toString())) {
+        && !Objects.equals(userDetails.getStatus(), UserStatusType.ACTIVATE.toString())) {
 
       // Return a Bad Request response with message about account not being activated
       return ResponseEntity.status(HttpStatus.BAD_REQUEST) // Change the status to BAD_REQUEST
-              .body(BaseOutput.<AccessToken>builder()
-                      .message("Account not activated, unable to login.") // Descriptive message
-                      .data(null) // Do not return AccessToken
-                      .build());
+          .body(
+              BaseOutput.<AccessToken>builder()
+                  .message("Account not activated, unable to login.") // Descriptive message
+                  .data(null) // Do not return AccessToken
+                  .build());
     }
 
     // Generate JWT token for authenticated user
@@ -68,7 +69,8 @@ public class AuthenticationController {
     AccessToken accessToken = AccessToken.builder().accessToken(jwt).build();
 
     // Return successful response with AccessToken
-    BaseOutput<AccessToken> response = BaseOutput.<AccessToken>builder()
+    BaseOutput<AccessToken> response =
+        BaseOutput.<AccessToken>builder()
             .message(HttpStatus.OK.toString())
             .data(accessToken)
             .build();
@@ -91,10 +93,10 @@ public class AuthenticationController {
 
     // Create a response object containing the newly created user
     BaseOutput<User> response =
-            BaseOutput.<User>builder()
-                    .message(HttpStatus.OK.toString()) // Set the response message to OK
-                    .data(newUser) // Attach the newly created user data
-                    .build();
+        BaseOutput.<User>builder()
+            .message(HttpStatus.OK.toString()) // Set the response message to OK
+            .data(newUser) // Attach the newly created user data
+            .build();
 
     // Return a response entity with status OK and the user data
     return ResponseEntity.ok(response);

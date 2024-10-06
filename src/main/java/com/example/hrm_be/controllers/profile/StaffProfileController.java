@@ -1,7 +1,6 @@
 package com.example.hrm_be.controllers.profile;
 
 import com.example.hrm_be.commons.constants.HrmConstant;
-import com.example.hrm_be.models.dtos.Branch;
 import com.example.hrm_be.models.dtos.User;
 import com.example.hrm_be.models.requests.user.UserUpdateRequest;
 import com.example.hrm_be.models.responses.BaseOutput;
@@ -24,50 +23,50 @@ import java.util.List;
 @Tag(name = "Admin-Users API")
 @SecurityRequirement(name = "Authorization")
 public class StaffProfileController {
-    private final UserService userService;
+  private final UserService userService;
 
-    // GET: /api/v1/staff/profile
-    // Retrieve user profile data
-    @GetMapping
-    protected ResponseEntity<BaseOutput<User>> getProfile() {
-        //Get email of logged in user
-        String email = userService.getAuthenticatedUserEmail();
-        if (email == null) {
-            BaseOutput<User> response =
-                    BaseOutput.<User>builder()
-                            .status(com.example.hrm_be.commons.enums.ResponseStatus.FAILED)
-                            .errors(List.of(HrmConstant.ERROR.REQUEST.INVALID_PATH_VARIABLE))
-                            .build();
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-        }
-
-        //Get detailed data of logged in user
-        User user = userService.findLoggedInfoByEmail(email);
-
-        BaseOutput<User> response =
-                BaseOutput.<User>builder()
-                        .message(HttpStatus.OK.toString())
-                        .data(user)
-                        .status(com.example.hrm_be.commons.enums.ResponseStatus.SUCCESS)
-                        .build();
-        return ResponseEntity.ok(response);
+  // GET: /api/v1/staff/profile
+  // Retrieve user profile data
+  @GetMapping
+  protected ResponseEntity<BaseOutput<User>> getProfile() {
+    // Get email of logged in user
+    String email = userService.getAuthenticatedUserEmail();
+    if (email == null) {
+      BaseOutput<User> response =
+          BaseOutput.<User>builder()
+              .status(com.example.hrm_be.commons.enums.ResponseStatus.FAILED)
+              .errors(List.of(HrmConstant.ERROR.REQUEST.INVALID_PATH_VARIABLE))
+              .build();
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
-    // PUT: /api/v1/staff/profile
-    // Update user profile data
-    @PutMapping
-    protected ResponseEntity<BaseOutput<User>> updateProfile(
-            @RequestBody @NotNull(message = "error.request.body.invalid") UserUpdateRequest user) {
-        // Update profile
-        User updateUser = userService.update(user, true);
+    // Get detailed data of logged in user
+    User user = userService.findLoggedInfoByEmail(email);
 
-        // Build the response with the updated profile data
-        BaseOutput<User> response =
-                BaseOutput.<User>builder()
-                        .message(HttpStatus.OK.toString())
-                        .data(updateUser)
-                        .status(com.example.hrm_be.commons.enums.ResponseStatus.SUCCESS)
-                        .build();
-        return ResponseEntity.ok(response);
-    }
+    BaseOutput<User> response =
+        BaseOutput.<User>builder()
+            .message(HttpStatus.OK.toString())
+            .data(user)
+            .status(com.example.hrm_be.commons.enums.ResponseStatus.SUCCESS)
+            .build();
+    return ResponseEntity.ok(response);
+  }
+
+  // PUT: /api/v1/staff/profile
+  // Update user profile data
+  @PutMapping
+  protected ResponseEntity<BaseOutput<User>> updateProfile(
+      @RequestBody @NotNull(message = "error.request.body.invalid") UserUpdateRequest user) {
+    // Update profile
+    User updateUser = userService.update(user, true);
+
+    // Build the response with the updated profile data
+    BaseOutput<User> response =
+        BaseOutput.<User>builder()
+            .message(HttpStatus.OK.toString())
+            .data(updateUser)
+            .status(com.example.hrm_be.commons.enums.ResponseStatus.SUCCESS)
+            .build();
+    return ResponseEntity.ok(response);
+  }
 }

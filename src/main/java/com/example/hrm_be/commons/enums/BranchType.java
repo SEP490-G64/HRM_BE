@@ -1,6 +1,5 @@
 package com.example.hrm_be.commons.enums;
 
-import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum BranchType {
   MAIN("Trụ sở chính"),
