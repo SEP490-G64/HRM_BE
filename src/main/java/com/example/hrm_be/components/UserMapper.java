@@ -71,19 +71,22 @@ public class UserMapper {
                                 .map(urm -> roleMapper.toDTO(urm))
                                 .collect(Collectors.toList())
                             : null)
-                    .branch(
-                        e.getBranch() != null
-                            ? new Branch()
-                                .setId(e.getBranch().getId())
-                                .setBranchName(e.getBranch().getBranchName())
-                                .setLocation(e.getBranch().getLocation())
-                                .setBranchType(e.getBranch().getBranchType())
-                            : null)
                     .status(String.valueOf(e.getStatus()))
                     .createdDate(e.getCreatedDate())
                     .build())
         .orElse(null);
   }
+
+    public User convertToDtoWithBranch(UserEntity entity) {
+        return Optional.ofNullable(entity)
+                .map(this::convertToDto)
+                .map(
+                        e ->
+                                e.toBuilder()
+                                        .branch(entity.getBranch() != null ? branchMapper.convertToDTOBasicInfo(entity.getBranch()) : null)
+                                        .build())
+                .orElse(null);
+    }
 
   // Convert UserCreateRequest to UserEntity
   public UserEntity toEntity(UserCreateRequest dto) {

@@ -130,7 +130,7 @@ public class UserServiceImpl implements UserService {
     // Retrieve user by ID and map to DTO
     return Optional.ofNullable(id)
         .flatMap(e -> userRepository.findById(id))
-        .map(userMapper::toDTO)
+        .map(userMapper::convertToDtoWithBranch)
         .orElse(null); // Return null if user not found
   }
 
