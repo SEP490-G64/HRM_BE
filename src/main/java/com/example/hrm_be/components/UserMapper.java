@@ -1,7 +1,6 @@
 package com.example.hrm_be.components;
 
 import com.example.hrm_be.commons.enums.UserStatusType;
-import com.example.hrm_be.models.dtos.Branch;
 import com.example.hrm_be.models.dtos.User;
 import com.example.hrm_be.models.entities.BranchEntity;
 import com.example.hrm_be.models.entities.UserEntity;
@@ -77,16 +76,19 @@ public class UserMapper {
         .orElse(null);
   }
 
-    public User convertToDtoWithBranch(UserEntity entity) {
-        return Optional.ofNullable(entity)
-                .map(this::convertToDto)
-                .map(
-                        e ->
-                                e.toBuilder()
-                                        .branch(entity.getBranch() != null ? branchMapper.convertToDTOBasicInfo(entity.getBranch()) : null)
-                                        .build())
-                .orElse(null);
-    }
+  public User convertToDtoWithBranch(UserEntity entity) {
+    return Optional.ofNullable(entity)
+        .map(this::convertToDto)
+        .map(
+            e ->
+                e.toBuilder()
+                    .branch(
+                        entity.getBranch() != null
+                            ? branchMapper.convertToDTOBasicInfo(entity.getBranch())
+                            : null)
+                    .build())
+        .orElse(null);
+  }
 
   // Convert UserCreateRequest to UserEntity
   public UserEntity toEntity(UserCreateRequest dto) {

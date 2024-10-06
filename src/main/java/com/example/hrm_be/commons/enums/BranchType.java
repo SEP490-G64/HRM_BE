@@ -1,6 +1,5 @@
 package com.example.hrm_be.commons.enums;
 
-
 public enum BranchType {
   MAIN("Trụ sở chính"),
   SUB("Chi nhánh");
