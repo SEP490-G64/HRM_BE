@@ -6,23 +6,18 @@ public enum BranchType {
   MAIN("Trụ sở chính"),
   SUB("Chi nhánh");
 
-  private final String value;
+  private final String displayName;
 
-  BranchType(String value) {
-    this.value = value;
+  BranchType(String displayName) {
+    this.displayName = displayName;
   }
 
-  @JsonValue
-  public String getValue() {
-    return value;
+  public String getDisplayName() {
+    return displayName;
   }
 
-  public static BranchType fromValue(String value) {
-    for (BranchType type : BranchType.values()) {
-      if (type.value.equalsIgnoreCase(value)) {
-        return type;
-      }
-    }
-    throw new IllegalArgumentException("Unknown value: " + value);
+  @Override
+  public String toString() {
+    return displayName;
   }
 }

@@ -1,5 +1,6 @@
 package com.example.hrm_be.configs.inits;
 
+import com.example.hrm_be.commons.enums.UserStatusType;
 import com.example.hrm_be.models.dtos.Role;
 import com.example.hrm_be.models.dtos.User;
 import com.example.hrm_be.services.RoleService;
@@ -11,6 +12,8 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+
+import java.time.LocalDateTime;
 
 @Slf4j
 @Component
@@ -67,7 +70,7 @@ public class CommonInitializer implements ApplicationRunner {
             .email("dsdadmin@gmail.com")
             .password("Abcd1234")
             .userName("dsdadmin")
-            .phone("")
+            .status(UserStatusType.ACTIVATE.toString())
             .build();
     User createdAdminUser = userService.createAdmin(newAdminUser);
     log.info(

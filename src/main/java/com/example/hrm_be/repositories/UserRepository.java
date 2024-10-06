@@ -1,5 +1,7 @@
 package com.example.hrm_be.repositories;
 
+import com.example.hrm_be.commons.enums.UserStatusType;
+import com.example.hrm_be.models.dtos.User;
 import com.example.hrm_be.models.entities.RoleEntity;
 import com.example.hrm_be.models.entities.UserEntity;
 import java.util.List;
@@ -21,8 +23,15 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
   boolean existsByUserName(String username);
 
-  @Query("SELECT u FROM UserEntity u WHERE u.userName LIKE %:keyword% OR u.email LIKE %:keyword%")
-  Page<UserEntity> findByKeyword(String keyword, Pageable pageable);
+  @Query("SELECT u FROM UserEntity u " +
+          "WHERE (LOWER(u.userName) LIKE LOWER(CONCAT('%', :searchKeyword, '%')) " +
+          "OR LOWER(u.email) LIKE LOWER(CONCAT('%', :searchKeyword, '%')) " +
+          "OR LOWER(u.firstName) LIKE LOWER(CONCAT('%', :searchKeyword, '%')) " +
+          "OR LOWER(u.lastName) LIKE LOWER(CONCAT('%', :searchKeyword, '%'))) " +
+          "AND (u.status <> :status)")
+  Page<UserEntity> searchUsers(String searchKeyword, UserStatusType status, Pageable pageable);
+
+  Page<UserEntity> findByStatus(UserStatusType status, Pageable pageable);
 
   @Modifying
   @Transactional

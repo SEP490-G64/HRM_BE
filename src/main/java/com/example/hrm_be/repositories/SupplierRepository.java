@@ -10,5 +10,5 @@ import org.springframework.stereotype.Repository;
 public interface SupplierRepository extends JpaRepository<SupplierEntity, Long> {
   boolean existsBySupplierNameAndAddress(String name, String address);
 
-  Page<SupplierEntity> findBySupplierNameContainsIgnoreCase(String name, Pageable pageable);
+  Page<SupplierEntity> findBySupplierNameContainsIgnoreCaseOrAddressContainsIgnoreCase(String searchSupplier, String searchName, Pageable pageable);
 }
