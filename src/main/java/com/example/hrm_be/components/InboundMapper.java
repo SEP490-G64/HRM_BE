@@ -38,6 +38,7 @@ public class InboundMapper {
                     .createdBy(
                         d.getCreatedBy() != null ? userMapper.toEntity(d.getCreatedBy()) : null)
                     .createdDate(d.getCreatedDate())
+                    .inboundDate(d.getInboundDate())
                     .totalPrice(d.getTotalPrice())
                     .isApproved(d.getIsApproved())
                     .status(d.getStatus())
@@ -63,6 +64,7 @@ public class InboundMapper {
         .supplier(entity.getSupplier() != null ? supplierMapper.toDTO(entity.getSupplier()) : null)
         .createdBy(entity.getCreatedBy() != null ? userMapper.toDTO(entity.getCreatedBy()) : null)
         .createdDate(entity.getCreatedDate())
+        .inboundDate(entity.getInboundDate())
         .totalPrice(entity.getTotalPrice())
         .isApproved(entity.getIsApproved())
         .status(entity.getStatus())

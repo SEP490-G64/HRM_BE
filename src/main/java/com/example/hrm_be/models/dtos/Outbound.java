@@ -3,6 +3,7 @@ package com.example.hrm_be.models.dtos;
 import com.example.hrm_be.commons.enums.OutboundStatus;
 import com.example.hrm_be.commons.enums.OutboundType;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import jakarta.persistence.Column;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -37,13 +38,15 @@ public class Outbound {
 
   LocalDateTime createdDate;
 
+  LocalDateTime outboundDate;
+
   BigDecimal totalPrice;
 
   Boolean isApproved;
 
   User approvedBy;
 
-  OutboundStatus status; // Assume this is an Enum for "Chờ duyệt", "Đang xử lý", etc.
+  OutboundStatus status; // Enum for "Chờ duyệt", "Đang xử lý", etc.
 
   Boolean taxable;
 
