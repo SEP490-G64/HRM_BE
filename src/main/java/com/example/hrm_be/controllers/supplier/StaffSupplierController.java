@@ -5,6 +5,8 @@ import com.example.hrm_be.commons.enums.ResponseStatus;
 import com.example.hrm_be.models.dtos.Supplier;
 import com.example.hrm_be.models.responses.BaseOutput;
 import com.example.hrm_be.services.SupplierService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +21,8 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/staff/supplier")
+@Tag(name = "Admin-Users API")
+@SecurityRequirement(name = "Authorization")
 public class StaffSupplierController {
   private final SupplierService supplierService;
 

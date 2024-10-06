@@ -6,6 +6,8 @@ import com.example.hrm_be.models.dtos.User;
 import com.example.hrm_be.models.requests.user.UserUpdateRequest;
 import com.example.hrm_be.models.responses.BaseOutput;
 import com.example.hrm_be.services.UserService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +21,8 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/staff/profile")
+@Tag(name = "Admin-Users API")
+@SecurityRequirement(name = "Authorization")
 public class StaffProfileController {
     private final UserService userService;
 

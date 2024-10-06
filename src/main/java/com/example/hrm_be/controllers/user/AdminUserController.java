@@ -245,4 +245,30 @@ public class AdminUserController {
     return ResponseEntity.ok(response);
   }
 
+  // POST: /api/v1/auth/verify-user/{id}
+  // Admin approve user registration request
+  @PostMapping("/verify-user/{id}")
+  public ResponseEntity<BaseOutput<User>> verifyUser(@PathVariable("id") Long id,
+                                                     @RequestParam boolean accept) {
+
+    // Check if the provided user ID is null
+    if (id == null) {
+      // Throw an exception for invalid path variable
+      throw new HrmCommonException(REQUEST.INVALID_PATH_VARIABLE);
+    }
+
+    // Call the user service to verify the user based on the provided ID and acceptance status
+    User verifiedUser = userService.verifyUser(id, accept);
+
+    // Create a response object containing the verified user
+    BaseOutput<User> response =
+            BaseOutput.<User>builder()
+                    .message(HttpStatus.OK.toString()) // Set the response message to OK
+                    .data(verifiedUser) // Attach the verified user data
+                    .build();
+
+    // Return a response entity with status OK and the verified user data
+    return ResponseEntity.ok(response);
+  }
+
 }
