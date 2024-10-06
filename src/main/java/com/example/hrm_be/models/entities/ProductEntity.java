@@ -3,7 +3,6 @@ package com.example.hrm_be.models.entities;
 import com.example.hrm_be.commons.enums.ProductStatus;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
@@ -52,21 +51,15 @@ public class ProductEntity extends CommonEntity {
   String urlImage;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(
-      name = "manufacturer_id",
-      foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+  @JoinColumn(name = "manufacturer_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   ManufacturerEntity manufacturer;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(
-      name = "category_id",
-      foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+  @JoinColumn(name = "category_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   ProductCategoryEntity category;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(
-      name = "type_id",
-      foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+  @JoinColumn(name = "type_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   ProductTypeEntity type;
 
   @Column(name = "active_ingredient", length = 255, nullable = true)
@@ -86,9 +79,7 @@ public class ProductEntity extends CommonEntity {
   ProductStatus status; // Enum for "Còn hàng", "Hết hàng", "Ngừng kinh doanh"
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(
-      name = "base_unit_id",
-      foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+  @JoinColumn(name = "base_unit_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   UnitOfMeasurementEntity baseUnit;
 
   // One-to-Many Relationships

@@ -72,7 +72,6 @@ public class StaffProductController {
     return ResponseEntity.ok(response);
   }
 
-
   @GetMapping("type/{id}")
   protected ResponseEntity<BaseOutput<List<Product>>> getByPagingAndTypeId(
       @PathVariable("id") Long id,
