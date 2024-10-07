@@ -85,6 +85,9 @@ public class InboundEntity extends CommonEntity {
   @Column(name = "note")
   String note;
 
+  @Column(name = "inbound_date")
+  LocalDateTime inboundDate;
+
   @ToString.Exclude
   @OneToMany(mappedBy = "inbound", fetch = FetchType.LAZY)
   List<InboundDetailsEntity> inboundDetails;

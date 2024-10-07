@@ -27,6 +27,7 @@ import lombok.extern.jackson.Jacksonized;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Outbound {
   Long id;
+
   OutboundType outboundType; // Assume this is an Enum with values like "Bán hàng", "Trả hàng", etc.
 
   Branch fromBranch;
@@ -50,6 +51,8 @@ public class Outbound {
   String note;
 
   User createdBy;
+
+  LocalDateTime outboundDate;
 
   List<OutboundDetail> outboundDetails;
 }

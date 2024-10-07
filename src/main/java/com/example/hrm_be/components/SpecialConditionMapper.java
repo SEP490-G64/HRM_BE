@@ -1,7 +1,12 @@
 package com.example.hrm_be.components;
 
+import com.example.hrm_be.commons.enums.ConditionType;
 import com.example.hrm_be.models.dtos.SpecialCondition;
+import com.example.hrm_be.models.entities.ProductEntity;
 import com.example.hrm_be.models.entities.SpecialConditionEntity;
+import com.example.hrm_be.models.entities.SupplierEntity;
+import com.example.hrm_be.models.requests.specialCondition.SpecialConditionCreateRequest;
+import com.example.hrm_be.models.requests.specialCondition.SpecialConditionUpdateRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -40,5 +45,35 @@ public class SpecialConditionMapper {
         .conditionType(entity.getConditionType())
         .handlingInstruction(entity.getHandlingInstruction())
         .build();
+  }
+
+  // Convert SpecialConditionCreateRequest to SpecialConditionEntity
+  public SpecialConditionEntity toEntity(SpecialConditionCreateRequest dto, ProductEntity product) {
+    return Optional.ofNullable(dto)
+            .map(
+                    request -> {
+                      // Create SpecialConditionEntity from SpecialConditionCreateRequest
+                      return SpecialConditionEntity.builder()
+                              .product(product)
+                              .conditionType(ConditionType.valueOf(dto.getConditionType()))
+                              .handlingInstruction(dto.getHandlingInstruction())
+                              .build();
+                    })
+            .orElse(null);
+  }
+
+  // Convert SpecialConditionUpdateRequest to SpecialConditionEntity
+  public SpecialConditionEntity toEntity(SpecialConditionUpdateRequest dto, ProductEntity product) {
+    return Optional.ofNullable(dto)
+            .map(
+                    request -> {
+                      // Create SpecialConditionEntity from SpecialConditionUpdateRequest
+                      return SpecialConditionEntity.builder()
+                              .product(product)
+                              .conditionType(ConditionType.valueOf(dto.getConditionType()))
+                              .handlingInstruction(dto.getHandlingInstruction())
+                              .build();
+                    })
+            .orElse(null);
   }
 }

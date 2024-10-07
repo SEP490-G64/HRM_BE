@@ -49,5 +49,7 @@ public class Inbound {
 
   String note;
 
+  LocalDateTime inboundDate;
+
   List<InboundDetails> inboundDetails;
 }

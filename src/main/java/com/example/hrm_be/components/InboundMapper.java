@@ -43,6 +43,7 @@ public class InboundMapper {
                     .status(d.getStatus())
                     .taxable(d.getTaxable())
                     .note(d.getNote())
+                    .inboundDate(d.getInboundDate())
                     .inboundDetails(
                         d.getInboundDetails() != null
                             ? d.getInboundDetails().stream()
@@ -68,6 +69,7 @@ public class InboundMapper {
         .status(entity.getStatus())
         .taxable(entity.getTaxable())
         .note(entity.getNote())
+        .inboundDate(entity.getInboundDate())
         .inboundDetails(
             entity.getInboundDetails() != null
                 ? entity.getInboundDetails().stream()

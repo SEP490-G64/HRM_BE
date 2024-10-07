@@ -9,6 +9,7 @@ import com.example.hrm_be.components.UserMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.Role;
 import com.example.hrm_be.models.dtos.User;
+import com.example.hrm_be.models.entities.BranchEntity;
 import com.example.hrm_be.models.entities.UserEntity;
 import com.example.hrm_be.models.entities.UserRoleMapEntity;
 import com.example.hrm_be.models.requests.RegisterRequest;
@@ -26,6 +27,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import com.example.hrm_be.utils.PasswordGenerator;
+import jakarta.persistence.EntityManager;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -60,6 +62,7 @@ public class UserServiceImpl implements UserService {
 
   @Lazy @Autowired private PasswordEncoder passwordEncoder;
   @Autowired private EmailService emailService;
+  @Autowired private EntityManager entityManager;
 
   @Override
   public String getAuthenticatedUserEmail() throws UsernameNotFoundException {
@@ -155,8 +158,18 @@ public class UserServiceImpl implements UserService {
     // Encode the generated password
     String encodedPassword = passwordEncoder.encode(rawPassword);
 
-    return Optional.of(user)
-        .map(userMapper::toEntity)
+    BranchEntity branch;
+    if (user.getBranchId() != null) {
+      branch = entityManager.getReference(BranchEntity.class, user.getBranchId());
+      if (branch == null) {
+        throw new HrmCommonException("Branch not found with id: " + user.getBranchId());
+      }
+    } else {
+        branch = null;
+    }
+
+      return Optional.of(user)
+        .map(u -> userMapper.toEntity(u, branch))
         .map(
             e -> {
               e.setStatus(UserStatusType.ACTIVATE);
@@ -226,6 +239,16 @@ public class UserServiceImpl implements UserService {
       throw new HrmCommonException(USER.EXIST);
     }
 
+    BranchEntity branch;
+    if (user.getBranchId() != null) {
+      branch = entityManager.getReference(BranchEntity.class, user.getBranchId());
+      if (branch == null) {
+        throw new HrmCommonException("Branch not found with id: " + user.getBranchId());
+      }
+    } else {
+      branch = null;
+    }
+
     // Update user details and save
     return Optional.of(oldUserEntity)
         .map(
@@ -236,7 +259,8 @@ public class UserServiceImpl implements UserService {
                       .lastName(user.getLastName())
                       .phone(user.getPhone())
                       .userName(user.getUserName())
-                      .email(user.getEmail());
+                      .email(user.getEmail())
+                      .branch(branch);
 
               // Only set new status if status is not null
               if (user.getStatus() != null) {
@@ -366,8 +390,18 @@ public class UserServiceImpl implements UserService {
       throw new HrmCommonException(USER.NOT_MATCH_CONFIRM_PASSWORD);
     }
 
+    BranchEntity branch;
+    if (registerRequest.getBranchId() != null) {
+      branch = entityManager.getReference(BranchEntity.class, registerRequest.getBranchId());
+      if (branch == null) {
+        throw new HrmCommonException("Branch not found with id: " + registerRequest.getBranchId());
+      }
+    } else {
+      branch = null;
+    }
+
     return Optional.of(registerRequest)
-        .map(userMapper::toEntity)
+        .map(u -> userMapper.toEntity(u, branch))
         .map(
             e -> {
               e.setStatus(UserStatusType.PENDING);
@@ -385,6 +419,9 @@ public class UserServiceImpl implements UserService {
                 } else if (registerRequest.getRole() == 3) {
                   userRoleMapService.setAdminRoleForUser(e.getId());
                 }
+              }
+              else {
+                userRoleMapService.setStaffRoleForUser(e.getId());
               }
               return e;
             })

@@ -91,6 +91,9 @@ public class OutboundEntity extends CommonEntity {
   @Column(name = "note", columnDefinition = "TEXT", nullable = true)
   String note;
 
+  @Column(name = "outbound_date")
+  LocalDateTime outboundDate;
+
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(
       name = "created_by",

@@ -1,7 +1,12 @@
 package com.example.hrm_be.components;
 
 import com.example.hrm_be.models.dtos.OutboundDetail;
+import com.example.hrm_be.models.entities.BatchEntity;
+import com.example.hrm_be.models.entities.BranchBatchEntity;
 import com.example.hrm_be.models.entities.OutboundDetailEntity;
+import com.example.hrm_be.models.entities.OutboundEntity;
+import com.example.hrm_be.models.requests.outboundDetails.OutboundDetailsCreateRequest;
+import com.example.hrm_be.models.requests.outboundDetails.OutboundDetailsUpdateRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -42,5 +47,35 @@ public class OutboundDetailMapper {
         .batch(entity.getBatch() != null ? batchMapper.toDTO(entity.getBatch()) : null)
         .quantity(entity.getQuantity())
         .build();
+  }
+
+  // Convert OutboundDetailCreateRequest to OutboundDetailEntity
+  public OutboundDetailEntity toEntity(OutboundDetailsCreateRequest dto,
+                                       OutboundEntity outbound, BatchEntity batch) {
+    return Optional.ofNullable(dto)
+            .map(
+                    request -> {
+                      // Create OutboundDetailEntity from OutboundDetailCreateRequest
+                      return OutboundDetailEntity.builder()
+                              .outbound(outbound)
+                              .batch(batch)
+                              .quantity(dto.getQuantity())
+                              .build();
+                    })
+            .orElse(null);
+  }
+
+  // Convert OutboundDetailUpdateRequest to OutboundDetailEntity
+  public OutboundDetailEntity toEntity(OutboundDetailsUpdateRequest dto, BatchEntity batch) {
+    return Optional.ofNullable(dto)
+            .map(
+                    request -> {
+                      // Create OutboundDetailEntity from OutboundDetailUpdateRequest
+                      return OutboundDetailEntity.builder()
+                              .batch(batch)
+                              .quantity(dto.getQuantity())
+                              .build();
+                    })
+            .orElse(null);
   }
 }

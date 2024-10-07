@@ -1,7 +1,11 @@
 package com.example.hrm_be.components;
 
+import com.example.hrm_be.commons.enums.InboundStatus;
+import com.example.hrm_be.commons.enums.InboundType;
 import com.example.hrm_be.models.dtos.InboundDetails;
-import com.example.hrm_be.models.entities.InboundDetailsEntity;
+import com.example.hrm_be.models.entities.*;
+import com.example.hrm_be.models.requests.inboundDetails.InboundDetailsCreateRequest;
+import com.example.hrm_be.models.requests.inboundDetails.InboundDetailsUpdateRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -41,5 +45,35 @@ public class InboundDetailsMapper {
         .requestQuantity(entity.getRequestQuantity())
         .receiveQuantity(entity.getReceiveQuantity())
         .build();
+  }
+
+  // Convert InboundDetailsCreateRequest to InboundDetailsEntity
+  public InboundDetailsEntity toEntity(InboundDetailsCreateRequest dto, InboundEntity inbound, ProductEntity product) {
+    return Optional.ofNullable(dto)
+            .map(
+                    request -> {
+                      // Create InboundEntity from InboundDetailsCreateRequest
+                      return InboundDetailsEntity.builder()
+                              .inbound(inbound)
+                              .product(product)
+                              .requestQuantity(dto.getRequestQuantity())
+                              .receiveQuantity(dto.getReceiveQuantity())
+                              .build();
+                    })
+            .orElse(null);
+  }
+
+  // Convert InboundUpdateRequest to InboundDetailsEntity
+  public InboundDetailsEntity toEntity(InboundDetailsUpdateRequest dto) {
+    return Optional.ofNullable(dto)
+            .map(
+                    request -> {
+                      // Create InboundDetailsEntity from InboundDetailsUpdateRequest
+                      return InboundDetailsEntity.builder()
+                              .requestQuantity(dto.getRequestQuantity())
+                              .receiveQuantity(dto.getReceiveQuantity())
+                              .build();
+                    })
+            .orElse(null);
   }
 }

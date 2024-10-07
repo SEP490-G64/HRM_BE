@@ -91,22 +91,10 @@ public class UserMapper {
   }
 
   // Convert UserCreateRequest to UserEntity
-  public UserEntity toEntity(UserCreateRequest dto) {
+  public UserEntity toEntity(UserCreateRequest dto, BranchEntity branch) {
     return Optional.ofNullable(dto)
         .map(
             request -> {
-              BranchEntity branch = null;
-              if (dto.getBranchId() != null) {
-                // Find BranchEntity by branchId
-                branch =
-                    branchRepository
-                        .findById(request.getBranchId())
-                        .orElseThrow(
-                            () ->
-                                new RuntimeException(
-                                    "Branch not found with id: " + request.getBranchId()));
-              }
-
               // Create UserEntity from UserCreateRequest
               return UserEntity.builder()
                   .userName(request.getUserName())
@@ -121,23 +109,11 @@ public class UserMapper {
   }
 
   // Convert UserUpdateRequest to UserEntity
-  public UserEntity toEntity(UserUpdateRequest dto) {
+  public UserEntity toEntity(UserUpdateRequest dto, BranchEntity branch) {
     return Optional.ofNullable(dto)
         .map(
             request -> {
-              BranchEntity branch = null;
-              if (dto.getBranchId() != null) {
-                // Find BranchEntity by branchId
-                branch =
-                    branchRepository
-                        .findById(request.getBranchId())
-                        .orElseThrow(
-                            () ->
-                                new RuntimeException(
-                                    "Branch not found with id: " + request.getBranchId()));
-              }
-
-              // Create UserEntity from UserCreateRequest
+              // Create UserEntity from UserUpdateRequest
               return UserEntity.builder()
                   .userName(request.getUserName())
                   .email(request.getEmail())
@@ -152,23 +128,11 @@ public class UserMapper {
   }
 
   // Convert RegisterRequest to UserEntity
-  public UserEntity toEntity(RegisterRequest dto) {
+  public UserEntity toEntity(RegisterRequest dto, BranchEntity branch) {
     return Optional.ofNullable(dto)
         .map(
             request -> {
-              BranchEntity branch = null;
-              if (dto.getBranchId() != null) {
-                // Find BranchEntity by branchId
-                branch =
-                    branchRepository
-                        .findById(request.getBranchId())
-                        .orElseThrow(
-                            () ->
-                                new RuntimeException(
-                                    "Branch not found with id: " + request.getBranchId()));
-              }
-
-              // Create UserEntity from UserCreateRequest
+              // Create UserEntity from RegisterRequest
               return UserEntity.builder()
                   .userName(request.getUserName())
                   .email(request.getEmail())
