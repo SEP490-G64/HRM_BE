@@ -24,136 +24,134 @@ import java.util.List;
 @Tag(name = "Staff-Batches API")
 @SecurityRequirement(name = "Authorization")
 public class StaffBatchController {
-    // Injecting BatchService to handle business logic for ProductCategory
-    private final BatchService batchService;
+  // Injecting BatchService to handle business logic for ProductCategory
+  private final BatchService batchService;
 
-    // Handles GET requests for paginated list of Batch entities
-    @GetMapping("")
-    protected ResponseEntity<BaseOutput<List<Batch>>> getByPaging(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size,
-            @RequestParam(required = false, defaultValue = "id") String sortBy,
-            @RequestParam(required = false, defaultValue = "") String keyword) {
-        Page<Batch> batchPage = batchService.getByPaging(page, size, sortBy, keyword);
+  // Handles GET requests for paginated list of Batch entities
+  @GetMapping("")
+  protected ResponseEntity<BaseOutput<List<Batch>>> getByPaging(
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "20") int size,
+      @RequestParam(required = false, defaultValue = "id") String sortBy,
+      @RequestParam(required = false, defaultValue = "") String keyword) {
+    Page<Batch> batchPage = batchService.getByPaging(page, size, sortBy, keyword);
 
-        // Building response object with the retrieved data and pagination details
-        BaseOutput<List<Batch>> response =
-                BaseOutput.<List<Batch>>builder()
-                        .message(HttpStatus.OK.toString())
-                        .totalPages(batchPage.getTotalPages())
-                        .currentPage(page)
-                        .pageSize(size)
-                        .total(batchPage.getTotalElements())
-                        .data(batchPage.getContent())
-                        .status(com.example.hrm_be.commons.enums.ResponseStatus.SUCCESS)
-                        .build();
-        return ResponseEntity.ok(response);
+    // Building response object with the retrieved data and pagination details
+    BaseOutput<List<Batch>> response =
+        BaseOutput.<List<Batch>>builder()
+            .message(HttpStatus.OK.toString())
+            .totalPages(batchPage.getTotalPages())
+            .currentPage(page)
+            .pageSize(size)
+            .total(batchPage.getTotalElements())
+            .data(batchPage.getContent())
+            .status(com.example.hrm_be.commons.enums.ResponseStatus.SUCCESS)
+            .build();
+    return ResponseEntity.ok(response);
+  }
+
+  // Handles GET requests to retrieve a single Batch by ID
+  @GetMapping("/{id}")
+  protected ResponseEntity<BaseOutput<Batch>> getById(@PathVariable("id") Long id) {
+    // Validation: If the provided ID is invalid, return a bad request response
+    if (id <= 0 || id == null) {
+      BaseOutput<Batch> response =
+          BaseOutput.<Batch>builder()
+              .status(com.example.hrm_be.commons.enums.ResponseStatus.FAILED)
+              .errors(List.of(HrmConstant.ERROR.REQUEST.INVALID_PATH_VARIABLE))
+              .build();
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
-    // Handles GET requests to retrieve a single Batch by ID
-    @GetMapping("/{id}")
-    protected ResponseEntity<BaseOutput<Batch>> getById(@PathVariable("id") Long id) {
-        // Validation: If the provided ID is invalid, return a bad request response
-        if (id <= 0 || id == null) {
-            BaseOutput<Batch> response =
-                    BaseOutput.<Batch>builder()
-                            .status(com.example.hrm_be.commons.enums.ResponseStatus.FAILED)
-                            .errors(List.of(HrmConstant.ERROR.REQUEST.INVALID_PATH_VARIABLE))
-                            .build();
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-        }
+    // Retrieve Batch by ID
+    Batch batch = batchService.getById(id);
 
-        // Retrieve Batch by ID
-        Batch batch = batchService.getById(id);
+    // Building success response
+    BaseOutput<Batch> response =
+        BaseOutput.<Batch>builder()
+            .message(HttpStatus.OK.toString())
+            .data(batch)
+            .status(com.example.hrm_be.commons.enums.ResponseStatus.SUCCESS)
+            .build();
+    return ResponseEntity.ok(response);
+  }
 
-        // Building success response
-        BaseOutput<Batch> response =
-                BaseOutput.<Batch>builder()
-                        .message(HttpStatus.OK.toString())
-                        .data(batch)
-                        .status(com.example.hrm_be.commons.enums.ResponseStatus.SUCCESS)
-                        .build();
-        return ResponseEntity.ok(response);
+  // Handles POST requests to create a new Batch
+  @PostMapping()
+  protected ResponseEntity<BaseOutput<Batch>> create(
+      @RequestBody @NotNull(message = "error.request.body.invalid") Batch batch) {
+    // Validation: If the request body is null, return a bad request response
+    if (batch == null) {
+      BaseOutput<Batch> response =
+          BaseOutput.<Batch>builder()
+              .errors(List.of(HrmConstant.ERROR.REQUEST.INVALID_BODY))
+              .status(com.example.hrm_be.commons.enums.ResponseStatus.FAILED)
+              .build();
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
-    // Handles POST requests to create a new Batch
-    @PostMapping()
-    protected ResponseEntity<BaseOutput<Batch>> create(
-            @RequestBody @NotNull(message = "error.request.body.invalid")
-            Batch batch) {
-        // Validation: If the request body is null, return a bad request response
-        if (batch == null) {
-            BaseOutput<Batch> response =
-                    BaseOutput.<Batch>builder()
-                            .errors(List.of(HrmConstant.ERROR.REQUEST.INVALID_BODY))
-                            .status(com.example.hrm_be.commons.enums.ResponseStatus.FAILED)
-                            .build();
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-        }
+    // Create the new Batch via service
+    Batch createdBatch = batchService.create(batch);
 
-        // Create the new Batch via service
-        Batch createdBatch = batchService.create(batch);
+    // Building success response
+    BaseOutput<Batch> response =
+        BaseOutput.<Batch>builder()
+            .message(HttpStatus.OK.toString())
+            .data(createdBatch)
+            .status(com.example.hrm_be.commons.enums.ResponseStatus.SUCCESS)
+            .build();
+    return ResponseEntity.ok(response);
+  }
 
-        // Building success response
-        BaseOutput<Batch> response =
-                BaseOutput.<Batch>builder()
-                        .message(HttpStatus.OK.toString())
-                        .data(createdBatch)
-                        .status(com.example.hrm_be.commons.enums.ResponseStatus.SUCCESS)
-                        .build();
-        return ResponseEntity.ok(response);
+  // Handles PUT requests to update an existing Batch by ID
+  @PutMapping("/{id}")
+  protected ResponseEntity<BaseOutput<Batch>> update(
+      @PathVariable("id") Long id,
+      @RequestBody @NotNull(message = "error.request.body.invalid") Batch batch) {
+    // Validation: If the provided ID is invalid, return a bad request response
+    if (id <= 0 || id == null) {
+      BaseOutput<Batch> response =
+          BaseOutput.<Batch>builder()
+              .status(com.example.hrm_be.commons.enums.ResponseStatus.FAILED)
+              .errors(List.of(HrmConstant.ERROR.REQUEST.INVALID_PATH_VARIABLE))
+              .build();
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
-    // Handles PUT requests to update an existing Batch by ID
-    @PutMapping("/{id}")
-    protected ResponseEntity<BaseOutput<Batch>> update(
-            @PathVariable("id") Long id,
-            @RequestBody @NotNull(message = "error.request.body.invalid")
-            Batch batch) {
-        // Validation: If the provided ID is invalid, return a bad request response
-        if (id <= 0 || id == null) {
-            BaseOutput<Batch> response =
-                    BaseOutput.<Batch>builder()
-                            .status(com.example.hrm_be.commons.enums.ResponseStatus.FAILED)
-                            .errors(List.of(HrmConstant.ERROR.REQUEST.INVALID_PATH_VARIABLE))
-                            .build();
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-        }
+    // Set the ID to the existing Batch before updating
+    batch.setId(id);
+    Batch updateBatch = batchService.update(batch);
 
-        // Set the ID to the existing Batch before updating
-        batch.setId(id);
-        Batch updateBatch = batchService.update(batch);
+    // Building success response
+    BaseOutput<Batch> response =
+        BaseOutput.<Batch>builder()
+            .message(HttpStatus.OK.toString())
+            .data(updateBatch)
+            .status(com.example.hrm_be.commons.enums.ResponseStatus.SUCCESS)
+            .build();
+    return ResponseEntity.ok(response);
+  }
 
-        // Building success response
-        BaseOutput<Batch> response =
-                BaseOutput.<Batch>builder()
-                        .message(HttpStatus.OK.toString())
-                        .data(updateBatch)
-                        .status(com.example.hrm_be.commons.enums.ResponseStatus.SUCCESS)
-                        .build();
-        return ResponseEntity.ok(response);
+  // Handles DELETE requests to remove a Batch by ID
+  @DeleteMapping("/{id}")
+  protected ResponseEntity<BaseOutput<String>> delete(@PathVariable("id") Long id) {
+    if (id <= 0 || id == null) {
+      BaseOutput<String> response =
+          BaseOutput.<String>builder()
+              .status(com.example.hrm_be.commons.enums.ResponseStatus.FAILED)
+              .errors(List.of(HrmConstant.ERROR.REQUEST.INVALID_PATH_VARIABLE))
+              .build();
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
-    // Handles DELETE requests to remove a Batch by ID
-    @DeleteMapping("/{id}")
-    protected ResponseEntity<BaseOutput<String>> delete(@PathVariable("id") Long id) {
-        if (id <= 0 || id == null) {
-            BaseOutput<String> response =
-                    BaseOutput.<String>builder()
-                            .status(com.example.hrm_be.commons.enums.ResponseStatus.FAILED)
-                            .errors(List.of(HrmConstant.ERROR.REQUEST.INVALID_PATH_VARIABLE))
-                            .build();
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-        }
+    // Delete the Batch via service
+    batchService.delete(id);
 
-        // Delete the Batch via service
-        batchService.delete(id);
-
-        // Building success response after deletion
-        return ResponseEntity.ok(
-                BaseOutput.<String>builder()
-                        .data(HttpStatus.OK.toString())
-                        .status(ResponseStatus.SUCCESS)
-                        .build());
-    }
+    // Building success response after deletion
+    return ResponseEntity.ok(
+        BaseOutput.<String>builder()
+            .data(HttpStatus.OK.toString())
+            .status(ResponseStatus.SUCCESS)
+            .build());
+  }
 }

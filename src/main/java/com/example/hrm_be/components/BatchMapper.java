@@ -33,7 +33,7 @@ public class BatchMapper {
                     .batchCode(e.getBatchCode())
                     .produceDate(e.getProduceDate())
                     .expireDate(e.getExpireDate())
-                        .inboundPrice(e.getInboundPrice())
+                    .inboundPrice(e.getInboundPrice())
                     .unitConversions(
                         e.getUnitConversions() != null
                             ? e.getUnitConversions().stream()
@@ -71,7 +71,7 @@ public class BatchMapper {
                     .batchCode(e.getBatchCode())
                     .produceDate(e.getProduceDate())
                     .expireDate(e.getExpireDate())
-                        .inboundPrice(e.getInboundPrice())
+                    .inboundPrice(e.getInboundPrice())
                     .unitConversions(
                         e.getUnitConversions() != null
                             ? e.getUnitConversions().stream()

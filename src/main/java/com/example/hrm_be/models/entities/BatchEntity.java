@@ -67,9 +67,7 @@ public class BatchEntity extends CommonEntity {
   InboundBatchDetailEntity inboundBatchDetail;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(
-      name = "product_id",
-      foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+  @JoinColumn(name = "product_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   ProductEntity product;
 
   @ToString.Exclude

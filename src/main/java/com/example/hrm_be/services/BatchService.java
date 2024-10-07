@@ -6,18 +6,18 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface BatchService {
-    // Retrieve a batch by its ID.
-    Batch getById(Long id);
+  // Retrieve a batch by its ID.
+  Batch getById(Long id);
 
-    // Get a paginated list of batch based on provided filters.
-    Page<Batch> getByPaging(int pageNo, int pageSize, String sortBy, String keyword);
+  // Get a paginated list of batch based on provided filters.
+  Page<Batch> getByPaging(int pageNo, int pageSize, String sortBy, String keyword);
 
-    // Create a new Batch.
-    Batch create(Batch batch);
+  // Create a new Batch.
+  Batch create(Batch batch);
 
-    // Update an existing Batch.
-    Batch update(Batch batch);
+  // Update an existing Batch.
+  Batch update(Batch batch);
 
-    // Delete a Batch by its ID.
-    void delete(Long id);
+  // Delete a Batch by its ID.
+  void delete(Long id);
 }

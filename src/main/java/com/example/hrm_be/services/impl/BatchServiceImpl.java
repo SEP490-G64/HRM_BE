@@ -21,79 +21,78 @@ import java.util.Optional;
 @Service
 @Transactional
 public class BatchServiceImpl implements BatchService {
-    // Injects the repository to interact with batch data in the database
-    @Autowired
-    private BatchRepository batchRepository;
+  // Injects the repository to interact with batch data in the database
+  @Autowired private BatchRepository batchRepository;
 
-    // Injects the mapper to convert between DTO and Entity objects for batches
-    @Autowired private BatchMapper batchMapper;
+  // Injects the mapper to convert between DTO and Entity objects for batches
+  @Autowired private BatchMapper batchMapper;
 
-    // Retrieves a Batch by its ID
-    @Override
-    public Batch getById(Long id) {
-        return Optional.ofNullable(id)
-                .flatMap(e -> batchRepository.findById(e).map(b -> batchMapper.toDTO(b)))
-                .orElse(null);
+  // Retrieves a Batch by its ID
+  @Override
+  public Batch getById(Long id) {
+    return Optional.ofNullable(id)
+        .flatMap(e -> batchRepository.findById(e).map(b -> batchMapper.toDTO(b)))
+        .orElse(null);
+  }
+
+  // Retrieves a paginated list of Batch entities, allowing sorting and searching by name
+  @Override
+  public Page<Batch> getByPaging(int pageNo, int pageSize, String sortBy, String keyword) {
+    Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(sortBy).ascending());
+    return batchRepository
+        .findByBatchCodeContainingIgnoreCase(keyword, pageable)
+        .map(dao -> batchMapper.toDTO(dao));
+  }
+
+  // Creates a new Batch
+  @Override
+  public Batch create(Batch batch) {
+    // Validation: Ensure the Batch is not null and does not already exist at the same batch code
+    if (batch == null || batchRepository.existsByBatchCode(batch.getBatchCode())) {
+      throw new HrmCommonException(HrmConstant.ERROR.BATCH.EXIST);
     }
 
-    // Retrieves a paginated list of Batch entities, allowing sorting and searching by name
-    @Override
-    public Page<Batch> getByPaging(int pageNo, int pageSize, String sortBy, String keyword) {
-        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(sortBy).ascending());
-        return batchRepository
-                .findByBatchCodeContainingIgnoreCase(keyword, pageable)
-                .map(dao -> batchMapper.toDTO(dao));
+    // Convert DTO to entity, save it, and convert back to DTO
+    return Optional.ofNullable(batch)
+        .map(e -> batchMapper.toEntity(e))
+        .map(e -> batchRepository.save(e))
+        .map(e -> batchMapper.toDTO(e))
+        .orElse(null);
+  }
+
+  // Updates an existing Batch
+  @Override
+  public Batch update(Batch batch) {
+    // Retrieve the existing Batch entity by ID
+    BatchEntity oldBatchEntity = batchRepository.findById(batch.getId()).orElse(null);
+    if (oldBatchEntity == null) {
+      throw new HrmCommonException(HrmConstant.ERROR.BATCH.NOT_EXIST);
     }
 
-    // Creates a new Batch
-    @Override
-    public Batch create(Batch batch) {
-        // Validation: Ensure the Batch is not null and does not already exist at the same batch code
-        if (batch == null || batchRepository.existsByBatchCode(batch.getBatchCode())) {
-            throw new HrmCommonException(HrmConstant.ERROR.BATCH.EXIST);
-        }
+    // Update the fields of the existing Batch entity with new values
+    return Optional.ofNullable(oldBatchEntity)
+        .map(
+            op ->
+                op.toBuilder()
+                    .batchCode(batch.getBatchCode())
+                    .expireDate(batch.getExpireDate())
+                    .produceDate(batch.getProduceDate())
+                    .inboundPrice(batch.getInboundPrice())
+                    .build())
+        .map(batchRepository::save)
+        .map(batchMapper::toDTO)
+        .orElse(null);
+  }
 
-        // Convert DTO to entity, save it, and convert back to DTO
-        return Optional.ofNullable(batch)
-                .map(e -> batchMapper.toEntity(e))
-                .map(e -> batchRepository.save(e))
-                .map(e -> batchMapper.toDTO(e))
-                .orElse(null);
+  // Deletes a Batch by ID
+  @Override
+  public void delete(Long id) {
+    // Validation: Check if the ID is blank
+    if (StringUtils.isBlank(id.toString())) {
+      return;
     }
 
-    // Updates an existing Batch
-    @Override
-    public Batch update(Batch batch) {
-        // Retrieve the existing Batch entity by ID
-        BatchEntity oldBatchEntity = batchRepository.findById(batch.getId()).orElse(null);
-        if (oldBatchEntity == null) {
-            throw new HrmCommonException(HrmConstant.ERROR.BATCH.NOT_EXIST);
-        }
-
-        // Update the fields of the existing Batch entity with new values
-        return Optional.ofNullable(oldBatchEntity)
-                .map(
-                        op ->
-                                op.toBuilder()
-                                        .batchCode(batch.getBatchCode())
-                                        .expireDate(batch.getExpireDate())
-                                        .produceDate(batch.getProduceDate())
-                                        .inboundPrice(batch.getInboundPrice())
-                                        .build())
-                .map(batchRepository::save)
-                .map(batchMapper::toDTO)
-                .orElse(null);
-    }
-
-    // Deletes a Batch by ID
-    @Override
-    public void delete(Long id) {
-        // Validation: Check if the ID is blank
-        if (StringUtils.isBlank(id.toString())) {
-            return;
-        }
-
-        // Delete the batch by ID
-        batchRepository.deleteById(id);
-    }
+    // Delete the batch by ID
+    batchRepository.deleteById(id);
+  }
 }
