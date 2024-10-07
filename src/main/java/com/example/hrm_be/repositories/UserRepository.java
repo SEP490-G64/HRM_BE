@@ -44,4 +44,9 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
           + "JOIN urm.role role "
           + "WHERE user.email = :email")
   List<RoleEntity> findRolesByEmail(String email);
+
+  @Modifying
+  @Transactional
+  @Query("UPDATE UserEntity f SET f.branch.id = :branchId WHERE f.id IN :ids")
+  void assignToBranchByBranchIdAndIds(@Param("branchId") Long branchId, @Param("ids") List<Long> ids);
 }
