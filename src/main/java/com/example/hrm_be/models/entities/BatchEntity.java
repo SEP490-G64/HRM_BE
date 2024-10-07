@@ -63,14 +63,12 @@ public class BatchEntity extends CommonEntity {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(
       name = "inbound_batch_detail_id",
-      nullable = false,
       foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   InboundBatchDetailEntity inboundBatchDetail;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(
       name = "product_id",
-      nullable = false,
       foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   ProductEntity product;
 
