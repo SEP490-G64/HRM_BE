@@ -76,7 +76,8 @@ class SupplierServiceImplTest {
   @Test
   void shouldGetByPaging() {
     Page<SupplierEntity> page = new PageImpl<>(List.of(supplierEntity));
-    when(supplierRepository.findBySupplierNameContainsIgnoreCase(anyString(), any(Pageable.class)))
+    when(supplierRepository.findBySupplierNameContainsIgnoreCaseOrAddressContainsIgnoreCase(
+            anyString(), anyString(), any(Pageable.class)))
         .thenReturn(page);
     when(supplierMapper.toDTO(any(SupplierEntity.class))).thenReturn(supplierDTO);
 
@@ -86,7 +87,8 @@ class SupplierServiceImplTest {
     assertEquals(1, result.getTotalElements());
     assertEquals("Test Supplier", result.getContent().get(0).getSupplierName());
     verify(supplierRepository, times(1))
-        .findBySupplierNameContainsIgnoreCase(anyString(), any(Pageable.class));
+        .findBySupplierNameContainsIgnoreCaseOrAddressContainsIgnoreCase(
+            anyString(), anyString(), any(Pageable.class));
   }
 
   @Test

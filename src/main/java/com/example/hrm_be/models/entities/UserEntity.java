@@ -1,7 +1,10 @@
 package com.example.hrm_be.models.entities;
 
+import com.example.hrm_be.commons.enums.UserStatusType;
 import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
+
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.*;
 import lombok.experimental.Accessors;
@@ -38,8 +41,12 @@ public class UserEntity extends CommonEntity {
   @Column(name = "last_name")
   String lastName;
 
-  @Column(name = "is_verified")
-  Boolean isVerified = false;
+  @Enumerated(EnumType.STRING)
+  @Column(name = "status")
+  UserStatusType status;
+
+  @Column(name = "created_date")
+  LocalDateTime createdDate;
 
   @ToString.Exclude
   @OneToMany(mappedBy = "user")
