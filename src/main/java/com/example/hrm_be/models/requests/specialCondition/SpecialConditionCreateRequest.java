@@ -1,6 +1,5 @@
 package com.example.hrm_be.models.requests.specialCondition;
 
-import com.example.hrm_be.commons.enums.ConditionType;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.Accessors;
@@ -18,9 +17,9 @@ import lombok.extern.jackson.Jacksonized;
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SpecialConditionCreateRequest {
-    Long productId;
+  Long productId;
 
-    String conditionType;
+  String conditionType;
 
-    String handlingInstruction;
+  String handlingInstruction;
 }

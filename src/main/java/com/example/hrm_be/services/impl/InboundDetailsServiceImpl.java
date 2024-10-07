@@ -24,87 +24,86 @@ import java.util.Optional;
 @Service
 @Transactional
 public class InboundDetailsServiceImpl implements InboundDetailsService {
-    @Autowired
-    private InboundDetailsRepository inboundDetailsRepository;
+  @Autowired private InboundDetailsRepository inboundDetailsRepository;
 
-    @Autowired private InboundDetailsMapper inboundDetailsMapper;
+  @Autowired private InboundDetailsMapper inboundDetailsMapper;
 
-    @Autowired private EntityManager entityManager;
-    
-    @Override
-    public InboundDetails getById(Long id) {
-        return Optional.ofNullable(id)
-                .flatMap(e -> inboundDetailsRepository.findById(e).map(b -> inboundDetailsMapper.toDTO(b)))
-                .orElse(null);
+  @Autowired private EntityManager entityManager;
+
+  @Override
+  public InboundDetails getById(Long id) {
+    return Optional.ofNullable(id)
+        .flatMap(e -> inboundDetailsRepository.findById(e).map(b -> inboundDetailsMapper.toDTO(b)))
+        .orElse(null);
+  }
+
+  @Override
+  public Page<InboundDetails> getByPaging(int pageNo, int pageSize, String sortBy) {
+    Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(sortBy).ascending());
+    return inboundDetailsRepository.findAll(pageable).map(dao -> inboundDetailsMapper.toDTO(dao));
+  }
+
+  @Override
+  public InboundDetails create(InboundDetailsCreateRequest inboundDetails) {
+    if (inboundDetails == null) {
+      throw new HrmCommonException(HrmConstant.ERROR.BRANCH.EXIST);
     }
 
-    @Override
-    public Page<InboundDetails> getByPaging(int pageNo, int pageSize, String sortBy) {
-        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(sortBy).ascending());
-        return inboundDetailsRepository
-                .findAll(pageable)
-                .map(dao -> inboundDetailsMapper.toDTO(dao));
+    InboundEntity inbound;
+    if (inboundDetails.getInboundId() != null) {
+      inbound = entityManager.getReference(InboundEntity.class, inboundDetails.getInboundId());
+      if (inbound == null) {
+        throw new HrmCommonException("Inbound not found with id: " + inboundDetails.getInboundId());
+      }
+    } else {
+      inbound = null;
     }
 
-    @Override
-    public InboundDetails create(InboundDetailsCreateRequest inboundDetails) {
-        if (inboundDetails == null) {
-            throw new HrmCommonException(HrmConstant.ERROR.BRANCH.EXIST);
-        }
-
-        InboundEntity inbound;
-        if (inboundDetails.getInboundId() != null) {
-            inbound = entityManager.getReference(InboundEntity.class, inboundDetails.getInboundId());
-            if (inbound == null) {
-                throw new HrmCommonException("Inbound not found with id: " + inboundDetails.getInboundId());
-            }
-        } else {
-            inbound = null;
-        }
-
-        ProductEntity product;
-        if (inboundDetails.getProductId() != null) {
-            product = entityManager.getReference(ProductEntity.class, inboundDetails.getProductId());
-            if (product == null) {
-                throw new HrmCommonException("Product Check not found with id: " + inboundDetails.getProductId());
-            }
-        } else {
-            product = null;
-        }
-
-        // Convert DTO to entity, save it, and convert back to DTO
-        return Optional.ofNullable(inboundDetails)
-                .map(e -> inboundDetailsMapper.toEntity(e, inbound, product))
-                .map(e -> inboundDetailsRepository.save(e))
-                .map(e -> inboundDetailsMapper.toDTO(e))
-                .orElse(null);
+    ProductEntity product;
+    if (inboundDetails.getProductId() != null) {
+      product = entityManager.getReference(ProductEntity.class, inboundDetails.getProductId());
+      if (product == null) {
+        throw new HrmCommonException(
+            "Product Check not found with id: " + inboundDetails.getProductId());
+      }
+    } else {
+      product = null;
     }
 
-    @Override
-    public InboundDetails update(InboundDetailsUpdateRequest inboundDetails) {
-        InboundDetailsEntity oldInboundDetailsEntity = inboundDetailsRepository.findById(inboundDetails.getId()).orElse(null);
-        if (oldInboundDetailsEntity == null) {
-            throw new HrmCommonException(HrmConstant.ERROR.BRANCH.NOT_EXIST);
-        }
+    // Convert DTO to entity, save it, and convert back to DTO
+    return Optional.ofNullable(inboundDetails)
+        .map(e -> inboundDetailsMapper.toEntity(e, inbound, product))
+        .map(e -> inboundDetailsRepository.save(e))
+        .map(e -> inboundDetailsMapper.toDTO(e))
+        .orElse(null);
+  }
 
-        return Optional.ofNullable(oldInboundDetailsEntity)
-                .map(
-                        op ->
-                                op.toBuilder()
-                                        .receiveQuantity(inboundDetails.getReceiveQuantity())
-                                        .requestQuantity(inboundDetails.getRequestQuantity())
-                                        .build())
-                .map(inboundDetailsRepository::save)
-                .map(inboundDetailsMapper::toDTO)
-                .orElse(null);
+  @Override
+  public InboundDetails update(InboundDetailsUpdateRequest inboundDetails) {
+    InboundDetailsEntity oldInboundDetailsEntity =
+        inboundDetailsRepository.findById(inboundDetails.getId()).orElse(null);
+    if (oldInboundDetailsEntity == null) {
+      throw new HrmCommonException(HrmConstant.ERROR.BRANCH.NOT_EXIST);
     }
 
-    @Override
-    public void delete(Long id) {
-        if (StringUtils.isBlank(id.toString())) {
-            return;
-        }
+    return Optional.ofNullable(oldInboundDetailsEntity)
+        .map(
+            op ->
+                op.toBuilder()
+                    .receiveQuantity(inboundDetails.getReceiveQuantity())
+                    .requestQuantity(inboundDetails.getRequestQuantity())
+                    .build())
+        .map(inboundDetailsRepository::save)
+        .map(inboundDetailsMapper::toDTO)
+        .orElse(null);
+  }
 
-        inboundDetailsRepository.deleteById(id);
+  @Override
+  public void delete(Long id) {
+    if (StringUtils.isBlank(id.toString())) {
+      return;
     }
+
+    inboundDetailsRepository.deleteById(id);
+  }
 }

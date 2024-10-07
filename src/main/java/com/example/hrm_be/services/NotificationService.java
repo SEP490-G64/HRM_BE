@@ -8,13 +8,13 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface NotificationService {
-    Notification getById(Long id);
+  Notification getById(Long id);
 
-    Page<Notification> getByPaging(int pageNo, int pageSize, String sortBy);
+  Page<Notification> getByPaging(int pageNo, int pageSize, String sortBy);
 
-    Notification create(NotificationCreateRequest notification);
+  Notification create(NotificationCreateRequest notification);
 
-    Notification update(NotificationUpdateRequest notification);
+  Notification update(NotificationUpdateRequest notification);
 
-    void delete(Long id);
+  void delete(Long id);
 }

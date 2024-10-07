@@ -1,8 +1,6 @@
 package com.example.hrm_be.models.requests.purchase;
 
-import com.example.hrm_be.models.entities.SupplierEntity;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import jakarta.persistence.Column;
 import lombok.*;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldDefaults;
@@ -22,11 +20,11 @@ import java.time.LocalDateTime;
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PurchaseCreateRequest {
-    Long supplierId;
+  Long supplierId;
 
-    BigDecimal amount;
+  BigDecimal amount;
 
-    LocalDateTime purchaseDate;
+  LocalDateTime purchaseDate;
 
-    BigDecimal remainDebt;
+  BigDecimal remainDebt;
 }

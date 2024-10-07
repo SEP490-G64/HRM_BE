@@ -20,11 +20,11 @@ import java.time.LocalDateTime;
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PurchaseUpdateRequest {
-    Long Id;
+  Long Id;
 
-    BigDecimal amount;
+  BigDecimal amount;
 
-    LocalDateTime purchaseDate;
+  LocalDateTime purchaseDate;
 
-    BigDecimal remainDebt;
+  BigDecimal remainDebt;
 }

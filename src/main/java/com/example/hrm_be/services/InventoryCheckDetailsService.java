@@ -8,13 +8,13 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface InventoryCheckDetailsService {
-    InventoryCheckDetails getById(Long id);
+  InventoryCheckDetails getById(Long id);
 
-    Page<InventoryCheckDetails> getByPaging(int pageNo, int pageSize, String sortBy);
+  Page<InventoryCheckDetails> getByPaging(int pageNo, int pageSize, String sortBy);
 
-    InventoryCheckDetails create(InventoryCheckDetailsCreateRequest inventoryCheckDetails);
+  InventoryCheckDetails create(InventoryCheckDetailsCreateRequest inventoryCheckDetails);
 
-    InventoryCheckDetails update(InventoryCheckDetailsUpdateRequest inventoryCheckDetails);
+  InventoryCheckDetails update(InventoryCheckDetailsUpdateRequest inventoryCheckDetails);
 
-    void delete(Long id);
+  void delete(Long id);
 }

@@ -58,39 +58,43 @@ public class InventoryCheckDetailsMapper {
   }
 
   // Convert InventoryCheckDetailsCreateRequest to InventoryCheckDetailsEntity
-  public InventoryCheckDetailsEntity toEntity(InventoryCheckDetailsCreateRequest dto,
-                                              InventoryCheckEntity inventoryCheck, BatchEntity batch) {
+  public InventoryCheckDetailsEntity toEntity(
+      InventoryCheckDetailsCreateRequest dto,
+      InventoryCheckEntity inventoryCheck,
+      BatchEntity batch) {
     return Optional.ofNullable(dto)
-            .map(
-                    request -> {
-                      // Create InventoryCheckDetailsEntity from InventoryCheckDetailsCreateRequest
-                      return InventoryCheckDetailsEntity.builder()
-                              .inventoryCheck(inventoryCheck)
-                              .batch(batch)
-                              .systemQuantity(dto.getSystemQuantity())
-                              .countedQuantity(dto.getCountedQuantity())
-                              .difference(dto.getDifference())
-                              .reason(dto.getReason())
-                              .build();
-                    })
-            .orElse(null);
+        .map(
+            request -> {
+              // Create InventoryCheckDetailsEntity from InventoryCheckDetailsCreateRequest
+              return InventoryCheckDetailsEntity.builder()
+                  .inventoryCheck(inventoryCheck)
+                  .batch(batch)
+                  .systemQuantity(dto.getSystemQuantity())
+                  .countedQuantity(dto.getCountedQuantity())
+                  .difference(dto.getDifference())
+                  .reason(dto.getReason())
+                  .build();
+            })
+        .orElse(null);
   }
 
   // Convert InventoryCheckDetailsUpdateRequest to InventoryCheckDetailsEntity
-  public InventoryCheckDetailsEntity toEntity(InventoryCheckDetailsUpdateRequest dto,
-                                              InventoryCheckEntity inventoryCheck, BatchEntity batch) {
+  public InventoryCheckDetailsEntity toEntity(
+      InventoryCheckDetailsUpdateRequest dto,
+      InventoryCheckEntity inventoryCheck,
+      BatchEntity batch) {
     return Optional.ofNullable(dto)
-            .map(
-                    request -> {
-                      // Create InventoryCheckDetailsEntity from InventoryCheckDetailsUpdateRequest
-                      return InventoryCheckDetailsEntity.builder()
-                              .batch(batch)
-                              .systemQuantity(dto.getSystemQuantity())
-                              .countedQuantity(dto.getCountedQuantity())
-                              .difference(dto.getDifference())
-                              .reason(dto.getReason())
-                              .build();
-                    })
-            .orElse(null);
+        .map(
+            request -> {
+              // Create InventoryCheckDetailsEntity from InventoryCheckDetailsUpdateRequest
+              return InventoryCheckDetailsEntity.builder()
+                  .batch(batch)
+                  .systemQuantity(dto.getSystemQuantity())
+                  .countedQuantity(dto.getCountedQuantity())
+                  .difference(dto.getDifference())
+                  .reason(dto.getReason())
+                  .build();
+            })
+        .orElse(null);
   }
 }

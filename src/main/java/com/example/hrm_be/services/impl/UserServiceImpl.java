@@ -165,10 +165,10 @@ public class UserServiceImpl implements UserService {
         throw new HrmCommonException("Branch not found with id: " + user.getBranchId());
       }
     } else {
-        branch = null;
+      branch = null;
     }
 
-      return Optional.of(user)
+    return Optional.of(user)
         .map(u -> userMapper.toEntity(u, branch))
         .map(
             e -> {
@@ -419,8 +419,7 @@ public class UserServiceImpl implements UserService {
                 } else if (registerRequest.getRole() == 3) {
                   userRoleMapService.setAdminRoleForUser(e.getId());
                 }
-              }
-              else {
+              } else {
                 userRoleMapService.setStaffRoleForUser(e.getId());
               }
               return e;

@@ -8,13 +8,13 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface InboundDetailsService {
-    InboundDetails getById(Long id);
+  InboundDetails getById(Long id);
 
-    Page<InboundDetails> getByPaging(int pageNo, int pageSize, String sortBy);
+  Page<InboundDetails> getByPaging(int pageNo, int pageSize, String sortBy);
 
-    InboundDetails create(InboundDetailsCreateRequest inboundDetails);
+  InboundDetails create(InboundDetailsCreateRequest inboundDetails);
 
-    InboundDetails update(InboundDetailsUpdateRequest inboundDetails);
+  InboundDetails update(InboundDetailsUpdateRequest inboundDetails);
 
-    void delete(Long id);
+  void delete(Long id);
 }

@@ -1,7 +1,5 @@
 package com.example.hrm_be.models.requests.outbound;
 
-import com.example.hrm_be.commons.enums.OutboundStatus;
-import com.example.hrm_be.commons.enums.OutboundType;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.Accessors;
@@ -22,17 +20,17 @@ import java.time.LocalDateTime;
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class OutboundUpdateRequest {
-    Long Id;
+  Long Id;
 
-    String outboundType;
+  String outboundType;
 
-    BigDecimal totalPrice;
+  BigDecimal totalPrice;
 
-    String status;
+  String status;
 
-    Boolean taxable;
+  Boolean taxable;
 
-    String note;
+  String note;
 
-    LocalDateTime outboundDate;
+  LocalDateTime outboundDate;
 }

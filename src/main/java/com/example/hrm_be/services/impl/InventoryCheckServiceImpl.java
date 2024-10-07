@@ -2,14 +2,12 @@ package com.example.hrm_be.services.impl;
 
 import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.commons.enums.InventoryCheckStatus;
-import com.example.hrm_be.commons.enums.OutboundStatus;
 import com.example.hrm_be.components.InventoryCheckMapper;
 import com.example.hrm_be.components.InventoryCheckMapper;
 import com.example.hrm_be.components.UserMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.InventoryCheck;
 import com.example.hrm_be.models.dtos.InventoryCheck;
-import com.example.hrm_be.models.entities.BatchEntity;
 import com.example.hrm_be.models.entities.BranchEntity;
 import com.example.hrm_be.models.entities.InventoryCheckEntity;
 import com.example.hrm_be.models.entities.UserEntity;
@@ -36,112 +34,106 @@ import java.util.Optional;
 @Service
 @Transactional
 public class InventoryCheckServiceImpl implements InventoryCheckService {
-    @Autowired
-    private InventoryCheckRepository inventoryCheckRepository;
+  @Autowired private InventoryCheckRepository inventoryCheckRepository;
 
-    @Autowired private InventoryCheckMapper inventoryCheckMapper;
+  @Autowired private InventoryCheckMapper inventoryCheckMapper;
 
-    @Autowired private EntityManager entityManager;
+  @Autowired private EntityManager entityManager;
 
-    @Autowired private UserService userService;
-    @Autowired private UserMapper userMapper;
+  @Autowired private UserService userService;
+  @Autowired private UserMapper userMapper;
 
-    @Override
-    public InventoryCheck getById(Long id) {
-        return Optional.ofNullable(id)
-                .flatMap(e -> inventoryCheckRepository.findById(e).map(b -> inventoryCheckMapper.toDTO(b)))
-                .orElse(null);
+  @Override
+  public InventoryCheck getById(Long id) {
+    return Optional.ofNullable(id)
+        .flatMap(e -> inventoryCheckRepository.findById(e).map(b -> inventoryCheckMapper.toDTO(b)))
+        .orElse(null);
+  }
+
+  @Override
+  public Page<InventoryCheck> getByPaging(int pageNo, int pageSize, String sortBy) {
+    Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(sortBy).ascending());
+    return inventoryCheckRepository.findAll(pageable).map(dao -> inventoryCheckMapper.toDTO(dao));
+  }
+
+  @Override
+  public InventoryCheck create(InventoryCheckCreateRequest InventoryCheck) {
+    if (InventoryCheck == null) {
+      throw new HrmCommonException(HrmConstant.ERROR.BRANCH.EXIST);
     }
 
-    @Override
-    public Page<InventoryCheck> getByPaging(int pageNo, int pageSize, String sortBy) {
-        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(sortBy).ascending());
-        return inventoryCheckRepository
-                .findAll(pageable)
-                .map(dao -> inventoryCheckMapper.toDTO(dao));
+    BranchEntity branch;
+    if (InventoryCheck.getBranchId() != null) {
+      branch = entityManager.getReference(BranchEntity.class, InventoryCheck.getBranchId());
+      if (branch == null) {
+        throw new HrmCommonException("Branch not found with id: " + InventoryCheck.getBranchId());
+      }
+    } else {
+      branch = null;
     }
 
-    @Override
-    public InventoryCheck create(InventoryCheckCreateRequest InventoryCheck) {
-        if (InventoryCheck == null) {
-            throw new HrmCommonException(HrmConstant.ERROR.BRANCH.EXIST);
-        }
+    String email = userService.getAuthenticatedUserEmail();
+    UserEntity userEntity = userMapper.toEntity(userService.findLoggedInfoByEmail(email));
 
-        BranchEntity branch;
-        if (InventoryCheck.getBranchId() != null) {
-            branch = entityManager.getReference(BranchEntity.class, InventoryCheck.getBranchId());
-            if (branch == null) {
-                throw new HrmCommonException("Branch not found with id: " + InventoryCheck.getBranchId());
-            }
-        } else {
-            branch = null;
-        }
+    // Convert DTO to entity, save it, and convert back to DTO
+    return Optional.ofNullable(InventoryCheck)
+        .map(e -> inventoryCheckMapper.toEntity(e, branch))
+        .map(
+            e -> {
+              e.setCreatedBy(userEntity);
+              e.setCreatedDate(LocalDateTime.now());
+              e.setStatus(InventoryCheckStatus.CHO_DUYET);
+              e.setIsApproved(false);
+              return inventoryCheckRepository.save(e);
+            })
+        .map(e -> inventoryCheckMapper.toDTO(e))
+        .orElse(null);
+  }
 
-        String email = userService.getAuthenticatedUserEmail();
-        UserEntity userEntity = userMapper.toEntity(userService.findLoggedInfoByEmail(email));
-
-        // Convert DTO to entity, save it, and convert back to DTO
-        return Optional.ofNullable(InventoryCheck)
-                .map(e -> inventoryCheckMapper.toEntity(e, branch))
-                .map(
-                        e -> {
-                            e.setCreatedBy(userEntity);
-                            e.setCreatedDate(LocalDateTime.now());
-                            e.setStatus(InventoryCheckStatus.CHO_DUYET);
-                            e.setIsApproved(false);
-                            return inventoryCheckRepository.save(e);
-                        })
-                .map(e -> inventoryCheckMapper.toDTO(e))
-                .orElse(null);
+  @Override
+  public InventoryCheck update(InventoryCheckUpdateRequest InventoryCheck) {
+    InventoryCheckEntity oldInventoryCheckEntity =
+        inventoryCheckRepository.findById(InventoryCheck.getId()).orElse(null);
+    if (oldInventoryCheckEntity == null) {
+      throw new HrmCommonException(HrmConstant.ERROR.BRANCH.NOT_EXIST);
     }
 
-    @Override
-    public InventoryCheck update(InventoryCheckUpdateRequest InventoryCheck) {
-        InventoryCheckEntity oldInventoryCheckEntity = inventoryCheckRepository.findById(InventoryCheck.getId()).orElse(null);
-        if (oldInventoryCheckEntity == null) {
-            throw new HrmCommonException(HrmConstant.ERROR.BRANCH.NOT_EXIST);
-        }
+    return Optional.ofNullable(oldInventoryCheckEntity)
+        .map(
+            op ->
+                op.toBuilder()
+                    .note(InventoryCheck.getNote())
+                    .status(InventoryCheckStatus.valueOf(InventoryCheck.getStatus()))
+                    .build())
+        .map(inventoryCheckRepository::save)
+        .map(inventoryCheckMapper::toDTO)
+        .orElse(null);
+  }
 
-        return Optional.ofNullable(oldInventoryCheckEntity)
-                .map(
-                        op ->
-                                op.toBuilder()
-                                        .note(InventoryCheck.getNote())
-                                        .status(InventoryCheckStatus.valueOf(InventoryCheck.getStatus()))
-                                        .build())
-                .map(inventoryCheckRepository::save)
-                .map(inventoryCheckMapper::toDTO)
-                .orElse(null);
+  @Override
+  public InventoryCheck approve(Long id) {
+    InventoryCheckEntity oldInventoryCheckEntity =
+        inventoryCheckRepository.findById(id).orElse(null);
+    if (oldInventoryCheckEntity == null) {
+      throw new HrmCommonException(HrmConstant.ERROR.BRANCH.NOT_EXIST);
     }
 
-    @Override
-    public InventoryCheck approve(Long id) {
-        InventoryCheckEntity oldInventoryCheckEntity = inventoryCheckRepository.findById(id).orElse(null);
-        if (oldInventoryCheckEntity == null) {
-            throw new HrmCommonException(HrmConstant.ERROR.BRANCH.NOT_EXIST);
-        }
+    String email = userService.getAuthenticatedUserEmail();
+    UserEntity userEntity = userMapper.toEntity(userService.findLoggedInfoByEmail(email));
 
-        String email = userService.getAuthenticatedUserEmail();
-        UserEntity userEntity = userMapper.toEntity(userService.findLoggedInfoByEmail(email));
+    return Optional.ofNullable(oldInventoryCheckEntity)
+        .map(op -> op.toBuilder().isApproved(true).approvedBy(userEntity).build())
+        .map(inventoryCheckRepository::save)
+        .map(inventoryCheckMapper::toDTO)
+        .orElse(null);
+  }
 
-        return Optional.ofNullable(oldInventoryCheckEntity)
-                .map(
-                        op ->
-                                op.toBuilder()
-                                        .isApproved(true)
-                                        .approvedBy(userEntity)
-                                        .build())
-                .map(inventoryCheckRepository::save)
-                .map(inventoryCheckMapper::toDTO)
-                .orElse(null);
+  @Override
+  public void delete(Long id) {
+    if (StringUtils.isBlank(id.toString())) {
+      return;
     }
 
-    @Override
-    public void delete(Long id) {
-        if (StringUtils.isBlank(id.toString())) {
-            return;
-        }
-
-        inventoryCheckRepository.deleteById(id);
-    }
+    inventoryCheckRepository.deleteById(id);
+  }
 }

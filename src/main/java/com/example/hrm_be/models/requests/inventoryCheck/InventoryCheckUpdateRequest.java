@@ -1,6 +1,5 @@
 package com.example.hrm_be.models.requests.inventoryCheck;
 
-import com.example.hrm_be.commons.enums.InventoryCheckStatus;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.Accessors;
@@ -8,7 +7,6 @@ import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
-import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
@@ -20,9 +18,9 @@ import java.time.LocalDateTime;
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InventoryCheckUpdateRequest {
-    Long Id;
+  Long Id;
 
-    String status;
+  String status;
 
-    String note;
+  String note;
 }

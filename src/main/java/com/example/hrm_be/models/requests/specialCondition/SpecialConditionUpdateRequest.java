@@ -1,11 +1,6 @@
 package com.example.hrm_be.models.requests.specialCondition;
 
-import com.example.hrm_be.commons.enums.ConditionType;
-import com.example.hrm_be.models.entities.ProductEntity;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import jakarta.persistence.Column;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import lombok.*;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldDefaults;
@@ -22,9 +17,9 @@ import lombok.extern.jackson.Jacksonized;
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SpecialConditionUpdateRequest {
-    Long Id;
+  Long Id;
 
-    String conditionType;
+  String conditionType;
 
-    String handlingInstruction;
+  String handlingInstruction;
 }

@@ -17,7 +17,7 @@ import lombok.extern.jackson.Jacksonized;
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class OutboundDetailsUpdateRequest {
-    Long Id;
+  Long Id;
 
-    Integer quantity;
+  Integer quantity;
 }

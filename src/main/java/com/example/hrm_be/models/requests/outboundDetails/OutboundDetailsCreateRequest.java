@@ -1,7 +1,5 @@
 package com.example.hrm_be.models.requests.outboundDetails;
 
-import com.example.hrm_be.models.entities.BatchEntity;
-import com.example.hrm_be.models.entities.OutboundEntity;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import lombok.*;
@@ -20,9 +18,9 @@ import lombok.extern.jackson.Jacksonized;
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class OutboundDetailsCreateRequest {
-    Long outboundId;
+  Long outboundId;
 
-    Long batchId;
+  Long batchId;
 
-    Integer quantity;
+  Integer quantity;
 }

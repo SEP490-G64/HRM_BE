@@ -22,137 +22,139 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/staff/outboundDetail-details")
 public class StaffOutboundDetailsController {
-    private final OutboundDetailService outboundDetailService;
+  private final OutboundDetailService outboundDetailService;
 
-    // Retrieves a paginated list of OutboundDetail entities
-    // with optional sorting and searching by name or location and filter type
-    @GetMapping("")
-    protected ResponseEntity<BaseOutput<List<OutboundDetail>>> getByPaging(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size,
-            @RequestParam(required = false, defaultValue = "id") String sortBy,
-            @RequestParam(required = false, defaultValue = "") String keyword) {
-        Page<OutboundDetail> OutboundDetailPage = outboundDetailService.getByPaging(page, size, sortBy);
+  // Retrieves a paginated list of OutboundDetail entities
+  // with optional sorting and searching by name or location and filter type
+  @GetMapping("")
+  protected ResponseEntity<BaseOutput<List<OutboundDetail>>> getByPaging(
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "20") int size,
+      @RequestParam(required = false, defaultValue = "id") String sortBy,
+      @RequestParam(required = false, defaultValue = "") String keyword) {
+    Page<OutboundDetail> OutboundDetailPage = outboundDetailService.getByPaging(page, size, sortBy);
 
-        // Build the response with pagination details
-        BaseOutput<List<OutboundDetail>> response =
-                BaseOutput.<List<OutboundDetail>>builder()
-                        .message(HttpStatus.OK.toString())
-                        .totalPages(OutboundDetailPage.getTotalPages())
-                        .currentPage(page)
-                        .pageSize(size)
-                        .total(OutboundDetailPage.getTotalElements())
-                        .data(OutboundDetailPage.getContent())
-                        .status(com.example.hrm_be.commons.enums.ResponseStatus.SUCCESS)
-                        .build();
-        return ResponseEntity.ok(response);
+    // Build the response with pagination details
+    BaseOutput<List<OutboundDetail>> response =
+        BaseOutput.<List<OutboundDetail>>builder()
+            .message(HttpStatus.OK.toString())
+            .totalPages(OutboundDetailPage.getTotalPages())
+            .currentPage(page)
+            .pageSize(size)
+            .total(OutboundDetailPage.getTotalElements())
+            .data(OutboundDetailPage.getContent())
+            .status(com.example.hrm_be.commons.enums.ResponseStatus.SUCCESS)
+            .build();
+    return ResponseEntity.ok(response);
+  }
+
+  // Retrieves a OutboundDetail by its ID
+  @GetMapping("/{id}")
+  protected ResponseEntity<BaseOutput<OutboundDetail>> getById(@PathVariable("id") Long id) {
+    // Validate the path variable ID
+    if (id <= 0 || id == null) {
+      BaseOutput<OutboundDetail> response =
+          BaseOutput.<OutboundDetail>builder()
+              .status(com.example.hrm_be.commons.enums.ResponseStatus.FAILED)
+              .errors(List.of(HrmConstant.ERROR.REQUEST.INVALID_PATH_VARIABLE))
+              .build();
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
-    // Retrieves a OutboundDetail by its ID
-    @GetMapping("/{id}")
-    protected ResponseEntity<BaseOutput<OutboundDetail>> getById(@PathVariable("id") Long id) {
-        // Validate the path variable ID
-        if (id <= 0 || id == null) {
-            BaseOutput<OutboundDetail> response =
-                    BaseOutput.<OutboundDetail>builder()
-                            .status(com.example.hrm_be.commons.enums.ResponseStatus.FAILED)
-                            .errors(List.of(HrmConstant.ERROR.REQUEST.INVALID_PATH_VARIABLE))
-                            .build();
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-        }
+    // Fetch OutboundDetail by ID
+    OutboundDetail OutboundDetail = outboundDetailService.getById(id);
 
-        // Fetch OutboundDetail by ID
-        OutboundDetail OutboundDetail = outboundDetailService.getById(id);
+    // Build the response with the found OutboundDetail data
+    BaseOutput<OutboundDetail> response =
+        BaseOutput.<OutboundDetail>builder()
+            .message(HttpStatus.OK.toString())
+            .data(OutboundDetail)
+            .status(com.example.hrm_be.commons.enums.ResponseStatus.SUCCESS)
+            .build();
+    return ResponseEntity.ok(response);
+  }
 
-        // Build the response with the found OutboundDetail data
-        BaseOutput<OutboundDetail> response =
-                BaseOutput.<OutboundDetail>builder()
-                        .message(HttpStatus.OK.toString())
-                        .data(OutboundDetail)
-                        .status(com.example.hrm_be.commons.enums.ResponseStatus.SUCCESS)
-                        .build();
-        return ResponseEntity.ok(response);
+  // Creates a new OutboundDetail
+  @PostMapping()
+  protected ResponseEntity<BaseOutput<OutboundDetail>> create(
+      @RequestBody @NotNull(message = "error.request.body.invalid")
+          OutboundDetailsCreateRequest OutboundDetail) {
+    // Validate the request body
+    if (OutboundDetail == null) {
+      BaseOutput<OutboundDetail> response =
+          BaseOutput.<OutboundDetail>builder()
+              .errors(List.of(HrmConstant.ERROR.REQUEST.INVALID_BODY))
+              .status(com.example.hrm_be.commons.enums.ResponseStatus.FAILED)
+              .build();
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
-    // Creates a new OutboundDetail
-    @PostMapping()
-    protected ResponseEntity<BaseOutput<OutboundDetail>> create(
-            @RequestBody @NotNull(message = "error.request.body.invalid") OutboundDetailsCreateRequest OutboundDetail) {
-        // Validate the request body
-        if (OutboundDetail == null) {
-            BaseOutput<OutboundDetail> response =
-                    BaseOutput.<OutboundDetail>builder()
-                            .errors(List.of(HrmConstant.ERROR.REQUEST.INVALID_BODY))
-                            .status(com.example.hrm_be.commons.enums.ResponseStatus.FAILED)
-                            .build();
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-        }
+    // Create the OutboundDetail
+    OutboundDetail createdOutboundDetail = outboundDetailService.create(OutboundDetail);
 
-        // Create the OutboundDetail
-        OutboundDetail createdOutboundDetail = outboundDetailService.create(OutboundDetail);
+    // Build the response with the created OutboundDetail data
+    BaseOutput<OutboundDetail> response =
+        BaseOutput.<OutboundDetail>builder()
+            .message(HttpStatus.OK.toString())
+            .data(createdOutboundDetail)
+            .status(com.example.hrm_be.commons.enums.ResponseStatus.SUCCESS)
+            .build();
+    return ResponseEntity.ok(response);
+  }
 
-        // Build the response with the created OutboundDetail data
-        BaseOutput<OutboundDetail> response =
-                BaseOutput.<OutboundDetail>builder()
-                        .message(HttpStatus.OK.toString())
-                        .data(createdOutboundDetail)
-                        .status(com.example.hrm_be.commons.enums.ResponseStatus.SUCCESS)
-                        .build();
-        return ResponseEntity.ok(response);
+  // Updates an existing OutboundDetail
+  @PutMapping("/{id}")
+  protected ResponseEntity<BaseOutput<OutboundDetail>> update(
+      @PathVariable("id") Long id,
+      @RequestBody @NotNull(message = "error.request.body.invalid")
+          OutboundDetailsUpdateRequest OutboundDetail) {
+    // Validate the path variable ID
+    if (id <= 0 || id == null) {
+      BaseOutput<OutboundDetail> response =
+          BaseOutput.<OutboundDetail>builder()
+              .status(com.example.hrm_be.commons.enums.ResponseStatus.FAILED)
+              .errors(List.of(HrmConstant.ERROR.REQUEST.INVALID_PATH_VARIABLE))
+              .build();
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
-    // Updates an existing OutboundDetail
-    @PutMapping("/{id}")
-    protected ResponseEntity<BaseOutput<OutboundDetail>> update(
-            @PathVariable("id") Long id,
-            @RequestBody @NotNull(message = "error.request.body.invalid") OutboundDetailsUpdateRequest OutboundDetail) {
-        // Validate the path variable ID
-        if (id <= 0 || id == null) {
-            BaseOutput<OutboundDetail> response =
-                    BaseOutput.<OutboundDetail>builder()
-                            .status(com.example.hrm_be.commons.enums.ResponseStatus.FAILED)
-                            .errors(List.of(HrmConstant.ERROR.REQUEST.INVALID_PATH_VARIABLE))
-                            .build();
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-        }
+    // Set the ID for the OutboundDetail to update
+    OutboundDetail.setId(id);
 
-        // Set the ID for the OutboundDetail to update
-        OutboundDetail.setId(id);
+    // Update the OutboundDetail
+    OutboundDetail updateOutboundDetail = outboundDetailService.update(OutboundDetail);
 
-        // Update the OutboundDetail
-        OutboundDetail updateOutboundDetail = outboundDetailService.update(OutboundDetail);
+    // Build the response with the updated OutboundDetail data
+    BaseOutput<OutboundDetail> response =
+        BaseOutput.<OutboundDetail>builder()
+            .message(HttpStatus.OK.toString())
+            .data(updateOutboundDetail)
+            .status(com.example.hrm_be.commons.enums.ResponseStatus.SUCCESS)
+            .build();
+    return ResponseEntity.ok(response);
+  }
 
-        // Build the response with the updated OutboundDetail data
-        BaseOutput<OutboundDetail> response =
-                BaseOutput.<OutboundDetail>builder()
-                        .message(HttpStatus.OK.toString())
-                        .data(updateOutboundDetail)
-                        .status(com.example.hrm_be.commons.enums.ResponseStatus.SUCCESS)
-                        .build();
-        return ResponseEntity.ok(response);
+  // Deletes a OutboundDetail by ID
+  @DeleteMapping("/{id}")
+  protected ResponseEntity<BaseOutput<String>> delete(@PathVariable("id") Long id) {
+    // Validate the path variable ID
+    if (id <= 0 || id == null) {
+      BaseOutput<String> response =
+          BaseOutput.<String>builder()
+              .status(com.example.hrm_be.commons.enums.ResponseStatus.FAILED)
+              .errors(List.of(HrmConstant.ERROR.REQUEST.INVALID_PATH_VARIABLE))
+              .build();
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
-    // Deletes a OutboundDetail by ID
-    @DeleteMapping("/{id}")
-    protected ResponseEntity<BaseOutput<String>> delete(@PathVariable("id") Long id) {
-        // Validate the path variable ID
-        if (id <= 0 || id == null) {
-            BaseOutput<String> response =
-                    BaseOutput.<String>builder()
-                            .status(com.example.hrm_be.commons.enums.ResponseStatus.FAILED)
-                            .errors(List.of(HrmConstant.ERROR.REQUEST.INVALID_PATH_VARIABLE))
-                            .build();
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-        }
+    // Delete the OutboundDetail by ID
+    outboundDetailService.delete(id);
 
-        // Delete the OutboundDetail by ID
-        outboundDetailService.delete(id);
-
-        // Build the response indicating success
-        return ResponseEntity.ok(
-                BaseOutput.<String>builder()
-                        .data(HttpStatus.OK.toString())
-                        .status(ResponseStatus.SUCCESS)
-                        .build());
-    }
+    // Build the response indicating success
+    return ResponseEntity.ok(
+        BaseOutput.<String>builder()
+            .data(HttpStatus.OK.toString())
+            .status(ResponseStatus.SUCCESS)
+            .build());
+  }
 }

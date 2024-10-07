@@ -1,6 +1,5 @@
 package com.example.hrm_be.services;
 
-import com.example.hrm_be.models.dtos.InboundDetails;
 import com.example.hrm_be.models.dtos.OutboundDetail;
 import com.example.hrm_be.models.requests.outboundDetails.OutboundDetailsCreateRequest;
 import com.example.hrm_be.models.requests.outboundDetails.OutboundDetailsUpdateRequest;
@@ -9,13 +8,13 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface OutboundDetailService {
-    OutboundDetail getById(Long id);
+  OutboundDetail getById(Long id);
 
-    Page<OutboundDetail> getByPaging(int pageNo, int pageSize, String sortBy);
+  Page<OutboundDetail> getByPaging(int pageNo, int pageSize, String sortBy);
 
-    OutboundDetail create(OutboundDetailsCreateRequest outboundDetail);
+  OutboundDetail create(OutboundDetailsCreateRequest outboundDetail);
 
-    OutboundDetail update(OutboundDetailsUpdateRequest outboundDetail);
+  OutboundDetail update(OutboundDetailsUpdateRequest outboundDetail);
 
-    void delete(Long id);
+  void delete(Long id);
 }

@@ -1,6 +1,5 @@
 package com.example.hrm_be.models.requests.notification;
 
-import com.example.hrm_be.commons.enums.NotificationType;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.Accessors;
@@ -18,13 +17,13 @@ import lombok.extern.jackson.Jacksonized;
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class NotificationUpdateRequest {
-    Long Id;
+  Long Id;
 
-    String notiType;
+  String notiType;
 
-    String notiName;
+  String notiName;
 
-    String message;
+  String message;
 
-    Long branchBatchId;
+  Long branchBatchId;
 }

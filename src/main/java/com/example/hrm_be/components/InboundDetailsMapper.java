@@ -1,7 +1,5 @@
 package com.example.hrm_be.components;
 
-import com.example.hrm_be.commons.enums.InboundStatus;
-import com.example.hrm_be.commons.enums.InboundType;
 import com.example.hrm_be.models.dtos.InboundDetails;
 import com.example.hrm_be.models.entities.*;
 import com.example.hrm_be.models.requests.inboundDetails.InboundDetailsCreateRequest;
@@ -48,32 +46,33 @@ public class InboundDetailsMapper {
   }
 
   // Convert InboundDetailsCreateRequest to InboundDetailsEntity
-  public InboundDetailsEntity toEntity(InboundDetailsCreateRequest dto, InboundEntity inbound, ProductEntity product) {
+  public InboundDetailsEntity toEntity(
+      InboundDetailsCreateRequest dto, InboundEntity inbound, ProductEntity product) {
     return Optional.ofNullable(dto)
-            .map(
-                    request -> {
-                      // Create InboundEntity from InboundDetailsCreateRequest
-                      return InboundDetailsEntity.builder()
-                              .inbound(inbound)
-                              .product(product)
-                              .requestQuantity(dto.getRequestQuantity())
-                              .receiveQuantity(dto.getReceiveQuantity())
-                              .build();
-                    })
-            .orElse(null);
+        .map(
+            request -> {
+              // Create InboundEntity from InboundDetailsCreateRequest
+              return InboundDetailsEntity.builder()
+                  .inbound(inbound)
+                  .product(product)
+                  .requestQuantity(dto.getRequestQuantity())
+                  .receiveQuantity(dto.getReceiveQuantity())
+                  .build();
+            })
+        .orElse(null);
   }
 
   // Convert InboundUpdateRequest to InboundDetailsEntity
   public InboundDetailsEntity toEntity(InboundDetailsUpdateRequest dto) {
     return Optional.ofNullable(dto)
-            .map(
-                    request -> {
-                      // Create InboundDetailsEntity from InboundDetailsUpdateRequest
-                      return InboundDetailsEntity.builder()
-                              .requestQuantity(dto.getRequestQuantity())
-                              .receiveQuantity(dto.getReceiveQuantity())
-                              .build();
-                    })
-            .orElse(null);
+        .map(
+            request -> {
+              // Create InboundDetailsEntity from InboundDetailsUpdateRequest
+              return InboundDetailsEntity.builder()
+                  .requestQuantity(dto.getRequestQuantity())
+                  .receiveQuantity(dto.getReceiveQuantity())
+                  .build();
+            })
+        .orElse(null);
   }
 }

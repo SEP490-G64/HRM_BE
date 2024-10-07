@@ -17,15 +17,15 @@ import lombok.extern.jackson.Jacksonized;
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InventoryCheckDetailsUpdateRequest {
-    Long Id;
+  Long Id;
 
-    Long batchId;
+  Long batchId;
 
-    Integer systemQuantity;
+  Integer systemQuantity;
 
-    Integer countedQuantity;
+  Integer countedQuantity;
 
-    Integer difference;
+  Integer difference;
 
-    String reason;
+  String reason;
 }

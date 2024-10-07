@@ -2,7 +2,6 @@ package com.example.hrm_be.components;
 
 import com.example.hrm_be.commons.enums.InventoryCheckStatus;
 import com.example.hrm_be.models.dtos.InventoryCheck;
-import com.example.hrm_be.models.entities.BatchEntity;
 import com.example.hrm_be.models.entities.BranchEntity;
 import com.example.hrm_be.models.entities.InventoryCheckEntity;
 import com.example.hrm_be.models.entities.UserEntity;
@@ -12,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -76,29 +74,26 @@ public class InventoryCheckMapper {
   // Convert InventoryCheckCreateRequest to InventoryCheckEntity
   public InventoryCheckEntity toEntity(InventoryCheckCreateRequest dto, BranchEntity branch) {
     return Optional.ofNullable(dto)
-            .map(
-                    request -> {
-                      // Create InventoryCheckEntity from InventoryCheckCreateRequest
-                      return InventoryCheckEntity.builder()
-                              .branch(branch)
-                              .note(dto.getNote())
-                              .build();
-                    })
-            .orElse(null);
+        .map(
+            request -> {
+              // Create InventoryCheckEntity from InventoryCheckCreateRequest
+              return InventoryCheckEntity.builder().branch(branch).note(dto.getNote()).build();
+            })
+        .orElse(null);
   }
 
   // Convert InventoryCheckUpdateRequest to InventoryCheckEntity
   public InventoryCheckEntity toEntity(InventoryCheckUpdateRequest dto, UserEntity approvedBy) {
     return Optional.ofNullable(dto)
-            .map(
-                    request -> {
-                      // Create InventoryCheckEntity from InventoryCheckUpdateRequest
-                      return InventoryCheckEntity.builder()
-                              .approvedBy(approvedBy)
-                              .status(InventoryCheckStatus.valueOf(dto.getStatus()))
-                              .note(dto.getNote())
-                              .build();
-                    })
-            .orElse(null);
+        .map(
+            request -> {
+              // Create InventoryCheckEntity from InventoryCheckUpdateRequest
+              return InventoryCheckEntity.builder()
+                  .approvedBy(approvedBy)
+                  .status(InventoryCheckStatus.valueOf(dto.getStatus()))
+                  .note(dto.getNote())
+                  .build();
+            })
+        .orElse(null);
   }
 }

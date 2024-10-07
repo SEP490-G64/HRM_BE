@@ -26,86 +26,81 @@ import java.util.Optional;
 @Service
 @Transactional
 public class OutboundDetailServiceImpl implements OutboundDetailService {
-    @Autowired
-    private OutboundDetailRepository outboundDetailRepository;
+  @Autowired private OutboundDetailRepository outboundDetailRepository;
 
-    @Autowired private OutboundDetailMapper outboundDetailMapper;
+  @Autowired private OutboundDetailMapper outboundDetailMapper;
 
-    @Autowired private EntityManager entityManager;
+  @Autowired private EntityManager entityManager;
 
-    @Override
-    public OutboundDetail getById(Long id) {
-        return Optional.ofNullable(id)
-                .flatMap(e -> outboundDetailRepository.findById(e).map(b -> outboundDetailMapper.toDTO(b)))
-                .orElse(null);
+  @Override
+  public OutboundDetail getById(Long id) {
+    return Optional.ofNullable(id)
+        .flatMap(e -> outboundDetailRepository.findById(e).map(b -> outboundDetailMapper.toDTO(b)))
+        .orElse(null);
+  }
+
+  @Override
+  public Page<OutboundDetail> getByPaging(int pageNo, int pageSize, String sortBy) {
+    Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(sortBy).ascending());
+    return outboundDetailRepository.findAll(pageable).map(dao -> outboundDetailMapper.toDTO(dao));
+  }
+
+  @Override
+  public OutboundDetail create(OutboundDetailsCreateRequest outboundDetail) {
+    if (outboundDetail == null) {
+      throw new HrmCommonException(HrmConstant.ERROR.BRANCH.EXIST);
     }
 
-    @Override
-    public Page<OutboundDetail> getByPaging(int pageNo, int pageSize, String sortBy) {
-        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(sortBy).ascending());
-        return outboundDetailRepository
-                .findAll(pageable)
-                .map(dao -> outboundDetailMapper.toDTO(dao));
+    OutboundEntity outbound;
+    if (outboundDetail.getOutboundId() != null) {
+      outbound = entityManager.getReference(OutboundEntity.class, outboundDetail.getOutboundId());
+      if (outbound == null) {
+        throw new HrmCommonException(
+            "Outbound not found with id: " + outboundDetail.getOutboundId());
+      }
+    } else {
+      outbound = null;
     }
 
-    @Override
-    public OutboundDetail create(OutboundDetailsCreateRequest outboundDetail) {
-        if (outboundDetail == null) {
-            throw new HrmCommonException(HrmConstant.ERROR.BRANCH.EXIST);
-        }
-
-        OutboundEntity outbound;
-        if (outboundDetail.getOutboundId() != null) {
-            outbound = entityManager.getReference(OutboundEntity.class, outboundDetail.getOutboundId());
-            if (outbound == null) {
-                throw new HrmCommonException("Outbound not found with id: " + outboundDetail.getOutboundId());
-            }
-        } else {
-            outbound = null;
-        }
-
-        BatchEntity batch;
-        if (outboundDetail.getBatchId() != null) {
-            batch = entityManager.getReference(BatchEntity.class, outboundDetail.getBatchId());
-            if (batch == null) {
-                throw new HrmCommonException("Batch not found with id: " + outboundDetail.getBatchId());
-            }
-        } else {
-            batch = null;
-        }
-
-        // Convert DTO to entity, save it, and convert back to DTO
-        return Optional.ofNullable(outboundDetail)
-                .map(e -> outboundDetailMapper.toEntity(e, outbound, batch))
-                .map(e -> outboundDetailRepository.save(e))
-                .map(e -> outboundDetailMapper.toDTO(e))
-                .orElse(null);
+    BatchEntity batch;
+    if (outboundDetail.getBatchId() != null) {
+      batch = entityManager.getReference(BatchEntity.class, outboundDetail.getBatchId());
+      if (batch == null) {
+        throw new HrmCommonException("Batch not found with id: " + outboundDetail.getBatchId());
+      }
+    } else {
+      batch = null;
     }
 
-    @Override
-    public OutboundDetail update(OutboundDetailsUpdateRequest outboundDetail) {
-        OutboundDetailEntity oldoutboundDetailEntity = outboundDetailRepository.findById(outboundDetail.getId()).orElse(null);
-        if (oldoutboundDetailEntity == null) {
-            throw new HrmCommonException(HrmConstant.ERROR.BRANCH.NOT_EXIST);
-        }
+    // Convert DTO to entity, save it, and convert back to DTO
+    return Optional.ofNullable(outboundDetail)
+        .map(e -> outboundDetailMapper.toEntity(e, outbound, batch))
+        .map(e -> outboundDetailRepository.save(e))
+        .map(e -> outboundDetailMapper.toDTO(e))
+        .orElse(null);
+  }
 
-        return Optional.ofNullable(oldoutboundDetailEntity)
-                .map(
-                        op ->
-                                op.toBuilder()
-                                        .quantity(outboundDetail.getQuantity())
-                                        .build())
-                .map(outboundDetailRepository::save)
-                .map(outboundDetailMapper::toDTO)
-                .orElse(null);
+  @Override
+  public OutboundDetail update(OutboundDetailsUpdateRequest outboundDetail) {
+    OutboundDetailEntity oldoutboundDetailEntity =
+        outboundDetailRepository.findById(outboundDetail.getId()).orElse(null);
+    if (oldoutboundDetailEntity == null) {
+      throw new HrmCommonException(HrmConstant.ERROR.BRANCH.NOT_EXIST);
     }
 
-    @Override
-    public void delete(Long id) {
-        if (StringUtils.isBlank(id.toString())) {
-            return;
-        }
+    return Optional.ofNullable(oldoutboundDetailEntity)
+        .map(op -> op.toBuilder().quantity(outboundDetail.getQuantity()).build())
+        .map(outboundDetailRepository::save)
+        .map(outboundDetailMapper::toDTO)
+        .orElse(null);
+  }
 
-        outboundDetailRepository.deleteById(id);
+  @Override
+  public void delete(Long id) {
+    if (StringUtils.isBlank(id.toString())) {
+      return;
     }
+
+    outboundDetailRepository.deleteById(id);
+  }
 }

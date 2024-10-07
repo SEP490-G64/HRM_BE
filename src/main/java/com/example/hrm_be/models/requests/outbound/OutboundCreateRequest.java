@@ -1,11 +1,5 @@
 package com.example.hrm_be.models.requests.outbound;
 
-import com.example.hrm_be.commons.enums.OutboundStatus;
-import com.example.hrm_be.commons.enums.OutboundType;
-import com.example.hrm_be.models.entities.BranchEntity;
-import com.example.hrm_be.models.entities.OutboundDetailEntity;
-import com.example.hrm_be.models.entities.SupplierEntity;
-import com.example.hrm_be.models.entities.UserEntity;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import lombok.*;
@@ -16,7 +10,6 @@ import lombok.extern.jackson.Jacksonized;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -28,21 +21,21 @@ import java.util.List;
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class OutboundCreateRequest {
-    String outboundType;
+  String outboundType;
 
-    Long fromBranchId;
+  Long fromBranchId;
 
-    Long supplierId;
+  Long supplierId;
 
-    Long toBranchId;
+  Long toBranchId;
 
-    BigDecimal totalPrice;
+  BigDecimal totalPrice;
 
-    String status;
+  String status;
 
-    Boolean taxable;
+  Boolean taxable;
 
-    String note;
+  String note;
 
-    LocalDateTime outboundDate;
+  LocalDateTime outboundDate;
 }

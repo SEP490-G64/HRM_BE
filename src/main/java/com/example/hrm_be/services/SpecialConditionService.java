@@ -8,13 +8,13 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface SpecialConditionService {
-    SpecialCondition getById(Long id);
+  SpecialCondition getById(Long id);
 
-    Page<SpecialCondition> getByPaging(int pageNo, int pageSize, String sortBy);
+  Page<SpecialCondition> getByPaging(int pageNo, int pageSize, String sortBy);
 
-    SpecialCondition create(SpecialConditionCreateRequest specialCondition);
+  SpecialCondition create(SpecialConditionCreateRequest specialCondition);
 
-    SpecialCondition update(SpecialConditionUpdateRequest specialCondition);
+  SpecialCondition update(SpecialConditionUpdateRequest specialCondition);
 
-    void delete(Long id);
+  void delete(Long id);
 }
