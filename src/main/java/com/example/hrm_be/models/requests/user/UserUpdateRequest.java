@@ -1,11 +1,7 @@
-package com.example.hrm_be.models.dtos;
+package com.example.hrm_be.models.requests.user;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
@@ -20,17 +16,22 @@ import lombok.extern.jackson.Jacksonized;
 @EqualsAndHashCode
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class InventoryCheckDetails {
+public class UserUpdateRequest {
   Long id;
-  InventoryCheck inventoryCheck; // N-1 with InventoryCheckEntity
 
-  Batch batch;
+  String userName;
 
-  Integer systemQuantity;
+  String email;
 
-  Integer countedQuantity;
+  String phone;
 
-  Integer difference;
+  String firstName;
 
-  String reason;
+  String lastName;
+
+  String status;
+
+  Long role;
+
+  Long branchId;
 }

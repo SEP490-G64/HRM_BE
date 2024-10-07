@@ -1,12 +1,14 @@
 package com.example.hrm_be.commons.enums;
 
-public enum BranchType {
-  MAIN("Trụ sở chính"),
-  SUB("Chi nhánh");
+public enum UserStatusType {
+  PENDING("Chờ duyệt"),
+  REJECTED("Từ chối"),
+  ACTIVATE("Đang kích hoạt"),
+  DEACTIVATE("Vô hiệu hoá");
 
   private final String displayName;
 
-  BranchType(String displayName) {
+  UserStatusType(String displayName) {
     this.displayName = displayName;
   }
 

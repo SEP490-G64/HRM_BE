@@ -65,6 +65,15 @@ public class HrmConstant {
       public static final String NOT_EXIST = "error.category.not_exist";
     }
 
+    public static class TYPE {
+      public static final String CREATE = "error.type.create";
+      public static final String UPDATE = "error.type.update";
+      public static final String DELETE = "error.type.delete";
+      public static final String EXIST = "error.type.exist";
+      public static final String NOT_CHILD = "error.type.not_child";
+      public static final String NOT_EXIST = "error.type.not_exist";
+    }
+
     public static class PLAYLIST {
       public static final String CREATE = "error.playlist.create";
       public static final String UPDATE = "error.playlist.update";
@@ -129,6 +138,8 @@ public class HrmConstant {
       public static final String NOT_EXIST = "error.user.not_exist";
       public static final String EXIST = "error.user.exist";
       public static final String NOT_ASSIGNED_ROLE = "error.user.not_assigned_role";
+      public static final String NOT_MATCH_CONFIRM_PASSWORD =
+          "error.user.not_match_confirm_password";
     }
 
     public static class ROLE {

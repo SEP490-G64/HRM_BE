@@ -12,6 +12,7 @@ public class InventoryCheckDetailsMapper {
 
   @Autowired @Lazy private InventoryCheckMapper inventoryCheckMapper;
   @Autowired @Lazy private ProductMapper productMapper;
+  @Autowired @Lazy private BatchMapper batchMapper;
 
   // Convert InventoryCheckDetailsEntity to InventoryCheckDetailsDTO
   public InventoryCheckDetails toDTO(InventoryCheckDetailsEntity entity) {
@@ -28,7 +29,8 @@ public class InventoryCheckDetailsMapper {
                         d.getInventoryCheck() != null
                             ? inventoryCheckMapper.toEntity(d.getInventoryCheck())
                             : null)
-                    .product(d.getProduct() != null ? productMapper.toEntity(d.getProduct()) : null)
+                    .batch(
+                        d.getInventoryCheck() != null ? batchMapper.toEntity(d.getBatch()) : null)
                     .systemQuantity(d.getSystemQuantity())
                     .countedQuantity(d.getCountedQuantity())
                     .difference(d.getDifference())
@@ -44,7 +46,7 @@ public class InventoryCheckDetailsMapper {
             entity.getInventoryCheck() != null
                 ? inventoryCheckMapper.toDTO(entity.getInventoryCheck())
                 : null)
-        .product(entity.getProduct() != null ? productMapper.toDTO(entity.getProduct()) : null)
+        .batch(entity.getBatch() != null ? batchMapper.toDTO(entity.getBatch()) : null)
         .systemQuantity(entity.getSystemQuantity())
         .countedQuantity(entity.getCountedQuantity())
         .difference(entity.getDifference())
