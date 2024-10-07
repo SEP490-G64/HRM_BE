@@ -74,6 +74,15 @@ public class HrmConstant {
       public static final String NOT_EXIST = "error.type.not_exist";
     }
 
+    public static class STORAGE_LOCATION {
+      public static final String CREATE = "error.type.create";
+      public static final String UPDATE = "error.type.update";
+      public static final String DELETE = "error.type.delete";
+      public static final String EXIST = "error.type.exist";
+      public static final String NOT_CHILD = "error.type.not_child";
+      public static final String NOT_EXIST = "error.type.not_exist";
+    }
+
     public static class PLAYLIST {
       public static final String CREATE = "error.playlist.create";
       public static final String UPDATE = "error.playlist.update";
