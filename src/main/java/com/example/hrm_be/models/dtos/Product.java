@@ -45,6 +45,8 @@ public class Product {
 
   String formulation;
 
+  BigDecimal inboundPrice;
+
   BigDecimal sellPrice;
 
   ProductStatus status;

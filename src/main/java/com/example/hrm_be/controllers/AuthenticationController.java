@@ -2,7 +2,7 @@ package com.example.hrm_be.controllers;
 
 import com.example.hrm_be.commons.constants.HrmConstant.ERROR.REQUEST;
 import com.example.hrm_be.commons.enums.UserStatusType;
-import com.example.hrm_be.components.JwtUtil;
+import com.example.hrm_be.utils.JwtUtil;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.configs.exceptions.JwtAuthenticationException;
 import com.example.hrm_be.models.dtos.User;

@@ -29,7 +29,7 @@ public class UnitOfMeasurement {
 
   Double pricePerUnit;
 
-  Product product;
+  List<Product> products;
 
   List<UnitConversion> largerUnitConversions; // 1-N with UnitConversion as larger unit
 

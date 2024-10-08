@@ -37,6 +37,8 @@ public class Inbound {
 
   User createdBy;
 
+  User approvedBy;
+
   LocalDateTime inboundDate;
 
   LocalDateTime createdDate;

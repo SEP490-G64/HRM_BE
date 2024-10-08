@@ -38,16 +38,9 @@ public class UnitOfMeasurementEntity extends CommonEntity {
   @Column(name = "unit_name", length = 100)
   String unitName;
 
-  @Column(name = "conversion_factor")
-  Double conversionFactor;
-
-  @Column(name = "price_per_unit")
-  Double pricePerUnit;
-
   @ToString.Exclude
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "product_id", foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
-  ProductEntity product;
+  @OneToMany(mappedBy = "baseUnit", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  List<ProductEntity> products;
 
   @ToString.Exclude
   @OneToMany(mappedBy = "largerUnit", fetch = FetchType.LAZY, cascade = CascadeType.ALL)

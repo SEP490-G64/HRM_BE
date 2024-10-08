@@ -88,6 +88,10 @@ public class InboundEntity extends CommonEntity {
   @Column(name = "note")
   String note;
 
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "approved_by", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+  UserEntity approvedBy;
+
   @ToString.Exclude
   @OneToMany(mappedBy = "inbound", fetch = FetchType.LAZY)
   List<InboundDetailsEntity> inboundDetails;

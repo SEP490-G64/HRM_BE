@@ -41,7 +41,7 @@ public class Batch extends CommonEntity {
 
   List<BranchBatch> branchBatches; // 1-N with BranchBatch
 
-  InboundBatchDetail inboundBatchDetail;
+  List<InboundBatchDetail> inboundBatchDetails;
 
   List<InventoryCheckDetails> inventoryCheckDetails;
 
