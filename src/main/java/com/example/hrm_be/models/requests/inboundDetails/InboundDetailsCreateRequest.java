@@ -8,7 +8,6 @@ import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
