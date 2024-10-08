@@ -179,5 +179,14 @@ public class HrmConstant {
       public static final String NOT_CHILD = "error.ingredient.not_child";
       public static final String NOT_EXIST = "error.ingredient.not_exist";
     }
+
+    public static class MANUFACTURER {
+      public static final String CREATE = "error.branch.create";
+      public static final String UPDATE = "error.branch.update";
+      public static final String DELETE = "error.branch.delete";
+      public static final String EXIST = "error.branch.exist";
+      public static final String NOT_CHILD = "error.branch.not_child";
+      public static final String NOT_EXIST = "error.branch.not_exist";
+    }
   }
 }
