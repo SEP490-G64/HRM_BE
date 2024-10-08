@@ -51,7 +51,9 @@ jobs:
         run: docker load -i ${{ env.DOCKER_CACHE_PATH }}
 
       - name: Run Unit Testing with Junit
-        run: mvn clean test -fae
+        run: |
+          export AWS_JAVA_V1_DISABLE_DEPRECATION_ANNOUNCEMENT=true #Disable AWS alert
+          mvn clean test -fae
 
       - name: Init cache postgres image
         if: steps.cache-image-restore.outputs.cache-hit != 'true'
