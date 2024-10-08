@@ -2,15 +2,11 @@ package com.example.hrm_be.services.impl;
 
 import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.components.ManufacturerMapper;
-import com.example.hrm_be.components.ProductMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.Manufacturer;
 import com.example.hrm_be.models.entities.ManufacturerEntity;
-import com.example.hrm_be.models.entities.ProductEntity;
 import com.example.hrm_be.repositories.ManufacturerRepository;
 import com.example.hrm_be.services.ManufacturerService;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -26,8 +22,6 @@ public class ManufacturerServiceImpl implements ManufacturerService {
   @Autowired private ManufacturerRepository manufacturerRepository;
 
   @Autowired private ManufacturerMapper manufacturerMapper;
-
-  @Autowired private ProductMapper productMapper;
 
   @Override
   public Manufacturer getById(Long id) {
@@ -51,17 +45,17 @@ public class ManufacturerServiceImpl implements ManufacturerService {
   }
 
   @Override
-  public Manufacturer create(Manufacturer Manufacturer) {
+  public Manufacturer create(Manufacturer manufacturer) {
     // Validate that Manufacturer is not null and does not already exist
-    if (Manufacturer == null
+    if (manufacturer == null
         || manufacturerRepository.existsByManufacturerNameAndAddress(
-            Manufacturer.getManufacturerName(), Manufacturer.getAddress())) {
+            manufacturer.getManufacturerName(), manufacturer.getAddress())) {
       // Throw exception if Manufacturer already exists
       throw new HrmCommonException(HrmConstant.ERROR.MANUFACTURER.EXIST);
     }
 
     // Map Manufacturer DTO to entity and save it to the repository
-    return Optional.ofNullable(Manufacturer)
+    return Optional.ofNullable(manufacturer)
         .map(e -> manufacturerMapper.toEntity(e)) // Convert DTO to entity
         .map(e -> manufacturerRepository.save(e)) // Save entity to the repository
         .map(e -> manufacturerMapper.toDTO(e)) // Map saved entity back to DTO
@@ -69,10 +63,10 @@ public class ManufacturerServiceImpl implements ManufacturerService {
   }
 
   @Override
-  public Manufacturer update(Manufacturer Manufacturer) {
+  public Manufacturer update(Manufacturer manufacturer) {
     // Retrieve existing Manufacturer entity by ID
     ManufacturerEntity oldManufacturerEntity =
-        manufacturerRepository.findById(Manufacturer.getId()).orElse(null);
+        manufacturerRepository.findById(manufacturer.getId()).orElse(null);
     // Check if the Manufacturer to be updated exists
     if (oldManufacturerEntity == null) {
       throw new HrmCommonException(
@@ -81,29 +75,18 @@ public class ManufacturerServiceImpl implements ManufacturerService {
               .NOT_EXIST); // Throw exception if Manufacturer does not exist
     }
 
-    List<ProductEntity> productEntityList;
-    if (Manufacturer.getProducts() != null) {
-      productEntityList = new ArrayList<>();
-      for (int i = 0; i < Manufacturer.getProducts().size(); i++) {
-        productEntityList.add(productMapper.toEntity(Manufacturer.getProducts().get(i)));
-      }
-    } else {
-      productEntityList = null;
-    }
-
     // Use Optional to map the existing Manufacturer entity to a new one with updated fields
     return Optional.ofNullable(oldManufacturerEntity)
         .map(
             op ->
                 op.toBuilder() // Use builder pattern for immutability
-                    .manufacturerName(Manufacturer.getManufacturerName())
-                    .phoneNumber(Manufacturer.getPhoneNumber())
-                    .email(Manufacturer.getEmail())
-                    .address(Manufacturer.getAddress())
-                    .taxCode(Manufacturer.getTaxCode())
-                    .status(Manufacturer.getStatus())
-                    .origin(Manufacturer.getOrigin())
-                    .products(productEntityList)
+                    .manufacturerName(manufacturer.getManufacturerName())
+                    .phoneNumber(manufacturer.getPhoneNumber())
+                    .email(manufacturer.getEmail())
+                    .address(manufacturer.getAddress())
+                    .taxCode(manufacturer.getTaxCode())
+                    .status(manufacturer.getStatus())
+                    .origin(manufacturer.getOrigin())
                     .build()) // Build updated Manufacturer entity
         .map(manufacturerRepository::save) // Save the updated Manufacturer entity
         .map(manufacturerMapper::toDTO) // Convert saved entity back to DTO
