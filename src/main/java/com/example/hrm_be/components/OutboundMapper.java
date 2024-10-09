@@ -1,7 +1,5 @@
 package com.example.hrm_be.components;
 
-import com.example.hrm_be.commons.enums.OutboundStatus;
-import com.example.hrm_be.commons.enums.OutboundType;
 import com.example.hrm_be.models.dtos.Outbound;
 import com.example.hrm_be.models.entities.*;
 import org.springframework.beans.factory.annotation.Autowired;

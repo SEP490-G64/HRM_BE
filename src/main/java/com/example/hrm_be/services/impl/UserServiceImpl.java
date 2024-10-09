@@ -170,11 +170,14 @@ public class UserServiceImpl implements UserService {
             e -> {
               // Check role to assign role for user
               if (user.getRoles() != null) {
-                if (user.getRoles().contains(roleMapper.toDTO(roleRepository.getReferenceById(1L)))) {
+                if (user.getRoles()
+                    .contains(roleMapper.toDTO(roleRepository.getReferenceById(1L)))) {
                   userRoleMapService.setStaffRoleForUser(e.getId());
-                } else if (user.getRoles().contains(roleMapper.toDTO(roleRepository.getReferenceById(2L)))) {
+                } else if (user.getRoles()
+                    .contains(roleMapper.toDTO(roleRepository.getReferenceById(2L)))) {
                   userRoleMapService.setManagerRoleForUser(e.getId());
-                } else if (user.getRoles().contains(roleMapper.toDTO(roleRepository.getReferenceById(3L)))) {
+                } else if (user.getRoles()
+                    .contains(roleMapper.toDTO(roleRepository.getReferenceById(3L)))) {
                   userRoleMapService.setAdminRoleForUser(e.getId());
                 }
               } else {

@@ -85,7 +85,7 @@ public class SpecialConditionServiceImpl implements SpecialConditionService {
     }
 
     SpecialConditionEntity oldSpecialConditionEntity =
-            specialConditionRepository.findById(id).orElse(null);
+        specialConditionRepository.findById(id).orElse(null);
     if (oldSpecialConditionEntity == null) {
       throw new HrmCommonException(HrmConstant.ERROR.SPECIAL_CONDITION.NOT_EXIST);
     }

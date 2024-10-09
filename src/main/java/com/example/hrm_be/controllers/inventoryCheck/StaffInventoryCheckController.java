@@ -79,8 +79,7 @@ public class StaffInventoryCheckController {
   // Creates a new InventoryCheck
   @PostMapping()
   protected ResponseEntity<BaseOutput<InventoryCheck>> create(
-      @RequestBody @NotNull(message = "error.request.body.invalid")
-          InventoryCheck InventoryCheck) {
+      @RequestBody @NotNull(message = "error.request.body.invalid") InventoryCheck InventoryCheck) {
     // Validate the request body
     if (InventoryCheck == null) {
       BaseOutput<InventoryCheck> response =
@@ -108,8 +107,7 @@ public class StaffInventoryCheckController {
   @PutMapping("/{id}")
   protected ResponseEntity<BaseOutput<InventoryCheck>> update(
       @PathVariable("id") Long id,
-      @RequestBody @NotNull(message = "error.request.body.invalid")
-          InventoryCheck InventoryCheck) {
+      @RequestBody @NotNull(message = "error.request.body.invalid") InventoryCheck InventoryCheck) {
     // Validate the path variable ID
     if (id <= 0 || id == null) {
       BaseOutput<InventoryCheck> response =

@@ -79,8 +79,7 @@ public class StaffOutboundDetailsController {
   // Creates a new OutboundDetail
   @PostMapping()
   protected ResponseEntity<BaseOutput<OutboundDetail>> create(
-      @RequestBody @NotNull(message = "error.request.body.invalid")
-          OutboundDetail outboundDetail) {
+      @RequestBody @NotNull(message = "error.request.body.invalid") OutboundDetail outboundDetail) {
     // Validate the request body
     if (outboundDetail == null) {
       BaseOutput<OutboundDetail> response =
@@ -108,8 +107,7 @@ public class StaffOutboundDetailsController {
   @PutMapping("/{id}")
   protected ResponseEntity<BaseOutput<OutboundDetail>> update(
       @PathVariable("id") Long id,
-      @RequestBody @NotNull(message = "error.request.body.invalid")
-          OutboundDetail outboundDetail) {
+      @RequestBody @NotNull(message = "error.request.body.invalid") OutboundDetail outboundDetail) {
     // Validate the path variable ID
     if (id <= 0 || id == null) {
       BaseOutput<OutboundDetail> response =

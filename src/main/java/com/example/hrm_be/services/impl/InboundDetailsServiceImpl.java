@@ -82,7 +82,7 @@ public class InboundDetailsServiceImpl implements InboundDetailsService {
     }
 
     InboundDetailsEntity oldInboundDetailsEntity =
-            inboundDetailsRepository.findById(id).orElse(null);
+        inboundDetailsRepository.findById(id).orElse(null);
     if (oldInboundDetailsEntity == null) {
       throw new HrmCommonException(HrmConstant.ERROR.INBOUND_DETAILS.NOT_EXIST);
     }

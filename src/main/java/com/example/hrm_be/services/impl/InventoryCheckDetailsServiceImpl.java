@@ -90,7 +90,7 @@ public class InventoryCheckDetailsServiceImpl implements InventoryCheckDetailsSe
     }
 
     InventoryCheckDetailsEntity oldInventoryCheckDetailsEntity =
-            inventoryCheckDetailsRepository.findById(id).orElse(null);
+        inventoryCheckDetailsRepository.findById(id).orElse(null);
     if (oldInventoryCheckDetailsEntity == null) {
       throw new HrmCommonException(HrmConstant.ERROR.INVENTORY_CHECK_DETAILS.NOT_EXIST);
     }

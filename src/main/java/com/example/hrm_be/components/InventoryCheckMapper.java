@@ -1,10 +1,7 @@
 package com.example.hrm_be.components;
 
-import com.example.hrm_be.commons.enums.InventoryCheckStatus;
 import com.example.hrm_be.models.dtos.InventoryCheck;
-import com.example.hrm_be.models.entities.BranchEntity;
 import com.example.hrm_be.models.entities.InventoryCheckEntity;
-import com.example.hrm_be.models.entities.UserEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;

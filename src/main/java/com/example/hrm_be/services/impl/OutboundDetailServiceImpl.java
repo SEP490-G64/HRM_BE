@@ -77,7 +77,7 @@ public class OutboundDetailServiceImpl implements OutboundDetailService {
     }
 
     OutboundDetailEntity oldoutboundDetailEntity =
-            outboundDetailRepository.findById(id).orElse(null);
+        outboundDetailRepository.findById(id).orElse(null);
     if (oldoutboundDetailEntity == null) {
       throw new HrmCommonException(HrmConstant.ERROR.OUTBOUND_DETAILS.NOT_EXIST);
     }

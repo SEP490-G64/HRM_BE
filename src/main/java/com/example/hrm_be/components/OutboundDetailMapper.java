@@ -1,9 +1,7 @@
 package com.example.hrm_be.components;
 
 import com.example.hrm_be.models.dtos.OutboundDetail;
-import com.example.hrm_be.models.entities.BatchEntity;
 import com.example.hrm_be.models.entities.OutboundDetailEntity;
-import com.example.hrm_be.models.entities.OutboundEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;

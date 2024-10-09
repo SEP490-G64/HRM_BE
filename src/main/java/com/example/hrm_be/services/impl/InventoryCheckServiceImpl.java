@@ -117,8 +117,7 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
       return;
     }
 
-    InventoryCheckEntity inventoryCheckEntity =
-            inventoryCheckRepository.findById(id).orElse(null);
+    InventoryCheckEntity inventoryCheckEntity = inventoryCheckRepository.findById(id).orElse(null);
     if (inventoryCheckEntity == null) {
       throw new HrmCommonException(HrmConstant.ERROR.INVENTORY_CHECK.NOT_EXIST);
     }

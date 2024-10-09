@@ -1,8 +1,6 @@
 package com.example.hrm_be.components;
 
-import com.example.hrm_be.commons.enums.NotificationType;
 import com.example.hrm_be.models.dtos.Notification;
-import com.example.hrm_be.models.entities.BranchBatchEntity;
 import com.example.hrm_be.models.entities.NotificationEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;

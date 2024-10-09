@@ -1,8 +1,6 @@
 package com.example.hrm_be.components;
 
-import com.example.hrm_be.commons.enums.UserStatusType;
 import com.example.hrm_be.models.dtos.User;
-import com.example.hrm_be.models.entities.BranchEntity;
 import com.example.hrm_be.models.entities.UserEntity;
 import com.example.hrm_be.models.entities.UserRoleMapEntity;
 import com.example.hrm_be.models.requests.RegisterRequest;
@@ -100,10 +98,7 @@ public class UserMapper {
                   .phone(request.getPhone())
                   .firstName(request.getFirstName())
                   .lastName(request.getLastName())
-                  .branch(
-                      dto.getBranch() != null
-                           ? branchMapper.toEntity(dto.getBranch())
-                           : null)
+                  .branch(dto.getBranch() != null ? branchMapper.toEntity(dto.getBranch()) : null)
                   .password(passwordEncoder.encode(request.getPassword()))
                   .build();
             })

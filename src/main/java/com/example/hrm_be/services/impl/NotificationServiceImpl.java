@@ -81,7 +81,7 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     NotificationEntity oldNotificationDetailEntity =
-            notificationRepository.findById(id).orElse(null);
+        notificationRepository.findById(id).orElse(null);
     if (oldNotificationDetailEntity == null) {
       throw new HrmCommonException(HrmConstant.ERROR.NOTIFICATION.NOT_EXIST);
     }

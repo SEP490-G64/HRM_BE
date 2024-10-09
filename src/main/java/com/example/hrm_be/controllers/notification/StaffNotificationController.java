@@ -79,8 +79,7 @@ public class StaffNotificationController {
   // Creates a new notification
   @PostMapping()
   protected ResponseEntity<BaseOutput<Notification>> create(
-      @RequestBody @NotNull(message = "error.request.body.invalid")
-          Notification notification) {
+      @RequestBody @NotNull(message = "error.request.body.invalid") Notification notification) {
     // Validate the request body
     if (notification == null) {
       BaseOutput<Notification> response =
@@ -108,8 +107,7 @@ public class StaffNotificationController {
   @PutMapping("/{id}")
   protected ResponseEntity<BaseOutput<Notification>> update(
       @PathVariable("id") Long id,
-      @RequestBody @NotNull(message = "error.request.body.invalid")
-          Notification notification) {
+      @RequestBody @NotNull(message = "error.request.body.invalid") Notification notification) {
     // Validate the path variable ID
     if (id <= 0 || id == null) {
       BaseOutput<Notification> response =
