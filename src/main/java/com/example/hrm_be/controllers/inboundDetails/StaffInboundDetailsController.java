@@ -3,8 +3,6 @@ package com.example.hrm_be.controllers.inboundDetails;
 import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.commons.enums.ResponseStatus;
 import com.example.hrm_be.models.dtos.InboundDetails;
-import com.example.hrm_be.models.requests.inboundDetails.InboundDetailsCreateRequest;
-import com.example.hrm_be.models.requests.inboundDetails.InboundDetailsUpdateRequest;
 import com.example.hrm_be.models.responses.BaseOutput;
 import com.example.hrm_be.services.InboundDetailsService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -82,7 +80,7 @@ public class StaffInboundDetailsController {
   @PostMapping()
   protected ResponseEntity<BaseOutput<InboundDetails>> create(
       @RequestBody @NotNull(message = "error.request.body.invalid")
-          InboundDetailsCreateRequest InboundDetails) {
+          InboundDetails InboundDetails) {
     // Validate the request body
     if (InboundDetails == null) {
       BaseOutput<InboundDetails> response =
@@ -111,7 +109,7 @@ public class StaffInboundDetailsController {
   protected ResponseEntity<BaseOutput<InboundDetails>> update(
       @PathVariable("id") Long id,
       @RequestBody @NotNull(message = "error.request.body.invalid")
-          InboundDetailsUpdateRequest InboundDetails) {
+          InboundDetails InboundDetails) {
     // Validate the path variable ID
     if (id <= 0 || id == null) {
       BaseOutput<InboundDetails> response =

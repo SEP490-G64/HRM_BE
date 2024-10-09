@@ -3,8 +3,6 @@ package com.example.hrm_be.controllers.inventoryCheck;
 import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.commons.enums.ResponseStatus;
 import com.example.hrm_be.models.dtos.InventoryCheck;
-import com.example.hrm_be.models.requests.inventoryCheck.InventoryCheckCreateRequest;
-import com.example.hrm_be.models.requests.inventoryCheck.InventoryCheckUpdateRequest;
 import com.example.hrm_be.models.responses.BaseOutput;
 import com.example.hrm_be.services.InventoryCheckService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -82,7 +80,7 @@ public class StaffInventoryCheckController {
   @PostMapping()
   protected ResponseEntity<BaseOutput<InventoryCheck>> create(
       @RequestBody @NotNull(message = "error.request.body.invalid")
-          InventoryCheckCreateRequest InventoryCheck) {
+          InventoryCheck InventoryCheck) {
     // Validate the request body
     if (InventoryCheck == null) {
       BaseOutput<InventoryCheck> response =
@@ -111,7 +109,7 @@ public class StaffInventoryCheckController {
   protected ResponseEntity<BaseOutput<InventoryCheck>> update(
       @PathVariable("id") Long id,
       @RequestBody @NotNull(message = "error.request.body.invalid")
-          InventoryCheckUpdateRequest InventoryCheck) {
+          InventoryCheck InventoryCheck) {
     // Validate the path variable ID
     if (id <= 0 || id == null) {
       BaseOutput<InventoryCheck> response =

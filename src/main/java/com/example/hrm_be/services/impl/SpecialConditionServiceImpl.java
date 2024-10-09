@@ -1,14 +1,10 @@
 package com.example.hrm_be.services.impl;
 
 import com.example.hrm_be.commons.constants.HrmConstant;
-import com.example.hrm_be.commons.enums.ConditionType;
 import com.example.hrm_be.components.SpecialConditionMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.SpecialCondition;
-import com.example.hrm_be.models.entities.ProductEntity;
 import com.example.hrm_be.models.entities.SpecialConditionEntity;
-import com.example.hrm_be.models.requests.specialCondition.SpecialConditionCreateRequest;
-import com.example.hrm_be.models.requests.specialCondition.SpecialConditionUpdateRequest;
 import com.example.hrm_be.repositories.SpecialConditionRepository;
 import com.example.hrm_be.services.SpecialConditionService;
 import io.micrometer.common.util.StringUtils;
@@ -49,43 +45,32 @@ public class SpecialConditionServiceImpl implements SpecialConditionService {
   }
 
   @Override
-  public SpecialCondition create(SpecialConditionCreateRequest specialCondition) {
+  public SpecialCondition create(SpecialCondition specialCondition) {
     if (specialCondition == null) {
-      throw new HrmCommonException(HrmConstant.ERROR.BRANCH.EXIST);
-    }
-
-    ProductEntity product;
-    if (specialCondition.getProductId() != null) {
-      product = entityManager.getReference(ProductEntity.class, specialCondition.getProductId());
-      if (product == null) {
-        throw new HrmCommonException(
-            "Product not found with id: " + specialCondition.getProductId());
-      }
-    } else {
-      product = null;
+      throw new HrmCommonException(HrmConstant.ERROR.SPECIAL_CONDITION.EXIST);
     }
 
     // Convert DTO to entity, save it, and convert back to DTO
     return Optional.ofNullable(specialCondition)
-        .map(e -> specialConditionMapper.toEntity(e, product))
+        .map(specialConditionMapper::toEntity)
         .map(e -> specialConditionRepository.save(e))
         .map(e -> specialConditionMapper.toDTO(e))
         .orElse(null);
   }
 
   @Override
-  public SpecialCondition update(SpecialConditionUpdateRequest specialCondition) {
+  public SpecialCondition update(SpecialCondition specialCondition) {
     SpecialConditionEntity oldSpecialConditionEntity =
         specialConditionRepository.findById(specialCondition.getId()).orElse(null);
     if (oldSpecialConditionEntity == null) {
-      throw new HrmCommonException(HrmConstant.ERROR.BRANCH.NOT_EXIST);
+      throw new HrmCommonException(HrmConstant.ERROR.SPECIAL_CONDITION.NOT_EXIST);
     }
 
     return Optional.ofNullable(oldSpecialConditionEntity)
         .map(
             op ->
                 op.toBuilder()
-                    .conditionType(ConditionType.valueOf(specialCondition.getConditionType()))
+                    .conditionType(specialCondition.getConditionType())
                     .handlingInstruction(specialCondition.getHandlingInstruction())
                     .build())
         .map(specialConditionRepository::save)
@@ -97,6 +82,12 @@ public class SpecialConditionServiceImpl implements SpecialConditionService {
   public void delete(Long id) {
     if (StringUtils.isBlank(id.toString())) {
       return;
+    }
+
+    SpecialConditionEntity oldSpecialConditionEntity =
+            specialConditionRepository.findById(id).orElse(null);
+    if (oldSpecialConditionEntity == null) {
+      throw new HrmCommonException(HrmConstant.ERROR.SPECIAL_CONDITION.NOT_EXIST);
     }
 
     specialConditionRepository.deleteById(id);

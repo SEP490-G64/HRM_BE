@@ -5,8 +5,6 @@ import com.example.hrm_be.models.dtos.InventoryCheck;
 import com.example.hrm_be.models.entities.BranchEntity;
 import com.example.hrm_be.models.entities.InventoryCheckEntity;
 import com.example.hrm_be.models.entities.UserEntity;
-import com.example.hrm_be.models.requests.inventoryCheck.InventoryCheckCreateRequest;
-import com.example.hrm_be.models.requests.inventoryCheck.InventoryCheckUpdateRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -69,31 +67,5 @@ public class InventoryCheckMapper {
                     .collect(Collectors.toList())
                 : null)
         .build();
-  }
-
-  // Convert InventoryCheckCreateRequest to InventoryCheckEntity
-  public InventoryCheckEntity toEntity(InventoryCheckCreateRequest dto, BranchEntity branch) {
-    return Optional.ofNullable(dto)
-        .map(
-            request -> {
-              // Create InventoryCheckEntity from InventoryCheckCreateRequest
-              return InventoryCheckEntity.builder().branch(branch).note(dto.getNote()).build();
-            })
-        .orElse(null);
-  }
-
-  // Convert InventoryCheckUpdateRequest to InventoryCheckEntity
-  public InventoryCheckEntity toEntity(InventoryCheckUpdateRequest dto, UserEntity approvedBy) {
-    return Optional.ofNullable(dto)
-        .map(
-            request -> {
-              // Create InventoryCheckEntity from InventoryCheckUpdateRequest
-              return InventoryCheckEntity.builder()
-                  .approvedBy(approvedBy)
-                  .status(InventoryCheckStatus.valueOf(dto.getStatus()))
-                  .note(dto.getNote())
-                  .build();
-            })
-        .orElse(null);
   }
 }

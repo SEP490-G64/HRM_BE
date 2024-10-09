@@ -2,7 +2,6 @@ package com.example.hrm_be.controllers.profile;
 
 import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.models.dtos.User;
-import com.example.hrm_be.models.requests.user.UserUpdateRequest;
 import com.example.hrm_be.models.responses.BaseOutput;
 import com.example.hrm_be.services.UserService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -56,7 +55,7 @@ public class StaffProfileController {
   // Update user profile data
   @PutMapping
   protected ResponseEntity<BaseOutput<User>> updateProfile(
-      @RequestBody @NotNull(message = "error.request.body.invalid") UserUpdateRequest user) {
+      @RequestBody @NotNull(message = "error.request.body.invalid") User user) {
     // Update profile
     User updateUser = userService.update(user, true);
 

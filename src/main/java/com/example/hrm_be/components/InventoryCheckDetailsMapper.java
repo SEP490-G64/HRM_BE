@@ -2,8 +2,6 @@ package com.example.hrm_be.components;
 
 import com.example.hrm_be.models.dtos.InventoryCheckDetails;
 import com.example.hrm_be.models.entities.*;
-import com.example.hrm_be.models.requests.inventoryCheckDetails.InventoryCheckDetailsCreateRequest;
-import com.example.hrm_be.models.requests.inventoryCheckDetails.InventoryCheckDetailsUpdateRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -55,46 +53,5 @@ public class InventoryCheckDetailsMapper {
         .difference(entity.getDifference())
         .reason(entity.getReason())
         .build();
-  }
-
-  // Convert InventoryCheckDetailsCreateRequest to InventoryCheckDetailsEntity
-  public InventoryCheckDetailsEntity toEntity(
-      InventoryCheckDetailsCreateRequest dto,
-      InventoryCheckEntity inventoryCheck,
-      BatchEntity batch) {
-    return Optional.ofNullable(dto)
-        .map(
-            request -> {
-              // Create InventoryCheckDetailsEntity from InventoryCheckDetailsCreateRequest
-              return InventoryCheckDetailsEntity.builder()
-                  .inventoryCheck(inventoryCheck)
-                  .batch(batch)
-                  .systemQuantity(dto.getSystemQuantity())
-                  .countedQuantity(dto.getCountedQuantity())
-                  .difference(dto.getDifference())
-                  .reason(dto.getReason())
-                  .build();
-            })
-        .orElse(null);
-  }
-
-  // Convert InventoryCheckDetailsUpdateRequest to InventoryCheckDetailsEntity
-  public InventoryCheckDetailsEntity toEntity(
-      InventoryCheckDetailsUpdateRequest dto,
-      InventoryCheckEntity inventoryCheck,
-      BatchEntity batch) {
-    return Optional.ofNullable(dto)
-        .map(
-            request -> {
-              // Create InventoryCheckDetailsEntity from InventoryCheckDetailsUpdateRequest
-              return InventoryCheckDetailsEntity.builder()
-                  .batch(batch)
-                  .systemQuantity(dto.getSystemQuantity())
-                  .countedQuantity(dto.getCountedQuantity())
-                  .difference(dto.getDifference())
-                  .reason(dto.getReason())
-                  .build();
-            })
-        .orElse(null);
   }
 }

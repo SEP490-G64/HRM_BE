@@ -6,8 +6,6 @@ import com.example.hrm_be.models.entities.BranchEntity;
 import com.example.hrm_be.models.entities.UserEntity;
 import com.example.hrm_be.models.entities.UserRoleMapEntity;
 import com.example.hrm_be.models.requests.RegisterRequest;
-import com.example.hrm_be.models.requests.user.UserCreateRequest;
-import com.example.hrm_be.models.requests.user.UserUpdateRequest;
 import com.example.hrm_be.repositories.BranchRepository;
 import com.example.hrm_be.services.RoleService;
 
@@ -90,45 +88,8 @@ public class UserMapper {
         .orElse(null);
   }
 
-  // Convert UserCreateRequest to UserEntity
-  public UserEntity toEntity(UserCreateRequest dto, BranchEntity branch) {
-    return Optional.ofNullable(dto)
-        .map(
-            request -> {
-              // Create UserEntity from UserCreateRequest
-              return UserEntity.builder()
-                  .userName(request.getUserName())
-                  .email(request.getEmail())
-                  .phone(request.getPhone())
-                  .firstName(request.getFirstName())
-                  .lastName(request.getLastName())
-                  .branch(branch)
-                  .build();
-            })
-        .orElse(null);
-  }
-
-  // Convert UserUpdateRequest to UserEntity
-  public UserEntity toEntity(UserUpdateRequest dto, BranchEntity branch) {
-    return Optional.ofNullable(dto)
-        .map(
-            request -> {
-              // Create UserEntity from UserUpdateRequest
-              return UserEntity.builder()
-                  .userName(request.getUserName())
-                  .email(request.getEmail())
-                  .phone(request.getPhone())
-                  .firstName(request.getFirstName())
-                  .lastName(request.getLastName())
-                  .status(UserStatusType.valueOf(request.getStatus()))
-                  .branch(branch)
-                  .build();
-            })
-        .orElse(null);
-  }
-
   // Convert RegisterRequest to UserEntity
-  public UserEntity toEntity(RegisterRequest dto, BranchEntity branch) {
+  public UserEntity toEntity(RegisterRequest dto) {
     return Optional.ofNullable(dto)
         .map(
             request -> {
@@ -139,7 +100,10 @@ public class UserMapper {
                   .phone(request.getPhone())
                   .firstName(request.getFirstName())
                   .lastName(request.getLastName())
-                  .branch(branch)
+                  .branch(
+                      dto.getBranch() != null
+                           ? branchMapper.toEntity(dto.getBranch())
+                           : null)
                   .password(passwordEncoder.encode(request.getPassword()))
                   .build();
             })

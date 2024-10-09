@@ -1,13 +1,10 @@
 package com.example.hrm_be.services.impl;
 
 import com.example.hrm_be.commons.constants.HrmConstant;
-import com.example.hrm_be.commons.enums.NotificationType;
 import com.example.hrm_be.components.NotificationMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.Notification;
 import com.example.hrm_be.models.entities.*;
-import com.example.hrm_be.models.requests.notification.NotificationCreateRequest;
-import com.example.hrm_be.models.requests.notification.NotificationUpdateRequest;
 import com.example.hrm_be.repositories.NotificationRepository;
 import com.example.hrm_be.services.NotificationService;
 import io.micrometer.common.util.StringUtils;
@@ -43,37 +40,25 @@ public class NotificationServiceImpl implements NotificationService {
   }
 
   @Override
-  public Notification create(NotificationCreateRequest notification) {
+  public Notification create(Notification notification) {
     if (notification == null) {
-      throw new HrmCommonException(HrmConstant.ERROR.BRANCH.EXIST);
-    }
-
-    BranchBatchEntity branchBatch;
-    if (notification.getBranchBatchId() != null) {
-      branchBatch =
-          entityManager.getReference(BranchBatchEntity.class, notification.getBranchBatchId());
-      if (branchBatch == null) {
-        throw new HrmCommonException(
-            "Branch Batch not found with id: " + notification.getBranchBatchId());
-      }
-    } else {
-      branchBatch = null;
+      throw new HrmCommonException(HrmConstant.ERROR.NOTIFICATION.EXIST);
     }
 
     // Convert DTO to entity, save it, and convert back to DTO
     return Optional.ofNullable(notification)
-        .map(e -> notificationMapper.toEntity(e, branchBatch))
+        .map(notificationMapper::toEntity)
         .map(e -> notificationRepository.save(e))
         .map(e -> notificationMapper.toDTO(e))
         .orElse(null);
   }
 
   @Override
-  public Notification update(NotificationUpdateRequest notification) {
+  public Notification update(Notification notification) {
     NotificationEntity oldNotificationDetailEntity =
         notificationRepository.findById(notification.getId()).orElse(null);
     if (oldNotificationDetailEntity == null) {
-      throw new HrmCommonException(HrmConstant.ERROR.BRANCH.NOT_EXIST);
+      throw new HrmCommonException(HrmConstant.ERROR.NOTIFICATION.NOT_EXIST);
     }
 
     return Optional.ofNullable(oldNotificationDetailEntity)
@@ -81,7 +66,7 @@ public class NotificationServiceImpl implements NotificationService {
             op ->
                 op.toBuilder()
                     .notiName(notification.getNotiName())
-                    .notiType(NotificationType.valueOf(notification.getNotiType()))
+                    .notiType(notification.getNotiType())
                     .message(notification.getMessage())
                     .build())
         .map(notificationRepository::save)
@@ -93,6 +78,12 @@ public class NotificationServiceImpl implements NotificationService {
   public void delete(Long id) {
     if (StringUtils.isBlank(id.toString())) {
       return;
+    }
+
+    NotificationEntity oldNotificationDetailEntity =
+            notificationRepository.findById(id).orElse(null);
+    if (oldNotificationDetailEntity == null) {
+      throw new HrmCommonException(HrmConstant.ERROR.NOTIFICATION.NOT_EXIST);
     }
 
     notificationRepository.deleteById(id);

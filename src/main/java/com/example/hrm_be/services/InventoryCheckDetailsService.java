@@ -1,8 +1,6 @@
 package com.example.hrm_be.services;
 
 import com.example.hrm_be.models.dtos.InventoryCheckDetails;
-import com.example.hrm_be.models.requests.inventoryCheckDetails.InventoryCheckDetailsCreateRequest;
-import com.example.hrm_be.models.requests.inventoryCheckDetails.InventoryCheckDetailsUpdateRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
@@ -12,9 +10,9 @@ public interface InventoryCheckDetailsService {
 
   Page<InventoryCheckDetails> getByPaging(int pageNo, int pageSize, String sortBy);
 
-  InventoryCheckDetails create(InventoryCheckDetailsCreateRequest inventoryCheckDetails);
+  InventoryCheckDetails create(InventoryCheckDetails inventoryCheckDetails);
 
-  InventoryCheckDetails update(InventoryCheckDetailsUpdateRequest inventoryCheckDetails);
+  InventoryCheckDetails update(InventoryCheckDetails inventoryCheckDetails);
 
   void delete(Long id);
 }

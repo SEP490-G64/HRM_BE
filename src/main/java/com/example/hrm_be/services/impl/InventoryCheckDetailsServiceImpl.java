@@ -4,11 +4,7 @@ import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.components.InventoryCheckDetailsMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.InventoryCheckDetails;
-import com.example.hrm_be.models.entities.BatchEntity;
 import com.example.hrm_be.models.entities.InventoryCheckDetailsEntity;
-import com.example.hrm_be.models.entities.InventoryCheckEntity;
-import com.example.hrm_be.models.requests.inventoryCheckDetails.InventoryCheckDetailsCreateRequest;
-import com.example.hrm_be.models.requests.inventoryCheckDetails.InventoryCheckDetailsUpdateRequest;
 import com.example.hrm_be.repositories.InventoryCheckDetailsRepository;
 import com.example.hrm_be.services.InventoryCheckDetailsService;
 import io.micrometer.common.util.StringUtils;
@@ -52,59 +48,35 @@ public class InventoryCheckDetailsServiceImpl implements InventoryCheckDetailsSe
   }
 
   @Override
-  public InventoryCheckDetails create(InventoryCheckDetailsCreateRequest InventoryCheckDetails) {
+  public InventoryCheckDetails create(InventoryCheckDetails InventoryCheckDetails) {
     if (InventoryCheckDetails == null) {
-      throw new HrmCommonException(HrmConstant.ERROR.BRANCH.EXIST);
-    }
-
-    BatchEntity batch;
-    if (InventoryCheckDetails.getBatchId() != null) {
-      batch = entityManager.getReference(BatchEntity.class, InventoryCheckDetails.getBatchId());
-      if (batch == null) {
-        throw new HrmCommonException(
-            "Batch not found with id: " + InventoryCheckDetails.getBatchId());
-      }
-    } else {
-      batch = null;
-    }
-
-    InventoryCheckEntity inventoryCheck;
-    if (InventoryCheckDetails.getInventoryCheckId() != null) {
-      inventoryCheck =
-          entityManager.getReference(
-              InventoryCheckEntity.class, InventoryCheckDetails.getInventoryCheckId());
-      if (inventoryCheck == null) {
-        throw new HrmCommonException(
-            "Inventory Check not found with id: " + InventoryCheckDetails.getInventoryCheckId());
-      }
-    } else {
-      inventoryCheck = null;
+      throw new HrmCommonException(HrmConstant.ERROR.INVENTORY_CHECK_DETAILS.EXIST);
     }
 
     // Convert DTO to entity, save it, and convert back to DTO
     return Optional.ofNullable(InventoryCheckDetails)
-        .map(e -> inventoryCheckDetailsMapper.toEntity(e, inventoryCheck, batch))
+        .map(inventoryCheckDetailsMapper::toEntity)
         .map(e -> inventoryCheckDetailsRepository.save(e))
         .map(e -> inventoryCheckDetailsMapper.toDTO(e))
         .orElse(null);
   }
 
   @Override
-  public InventoryCheckDetails update(InventoryCheckDetailsUpdateRequest InventoryCheckDetails) {
+  public InventoryCheckDetails update(InventoryCheckDetails inventoryCheckDetails) {
     InventoryCheckDetailsEntity oldInventoryCheckDetailsEntity =
-        inventoryCheckDetailsRepository.findById(InventoryCheckDetails.getId()).orElse(null);
+        inventoryCheckDetailsRepository.findById(inventoryCheckDetails.getId()).orElse(null);
     if (oldInventoryCheckDetailsEntity == null) {
-      throw new HrmCommonException(HrmConstant.ERROR.BRANCH.NOT_EXIST);
+      throw new HrmCommonException(HrmConstant.ERROR.INVENTORY_CHECK_DETAILS.NOT_EXIST);
     }
 
     return Optional.ofNullable(oldInventoryCheckDetailsEntity)
         .map(
             op ->
                 op.toBuilder()
-                    .systemQuantity(InventoryCheckDetails.getSystemQuantity())
-                    .countedQuantity(InventoryCheckDetails.getCountedQuantity())
-                    .difference(InventoryCheckDetails.getDifference())
-                    .reason(InventoryCheckDetails.getReason())
+                    .systemQuantity(inventoryCheckDetails.getSystemQuantity())
+                    .countedQuantity(inventoryCheckDetails.getCountedQuantity())
+                    .difference(inventoryCheckDetails.getDifference())
+                    .reason(inventoryCheckDetails.getReason())
                     .build())
         .map(inventoryCheckDetailsRepository::save)
         .map(inventoryCheckDetailsMapper::toDTO)
@@ -115,6 +87,12 @@ public class InventoryCheckDetailsServiceImpl implements InventoryCheckDetailsSe
   public void delete(Long id) {
     if (StringUtils.isBlank(id.toString())) {
       return;
+    }
+
+    InventoryCheckDetailsEntity oldInventoryCheckDetailsEntity =
+            inventoryCheckDetailsRepository.findById(id).orElse(null);
+    if (oldInventoryCheckDetailsEntity == null) {
+      throw new HrmCommonException(HrmConstant.ERROR.INVENTORY_CHECK_DETAILS.NOT_EXIST);
     }
 
     inventoryCheckDetailsRepository.deleteById(id);

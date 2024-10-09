@@ -3,8 +3,6 @@ package com.example.hrm_be.controllers.notification;
 import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.commons.enums.ResponseStatus;
 import com.example.hrm_be.models.dtos.Notification;
-import com.example.hrm_be.models.requests.notification.NotificationCreateRequest;
-import com.example.hrm_be.models.requests.notification.NotificationUpdateRequest;
 import com.example.hrm_be.models.responses.BaseOutput;
 import com.example.hrm_be.services.NotificationService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -82,7 +80,7 @@ public class StaffNotificationController {
   @PostMapping()
   protected ResponseEntity<BaseOutput<Notification>> create(
       @RequestBody @NotNull(message = "error.request.body.invalid")
-          NotificationCreateRequest notification) {
+          Notification notification) {
     // Validate the request body
     if (notification == null) {
       BaseOutput<Notification> response =
@@ -111,7 +109,7 @@ public class StaffNotificationController {
   protected ResponseEntity<BaseOutput<Notification>> update(
       @PathVariable("id") Long id,
       @RequestBody @NotNull(message = "error.request.body.invalid")
-          NotificationUpdateRequest notification) {
+          Notification notification) {
     // Validate the path variable ID
     if (id <= 0 || id == null) {
       BaseOutput<Notification> response =

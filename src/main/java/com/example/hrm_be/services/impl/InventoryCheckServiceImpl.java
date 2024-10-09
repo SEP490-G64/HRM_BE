@@ -3,18 +3,11 @@ package com.example.hrm_be.services.impl;
 import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.commons.enums.InventoryCheckStatus;
 import com.example.hrm_be.components.InventoryCheckMapper;
-import com.example.hrm_be.components.InventoryCheckMapper;
 import com.example.hrm_be.components.UserMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.InventoryCheck;
-import com.example.hrm_be.models.dtos.InventoryCheck;
-import com.example.hrm_be.models.entities.BranchEntity;
 import com.example.hrm_be.models.entities.InventoryCheckEntity;
 import com.example.hrm_be.models.entities.UserEntity;
-import com.example.hrm_be.models.requests.inventoryCheck.InventoryCheckCreateRequest;
-import com.example.hrm_be.models.requests.inventoryCheck.InventoryCheckUpdateRequest;
-import com.example.hrm_be.repositories.InventoryCheckRepository;
-import com.example.hrm_be.repositories.InventoryCheckRepository;
 import com.example.hrm_be.repositories.InventoryCheckRepository;
 import com.example.hrm_be.services.InventoryCheckService;
 import com.example.hrm_be.services.UserService;
@@ -57,19 +50,9 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
   }
 
   @Override
-  public InventoryCheck create(InventoryCheckCreateRequest InventoryCheck) {
+  public InventoryCheck create(InventoryCheck InventoryCheck) {
     if (InventoryCheck == null) {
-      throw new HrmCommonException(HrmConstant.ERROR.BRANCH.EXIST);
-    }
-
-    BranchEntity branch;
-    if (InventoryCheck.getBranchId() != null) {
-      branch = entityManager.getReference(BranchEntity.class, InventoryCheck.getBranchId());
-      if (branch == null) {
-        throw new HrmCommonException("Branch not found with id: " + InventoryCheck.getBranchId());
-      }
-    } else {
-      branch = null;
+      throw new HrmCommonException(HrmConstant.ERROR.INVENTORY_CHECK.EXIST);
     }
 
     String email = userService.getAuthenticatedUserEmail();
@@ -77,7 +60,7 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
 
     // Convert DTO to entity, save it, and convert back to DTO
     return Optional.ofNullable(InventoryCheck)
-        .map(e -> inventoryCheckMapper.toEntity(e, branch))
+        .map(inventoryCheckMapper::toEntity)
         .map(
             e -> {
               e.setCreatedBy(userEntity);
@@ -91,19 +74,19 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
   }
 
   @Override
-  public InventoryCheck update(InventoryCheckUpdateRequest InventoryCheck) {
+  public InventoryCheck update(InventoryCheck inventoryCheck) {
     InventoryCheckEntity oldInventoryCheckEntity =
-        inventoryCheckRepository.findById(InventoryCheck.getId()).orElse(null);
+        inventoryCheckRepository.findById(inventoryCheck.getId()).orElse(null);
     if (oldInventoryCheckEntity == null) {
-      throw new HrmCommonException(HrmConstant.ERROR.BRANCH.NOT_EXIST);
+      throw new HrmCommonException(HrmConstant.ERROR.INVENTORY_CHECK.NOT_EXIST);
     }
 
     return Optional.ofNullable(oldInventoryCheckEntity)
         .map(
             op ->
                 op.toBuilder()
-                    .note(InventoryCheck.getNote())
-                    .status(InventoryCheckStatus.valueOf(InventoryCheck.getStatus()))
+                    .note(inventoryCheck.getNote())
+                    .status(inventoryCheck.getStatus())
                     .build())
         .map(inventoryCheckRepository::save)
         .map(inventoryCheckMapper::toDTO)
@@ -115,7 +98,7 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
     InventoryCheckEntity oldInventoryCheckEntity =
         inventoryCheckRepository.findById(id).orElse(null);
     if (oldInventoryCheckEntity == null) {
-      throw new HrmCommonException(HrmConstant.ERROR.BRANCH.NOT_EXIST);
+      throw new HrmCommonException(HrmConstant.ERROR.INVENTORY_CHECK.NOT_EXIST);
     }
 
     String email = userService.getAuthenticatedUserEmail();
@@ -132,6 +115,12 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
   public void delete(Long id) {
     if (StringUtils.isBlank(id.toString())) {
       return;
+    }
+
+    InventoryCheckEntity inventoryCheckEntity =
+            inventoryCheckRepository.findById(id).orElse(null);
+    if (inventoryCheckEntity == null) {
+      throw new HrmCommonException(HrmConstant.ERROR.INVENTORY_CHECK.NOT_EXIST);
     }
 
     inventoryCheckRepository.deleteById(id);

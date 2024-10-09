@@ -1,8 +1,6 @@
 package com.example.hrm_be.services;
 
 import com.example.hrm_be.models.dtos.InboundDetails;
-import com.example.hrm_be.models.requests.inboundDetails.InboundDetailsCreateRequest;
-import com.example.hrm_be.models.requests.inboundDetails.InboundDetailsUpdateRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
@@ -12,9 +10,9 @@ public interface InboundDetailsService {
 
   Page<InboundDetails> getByPaging(int pageNo, int pageSize, String sortBy);
 
-  InboundDetails create(InboundDetailsCreateRequest inboundDetails);
+  InboundDetails create(InboundDetails inboundDetails);
 
-  InboundDetails update(InboundDetailsUpdateRequest inboundDetails);
+  InboundDetails update(InboundDetails inboundDetails);
 
   void delete(Long id);
 }

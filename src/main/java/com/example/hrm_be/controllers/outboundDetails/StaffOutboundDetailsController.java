@@ -3,8 +3,6 @@ package com.example.hrm_be.controllers.outboundDetails;
 import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.commons.enums.ResponseStatus;
 import com.example.hrm_be.models.dtos.OutboundDetail;
-import com.example.hrm_be.models.requests.outboundDetails.OutboundDetailsCreateRequest;
-import com.example.hrm_be.models.requests.outboundDetails.OutboundDetailsUpdateRequest;
 import com.example.hrm_be.models.responses.BaseOutput;
 import com.example.hrm_be.services.OutboundDetailService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -82,9 +80,9 @@ public class StaffOutboundDetailsController {
   @PostMapping()
   protected ResponseEntity<BaseOutput<OutboundDetail>> create(
       @RequestBody @NotNull(message = "error.request.body.invalid")
-          OutboundDetailsCreateRequest OutboundDetail) {
+          OutboundDetail outboundDetail) {
     // Validate the request body
-    if (OutboundDetail == null) {
+    if (outboundDetail == null) {
       BaseOutput<OutboundDetail> response =
           BaseOutput.<OutboundDetail>builder()
               .errors(List.of(HrmConstant.ERROR.REQUEST.INVALID_BODY))
@@ -94,7 +92,7 @@ public class StaffOutboundDetailsController {
     }
 
     // Create the OutboundDetail
-    OutboundDetail createdOutboundDetail = outboundDetailService.create(OutboundDetail);
+    OutboundDetail createdOutboundDetail = outboundDetailService.create(outboundDetail);
 
     // Build the response with the created OutboundDetail data
     BaseOutput<OutboundDetail> response =
@@ -111,7 +109,7 @@ public class StaffOutboundDetailsController {
   protected ResponseEntity<BaseOutput<OutboundDetail>> update(
       @PathVariable("id") Long id,
       @RequestBody @NotNull(message = "error.request.body.invalid")
-          OutboundDetailsUpdateRequest OutboundDetail) {
+          OutboundDetail outboundDetail) {
     // Validate the path variable ID
     if (id <= 0 || id == null) {
       BaseOutput<OutboundDetail> response =
@@ -123,10 +121,10 @@ public class StaffOutboundDetailsController {
     }
 
     // Set the ID for the OutboundDetail to update
-    OutboundDetail.setId(id);
+    outboundDetail.setId(id);
 
     // Update the OutboundDetail
-    OutboundDetail updateOutboundDetail = outboundDetailService.update(OutboundDetail);
+    OutboundDetail updateOutboundDetail = outboundDetailService.update(outboundDetail);
 
     // Build the response with the updated OutboundDetail data
     BaseOutput<OutboundDetail> response =

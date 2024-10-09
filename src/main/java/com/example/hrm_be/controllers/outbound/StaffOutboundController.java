@@ -3,8 +3,6 @@ package com.example.hrm_be.controllers.outbound;
 import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.commons.enums.ResponseStatus;
 import com.example.hrm_be.models.dtos.Outbound;
-import com.example.hrm_be.models.requests.outbound.OutboundCreateRequest;
-import com.example.hrm_be.models.requests.outbound.OutboundUpdateRequest;
 import com.example.hrm_be.models.responses.BaseOutput;
 import com.example.hrm_be.services.OutboundService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -81,8 +79,7 @@ public class StaffOutboundController {
   // Creates a new Outbound
   @PostMapping()
   protected ResponseEntity<BaseOutput<Outbound>> create(
-      @RequestBody @NotNull(message = "error.request.body.invalid")
-          OutboundCreateRequest Outbound) {
+      @RequestBody @NotNull(message = "error.request.body.invalid") Outbound Outbound) {
     // Validate the request body
     if (Outbound == null) {
       BaseOutput<Outbound> response =
@@ -110,8 +107,7 @@ public class StaffOutboundController {
   @PutMapping("/{id}")
   protected ResponseEntity<BaseOutput<Outbound>> update(
       @PathVariable("id") Long id,
-      @RequestBody @NotNull(message = "error.request.body.invalid")
-          OutboundUpdateRequest Outbound) {
+      @RequestBody @NotNull(message = "error.request.body.invalid") Outbound Outbound) {
     // Validate the path variable ID
     if (id <= 0 || id == null) {
       BaseOutput<Outbound> response =

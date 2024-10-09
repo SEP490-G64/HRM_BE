@@ -2,17 +2,12 @@ package com.example.hrm_be.services.impl;
 
 import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.commons.enums.OutboundStatus;
-import com.example.hrm_be.commons.enums.OutboundType;
 import com.example.hrm_be.components.OutboundMapper;
 import com.example.hrm_be.components.UserMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.Outbound;
-import com.example.hrm_be.models.entities.BranchEntity;
 import com.example.hrm_be.models.entities.OutboundEntity;
-import com.example.hrm_be.models.entities.SupplierEntity;
 import com.example.hrm_be.models.entities.UserEntity;
-import com.example.hrm_be.models.requests.outbound.OutboundCreateRequest;
-import com.example.hrm_be.models.requests.outbound.OutboundUpdateRequest;
 import com.example.hrm_be.repositories.OutboundRepository;
 import com.example.hrm_be.services.OutboundService;
 import com.example.hrm_be.services.UserService;
@@ -55,40 +50,9 @@ public class OutboundServiceImpl implements OutboundService {
   }
 
   @Override
-  public Outbound create(OutboundCreateRequest outbound) {
+  public Outbound create(Outbound outbound) {
     if (outbound == null) {
       throw new HrmCommonException(HrmConstant.ERROR.BRANCH.EXIST);
-    }
-
-    BranchEntity fromBranch;
-    if (outbound.getFromBranchId() != null) {
-      fromBranch = entityManager.getReference(BranchEntity.class, outbound.getFromBranchId());
-      if (fromBranch == null) {
-        throw new HrmCommonException(
-            "From Branch not found with id: " + outbound.getFromBranchId());
-      }
-    } else {
-      fromBranch = null;
-    }
-
-    BranchEntity toBranch;
-    if (outbound.getToBranchId() != null) {
-      toBranch = entityManager.getReference(BranchEntity.class, outbound.getToBranchId());
-      if (toBranch == null) {
-        throw new HrmCommonException("To Branch not found with id: " + outbound.getToBranchId());
-      }
-    } else {
-      toBranch = null;
-    }
-
-    SupplierEntity supplier;
-    if (outbound.getSupplierId() != null) {
-      supplier = entityManager.getReference(SupplierEntity.class, outbound.getSupplierId());
-      if (supplier == null) {
-        throw new HrmCommonException("Supplier not found with id: " + outbound.getSupplierId());
-      }
-    } else {
-      supplier = null;
     }
 
     String email = userService.getAuthenticatedUserEmail();
@@ -96,7 +60,7 @@ public class OutboundServiceImpl implements OutboundService {
 
     // Convert DTO to entity, save it, and convert back to DTO
     return Optional.ofNullable(outbound)
-        .map(e -> outboundMapper.toEntity(e, fromBranch, toBranch, supplier))
+        .map(outboundMapper::toEntity)
         .map(
             e -> {
               e.setCreatedBy(userEntity);
@@ -110,7 +74,7 @@ public class OutboundServiceImpl implements OutboundService {
   }
 
   @Override
-  public Outbound update(OutboundUpdateRequest outbound) {
+  public Outbound update(Outbound outbound) {
     OutboundEntity oldoutboundEntity = outboundRepository.findById(outbound.getId()).orElse(null);
     if (oldoutboundEntity == null) {
       throw new HrmCommonException(HrmConstant.ERROR.BRANCH.NOT_EXIST);
@@ -121,8 +85,8 @@ public class OutboundServiceImpl implements OutboundService {
             op ->
                 op.toBuilder()
                     .note(outbound.getNote())
-                    .outboundType(OutboundType.valueOf(outbound.getOutboundType()))
-                    .status(OutboundStatus.valueOf(outbound.getStatus()))
+                    .outboundType(outbound.getOutboundType())
+                    .status(outbound.getStatus())
                     .taxable(outbound.getTaxable())
                     .totalPrice(outbound.getTotalPrice())
                     .build())
@@ -152,6 +116,11 @@ public class OutboundServiceImpl implements OutboundService {
   public void delete(Long id) {
     if (StringUtils.isBlank(id.toString())) {
       return;
+    }
+
+    OutboundEntity oldoutboundEntity = outboundRepository.findById(id).orElse(null);
+    if (oldoutboundEntity == null) {
+      throw new HrmCommonException(HrmConstant.ERROR.BRANCH.NOT_EXIST);
     }
 
     outboundRepository.deleteById(id);

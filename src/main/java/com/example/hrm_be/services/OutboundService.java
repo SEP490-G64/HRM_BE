@@ -1,8 +1,6 @@
 package com.example.hrm_be.services;
 
 import com.example.hrm_be.models.dtos.Outbound;
-import com.example.hrm_be.models.requests.outbound.OutboundCreateRequest;
-import com.example.hrm_be.models.requests.outbound.OutboundUpdateRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
@@ -12,9 +10,9 @@ public interface OutboundService {
 
   Page<Outbound> getByPaging(int pageNo, int pageSize, String sortBy);
 
-  Outbound create(OutboundCreateRequest outbound);
+  Outbound create(Outbound outbound);
 
-  Outbound update(OutboundUpdateRequest outbound);
+  Outbound update(Outbound outbound);
 
   Outbound approve(Long id);
 

@@ -9,12 +9,10 @@ import com.example.hrm_be.components.UserMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.Role;
 import com.example.hrm_be.models.dtos.User;
-import com.example.hrm_be.models.entities.BranchEntity;
 import com.example.hrm_be.models.entities.UserEntity;
 import com.example.hrm_be.models.entities.UserRoleMapEntity;
 import com.example.hrm_be.models.requests.RegisterRequest;
-import com.example.hrm_be.models.requests.user.UserCreateRequest;
-import com.example.hrm_be.models.requests.user.UserUpdateRequest;
+import com.example.hrm_be.repositories.RoleRepository;
 import com.example.hrm_be.repositories.UserRepository;
 import com.example.hrm_be.repositories.UserRoleMapRepository;
 import com.example.hrm_be.services.EmailService;
@@ -55,6 +53,7 @@ public class UserServiceImpl implements UserService {
   @Lazy @Autowired UserRepository userRepository;
   @Lazy @Autowired UserMapper userMapper;
 
+  @Lazy @Autowired RoleRepository roleRepository;
   @Lazy @Autowired RoleMapper roleMapper;
 
   @Lazy @Autowired UserRoleMapService userRoleMapService;
@@ -138,7 +137,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public User create(UserCreateRequest user) {
+  public User create(User user) {
     /** TODO Only allow admin user to call this function */
     // Check if the logged user is an admin
     if (!isAdmin()) {
@@ -158,18 +157,8 @@ public class UserServiceImpl implements UserService {
     // Encode the generated password
     String encodedPassword = passwordEncoder.encode(rawPassword);
 
-    BranchEntity branch;
-    if (user.getBranchId() != null) {
-      branch = entityManager.getReference(BranchEntity.class, user.getBranchId());
-      if (branch == null) {
-        throw new HrmCommonException("Branch not found with id: " + user.getBranchId());
-      }
-    } else {
-      branch = null;
-    }
-
     return Optional.of(user)
-        .map(u -> userMapper.toEntity(u, branch))
+        .map(userMapper::toEntity)
         .map(
             e -> {
               e.setStatus(UserStatusType.ACTIVATE);
@@ -180,12 +169,12 @@ public class UserServiceImpl implements UserService {
         .map(
             e -> {
               // Check role to assign role for user
-              if (user.getRole() != null) {
-                if (user.getRole() == 1) {
+              if (user.getRoles() != null) {
+                if (user.getRoles().contains(roleMapper.toDTO(roleRepository.getReferenceById(1L)))) {
                   userRoleMapService.setStaffRoleForUser(e.getId());
-                } else if (user.getRole() == 2) {
+                } else if (user.getRoles().contains(roleMapper.toDTO(roleRepository.getReferenceById(2L)))) {
                   userRoleMapService.setManagerRoleForUser(e.getId());
-                } else if (user.getRole() == 3) {
+                } else if (user.getRoles().contains(roleMapper.toDTO(roleRepository.getReferenceById(3L)))) {
                   userRoleMapService.setAdminRoleForUser(e.getId());
                 }
               } else {
@@ -206,7 +195,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public User update(UserUpdateRequest user, boolean profile) {
+  public User update(User user, boolean profile) {
     /** TODO Only allow admin user to update other users. */
     UserEntity oldUserEntity = null;
 
@@ -239,16 +228,6 @@ public class UserServiceImpl implements UserService {
       throw new HrmCommonException(USER.EXIST);
     }
 
-    BranchEntity branch;
-    if (user.getBranchId() != null) {
-      branch = entityManager.getReference(BranchEntity.class, user.getBranchId());
-      if (branch == null) {
-        throw new HrmCommonException("Branch not found with id: " + user.getBranchId());
-      }
-    } else {
-      branch = null;
-    }
-
     // Update user details and save
     return Optional.of(oldUserEntity)
         .map(
@@ -259,8 +238,7 @@ public class UserServiceImpl implements UserService {
                       .lastName(user.getLastName())
                       .phone(user.getPhone())
                       .userName(user.getUserName())
-                      .email(user.getEmail())
-                      .branch(branch);
+                      .email(user.getEmail());
 
               // Only set new status if status is not null
               if (user.getStatus() != null) {
@@ -271,14 +249,16 @@ public class UserServiceImpl implements UserService {
         .map(
             e -> {
               // Check role to assign role for user
-              if (user.getRole() != null) {
-                if (user.getRole() == 1) {
+              if (user.getRoles() != null) {
+                if (user.getRoles().contains(roleMapper.toDTO(roleRepository.getById(1L)))) {
                   userRoleMapService.setStaffRoleForUser(e.getId());
-                } else if (user.getRole() == 2) {
+                } else if (user.getRoles().contains(roleMapper.toDTO(roleRepository.getById(2L)))) {
                   userRoleMapService.setManagerRoleForUser(e.getId());
-                } else if (user.getRole() == 3) {
+                } else if (user.getRoles().contains(roleMapper.toDTO(roleRepository.getById(3L)))) {
                   userRoleMapService.setAdminRoleForUser(e.getId());
                 }
+              } else {
+                userRoleMapService.setStaffRoleForUser(e.getId());
               }
               return e;
             })
@@ -390,18 +370,8 @@ public class UserServiceImpl implements UserService {
       throw new HrmCommonException(USER.NOT_MATCH_CONFIRM_PASSWORD);
     }
 
-    BranchEntity branch;
-    if (registerRequest.getBranchId() != null) {
-      branch = entityManager.getReference(BranchEntity.class, registerRequest.getBranchId());
-      if (branch == null) {
-        throw new HrmCommonException("Branch not found with id: " + registerRequest.getBranchId());
-      }
-    } else {
-      branch = null;
-    }
-
     return Optional.of(registerRequest)
-        .map(u -> userMapper.toEntity(u, branch))
+        .map(u -> userMapper.toEntity(u))
         .map(
             e -> {
               e.setStatus(UserStatusType.PENDING);

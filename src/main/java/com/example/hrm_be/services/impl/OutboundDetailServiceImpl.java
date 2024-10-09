@@ -4,11 +4,7 @@ import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.components.OutboundDetailMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.OutboundDetail;
-import com.example.hrm_be.models.entities.BatchEntity;
 import com.example.hrm_be.models.entities.OutboundDetailEntity;
-import com.example.hrm_be.models.entities.OutboundEntity;
-import com.example.hrm_be.models.requests.outboundDetails.OutboundDetailsCreateRequest;
-import com.example.hrm_be.models.requests.outboundDetails.OutboundDetailsUpdateRequest;
 import com.example.hrm_be.repositories.OutboundDetailRepository;
 import com.example.hrm_be.services.OutboundDetailService;
 import io.micrometer.common.util.StringUtils;
@@ -46,46 +42,25 @@ public class OutboundDetailServiceImpl implements OutboundDetailService {
   }
 
   @Override
-  public OutboundDetail create(OutboundDetailsCreateRequest outboundDetail) {
+  public OutboundDetail create(OutboundDetail outboundDetail) {
     if (outboundDetail == null) {
-      throw new HrmCommonException(HrmConstant.ERROR.BRANCH.EXIST);
-    }
-
-    OutboundEntity outbound;
-    if (outboundDetail.getOutboundId() != null) {
-      outbound = entityManager.getReference(OutboundEntity.class, outboundDetail.getOutboundId());
-      if (outbound == null) {
-        throw new HrmCommonException(
-            "Outbound not found with id: " + outboundDetail.getOutboundId());
-      }
-    } else {
-      outbound = null;
-    }
-
-    BatchEntity batch;
-    if (outboundDetail.getBatchId() != null) {
-      batch = entityManager.getReference(BatchEntity.class, outboundDetail.getBatchId());
-      if (batch == null) {
-        throw new HrmCommonException("Batch not found with id: " + outboundDetail.getBatchId());
-      }
-    } else {
-      batch = null;
+      throw new HrmCommonException(HrmConstant.ERROR.OUTBOUND_DETAILS.EXIST);
     }
 
     // Convert DTO to entity, save it, and convert back to DTO
     return Optional.ofNullable(outboundDetail)
-        .map(e -> outboundDetailMapper.toEntity(e, outbound, batch))
+        .map(outboundDetailMapper::toEntity)
         .map(e -> outboundDetailRepository.save(e))
         .map(e -> outboundDetailMapper.toDTO(e))
         .orElse(null);
   }
 
   @Override
-  public OutboundDetail update(OutboundDetailsUpdateRequest outboundDetail) {
+  public OutboundDetail update(OutboundDetail outboundDetail) {
     OutboundDetailEntity oldoutboundDetailEntity =
         outboundDetailRepository.findById(outboundDetail.getId()).orElse(null);
     if (oldoutboundDetailEntity == null) {
-      throw new HrmCommonException(HrmConstant.ERROR.BRANCH.NOT_EXIST);
+      throw new HrmCommonException(HrmConstant.ERROR.OUTBOUND_DETAILS.NOT_EXIST);
     }
 
     return Optional.ofNullable(oldoutboundDetailEntity)
@@ -99,6 +74,12 @@ public class OutboundDetailServiceImpl implements OutboundDetailService {
   public void delete(Long id) {
     if (StringUtils.isBlank(id.toString())) {
       return;
+    }
+
+    OutboundDetailEntity oldoutboundDetailEntity =
+            outboundDetailRepository.findById(id).orElse(null);
+    if (oldoutboundDetailEntity == null) {
+      throw new HrmCommonException(HrmConstant.ERROR.OUTBOUND_DETAILS.NOT_EXIST);
     }
 
     outboundDetailRepository.deleteById(id);

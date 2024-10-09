@@ -3,8 +3,6 @@ package com.example.hrm_be.controllers.specialCondition;
 import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.commons.enums.ResponseStatus;
 import com.example.hrm_be.models.dtos.SpecialCondition;
-import com.example.hrm_be.models.requests.specialCondition.SpecialConditionCreateRequest;
-import com.example.hrm_be.models.requests.specialCondition.SpecialConditionUpdateRequest;
 import com.example.hrm_be.models.responses.BaseOutput;
 import com.example.hrm_be.services.SpecialConditionService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -83,7 +81,7 @@ public class StaffSpecialConditionController {
   @PostMapping()
   protected ResponseEntity<BaseOutput<SpecialCondition>> create(
       @RequestBody @NotNull(message = "error.request.body.invalid")
-          SpecialConditionCreateRequest specialCondition) {
+          SpecialCondition specialCondition) {
     // Validate the request body
     if (specialCondition == null) {
       BaseOutput<SpecialCondition> response =
@@ -112,7 +110,7 @@ public class StaffSpecialConditionController {
   protected ResponseEntity<BaseOutput<SpecialCondition>> update(
       @PathVariable("id") Long id,
       @RequestBody @NotNull(message = "error.request.body.invalid")
-          SpecialConditionUpdateRequest SpecialCondition) {
+          SpecialCondition SpecialCondition) {
     // Validate the path variable ID
     if (id <= 0 || id == null) {
       BaseOutput<SpecialCondition> response =

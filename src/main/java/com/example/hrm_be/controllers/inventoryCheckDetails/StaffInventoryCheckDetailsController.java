@@ -3,8 +3,6 @@ package com.example.hrm_be.controllers.inventoryCheckDetails;
 import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.commons.enums.ResponseStatus;
 import com.example.hrm_be.models.dtos.InventoryCheckDetails;
-import com.example.hrm_be.models.requests.inventoryCheckDetails.InventoryCheckDetailsCreateRequest;
-import com.example.hrm_be.models.requests.inventoryCheckDetails.InventoryCheckDetailsUpdateRequest;
 import com.example.hrm_be.models.responses.BaseOutput;
 import com.example.hrm_be.services.InventoryCheckDetailsService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -82,8 +80,7 @@ public class StaffInventoryCheckDetailsController {
   // Creates a new InventoryCheckDetails
   @PostMapping()
   protected ResponseEntity<BaseOutput<InventoryCheckDetails>> create(
-      @RequestBody @NotNull(message = "error.request.body.invalid")
-          InventoryCheckDetailsCreateRequest InventoryCheckDetails) {
+      @RequestBody @NotNull(message = "error.request.body.invalid") InventoryCheckDetails InventoryCheckDetails) {
     // Validate the request body
     if (InventoryCheckDetails == null) {
       BaseOutput<InventoryCheckDetails> response =
@@ -112,8 +109,7 @@ public class StaffInventoryCheckDetailsController {
   @PutMapping("/{id}")
   protected ResponseEntity<BaseOutput<InventoryCheckDetails>> update(
       @PathVariable("id") Long id,
-      @RequestBody @NotNull(message = "error.request.body.invalid")
-          InventoryCheckDetailsUpdateRequest InventoryCheckDetails) {
+      @RequestBody @NotNull(message = "error.request.body.invalid") InventoryCheckDetails InventoryCheckDetails) {
     // Validate the path variable ID
     if (id <= 0 || id == null) {
       BaseOutput<InventoryCheckDetails> response =

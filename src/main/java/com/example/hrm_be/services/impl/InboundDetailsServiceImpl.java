@@ -5,8 +5,6 @@ import com.example.hrm_be.components.InboundDetailsMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.InboundDetails;
 import com.example.hrm_be.models.entities.*;
-import com.example.hrm_be.models.requests.inboundDetails.InboundDetailsCreateRequest;
-import com.example.hrm_be.models.requests.inboundDetails.InboundDetailsUpdateRequest;
 import com.example.hrm_be.repositories.InboundDetailsRepository;
 import com.example.hrm_be.services.InboundDetailsService;
 import io.micrometer.common.util.StringUtils;
@@ -44,46 +42,25 @@ public class InboundDetailsServiceImpl implements InboundDetailsService {
   }
 
   @Override
-  public InboundDetails create(InboundDetailsCreateRequest inboundDetails) {
+  public InboundDetails create(InboundDetails inboundDetails) {
     if (inboundDetails == null) {
-      throw new HrmCommonException(HrmConstant.ERROR.BRANCH.EXIST);
-    }
-
-    InboundEntity inbound;
-    if (inboundDetails.getInboundId() != null) {
-      inbound = entityManager.getReference(InboundEntity.class, inboundDetails.getInboundId());
-      if (inbound == null) {
-        throw new HrmCommonException("Inbound not found with id: " + inboundDetails.getInboundId());
-      }
-    } else {
-      inbound = null;
-    }
-
-    ProductEntity product;
-    if (inboundDetails.getProductId() != null) {
-      product = entityManager.getReference(ProductEntity.class, inboundDetails.getProductId());
-      if (product == null) {
-        throw new HrmCommonException(
-            "Product Check not found with id: " + inboundDetails.getProductId());
-      }
-    } else {
-      product = null;
+      throw new HrmCommonException(HrmConstant.ERROR.INBOUND_DETAILS.EXIST);
     }
 
     // Convert DTO to entity, save it, and convert back to DTO
     return Optional.ofNullable(inboundDetails)
-        .map(e -> inboundDetailsMapper.toEntity(e, inbound, product))
+        .map(inboundDetailsMapper::toEntity)
         .map(e -> inboundDetailsRepository.save(e))
         .map(e -> inboundDetailsMapper.toDTO(e))
         .orElse(null);
   }
 
   @Override
-  public InboundDetails update(InboundDetailsUpdateRequest inboundDetails) {
+  public InboundDetails update(InboundDetails inboundDetails) {
     InboundDetailsEntity oldInboundDetailsEntity =
         inboundDetailsRepository.findById(inboundDetails.getId()).orElse(null);
     if (oldInboundDetailsEntity == null) {
-      throw new HrmCommonException(HrmConstant.ERROR.BRANCH.NOT_EXIST);
+      throw new HrmCommonException(HrmConstant.ERROR.INBOUND_DETAILS.NOT_EXIST);
     }
 
     return Optional.ofNullable(oldInboundDetailsEntity)
@@ -102,6 +79,12 @@ public class InboundDetailsServiceImpl implements InboundDetailsService {
   public void delete(Long id) {
     if (StringUtils.isBlank(id.toString())) {
       return;
+    }
+
+    InboundDetailsEntity oldInboundDetailsEntity =
+            inboundDetailsRepository.findById(id).orElse(null);
+    if (oldInboundDetailsEntity == null) {
+      throw new HrmCommonException(HrmConstant.ERROR.INBOUND_DETAILS.NOT_EXIST);
     }
 
     inboundDetailsRepository.deleteById(id);

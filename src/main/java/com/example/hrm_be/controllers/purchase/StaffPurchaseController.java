@@ -3,8 +3,6 @@ package com.example.hrm_be.controllers.purchase;
 import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.commons.enums.ResponseStatus;
 import com.example.hrm_be.models.dtos.Purchase;
-import com.example.hrm_be.models.requests.purchase.PurchaseCreateRequest;
-import com.example.hrm_be.models.requests.purchase.PurchaseUpdateRequest;
 import com.example.hrm_be.models.responses.BaseOutput;
 import com.example.hrm_be.services.PurchaseService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -81,8 +79,7 @@ public class StaffPurchaseController {
   // Creates a new Purchase
   @PostMapping()
   protected ResponseEntity<BaseOutput<Purchase>> create(
-      @RequestBody @NotNull(message = "error.request.body.invalid")
-          PurchaseCreateRequest Purchase) {
+      @RequestBody @NotNull(message = "error.request.body.invalid") Purchase Purchase) {
     // Validate the request body
     if (Purchase == null) {
       BaseOutput<Purchase> response =
@@ -110,8 +107,7 @@ public class StaffPurchaseController {
   @PutMapping("/{id}")
   protected ResponseEntity<BaseOutput<Purchase>> update(
       @PathVariable("id") Long id,
-      @RequestBody @NotNull(message = "error.request.body.invalid")
-          PurchaseUpdateRequest Purchase) {
+      @RequestBody @NotNull(message = "error.request.body.invalid") Purchase Purchase) {
     // Validate the path variable ID
     if (id <= 0 || id == null) {
       BaseOutput<Purchase> response =
