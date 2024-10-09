@@ -37,6 +37,8 @@ public class InboundMapper {
                         d.getSupplier() != null ? supplierMapper.toEntity(d.getSupplier()) : null)
                     .createdBy(
                         d.getCreatedBy() != null ? userMapper.toEntity(d.getCreatedBy()) : null)
+                    .approvedBy(
+                        d.getApprovedBy() != null ? userMapper.toEntity(d.getApprovedBy()) : null)
                     .createdDate(d.getCreatedDate())
                     .inboundDate(d.getInboundDate())
                     .totalPrice(d.getTotalPrice())
@@ -63,6 +65,7 @@ public class InboundMapper {
         .toBranch(entity.getToBranch() != null ? branchMapper.toDTO(entity.getToBranch()) : null)
         .supplier(entity.getSupplier() != null ? supplierMapper.toDTO(entity.getSupplier()) : null)
         .createdBy(entity.getCreatedBy() != null ? userMapper.toDTO(entity.getCreatedBy()) : null)
+        .approvedBy(entity.getApprovedBy() != null ? userMapper.toDTO(entity.getCreatedBy()) : null)
         .createdDate(entity.getCreatedDate())
         .inboundDate(entity.getInboundDate())
         .totalPrice(entity.getTotalPrice())

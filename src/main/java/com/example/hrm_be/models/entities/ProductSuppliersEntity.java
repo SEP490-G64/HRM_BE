@@ -27,7 +27,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder(toBuilder = true)
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(name = "product")
+@Table(name = "product_supplier")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class ProductSuppliersEntity extends CommonEntity {
 

@@ -39,5 +39,5 @@ spring:
 #        boot:
 #          allow_jdbc_metadata_access: false
         dialect: org.hibernate.dialect.PostgreSQLDialect
-    hibernate.ddl-auto: update
+    hibernate.ddl-auto: create-drop
     show-sql: true

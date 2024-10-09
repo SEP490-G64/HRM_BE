@@ -50,6 +50,7 @@ public class ProductMapper {
                     .activeIngredient(d.getActiveIngredient())
                     .excipient(d.getExcipient())
                     .formulation(d.getFormulation())
+                    .inboundPrice(d.getInboundPrice())
                     .sellPrice(d.getSellPrice())
                     .status(d.getStatus())
                     .baseUnit(
@@ -107,6 +108,7 @@ public class ProductMapper {
         .activeIngredient(entity.getActiveIngredient())
         .excipient(entity.getExcipient())
         .formulation(entity.getFormulation())
+        .inboundPrice(entity.getInboundPrice())
         .sellPrice(entity.getSellPrice())
         .status(entity.getStatus())
         .baseUnit(

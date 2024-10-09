@@ -81,6 +81,9 @@ public class ProductEntity extends CommonEntity {
   @Column(name = "formulation", length = 255, nullable = true)
   String formulation;
 
+  @Column(name = "inbound_price", nullable = false)
+  BigDecimal inboundPrice;
+
   @Column(name = "sell_price", nullable = false)
   BigDecimal sellPrice;
 
