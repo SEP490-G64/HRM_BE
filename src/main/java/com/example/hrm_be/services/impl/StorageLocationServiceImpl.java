@@ -2,13 +2,16 @@ package com.example.hrm_be.services.impl;
 
 import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.commons.constants.HrmConstant.ERROR.STORAGE_LOCATION;
+import com.example.hrm_be.components.BranchProductMapper;
 import com.example.hrm_be.components.StorageLocationMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
+import com.example.hrm_be.models.dtos.Branch;
 import com.example.hrm_be.models.dtos.StorageLocation;
 import com.example.hrm_be.models.entities.StorageLocationEntity;
 import com.example.hrm_be.repositories.StorageLocationRepository;
 import com.example.hrm_be.services.StorageLocationService;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,12 +26,13 @@ public class StorageLocationServiceImpl implements StorageLocationService {
   @Autowired
   private StorageLocationRepository storageLocationRepository;
 
-  @Autowired private StorageLocationMapper SsorageLocationMapper;
+  @Autowired private StorageLocationMapper storageLocationMapper;
+  @Autowired private BranchProductMapper branchProductMapper;
 
   @Override
   public StorageLocation getById(Long id) {
     return Optional.ofNullable(id)
-        .flatMap(e -> storageLocationRepository.findById(e).map(b -> SsorageLocationMapper.toDTO(b)))
+        .flatMap(e -> storageLocationRepository.findById(e).map(b -> storageLocationMapper.toDTO(b)))
         .orElse(null);
   }
 
@@ -39,7 +43,7 @@ public class StorageLocationServiceImpl implements StorageLocationService {
     // Tìm kiếm theo tên
     return storageLocationRepository
         .findByShelfNameContainingIgnoreCase(name, pageable)
-        .map(dao -> SsorageLocationMapper.toDTO(dao));
+        .map(dao -> storageLocationMapper.toDTO(dao));
   }
 
   @Override
@@ -48,9 +52,9 @@ public class StorageLocationServiceImpl implements StorageLocationService {
       throw new HrmCommonException(STORAGE_LOCATION.NOT_EXIST);
     }
     return Optional.ofNullable(storageLocation)
-        .map(e -> SsorageLocationMapper.toEntity(e))
+        .map(e -> storageLocationMapper.toEntity(e))
         .map(e -> storageLocationRepository.save(e))
-        .map(e -> SsorageLocationMapper.toDTO(e))
+        .map(e -> storageLocationMapper.toDTO(e))
         .orElse(null);
   }
 
@@ -58,16 +62,18 @@ public class StorageLocationServiceImpl implements StorageLocationService {
   public StorageLocation update(StorageLocation storageLocation) {
     StorageLocationEntity oldStorageLocationEntity = storageLocationRepository.findById(storageLocation.getId()).orElse(null);
     if (oldStorageLocationEntity == null) {
-      throw new HrmCommonException(HrmConstant.ERROR.ROLE.NOT_EXIST);
+      throw new HrmCommonException(HrmConstant.ERROR.STORAGE_LOCATION.NOT_EXIST);
     }
     return Optional.ofNullable(oldStorageLocationEntity)
         .map(
             op ->
                 op.toBuilder()
                     .shelfName(storageLocation.getShelfName())
+                    .branchProducts(storageLocation.getBranchProducts().stream().map(branchProductMapper::toEntity).collect(
+                        Collectors.toList()))
                     .build())
         .map(storageLocationRepository::save)
-        .map(SsorageLocationMapper::toDTO)
+        .map(storageLocationMapper::toDTO)
         .orElse(null);
   }
 

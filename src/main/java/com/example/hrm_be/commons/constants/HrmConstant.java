@@ -82,66 +82,23 @@ public class HrmConstant {
       public static final String NOT_CHILD = "error.type.not_child";
       public static final String NOT_EXIST = "error.type.not_exist";
     }
-
-    public static class PLAYLIST {
-      public static final String CREATE = "error.playlist.create";
-      public static final String UPDATE = "error.playlist.update";
-      public static final String DELETE = "error.playlist.delete";
-      public static final String EXIST = "error.playlist.exist";
-      public static final String NOT_EXIST = "error.playlist.not_exist";
+    public static class UNIT_CONVERSION {
+      public static final String CREATE = "error.type.create";
+      public static final String UPDATE = "error.type.update";
+      public static final String DELETE = "error.type.delete";
+      public static final String EXIST = "error.type.exist";
+      public static final String NOT_CHILD = "error.type.not_child";
+      public static final String NOT_EXIST = "error.type.not_exist";
+    }
+    public static class UNIT_OF_MEASUREMENT {
+      public static final String CREATE = "error.type.create";
+      public static final String UPDATE = "error.type.update";
+      public static final String DELETE = "error.type.delete";
+      public static final String EXIST = "error.type.exist";
+      public static final String NOT_CHILD = "error.type.not_child";
+      public static final String NOT_EXIST = "error.type.not_exist";
     }
 
-    public static class PLAYLIST_FILE_MAP {
-      public static final String NULL_OR_EMPTY_IDS =
-          "error.playlist_file_map.playlist_ids.file_ids_null_or_empty";
-    }
-
-    public static class LICENSE {
-      public static final String CREATE = "error.license.create";
-      public static final String UPDATE = "error.license.update";
-      public static final String DELETE = "error.license.delete";
-      public static final String EXIST = "error.license.exist";
-      public static final String NOT_EXIST = "error.license.not_exist";
-      public static final String UNMATCHED = "error.license.unmatched";
-      public static final String EXPIRED = "error.license.expired";
-      public static final String INVALID = "error.license.invalid";
-      public static final String EXPAND_FAILED = "error.license.expand_failed";
-      public static final String NOT_ASSIGNED_USER = "error.license.not_assigned_user";
-      public static final String EXIST_BY_USER = "error.license.exist_by_user";
-    }
-
-    public static class DEVICE_GROUP {
-      public static final String CREATE = "error.device_group.create";
-      public static final String UPDATE = "error.device_group.update";
-      public static final String DELETE = "error.device_group.delete";
-      public static final String EXIST = "error.device_group.exist";
-      public static final String NOT_EXIST = "error.device_group.not_exist";
-    }
-
-    public static class DEVICE {
-      public static final String CREATE = "error.device.create";
-      public static final String UPDATE = "error.device.update";
-      public static final String DELETE = "error.device.delete";
-      public static final String EXIST = "error.device.exist";
-      public static final String NOT_EXIST = "error.device.not_exist";
-      public static final String DOWNLOAD = "error.device.download";
-    }
-
-    public static class SECURITY {
-      public static final String GENERATE_KEY_PAIR = "error.security.generate_key_pair";
-      public static final String ENCODE_KEY = "error.security.encode_key_pair";
-      public static final String DECODE_KEY = "error.security.decode_key_pair";
-    }
-
-    public static class SCHEDULE {
-      public static final String CREATE = "error.schedule.create";
-      public static final String UPDATE = "error.schedule.update";
-      public static final String DELETE = "error.schedule.delete";
-      public static final String EXIST = "error.schedule.exist";
-      public static final String NOT_EXIST = "error.schedule.not_exist";
-      public static final String INVALID = "error.schedule.invalid";
-      public static final String DOWNLOAD = "error.schedule.download";
-    }
 
     public static class USER {
       public static final String NOT_EXIST = "error.user.not_exist";
