@@ -10,7 +10,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 
 public interface UnitConversionRepository extends JpaRepository<UnitConversionEntity, Long> {
-  Page<UnitConversionEntity> findByContainingIgnoreCase(String name, Pageable pageable);
-
 
 }
