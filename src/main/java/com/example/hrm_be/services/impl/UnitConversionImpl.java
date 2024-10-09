@@ -1,6 +1,7 @@
 package com.example.hrm_be.services.impl;
 
 import com.example.hrm_be.commons.constants.HrmConstant;
+import com.example.hrm_be.commons.constants.HrmConstant.ERROR.UNIT_CONVERSION;
 import com.example.hrm_be.components.BatchMapper;
 import com.example.hrm_be.components.UnitConversionMapper;
 import com.example.hrm_be.components.UnitOfMeasurementMapper;
@@ -48,7 +49,7 @@ public class UnitConversionImpl implements UnitConversionService {
   @Override
   public UnitConversion create(UnitConversion unitConversion) {
     if (unitConversion == null) {
-      throw new HrmCommonException(HrmConstant.ERROR.UNIT_CONVERSION.EXIST);
+      throw new HrmCommonException(UNIT_CONVERSION.NOT_EXIST);
     }
     return Optional.ofNullable(unitConversion)
         .map(e -> unitConversionMapper.toEntity(e))
@@ -68,9 +69,6 @@ public class UnitConversionImpl implements UnitConversionService {
             op ->
                 op.toBuilder()
                     .factorConversion(unitConversion.getFactorConversion())
-                    .largerUnit(unitOfMeasurementMapper.toEntity(unitConversion.getLargerUnit()))
-                    .smallerUnit(unitOfMeasurementMapper.toEntity(unitConversion.getLargerUnit()))
-                    .batch(batchMapper.toEntity(unitConversion.getBatch()))
                     .build())
         .map(unitConversionRepository::save)
         .map(unitConversionMapper::toDTO)

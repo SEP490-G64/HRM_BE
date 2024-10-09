@@ -69,8 +69,6 @@ public class StorageLocationServiceImpl implements StorageLocationService {
             op ->
                 op.toBuilder()
                     .shelfName(storageLocation.getShelfName())
-                    .branchProducts(storageLocation.getBranchProducts().stream().map(branchProductMapper::toEntity).collect(
-                        Collectors.toList()))
                     .build())
         .map(storageLocationRepository::save)
         .map(storageLocationMapper::toDTO)

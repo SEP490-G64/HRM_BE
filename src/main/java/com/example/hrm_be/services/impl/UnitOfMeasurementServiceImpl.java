@@ -69,10 +69,6 @@ public class UnitOfMeasurementServiceImpl implements UnitOfMeasurementService {
             op ->
                 op.toBuilder()
                     .unitName(storageLocation.getUnitName())
-                    .products(
-                        storageLocation.getProducts().stream()
-                            .map(productMapper::toEntity)
-                            .collect(Collectors.toList()))
                     .build())
         .map(unitOfMeasurementRepository::save)
         .map(unitOfMeasurementMapper::toDTO)
