@@ -57,10 +57,10 @@ public class UnitOfMeasurementMapper {
         .unitName(entity.getUnitName())
         .products(
             entity.getProducts() != null
-                 ? entity.getProducts().stream()
-                     .map(productMapper::toDTO)
-                     .collect(Collectors.toList())
-                 : null)
+                ? entity.getProducts().stream()
+                    .map(productMapper::toDTO)
+                    .collect(Collectors.toList())
+                : null)
         .largerUnitConversions(
             entity.getLargerUnitConversions() != null
                 ? entity.getLargerUnitConversions().stream()

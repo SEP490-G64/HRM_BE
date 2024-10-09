@@ -94,10 +94,10 @@ public class BatchMapper {
                             : null)
                     .inboundBatchDetails(
                         e.getInboundBatchDetail() != null
-                             ? e.getInboundBatchDetail().stream()
-                                 .map(inboundBatchDetailMapper::toDTO)
-                                 .collect(Collectors.toList())
-                             : null)
+                            ? e.getInboundBatchDetail().stream()
+                                .map(inboundBatchDetailMapper::toDTO)
+                                .collect(Collectors.toList())
+                            : null)
                     .product(e.getProduct() != null ? productMapper.toDTO(e.getProduct()) : null)
                     .build())
         .orElse(null);
