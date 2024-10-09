@@ -65,6 +65,15 @@ public class HrmConstant {
       public static final String NOT_EXIST = "error.category.not_exist";
     }
 
+    public static class TYPE {
+      public static final String CREATE = "error.type.create";
+      public static final String UPDATE = "error.type.update";
+      public static final String DELETE = "error.type.delete";
+      public static final String EXIST = "error.type.exist";
+      public static final String NOT_CHILD = "error.type.not_child";
+      public static final String NOT_EXIST = "error.type.not_exist";
+    }
+
     public static class PLAYLIST {
       public static final String CREATE = "error.playlist.create";
       public static final String UPDATE = "error.playlist.update";
@@ -162,6 +171,15 @@ public class HrmConstant {
       public static final String NOT_EXIST = "error.branch.not_exist";
     }
 
+    public static class BATCH {
+      public static final String CREATE = "error.batch.create";
+      public static final String UPDATE = "error.batch.update";
+      public static final String DELETE = "error.batch.delete";
+      public static final String EXIST = "error.batch.exist";
+      public static final String NOT_CHILD = "error.batch.not_child";
+      public static final String NOT_EXIST = "error.batch.not_exist";
+    }
+
     public static class INGREDIENT {
       public static final String CREATE = "error.ingredient.create";
       public static final String UPDATE = "error.ingredient.update";
@@ -169,6 +187,15 @@ public class HrmConstant {
       public static final String EXIST = "error.ingredient.exist";
       public static final String NOT_CHILD = "error.ingredient.not_child";
       public static final String NOT_EXIST = "error.ingredient.not_exist";
+    }
+
+    public static class MANUFACTURER {
+      public static final String CREATE = "error.branch.create";
+      public static final String UPDATE = "error.branch.update";
+      public static final String DELETE = "error.branch.delete";
+      public static final String EXIST = "error.branch.exist";
+      public static final String NOT_CHILD = "error.branch.not_child";
+      public static final String NOT_EXIST = "error.branch.not_exist";
     }
   }
 }

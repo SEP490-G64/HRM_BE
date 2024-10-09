@@ -2,19 +2,14 @@ package com.example.hrm_be.models.entities;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import jakarta.persistence.ConstraintMode;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.ForeignKey;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
@@ -27,17 +22,27 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder(toBuilder = true)
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(name = "product_supplier")
+@Table(name = "allowed-product")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-public class ProductSuppliersEntity extends CommonEntity {
+public class AllowedProductEntity extends CommonEntity {
+  @Column(name = "product_name", length = 50, nullable = false)
+  String productName;
 
-  @ToString.Exclude
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "product_id", foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
-  ProductEntity product;
+  @Column(name = "product_code", length = 30, nullable = false)
+  String productCode;
 
-  @ToString.Exclude
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "supplier_id", foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
-  SupplierEntity supplier;
+  @Column(name = "registration_code", length = 30, nullable = false)
+  String registrationCode;
+
+  @Column(name = "url_image", length = 255, nullable = true)
+  String urlImage;
+
+  @Column(name = "active_ingredient", length = 255, nullable = true)
+  String activeIngredient;
+
+  @Column(name = "excipient", length = 255, nullable = true)
+  String excipient;
+
+  @Column(name = "formulation", length = 255, nullable = true)
+  String formulation;
 }

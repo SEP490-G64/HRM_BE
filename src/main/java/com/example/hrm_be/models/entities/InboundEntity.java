@@ -69,6 +69,9 @@ public class InboundEntity extends CommonEntity {
   @Column(name = "created_date", nullable = false)
   LocalDateTime createdDate;
 
+  @Column(name = "inbound_date", nullable = false)
+  LocalDateTime inboundDate;
+
   @Column(name = "total_price", nullable = false)
   BigDecimal totalPrice;
 
@@ -85,8 +88,9 @@ public class InboundEntity extends CommonEntity {
   @Column(name = "note")
   String note;
 
-  @Column(name = "inbound_date")
-  LocalDateTime inboundDate;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "approved_by", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+  UserEntity approvedBy;
 
   @ToString.Exclude
   @OneToMany(mappedBy = "inbound", fetch = FetchType.LAZY)

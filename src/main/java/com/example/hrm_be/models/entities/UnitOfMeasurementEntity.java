@@ -4,12 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
-import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.ForeignKey;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.util.List;
@@ -38,16 +34,9 @@ public class UnitOfMeasurementEntity extends CommonEntity {
   @Column(name = "unit_name", length = 100)
   String unitName;
 
-  @Column(name = "conversion_factor")
-  Double conversionFactor;
-
-  @Column(name = "price_per_unit")
-  Double pricePerUnit;
-
   @ToString.Exclude
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "product_id", foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
-  ProductEntity product;
+  @OneToMany(mappedBy = "baseUnit", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  List<ProductEntity> products;
 
   @ToString.Exclude
   @OneToMany(mappedBy = "largerUnit", fetch = FetchType.LAZY, cascade = CascadeType.ALL)

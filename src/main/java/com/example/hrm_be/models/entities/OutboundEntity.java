@@ -68,6 +68,9 @@ public class OutboundEntity extends CommonEntity {
   @Column(name = "created_date", nullable = false)
   LocalDateTime createdDate;
 
+  @Column(name = "outbound_date", nullable = false)
+  LocalDateTime outboundDate;
+
   @Column(name = "total_price", nullable = false)
   BigDecimal totalPrice;
 

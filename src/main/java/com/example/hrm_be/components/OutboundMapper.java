@@ -40,6 +40,7 @@ public class OutboundMapper {
                     .toBranch(
                         d.getToBranch() != null ? branchMapper.toEntity(d.getToBranch()) : null)
                     .createdDate(d.getCreatedDate())
+                    .outboundDate(d.getOutboundDate())
                     .totalPrice(d.getTotalPrice())
                     .isApproved(d.getIsApproved())
                     .approvedBy(
@@ -69,6 +70,7 @@ public class OutboundMapper {
         .supplier(entity.getSupplier() != null ? supplierMapper.toDTO(entity.getSupplier()) : null)
         .toBranch(entity.getToBranch() != null ? branchMapper.toDTO(entity.getToBranch()) : null)
         .createdDate(entity.getCreatedDate())
+        .outboundDate(entity.getOutboundDate())
         .totalPrice(entity.getTotalPrice())
         .isApproved(entity.getIsApproved())
         .approvedBy(

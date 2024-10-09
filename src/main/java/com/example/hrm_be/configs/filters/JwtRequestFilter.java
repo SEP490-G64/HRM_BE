@@ -1,6 +1,6 @@
 package com.example.hrm_be.configs.filters;
 
-import com.example.hrm_be.components.JwtUtil;
+import com.example.hrm_be.utils.JwtUtil;
 import com.example.hrm_be.services.impl.JwtUserDetailsServiceImpl;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
