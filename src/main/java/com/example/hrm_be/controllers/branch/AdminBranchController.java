@@ -6,6 +6,8 @@ import com.example.hrm_be.commons.enums.ResponseStatus;
 import com.example.hrm_be.models.dtos.Branch;
 import com.example.hrm_be.models.responses.BaseOutput;
 import com.example.hrm_be.services.BranchService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +22,8 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/admin/branch")
+@Tag(name = "Admin-Branches API")
+@SecurityRequirement(name = "Authorization")
 public class AdminBranchController {
   // Injected service for handling branch operations
   private final BranchService branchService;

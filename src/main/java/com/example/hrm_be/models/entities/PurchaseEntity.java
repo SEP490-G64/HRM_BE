@@ -27,7 +27,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder(toBuilder = true)
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(name = "purchases")
+@Table(name = "purchase")
 public class PurchaseEntity extends CommonEntity {
 
   @ManyToOne(fetch = FetchType.LAZY)

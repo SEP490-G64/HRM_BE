@@ -147,6 +147,8 @@ public class HrmConstant {
       public static final String NOT_EXIST = "error.user.not_exist";
       public static final String EXIST = "error.user.exist";
       public static final String NOT_ASSIGNED_ROLE = "error.user.not_assigned_role";
+      public static final String NOT_MATCH_CONFIRM_PASSWORD =
+          "error.user.not_match_confirm_password";
     }
 
     public static class ROLE {
@@ -178,6 +180,15 @@ public class HrmConstant {
       public static final String NOT_EXIST = "error.branch.not_exist";
     }
 
+    public static class BATCH {
+      public static final String CREATE = "error.batch.create";
+      public static final String UPDATE = "error.batch.update";
+      public static final String DELETE = "error.batch.delete";
+      public static final String EXIST = "error.batch.exist";
+      public static final String NOT_CHILD = "error.batch.not_child";
+      public static final String NOT_EXIST = "error.batch.not_exist";
+    }
+
     public static class INGREDIENT {
       public static final String CREATE = "error.ingredient.create";
       public static final String UPDATE = "error.ingredient.update";
@@ -185,6 +196,15 @@ public class HrmConstant {
       public static final String EXIST = "error.ingredient.exist";
       public static final String NOT_CHILD = "error.ingredient.not_child";
       public static final String NOT_EXIST = "error.ingredient.not_exist";
+    }
+
+    public static class MANUFACTURER {
+      public static final String CREATE = "error.branch.create";
+      public static final String UPDATE = "error.branch.update";
+      public static final String DELETE = "error.branch.delete";
+      public static final String EXIST = "error.branch.exist";
+      public static final String NOT_CHILD = "error.branch.not_child";
+      public static final String NOT_EXIST = "error.branch.not_exist";
     }
   }
 }

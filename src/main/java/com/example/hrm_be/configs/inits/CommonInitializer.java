@@ -1,5 +1,6 @@
 package com.example.hrm_be.configs.inits;
 
+import com.example.hrm_be.commons.enums.UserStatusType;
 import com.example.hrm_be.models.dtos.Role;
 import com.example.hrm_be.models.dtos.User;
 import com.example.hrm_be.services.RoleService;
@@ -67,7 +68,7 @@ public class CommonInitializer implements ApplicationRunner {
             .email("dsdadmin@gmail.com")
             .password("Abcd1234")
             .userName("dsdadmin")
-            .phone("")
+            .status(UserStatusType.ACTIVATE.toString())
             .build();
     User createdAdminUser = userService.createAdmin(newAdminUser);
     log.info(

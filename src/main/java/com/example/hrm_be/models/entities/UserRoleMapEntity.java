@@ -18,7 +18,7 @@ import lombok.experimental.SuperBuilder;
     callSuper = true,
     exclude = {"user", "role"})
 @Entity
-@Table(name = "user_role_map")
+@Table(name = "user_role")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class UserRoleMapEntity extends CommonEntity {
 
