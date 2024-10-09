@@ -16,4 +16,3 @@ public interface UnitOfMeasurementService {
 
   void delete(Long id);
 }
-

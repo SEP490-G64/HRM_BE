@@ -5,13 +5,11 @@ import com.example.hrm_be.commons.constants.HrmConstant.ERROR.STORAGE_LOCATION;
 import com.example.hrm_be.components.BranchProductMapper;
 import com.example.hrm_be.components.StorageLocationMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
-import com.example.hrm_be.models.dtos.Branch;
 import com.example.hrm_be.models.dtos.StorageLocation;
 import com.example.hrm_be.models.entities.StorageLocationEntity;
 import com.example.hrm_be.repositories.StorageLocationRepository;
 import com.example.hrm_be.services.StorageLocationService;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,8 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 public class StorageLocationServiceImpl implements StorageLocationService {
-  @Autowired
-  private StorageLocationRepository storageLocationRepository;
+  @Autowired private StorageLocationRepository storageLocationRepository;
 
   @Autowired private StorageLocationMapper storageLocationMapper;
   @Autowired private BranchProductMapper branchProductMapper;
@@ -32,7 +29,8 @@ public class StorageLocationServiceImpl implements StorageLocationService {
   @Override
   public StorageLocation getById(Long id) {
     return Optional.ofNullable(id)
-        .flatMap(e -> storageLocationRepository.findById(e).map(b -> storageLocationMapper.toDTO(b)))
+        .flatMap(
+            e -> storageLocationRepository.findById(e).map(b -> storageLocationMapper.toDTO(b)))
         .orElse(null);
   }
 
@@ -60,16 +58,13 @@ public class StorageLocationServiceImpl implements StorageLocationService {
 
   @Override
   public StorageLocation update(StorageLocation storageLocation) {
-    StorageLocationEntity oldStorageLocationEntity = storageLocationRepository.findById(storageLocation.getId()).orElse(null);
+    StorageLocationEntity oldStorageLocationEntity =
+        storageLocationRepository.findById(storageLocation.getId()).orElse(null);
     if (oldStorageLocationEntity == null) {
       throw new HrmCommonException(HrmConstant.ERROR.STORAGE_LOCATION.NOT_EXIST);
     }
     return Optional.ofNullable(oldStorageLocationEntity)
-        .map(
-            op ->
-                op.toBuilder()
-                    .shelfName(storageLocation.getShelfName())
-                    .build())
+        .map(op -> op.toBuilder().shelfName(storageLocation.getShelfName()).build())
         .map(storageLocationRepository::save)
         .map(storageLocationMapper::toDTO)
         .orElse(null);

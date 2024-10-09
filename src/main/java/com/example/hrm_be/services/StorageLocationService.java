@@ -16,4 +16,3 @@ public interface StorageLocationService {
 
   void delete(Long id);
 }
-

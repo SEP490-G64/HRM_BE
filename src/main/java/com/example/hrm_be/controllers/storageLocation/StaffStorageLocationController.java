@@ -44,7 +44,8 @@ public class StaffStorageLocationController {
       @RequestParam(defaultValue = "") String name) {
 
     // Retrieve paginated list of storageLocations from the service
-    Page<StorageLocation> storageLocationPage = storageLocationService.getByPaging(page, size, sortBy, name);
+    Page<StorageLocation> storageLocationPage =
+        storageLocationService.getByPaging(page, size, sortBy, name);
 
     // Construct response object with storageLocation data and pagination details
     BaseOutput<List<StorageLocation>> response =
@@ -97,7 +98,8 @@ public class StaffStorageLocationController {
   // Create new storageLocation
   @PostMapping()
   protected ResponseEntity<BaseOutput<StorageLocation>> create(
-      @RequestBody @NotNull(message = "error.request.body.invalid") StorageLocation storageLocation) {
+      @RequestBody @NotNull(message = "error.request.body.invalid")
+          StorageLocation storageLocation) {
 
     // Check if the storageLocation object is null
     if (storageLocation == null) {
@@ -131,7 +133,8 @@ public class StaffStorageLocationController {
   @PutMapping("/{id}")
   protected ResponseEntity<BaseOutput<StorageLocation>> update(
       @PathVariable("id") Long id,
-      @RequestBody @NotNull(message = "error.request.body.invalid") StorageLocation storageLocation) {
+      @RequestBody @NotNull(message = "error.request.body.invalid")
+          StorageLocation storageLocation) {
 
     // Check if the provided ID is less than or equal to zero
     if (id <= 0 || id == null) {
