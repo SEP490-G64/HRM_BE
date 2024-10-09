@@ -23,7 +23,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/staff/special-condition")
-@Tag(name = "Admin-Users API")
+@Tag(name = "Staff-Special-Conditions API")
 @SecurityRequirement(name = "Authorization")
 public class StaffSpecialConditionController {
   private final SpecialConditionService specialConditionService;

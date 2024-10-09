@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/staff/unit-of-measurement")
-@Tag(name = "Admin-Users API")
+@Tag(name = "Admin-Units API")
 @SecurityRequirement(name = "Authorization")
 public class StaffUnitOfMeasurementController {
   private final UnitOfMeasurementService unitOfMeasurementService;

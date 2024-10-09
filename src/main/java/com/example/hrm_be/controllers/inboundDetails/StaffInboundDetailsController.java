@@ -7,6 +7,8 @@ import com.example.hrm_be.models.requests.inboundDetails.InboundDetailsCreateReq
 import com.example.hrm_be.models.requests.inboundDetails.InboundDetailsUpdateRequest;
 import com.example.hrm_be.models.responses.BaseOutput;
 import com.example.hrm_be.services.InboundDetailsService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +23,8 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/staff/inbound-details")
+@Tag(name = "Staff-Inbound-Details API")
+@SecurityRequirement(name = "Authorization")
 public class StaffInboundDetailsController {
   private final InboundDetailsService inboundDetailsService;
 

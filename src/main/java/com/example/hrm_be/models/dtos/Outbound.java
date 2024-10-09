@@ -54,7 +54,5 @@ public class Outbound {
 
   User createdBy;
 
-  LocalDateTime outboundDate;
-
   List<OutboundDetail> outboundDetails;
 }

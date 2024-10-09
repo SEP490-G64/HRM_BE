@@ -7,6 +7,8 @@ import com.example.hrm_be.models.requests.notification.NotificationCreateRequest
 import com.example.hrm_be.models.requests.notification.NotificationUpdateRequest;
 import com.example.hrm_be.models.responses.BaseOutput;
 import com.example.hrm_be.services.NotificationService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +23,8 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/staff/notification")
+@Tag(name = "Staff-Notifications API")
+@SecurityRequirement(name = "Authorization")
 public class StaffNotificationController {
   private final NotificationService notificationService;
 

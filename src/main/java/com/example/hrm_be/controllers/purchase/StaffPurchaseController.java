@@ -23,7 +23,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/staff/purchase")
-@Tag(name = "Admin-Users API")
+@Tag(name = "Staff-Purchases API")
 @SecurityRequirement(name = "Authorization")
 public class StaffPurchaseController {
   private final PurchaseService purchaseService;

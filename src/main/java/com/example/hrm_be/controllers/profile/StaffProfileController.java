@@ -20,7 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/staff/profile")
-@Tag(name = "Admin-Users API")
+@Tag(name = "Staff-Profile API")
 @SecurityRequirement(name = "Authorization")
 public class StaffProfileController {
   private final UserService userService;
