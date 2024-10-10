@@ -6,6 +6,7 @@ import com.example.hrm_be.components.ProductMapper;
 import com.example.hrm_be.components.UnitOfMeasurementMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.UnitOfMeasurement;
+import com.example.hrm_be.models.entities.UnitConversionEntity;
 import com.example.hrm_be.models.entities.UnitOfMeasurementEntity;
 import com.example.hrm_be.repositories.UnitOfMeasurementRepository;
 import com.example.hrm_be.services.UnitOfMeasurementService;
@@ -77,8 +78,11 @@ public class UnitOfMeasurementServiceImpl implements UnitOfMeasurementService {
 
   @Override
   public void delete(Long id) {
-    if (id == null) {
-      return;
+
+    UnitOfMeasurementEntity unitOfMeasurement =
+      unitOfMeasurementRepository.findById(id).orElse(null);
+    if (unitOfMeasurement == null) {
+      throw new HrmCommonException(HrmConstant.ERROR.UNIT_OF_MEASUREMENT.NOT_EXIST);
     }
     unitOfMeasurementRepository.deleteById(id);
   }
