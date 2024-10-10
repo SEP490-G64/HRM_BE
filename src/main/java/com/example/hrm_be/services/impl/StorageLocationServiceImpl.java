@@ -7,7 +7,6 @@ import com.example.hrm_be.components.StorageLocationMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.StorageLocation;
 import com.example.hrm_be.models.entities.StorageLocationEntity;
-import com.example.hrm_be.models.entities.UnitConversionEntity;
 import com.example.hrm_be.repositories.StorageLocationRepository;
 import com.example.hrm_be.services.StorageLocationService;
 import java.util.Optional;
@@ -73,8 +72,7 @@ public class StorageLocationServiceImpl implements StorageLocationService {
 
   @Override
   public void delete(Long id) {
-    StorageLocationEntity storageLocation =
-        storageLocationRepository.findById(id).orElse(null);
+    StorageLocationEntity storageLocation = storageLocationRepository.findById(id).orElse(null);
     if (storageLocation == null) {
       throw new HrmCommonException(HrmConstant.ERROR.UNIT_CONVERSION.NOT_EXIST);
     }
