@@ -22,18 +22,16 @@ import java.util.Optional;
 @Transactional
 public class NotificationServiceImpl implements NotificationService {
 
-  @Autowired
-  private NotificationRepository notificationRepository;
+  @Autowired private NotificationRepository notificationRepository;
 
-  @Autowired
-  private NotificationMapper notificationMapper;
+  @Autowired private NotificationMapper notificationMapper;
 
   @Override
   public Notification getById(Long id) {
     // Fetch notification by ID and map it to DTO
     return Optional.ofNullable(id)
-            .flatMap(e -> notificationRepository.findById(e).map(b -> notificationMapper.toDTO(b)))
-            .orElse(null);
+        .flatMap(e -> notificationRepository.findById(e).map(b -> notificationMapper.toDTO(b)))
+        .orElse(null);
   }
 
   @Override
@@ -53,46 +51,49 @@ public class NotificationServiceImpl implements NotificationService {
 
     // Convert DTO to entity, save it, and convert back to DTO
     return Optional.ofNullable(notification)
-            .map(notificationMapper::toEntity)
-            .map(e -> notificationRepository.save(e))
-            .map(e -> notificationMapper.toDTO(e))
-            .orElse(null);
+        .map(notificationMapper::toEntity)
+        .map(e -> notificationRepository.save(e))
+        .map(e -> notificationMapper.toDTO(e))
+        .orElse(null);
   }
 
   @Override
   public Notification update(Notification notification) {
     // Fetch the existing notification entity by ID
     NotificationEntity oldNotificationDetailEntity =
-            notificationRepository.findById(notification.getId()).orElse(null);
+        notificationRepository.findById(notification.getId()).orElse(null);
     if (oldNotificationDetailEntity == null) {
-      throw new HrmCommonException(HrmConstant.ERROR.NOTIFICATION.NOT_EXIST);  // Throw exception if not found
+      throw new HrmCommonException(
+          HrmConstant.ERROR.NOTIFICATION.NOT_EXIST); // Throw exception if not found
     }
 
     // Update the notification properties and save the updated entity
     return Optional.ofNullable(oldNotificationDetailEntity)
-            .map(
-                    op -> op.toBuilder()
-                            .notiName(notification.getNotiName())
-                            .notiType(notification.getNotiType())
-                            .message(notification.getMessage())
-                            .build())
-            .map(notificationRepository::save)
-            .map(notificationMapper::toDTO)
-            .orElse(null);
+        .map(
+            op ->
+                op.toBuilder()
+                    .notiName(notification.getNotiName())
+                    .notiType(notification.getNotiType())
+                    .message(notification.getMessage())
+                    .build())
+        .map(notificationRepository::save)
+        .map(notificationMapper::toDTO)
+        .orElse(null);
   }
 
   @Override
   public void delete(Long id) {
     // Check if the ID is blank
     if (StringUtils.isBlank(id.toString())) {
-      return;  // Exit if ID is invalid
+      return; // Exit if ID is invalid
     }
 
     // Fetch the existing notification entity by ID
     NotificationEntity oldNotificationDetailEntity =
         notificationRepository.findById(id).orElse(null);
     if (oldNotificationDetailEntity == null) {
-      throw new HrmCommonException(HrmConstant.ERROR.NOTIFICATION.NOT_EXIST);  // Throw exception if not found
+      throw new HrmCommonException(
+          HrmConstant.ERROR.NOTIFICATION.NOT_EXIST); // Throw exception if not found
     }
 
     // Delete the notification entity

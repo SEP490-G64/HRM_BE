@@ -35,8 +35,8 @@ public class OutboundServiceImpl implements OutboundService {
   @Override
   public Outbound getById(Long id) {
     return Optional.ofNullable(id)
-            .flatMap(e -> outboundRepository.findById(e).map(b -> outboundMapper.toDTO(b)))
-            .orElse(null);
+        .flatMap(e -> outboundRepository.findById(e).map(b -> outboundMapper.toDTO(b)))
+        .orElse(null);
   }
 
   @Override
@@ -49,24 +49,26 @@ public class OutboundServiceImpl implements OutboundService {
   @Override
   public Outbound create(Outbound outbound) {
     if (outbound == null) {
-      throw new HrmCommonException(HrmConstant.ERROR.BRANCH.EXIST);  // Error handling for null outbound object
+      throw new HrmCommonException(
+          HrmConstant.ERROR.BRANCH.EXIST); // Error handling for null outbound object
     }
 
-    String email = userService.getAuthenticatedUserEmail();  // Retrieve the logged-in user's email
-    UserEntity userEntity = userMapper.toEntity(userService.findLoggedInfoByEmail(email));  // Get user entity
+    String email = userService.getAuthenticatedUserEmail(); // Retrieve the logged-in user's email
+    UserEntity userEntity =
+        userMapper.toEntity(userService.findLoggedInfoByEmail(email)); // Get user entity
 
     return Optional.ofNullable(outbound)
-            .map(outboundMapper::toEntity)
-            .map(
-                    e -> {
-                      e.setCreatedBy(userEntity);
-                      e.setCreatedDate(LocalDateTime.now());
-                      e.setStatus(OutboundStatus.CHO_DUYET);
-                      e.setIsApproved(false);
-                      return outboundRepository.save(e);
-                    })
-            .map(e -> outboundMapper.toDTO(e))
-            .orElse(null);
+        .map(outboundMapper::toEntity)
+        .map(
+            e -> {
+              e.setCreatedBy(userEntity);
+              e.setCreatedDate(LocalDateTime.now());
+              e.setStatus(OutboundStatus.CHO_DUYET);
+              e.setIsApproved(false);
+              return outboundRepository.save(e);
+            })
+        .map(e -> outboundMapper.toDTO(e))
+        .orElse(null);
   }
 
   // Method to update an existing Outbound record
@@ -74,22 +76,23 @@ public class OutboundServiceImpl implements OutboundService {
   public Outbound update(Outbound outbound) {
     OutboundEntity oldoutboundEntity = outboundRepository.findById(outbound.getId()).orElse(null);
     if (oldoutboundEntity == null) {
-      throw new HrmCommonException(HrmConstant.ERROR.BRANCH.NOT_EXIST);  // Error if outbound entity is not found
+      throw new HrmCommonException(
+          HrmConstant.ERROR.BRANCH.NOT_EXIST); // Error if outbound entity is not found
     }
 
     return Optional.ofNullable(oldoutboundEntity)
-            .map(
-                    op ->
-                            op.toBuilder()
-                                    .note(outbound.getNote())
-                                    .outboundType(outbound.getOutboundType())
-                                    .status(outbound.getStatus())
-                                    .taxable(outbound.getTaxable())
-                                    .totalPrice(outbound.getTotalPrice())
-                                    .build())
-            .map(outboundRepository::save)
-            .map(outboundMapper::toDTO)
-            .orElse(null);
+        .map(
+            op ->
+                op.toBuilder()
+                    .note(outbound.getNote())
+                    .outboundType(outbound.getOutboundType())
+                    .status(outbound.getStatus())
+                    .taxable(outbound.getTaxable())
+                    .totalPrice(outbound.getTotalPrice())
+                    .build())
+        .map(outboundRepository::save)
+        .map(outboundMapper::toDTO)
+        .orElse(null);
   }
 
   // Method to approve an outbound record
@@ -97,31 +100,33 @@ public class OutboundServiceImpl implements OutboundService {
   public Outbound approve(Long id) {
     OutboundEntity oldoutboundEntity = outboundRepository.findById(id).orElse(null);
     if (oldoutboundEntity == null) {
-      throw new HrmCommonException(HrmConstant.ERROR.BRANCH.NOT_EXIST);  // Error if outbound entity is not found
+      throw new HrmCommonException(
+          HrmConstant.ERROR.BRANCH.NOT_EXIST); // Error if outbound entity is not found
     }
 
     String email = userService.getAuthenticatedUserEmail();
     UserEntity userEntity = userMapper.toEntity(userService.findLoggedInfoByEmail(email));
 
     return Optional.ofNullable(oldoutboundEntity)
-            .map(op -> op.toBuilder().isApproved(true).approvedBy(userEntity).build())
-            .map(outboundRepository::save)
-            .map(outboundMapper::toDTO)
-            .orElse(null);
+        .map(op -> op.toBuilder().isApproved(true).approvedBy(userEntity).build())
+        .map(outboundRepository::save)
+        .map(outboundMapper::toDTO)
+        .orElse(null);
   }
 
   // Method to delete an outbound record
   @Override
   public void delete(Long id) {
     if (StringUtils.isBlank(id.toString())) {
-      return;  // Return if the ID is invalid
+      return; // Return if the ID is invalid
     }
 
     OutboundEntity oldoutboundEntity = outboundRepository.findById(id).orElse(null);
     if (oldoutboundEntity == null) {
-      throw new HrmCommonException(HrmConstant.ERROR.BRANCH.NOT_EXIST);  // Error if outbound entity is not found
+      throw new HrmCommonException(
+          HrmConstant.ERROR.BRANCH.NOT_EXIST); // Error if outbound entity is not found
     }
 
-    outboundRepository.deleteById(id);  // Delete the outbound entity by ID
+    outboundRepository.deleteById(id); // Delete the outbound entity by ID
   }
 }

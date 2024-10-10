@@ -27,24 +27,20 @@ import java.util.Optional;
 @Transactional
 public class InventoryCheckServiceImpl implements InventoryCheckService {
 
-  @Autowired
-  private InventoryCheckRepository inventoryCheckRepository;
+  @Autowired private InventoryCheckRepository inventoryCheckRepository;
 
-  @Autowired
-  private InventoryCheckMapper inventoryCheckMapper;
+  @Autowired private InventoryCheckMapper inventoryCheckMapper;
 
-  @Autowired
-  private UserService userService;
+  @Autowired private UserService userService;
 
-  @Autowired
-  private UserMapper userMapper;
+  @Autowired private UserMapper userMapper;
 
   @Override
   public InventoryCheck getById(Long id) {
     // Retrieve an InventoryCheck by ID and convert it to a DTO
     return Optional.ofNullable(id)
-            .flatMap(e -> inventoryCheckRepository.findById(e).map(b -> inventoryCheckMapper.toDTO(b)))
-            .orElse(null);
+        .flatMap(e -> inventoryCheckRepository.findById(e).map(b -> inventoryCheckMapper.toDTO(b)))
+        .orElse(null);
   }
 
   @Override
@@ -59,7 +55,8 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
   public InventoryCheck create(InventoryCheck inventoryCheck) {
     // Check if the InventoryCheck is null
     if (inventoryCheck == null) {
-      throw new HrmCommonException(HrmConstant.ERROR.INVENTORY_CHECK.EXIST); // Throw an error if null
+      throw new HrmCommonException(
+          HrmConstant.ERROR.INVENTORY_CHECK.EXIST); // Throw an error if null
     }
 
     // Get the email of the authenticated user
@@ -68,47 +65,50 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
 
     // Convert DTO to entity, set metadata, and save it
     return Optional.ofNullable(inventoryCheck)
-            .map(inventoryCheckMapper::toEntity)
-            .map(
-                    e -> {
-                      e.setCreatedBy(userEntity);
-                      e.setCreatedDate(LocalDateTime.now());
-                      e.setStatus(InventoryCheckStatus.CHO_DUYET);
-                      e.setIsApproved(false);
-                      return inventoryCheckRepository.save(e);
-                    })
-            .map(e -> inventoryCheckMapper.toDTO(e))
-            .orElse(null);
+        .map(inventoryCheckMapper::toEntity)
+        .map(
+            e -> {
+              e.setCreatedBy(userEntity);
+              e.setCreatedDate(LocalDateTime.now());
+              e.setStatus(InventoryCheckStatus.CHO_DUYET);
+              e.setIsApproved(false);
+              return inventoryCheckRepository.save(e);
+            })
+        .map(e -> inventoryCheckMapper.toDTO(e))
+        .orElse(null);
   }
 
   @Override
   public InventoryCheck update(InventoryCheck inventoryCheck) {
     // Find the existing InventoryCheck by ID
     InventoryCheckEntity oldInventoryCheckEntity =
-            inventoryCheckRepository.findById(inventoryCheck.getId()).orElse(null);
+        inventoryCheckRepository.findById(inventoryCheck.getId()).orElse(null);
     if (oldInventoryCheckEntity == null) {
-      throw new HrmCommonException(HrmConstant.ERROR.INVENTORY_CHECK.NOT_EXIST); // Throw error if not found
+      throw new HrmCommonException(
+          HrmConstant.ERROR.INVENTORY_CHECK.NOT_EXIST); // Throw error if not found
     }
 
     // Update the existing entity with new data
     return Optional.ofNullable(oldInventoryCheckEntity)
-            .map(
-                    op -> op.toBuilder()
-                            .note(inventoryCheck.getNote())
-                            .status(inventoryCheck.getStatus())
-                            .build())
-            .map(inventoryCheckRepository::save)
-            .map(inventoryCheckMapper::toDTO)
-            .orElse(null);
+        .map(
+            op ->
+                op.toBuilder()
+                    .note(inventoryCheck.getNote())
+                    .status(inventoryCheck.getStatus())
+                    .build())
+        .map(inventoryCheckRepository::save)
+        .map(inventoryCheckMapper::toDTO)
+        .orElse(null);
   }
 
   @Override
   public InventoryCheck approve(Long id) {
     // Find the existing InventoryCheck by ID
     InventoryCheckEntity oldInventoryCheckEntity =
-            inventoryCheckRepository.findById(id).orElse(null);
+        inventoryCheckRepository.findById(id).orElse(null);
     if (oldInventoryCheckEntity == null) {
-      throw new HrmCommonException(HrmConstant.ERROR.INVENTORY_CHECK.NOT_EXIST); // Throw error if not found
+      throw new HrmCommonException(
+          HrmConstant.ERROR.INVENTORY_CHECK.NOT_EXIST); // Throw error if not found
     }
 
     // Get the email of the authenticated user
@@ -117,13 +117,15 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
 
     // Approve the inventory check and set the approver
     return Optional.ofNullable(oldInventoryCheckEntity)
-            .map(op -> op.toBuilder()
+        .map(
+            op ->
+                op.toBuilder()
                     .isApproved(true) // Set approval flag
                     .approvedBy(userEntity) // Set approver
                     .build())
-            .map(inventoryCheckRepository::save) // Save updated entity
-            .map(inventoryCheckMapper::toDTO) // Convert to DTO
-            .orElse(null);
+        .map(inventoryCheckRepository::save) // Save updated entity
+        .map(inventoryCheckMapper::toDTO) // Convert to DTO
+        .orElse(null);
   }
 
   @Override
@@ -134,10 +136,10 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
     }
 
     // Find the existing InventoryCheck by ID
-    InventoryCheckEntity inventoryCheckEntity =
-            inventoryCheckRepository.findById(id).orElse(null);
+    InventoryCheckEntity inventoryCheckEntity = inventoryCheckRepository.findById(id).orElse(null);
     if (inventoryCheckEntity == null) {
-      throw new HrmCommonException(HrmConstant.ERROR.INVENTORY_CHECK.NOT_EXIST); // Throw error if not found
+      throw new HrmCommonException(
+          HrmConstant.ERROR.INVENTORY_CHECK.NOT_EXIST); // Throw error if not found
     }
 
     // Delete the inventory check

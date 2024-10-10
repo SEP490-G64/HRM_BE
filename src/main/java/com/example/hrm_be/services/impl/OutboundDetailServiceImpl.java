@@ -22,18 +22,16 @@ import java.util.Optional;
 @Transactional
 public class OutboundDetailServiceImpl implements OutboundDetailService {
 
-  @Autowired
-  private OutboundDetailRepository outboundDetailRepository;
+  @Autowired private OutboundDetailRepository outboundDetailRepository;
 
-  @Autowired
-  private OutboundDetailMapper outboundDetailMapper;
+  @Autowired private OutboundDetailMapper outboundDetailMapper;
 
   @Override
   public OutboundDetail getById(Long id) {
     // Fetch outbound detail by ID, map the entity to DTO, and return it
     return Optional.ofNullable(id)
-            .flatMap(e -> outboundDetailRepository.findById(e).map(b -> outboundDetailMapper.toDTO(b)))
-            .orElse(null);
+        .flatMap(e -> outboundDetailRepository.findById(e).map(b -> outboundDetailMapper.toDTO(b)))
+        .orElse(null);
   }
 
   @Override
@@ -47,15 +45,16 @@ public class OutboundDetailServiceImpl implements OutboundDetailService {
   @Override
   public OutboundDetail create(OutboundDetail outboundDetail) {
     if (outboundDetail == null) {
-      throw new HrmCommonException(HrmConstant.ERROR.OUTBOUND_DETAILS.EXIST);  // Error handling for null outbound detail
+      throw new HrmCommonException(
+          HrmConstant.ERROR.OUTBOUND_DETAILS.EXIST); // Error handling for null outbound detail
     }
 
     // Convert DTO to entity, save it in the repository, and convert it back to DTO
     return Optional.ofNullable(outboundDetail)
-            .map(outboundDetailMapper::toEntity)
-            .map(e -> outboundDetailRepository.save(e))
-            .map(e -> outboundDetailMapper.toDTO(e))
-            .orElse(null);
+        .map(outboundDetailMapper::toEntity)
+        .map(e -> outboundDetailRepository.save(e))
+        .map(e -> outboundDetailMapper.toDTO(e))
+        .orElse(null);
   }
 
   // Method to update an existing outbound detail
@@ -63,17 +62,18 @@ public class OutboundDetailServiceImpl implements OutboundDetailService {
   public OutboundDetail update(OutboundDetail outboundDetail) {
     // Fetch the existing outbound detail entity by ID
     OutboundDetailEntity oldOutboundDetailEntity =
-            outboundDetailRepository.findById(outboundDetail.getId()).orElse(null);
+        outboundDetailRepository.findById(outboundDetail.getId()).orElse(null);
     if (oldOutboundDetailEntity == null) {
-      throw new HrmCommonException(HrmConstant.ERROR.OUTBOUND_DETAILS.NOT_EXIST);  // Error if the entity is not found
+      throw new HrmCommonException(
+          HrmConstant.ERROR.OUTBOUND_DETAILS.NOT_EXIST); // Error if the entity is not found
     }
 
     // Update the existing entity's properties using the builder pattern
     return Optional.ofNullable(oldOutboundDetailEntity)
-            .map(op -> op.toBuilder().quantity(outboundDetail.getQuantity()).build())
-            .map(outboundDetailRepository::save)
-            .map(outboundDetailMapper::toDTO)
-            .orElse(null);
+        .map(op -> op.toBuilder().quantity(outboundDetail.getQuantity()).build())
+        .map(outboundDetailRepository::save)
+        .map(outboundDetailMapper::toDTO)
+        .orElse(null);
   }
 
   // Method to delete an outbound detail by ID
@@ -85,9 +85,11 @@ public class OutboundDetailServiceImpl implements OutboundDetailService {
     }
 
     // Fetch the entity by ID
-    OutboundDetailEntity oldOutboundDetailEntity = outboundDetailRepository.findById(id).orElse(null);
+    OutboundDetailEntity oldOutboundDetailEntity =
+        outboundDetailRepository.findById(id).orElse(null);
     if (oldOutboundDetailEntity == null) {
-      throw new HrmCommonException(HrmConstant.ERROR.OUTBOUND_DETAILS.NOT_EXIST);  // Error if entity is not found
+      throw new HrmCommonException(
+          HrmConstant.ERROR.OUTBOUND_DETAILS.NOT_EXIST); // Error if entity is not found
     }
 
     // Delete the entity from the repository
