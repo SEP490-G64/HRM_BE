@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/staff/unit-conversion")
-@Tag(name = "Admin-Unit-Conversions API")
+@Tag(name = "Staff-Unit-Conversion API")
 @SecurityRequirement(name = "Authorization")
 public class StaffUnitConversionController {
   private final UnitConversionService unitConversionService;

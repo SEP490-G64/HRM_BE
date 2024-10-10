@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/staff/storage-location")
-@Tag(name = "Admin-Storage-Locations API")
+@Tag(name = "Staff-Storage-Location API")
 @SecurityRequirement(name = "Authorization")
 public class StaffStorageLocationController {
   private final StorageLocationService storageLocationService;

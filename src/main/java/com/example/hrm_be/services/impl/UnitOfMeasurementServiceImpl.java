@@ -72,8 +72,11 @@ public class UnitOfMeasurementServiceImpl implements UnitOfMeasurementService {
 
   @Override
   public void delete(Long id) {
-    if (id == null) {
-      return;
+
+    UnitOfMeasurementEntity unitOfMeasurement =
+        unitOfMeasurementRepository.findById(id).orElse(null);
+    if (unitOfMeasurement == null) {
+      throw new HrmCommonException(HrmConstant.ERROR.UNIT_OF_MEASUREMENT.NOT_EXIST);
     }
     unitOfMeasurementRepository.deleteById(id);
   }

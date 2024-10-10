@@ -72,8 +72,9 @@ public class StorageLocationServiceImpl implements StorageLocationService {
 
   @Override
   public void delete(Long id) {
-    if (id == null) {
-      return;
+    StorageLocationEntity storageLocation = storageLocationRepository.findById(id).orElse(null);
+    if (storageLocation == null) {
+      throw new HrmCommonException(HrmConstant.ERROR.UNIT_CONVERSION.NOT_EXIST);
     }
     storageLocationRepository.deleteById(id);
   }
