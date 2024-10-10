@@ -31,23 +31,17 @@ import lombok.experimental.SuperBuilder;
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class UnitConversionEntity extends CommonEntity {
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(
-      name = "larger_unit",
-      foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+  @JoinColumn(name = "larger_unit", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   UnitOfMeasurementEntity largerUnit;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(
-      name = "smaller_unit",
-      foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+  @JoinColumn(name = "smaller_unit", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   UnitOfMeasurementEntity smallerUnit;
 
   @Column(name = "factor_conversion", nullable = false)
   Double factorConversion;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(
-      name = "batch_id",
-      foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+  @JoinColumn(name = "batch_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   BatchEntity batch;
 }
