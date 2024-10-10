@@ -145,10 +145,10 @@ public class StaffOutboundController {
     // Validate the path variable ID
     if (id <= 0 || id == null) {
       BaseOutput<Outbound> response =
-              BaseOutput.<Outbound>builder()
-                      .status(com.example.hrm_be.commons.enums.ResponseStatus.FAILED)
-                      .errors(List.of(HrmConstant.ERROR.REQUEST.INVALID_PATH_VARIABLE))
-                      .build();
+          BaseOutput.<Outbound>builder()
+              .status(com.example.hrm_be.commons.enums.ResponseStatus.FAILED)
+              .errors(List.of(HrmConstant.ERROR.REQUEST.INVALID_PATH_VARIABLE))
+              .build();
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
@@ -157,11 +157,11 @@ public class StaffOutboundController {
 
     // Build the response with the updated Outbound data
     BaseOutput<Outbound> response =
-            BaseOutput.<Outbound>builder()
-                    .message(HttpStatus.OK.toString())
-                    .data(updateOutbound)
-                    .status(com.example.hrm_be.commons.enums.ResponseStatus.SUCCESS)
-                    .build();
+        BaseOutput.<Outbound>builder()
+            .message(HttpStatus.OK.toString())
+            .data(updateOutbound)
+            .status(com.example.hrm_be.commons.enums.ResponseStatus.SUCCESS)
+            .build();
     return ResponseEntity.ok(response);
   }
 

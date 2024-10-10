@@ -21,18 +21,16 @@ import java.util.Optional;
 @Service
 @Transactional
 public class PurchaseServiceImpl implements PurchaseService {
-  @Autowired
-  private PurchaseRepository purchaseRepository;
+  @Autowired private PurchaseRepository purchaseRepository;
 
-  @Autowired
-  private PurchaseMapper purchaseMapper;
+  @Autowired private PurchaseMapper purchaseMapper;
 
   // Method to get Purchase by ID, converts entity to DTO if found, returns null if not found
   @Override
   public Purchase getById(Long id) {
     return Optional.ofNullable(id)
-            .flatMap(e -> purchaseRepository.findById(e).map(b -> purchaseMapper.toDTO(b)))
-            .orElse(null);
+        .flatMap(e -> purchaseRepository.findById(e).map(b -> purchaseMapper.toDTO(b)))
+        .orElse(null);
   }
 
   // Method to retrieve a paginated list of Purchase entities, sorted by the specified field
@@ -55,10 +53,10 @@ public class PurchaseServiceImpl implements PurchaseService {
 
     // Convert DTO to entity, save it to the database, and then convert it back to DTO
     return Optional.ofNullable(purchase)
-            .map(purchaseMapper::toEntity)
-            .map(e -> purchaseRepository.save(e))
-            .map(e -> purchaseMapper.toDTO(e))
-            .orElse(null);
+        .map(purchaseMapper::toEntity)
+        .map(e -> purchaseRepository.save(e))
+        .map(e -> purchaseMapper.toDTO(e))
+        .orElse(null);
   }
 
   // Method to update an existing Purchase record
@@ -74,17 +72,17 @@ public class PurchaseServiceImpl implements PurchaseService {
 
     // Update fields of the existing entity, save the updated entity, and convert it to DTO
     return Optional.ofNullable(oldPurchaseEntity)
-            .map(
-                    op ->
-                            // Use builder pattern to update entity fields
-                            op.toBuilder()
-                                    .amount(purchase.getAmount())
-                                    .remainDebt(purchase.getRemainDebt())
-                                    .purchaseDate(purchase.getPurchaseDate())
-                                    .build())
-            .map(purchaseRepository::save)
-            .map(purchaseMapper::toDTO)
-            .orElse(null);
+        .map(
+            op ->
+                // Use builder pattern to update entity fields
+                op.toBuilder()
+                    .amount(purchase.getAmount())
+                    .remainDebt(purchase.getRemainDebt())
+                    .purchaseDate(purchase.getPurchaseDate())
+                    .build())
+        .map(purchaseRepository::save)
+        .map(purchaseMapper::toDTO)
+        .orElse(null);
   }
 
   // Method to delete a Purchase record by ID

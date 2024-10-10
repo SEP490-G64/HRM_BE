@@ -30,9 +30,9 @@ public class SpecialConditionServiceImpl implements SpecialConditionService {
   public SpecialCondition getById(Long id) {
     // Retrieve SpecialCondition by ID, map it to DTO if found, return null otherwise
     return Optional.ofNullable(id)
-            .flatMap(
-                    e -> specialConditionRepository.findById(e).map(b -> specialConditionMapper.toDTO(b)))
-            .orElse(null);
+        .flatMap(
+            e -> specialConditionRepository.findById(e).map(b -> specialConditionMapper.toDTO(b)))
+        .orElse(null);
   }
 
   @Override
@@ -42,8 +42,8 @@ public class SpecialConditionServiceImpl implements SpecialConditionService {
 
     // Fetch all SpecialCondition records from the repository, map entities to DTOs
     return specialConditionRepository
-            .findAll(pageable)
-            .map(dao -> specialConditionMapper.toDTO(dao));
+        .findAll(pageable)
+        .map(dao -> specialConditionMapper.toDTO(dao));
   }
 
   @Override
@@ -55,17 +55,17 @@ public class SpecialConditionServiceImpl implements SpecialConditionService {
 
     // Convert the DTO to an entity, save it, and then map the saved entity back to a DTO
     return Optional.ofNullable(specialCondition)
-            .map(specialConditionMapper::toEntity)
-            .map(e -> specialConditionRepository.save(e))
-            .map(e -> specialConditionMapper.toDTO(e))
-            .orElse(null);
+        .map(specialConditionMapper::toEntity)
+        .map(e -> specialConditionRepository.save(e))
+        .map(e -> specialConditionMapper.toDTO(e))
+        .orElse(null);
   }
 
   @Override
   public SpecialCondition update(SpecialCondition specialCondition) {
     // Retrieve the existing SpecialCondition entity by its ID
     SpecialConditionEntity oldSpecialConditionEntity =
-            specialConditionRepository.findById(specialCondition.getId()).orElse(null);
+        specialConditionRepository.findById(specialCondition.getId()).orElse(null);
 
     // If the entity doesn't exist, throw an exception
     if (oldSpecialConditionEntity == null) {
@@ -74,15 +74,16 @@ public class SpecialConditionServiceImpl implements SpecialConditionService {
 
     // Update the existing entity with new values, save it, and map it back to a DTO
     return Optional.ofNullable(oldSpecialConditionEntity)
-            .map(
-                    op ->
-                            op.toBuilder()
-                                    .conditionType(specialCondition.getConditionType()) // Update condition type
-                                    .handlingInstruction(specialCondition.getHandlingInstruction()) // Update handling instruction
-                                    .build())
-            .map(specialConditionRepository::save)
-            .map(specialConditionMapper::toDTO)
-            .orElse(null);
+        .map(
+            op ->
+                op.toBuilder()
+                    .conditionType(specialCondition.getConditionType()) // Update condition type
+                    .handlingInstruction(
+                        specialCondition.getHandlingInstruction()) // Update handling instruction
+                    .build())
+        .map(specialConditionRepository::save)
+        .map(specialConditionMapper::toDTO)
+        .orElse(null);
   }
 
   @Override

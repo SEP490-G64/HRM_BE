@@ -22,18 +22,16 @@ import java.util.Optional;
 @Transactional
 public class InboundDetailsServiceImpl implements InboundDetailsService {
 
-  @Autowired
-  private InboundDetailsRepository inboundDetailsRepository;
+  @Autowired private InboundDetailsRepository inboundDetailsRepository;
 
-  @Autowired
-  private InboundDetailsMapper inboundDetailsMapper;
+  @Autowired private InboundDetailsMapper inboundDetailsMapper;
 
   @Override
   public InboundDetails getById(Long id) {
     // Retrieve inbound details by ID and convert to DTO
     return Optional.ofNullable(id)
-            .flatMap(e -> inboundDetailsRepository.findById(e).map(b -> inboundDetailsMapper.toDTO(b)))
-            .orElse(null);
+        .flatMap(e -> inboundDetailsRepository.findById(e).map(b -> inboundDetailsMapper.toDTO(b)))
+        .orElse(null);
   }
 
   @Override
@@ -41,8 +39,7 @@ public class InboundDetailsServiceImpl implements InboundDetailsService {
     // Create pageable request for pagination and sorting
     Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(sortBy).ascending());
     // Retrieve paginated inbound details and map to DTOs
-    return inboundDetailsRepository.findAll(pageable)
-            .map(dao -> inboundDetailsMapper.toDTO(dao));
+    return inboundDetailsRepository.findAll(pageable).map(dao -> inboundDetailsMapper.toDTO(dao));
   }
 
   @Override
@@ -54,31 +51,33 @@ public class InboundDetailsServiceImpl implements InboundDetailsService {
 
     // Convert DTO to entity, save it, and convert back to DTO
     return Optional.ofNullable(inboundDetails)
-            .map(inboundDetailsMapper::toEntity)
-            .map(e -> inboundDetailsRepository.save(e))
-            .map(e -> inboundDetailsMapper.toDTO(e))
-            .orElse(null);
+        .map(inboundDetailsMapper::toEntity)
+        .map(e -> inboundDetailsRepository.save(e))
+        .map(e -> inboundDetailsMapper.toDTO(e))
+        .orElse(null);
   }
 
   @Override
   public InboundDetails update(InboundDetails inboundDetails) {
     // Find existing inbound details by ID
     InboundDetailsEntity oldInboundDetailsEntity =
-            inboundDetailsRepository.findById(inboundDetails.getId()).orElse(null);
+        inboundDetailsRepository.findById(inboundDetails.getId()).orElse(null);
     if (oldInboundDetailsEntity == null) {
-      throw new HrmCommonException(HrmConstant.ERROR.INBOUND_DETAILS.NOT_EXIST); // Throw error if not found
+      throw new HrmCommonException(
+          HrmConstant.ERROR.INBOUND_DETAILS.NOT_EXIST); // Throw error if not found
     }
 
     // Update fields of the existing entity
     return Optional.ofNullable(oldInboundDetailsEntity)
-            .map(
-                    op -> op.toBuilder()
-                            .receiveQuantity(inboundDetails.getReceiveQuantity())
-                            .requestQuantity(inboundDetails.getRequestQuantity())
-                            .build())
-            .map(inboundDetailsRepository::save)
-            .map(inboundDetailsMapper::toDTO)
-            .orElse(null);
+        .map(
+            op ->
+                op.toBuilder()
+                    .receiveQuantity(inboundDetails.getReceiveQuantity())
+                    .requestQuantity(inboundDetails.getRequestQuantity())
+                    .build())
+        .map(inboundDetailsRepository::save)
+        .map(inboundDetailsMapper::toDTO)
+        .orElse(null);
   }
 
   @Override
@@ -92,7 +91,8 @@ public class InboundDetailsServiceImpl implements InboundDetailsService {
     InboundDetailsEntity oldInboundDetailsEntity =
         inboundDetailsRepository.findById(id).orElse(null);
     if (oldInboundDetailsEntity == null) {
-      throw new HrmCommonException(HrmConstant.ERROR.INBOUND_DETAILS.NOT_EXIST); // Throw error if not found
+      throw new HrmCommonException(
+          HrmConstant.ERROR.INBOUND_DETAILS.NOT_EXIST); // Throw error if not found
     }
 
     // Delete the inbound details

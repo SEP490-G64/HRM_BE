@@ -3,7 +3,6 @@ package com.example.hrm_be.controllers.inventoryCheck;
 import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.commons.enums.ResponseStatus;
 import com.example.hrm_be.models.dtos.InventoryCheck;
-import com.example.hrm_be.models.dtos.Outbound;
 import com.example.hrm_be.models.responses.BaseOutput;
 import com.example.hrm_be.services.InventoryCheckService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -146,10 +145,10 @@ public class StaffInventoryCheckController {
     // Validate the path variable ID
     if (id <= 0 || id == null) {
       BaseOutput<InventoryCheck> response =
-              BaseOutput.<InventoryCheck>builder()
-                      .status(com.example.hrm_be.commons.enums.ResponseStatus.FAILED)
-                      .errors(List.of(HrmConstant.ERROR.REQUEST.INVALID_PATH_VARIABLE))
-                      .build();
+          BaseOutput.<InventoryCheck>builder()
+              .status(com.example.hrm_be.commons.enums.ResponseStatus.FAILED)
+              .errors(List.of(HrmConstant.ERROR.REQUEST.INVALID_PATH_VARIABLE))
+              .build();
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
@@ -158,11 +157,11 @@ public class StaffInventoryCheckController {
 
     // Build the response with the updated InventoryCheck data
     BaseOutput<InventoryCheck> response =
-            BaseOutput.<InventoryCheck>builder()
-                    .message(HttpStatus.OK.toString())
-                    .data(updateInventoryCheck)
-                    .status(com.example.hrm_be.commons.enums.ResponseStatus.SUCCESS)
-                    .build();
+        BaseOutput.<InventoryCheck>builder()
+            .message(HttpStatus.OK.toString())
+            .data(updateInventoryCheck)
+            .status(com.example.hrm_be.commons.enums.ResponseStatus.SUCCESS)
+            .build();
     return ResponseEntity.ok(response);
   }
 
