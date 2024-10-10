@@ -1,6 +1,7 @@
 package com.example.hrm_be.services.impl;
 
-import static org.junit.jupiter.api.Assertions.*;import com.example.hrm_be.HrmBeApplication;
+import static org.junit.jupiter.api.Assertions.*;
+import com.example.hrm_be.HrmBeApplication;
 import com.example.hrm_be.common.TestcontainersConfiguration;
 import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
@@ -33,11 +34,9 @@ class UnitConversionImplTest {
   public static PostgreSQLContainer<TestcontainersConfiguration> postgreSQLContainer =
       TestcontainersConfiguration.getInstance();
 
-  @Autowired
-  private UnitConversionImpl unitConversionService;
+  @Autowired private UnitConversionImpl unitConversionService;
 
-  @Autowired
-  private UnitConversionRepository unitConversionRepository;
+  @Autowired private UnitConversionRepository unitConversionRepository;
 
   @Test
   void testCreate_ShouldCreateUnitConversion() {
@@ -102,7 +101,8 @@ class UnitConversionImplTest {
     UnitConversion updated = unitConversionService.update(updatedUnitConversion);
 
     // Fetch the updated entity from the database
-    Optional<UnitConversionEntity> updatedEntity = unitConversionRepository.findById(oldEntity.getId());
+    Optional<UnitConversionEntity> updatedEntity =
+        unitConversionRepository.findById(oldEntity.getId());
 
     // Assertions
     assertTrue(updatedEntity.isPresent());
@@ -113,13 +113,16 @@ class UnitConversionImplTest {
   void testUpdate_ShouldThrowException_WhenEntityDoesNotExist() {
     // Prepare test data
     UnitConversion unitConversion = new UnitConversion();
-    unitConversion.setId(999L);  // Non-existing ID
+    unitConversion.setId(999L); // Non-existing ID
     unitConversion.setFactorConversion(2.5);
 
     // Call the service method and expect an exception
-    HrmCommonException exception = assertThrows(HrmCommonException.class, () -> {
-      unitConversionService.update(unitConversion);
-    });
+    HrmCommonException exception =
+        assertThrows(
+            HrmCommonException.class,
+            () -> {
+              unitConversionService.update(unitConversion);
+            });
 
     // Assert exception message
     assertEquals(HrmConstant.ERROR.UNIT_CONVERSION.NOT_EXIST, exception.getMessage());
@@ -136,16 +139,20 @@ class UnitConversionImplTest {
     unitConversionService.delete(entity.getId());
 
     // Verify that the entity is deleted
-    Optional<UnitConversionEntity> deletedEntity = unitConversionRepository.findById(entity.getId());
+    Optional<UnitConversionEntity> deletedEntity =
+        unitConversionRepository.findById(entity.getId());
     assertTrue(deletedEntity.isEmpty());
   }
 
   @Test
   void testDelete_ShouldThrowException_WhenEntityDoesNotExist() {
     // Call the service method and expect an exception for non-existent ID
-    HrmCommonException exception = assertThrows(HrmCommonException.class, () -> {
-      unitConversionService.delete(999L);
-    });
+    HrmCommonException exception =
+        assertThrows(
+            HrmCommonException.class,
+            () -> {
+              unitConversionService.delete(999L);
+            });
 
     // Assert exception message
     assertEquals(HrmConstant.ERROR.UNIT_CONVERSION.NOT_EXIST, exception.getMessage());

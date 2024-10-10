@@ -21,7 +21,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -35,14 +34,12 @@ class StorageLocationServiceImplTest {
   @Container
   public static PostgreSQLContainer<TestcontainersConfiguration> postgreSQLContainer =
       TestcontainersConfiguration.getInstance();
-  @Autowired
-  private StorageLocationService storageLocationService;
 
-  @Autowired
-  private StorageLocationRepository storageLocationRepository;
+  @Autowired private StorageLocationService storageLocationService;
 
-  @Autowired
-  private StorageLocationMapper storageLocationMapper;
+  @Autowired private StorageLocationRepository storageLocationRepository;
+
+  @Autowired private StorageLocationMapper storageLocationMapper;
 
   @Test
   void testCreateStorageLocation() {
@@ -82,9 +79,11 @@ class StorageLocationServiceImplTest {
     storageLocationService.delete(entity.getId());
 
     // Verify that it's deleted
-    Optional<StorageLocationEntity> deletedEntity = storageLocationRepository.findById(entity.getId());
+    Optional<StorageLocationEntity> deletedEntity =
+        storageLocationRepository.findById(entity.getId());
     assertTrue(deletedEntity.isEmpty());
   }
+
   @Test
   void testUpdate_ShouldUpdateStorageLocation_WhenEntityExists() {
     // Prepare test data
@@ -100,7 +99,8 @@ class StorageLocationServiceImplTest {
     StorageLocation updated = storageLocationService.update(storageLocationDTO);
 
     // Fetch the updated entity from the database
-    Optional<StorageLocationEntity> updatedEntity = storageLocationRepository.findById(oldEntity.getId());
+    Optional<StorageLocationEntity> updatedEntity =
+        storageLocationRepository.findById(oldEntity.getId());
 
     // Assertions
     assertTrue(updatedEntity.isPresent());
@@ -111,13 +111,16 @@ class StorageLocationServiceImplTest {
   void testUpdate_ShouldThrowException_WhenEntityDoesNotExist() {
     // Prepare test data
     StorageLocation storageLocationDTO = new StorageLocation();
-    storageLocationDTO.setId(999L);  // Non-existing ID
+    storageLocationDTO.setId(999L); // Non-existing ID
     storageLocationDTO.setShelfName("Non-existent Shelf");
 
     // Call the service method and expect an exception
-    HrmCommonException exception = assertThrows(HrmCommonException.class, () -> {
-      storageLocationService.update(storageLocationDTO);
-    });
+    HrmCommonException exception =
+        assertThrows(
+            HrmCommonException.class,
+            () -> {
+              storageLocationService.update(storageLocationDTO);
+            });
 
     // Assert exception message
     assertEquals(HrmConstant.ERROR.STORAGE_LOCATION.NOT_EXIST, exception.getMessage());

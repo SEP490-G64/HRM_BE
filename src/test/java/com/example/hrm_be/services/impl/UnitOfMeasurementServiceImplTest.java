@@ -38,11 +38,10 @@ class UnitOfMeasurementServiceImplTest {
   @Container
   public static PostgreSQLContainer<TestcontainersConfiguration> postgreSQLContainer =
       TestcontainersConfiguration.getInstance();
-  @Autowired
-  private UnitOfMeasurementServiceImpl unitOfMeasurementService;
 
-  @Autowired
-  private UnitOfMeasurementRepository unitOfMeasurementRepository;
+  @Autowired private UnitOfMeasurementServiceImpl unitOfMeasurementService;
+
+  @Autowired private UnitOfMeasurementRepository unitOfMeasurementRepository;
 
   @Test
   void testCreate_ShouldCreateUnitOfMeasurement() {
@@ -108,7 +107,8 @@ class UnitOfMeasurementServiceImplTest {
     UnitOfMeasurement updated = unitOfMeasurementService.update(updatedUnitOfMeasurement);
 
     // Fetch the updated entity from the database
-    Optional<UnitOfMeasurementEntity> updatedEntity = unitOfMeasurementRepository.findById(oldEntity.getId());
+    Optional<UnitOfMeasurementEntity> updatedEntity =
+        unitOfMeasurementRepository.findById(oldEntity.getId());
 
     // Assertions
     assertTrue(updatedEntity.isPresent());
@@ -119,13 +119,16 @@ class UnitOfMeasurementServiceImplTest {
   void testUpdate_ShouldThrowException_WhenEntityDoesNotExist() {
     // Prepare test data
     UnitOfMeasurement unitOfMeasurement = new UnitOfMeasurement();
-    unitOfMeasurement.setId(999L);  // Non-existing ID
+    unitOfMeasurement.setId(999L); // Non-existing ID
     unitOfMeasurement.setUnitName("Non-existent Unit");
 
     // Call the service method and expect an exception
-    HrmCommonException exception = assertThrows(HrmCommonException.class, () -> {
-      unitOfMeasurementService.update(unitOfMeasurement);
-    });
+    HrmCommonException exception =
+        assertThrows(
+            HrmCommonException.class,
+            () -> {
+              unitOfMeasurementService.update(unitOfMeasurement);
+            });
 
     // Assert exception message
     assertEquals(HrmConstant.ERROR.UNIT_OF_MEASUREMENT.NOT_EXIST, exception.getMessage());
@@ -142,16 +145,20 @@ class UnitOfMeasurementServiceImplTest {
     unitOfMeasurementService.delete(entity.getId());
 
     // Verify that the entity is deleted
-    Optional<UnitOfMeasurementEntity> deletedEntity = unitOfMeasurementRepository.findById(entity.getId());
+    Optional<UnitOfMeasurementEntity> deletedEntity =
+        unitOfMeasurementRepository.findById(entity.getId());
     assertTrue(deletedEntity.isEmpty());
   }
 
   @Test
   void testDelete_ShouldThrowException_WhenEntityDoesNotExist() {
     // Call the service method and expect an exception for non-existent ID
-    HrmCommonException exception = assertThrows(HrmCommonException.class, () -> {
-      unitOfMeasurementService.delete(999L);
-    });
+    HrmCommonException exception =
+        assertThrows(
+            HrmCommonException.class,
+            () -> {
+              unitOfMeasurementService.delete(999L);
+            });
 
     // Assert exception message
     assertEquals(HrmConstant.ERROR.UNIT_OF_MEASUREMENT.NOT_EXIST, exception.getMessage());
