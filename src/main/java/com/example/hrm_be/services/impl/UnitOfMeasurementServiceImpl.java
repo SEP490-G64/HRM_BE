@@ -11,7 +11,6 @@ import com.example.hrm_be.models.entities.UnitOfMeasurementEntity;
 import com.example.hrm_be.repositories.UnitOfMeasurementRepository;
 import com.example.hrm_be.services.UnitOfMeasurementService;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -66,11 +65,7 @@ public class UnitOfMeasurementServiceImpl implements UnitOfMeasurementService {
       throw new HrmCommonException(HrmConstant.ERROR.UNIT_OF_MEASUREMENT.NOT_EXIST);
     }
     return Optional.ofNullable(oldUnitOfMeasurementEntity)
-        .map(
-            op ->
-                op.toBuilder()
-                    .unitName(storageLocation.getUnitName())
-                    .build())
+        .map(op -> op.toBuilder().unitName(storageLocation.getUnitName()).build())
         .map(unitOfMeasurementRepository::save)
         .map(unitOfMeasurementMapper::toDTO)
         .orElse(null);

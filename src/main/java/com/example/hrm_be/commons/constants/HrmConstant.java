@@ -82,6 +82,7 @@ public class HrmConstant {
       public static final String NOT_CHILD = "error.type.not_child";
       public static final String NOT_EXIST = "error.type.not_exist";
     }
+
     public static class UNIT_CONVERSION {
       public static final String CREATE = "error.type.create";
       public static final String UPDATE = "error.type.update";
@@ -90,6 +91,7 @@ public class HrmConstant {
       public static final String NOT_CHILD = "error.type.not_child";
       public static final String NOT_EXIST = "error.type.not_exist";
     }
+
     public static class UNIT_OF_MEASUREMENT {
       public static final String CREATE = "error.type.create";
       public static final String UPDATE = "error.type.update";
@@ -98,7 +100,6 @@ public class HrmConstant {
       public static final String NOT_CHILD = "error.type.not_child";
       public static final String NOT_EXIST = "error.type.not_exist";
     }
-
 
     public static class USER {
       public static final String NOT_EXIST = "error.user.not_exist";

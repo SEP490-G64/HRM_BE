@@ -1,6 +1,5 @@
 package com.example.hrm_be.repositories;
 
-import com.example.hrm_be.models.entities.UnitConversionEntity;
 import com.example.hrm_be.models.entities.UnitOfMeasurementEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,5 +9,4 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UnitOfMeasurementRepository extends JpaRepository<UnitOfMeasurementEntity, Long> {
   Page<UnitOfMeasurementEntity> findByUnitNameContainingIgnoreCase(String name, Pageable pageable);
-
 }

@@ -44,7 +44,8 @@ public class StaffUnitOfMeasurementController {
       @RequestParam(defaultValue = "") String name) {
 
     // Retrieve paginated list of unitOfMeasurements from the service
-    Page<UnitOfMeasurement> unitOfMeasurementPage = unitOfMeasurementService.getByPaging(page, size, sortBy, name);
+    Page<UnitOfMeasurement> unitOfMeasurementPage =
+        unitOfMeasurementService.getByPaging(page, size, sortBy, name);
 
     // Construct response object with unitOfMeasurement data and pagination details
     BaseOutput<List<UnitOfMeasurement>> response =
@@ -54,7 +55,9 @@ public class StaffUnitOfMeasurementController {
             .currentPage(page) // Current page number
             .pageSize(size) // Size of the current page
             .total(unitOfMeasurementPage.getTotalElements()) // Total number of unitOfMeasurements
-            .data(unitOfMeasurementPage.getContent()) // List of unitOfMeasurements in the current page
+            .data(
+                unitOfMeasurementPage
+                    .getContent()) // List of unitOfMeasurements in the current page
             .status(ResponseStatus.SUCCESS) // Set response status to SUCCESS
             .build();
 
@@ -97,7 +100,8 @@ public class StaffUnitOfMeasurementController {
   // Create new UnitOfMeasurement
   @PostMapping()
   protected ResponseEntity<BaseOutput<UnitOfMeasurement>> create(
-      @RequestBody @NotNull(message = "error.request.body.invalid") UnitOfMeasurement unitOfMeasurement) {
+      @RequestBody @NotNull(message = "error.request.body.invalid")
+          UnitOfMeasurement unitOfMeasurement) {
 
     // Check if the unitOfMeasurement object is null
     if (unitOfMeasurement == null) {
@@ -131,7 +135,8 @@ public class StaffUnitOfMeasurementController {
   @PutMapping("/{id}")
   protected ResponseEntity<BaseOutput<UnitOfMeasurement>> update(
       @PathVariable("id") Long id,
-      @RequestBody @NotNull(message = "error.request.body.invalid") UnitOfMeasurement unitOfMeasurement) {
+      @RequestBody @NotNull(message = "error.request.body.invalid")
+          UnitOfMeasurement unitOfMeasurement) {
 
     // Check if the provided ID is less than or equal to zero
     if (id <= 0 || id == null) {
@@ -188,4 +193,3 @@ public class StaffUnitOfMeasurementController {
             .build());
   }
 }
-

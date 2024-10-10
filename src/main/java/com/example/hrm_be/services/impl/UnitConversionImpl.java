@@ -7,7 +7,6 @@ import com.example.hrm_be.components.UnitConversionMapper;
 import com.example.hrm_be.components.UnitOfMeasurementMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.UnitConversion;
-import com.example.hrm_be.models.dtos.UnitOfMeasurement;
 import com.example.hrm_be.models.entities.UnitConversionEntity;
 import com.example.hrm_be.repositories.UnitConversionRepository;
 import com.example.hrm_be.services.UnitConversionService;
@@ -15,17 +14,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
 public class UnitConversionImpl implements UnitConversionService {
-  @Autowired
-  private UnitConversionRepository unitConversionRepository;
+  @Autowired private UnitConversionRepository unitConversionRepository;
 
   @Autowired private UnitConversionMapper unitConversionMapper;
   @Autowired private UnitOfMeasurementMapper unitOfMeasurementMapper;
@@ -44,7 +39,7 @@ public class UnitConversionImpl implements UnitConversionService {
     return unitConversionEntities.stream()
         .map(dao -> unitConversionMapper.toDTO(dao))
         .collect(Collectors.toList());
-    }
+  }
 
   @Override
   public UnitConversion create(UnitConversion unitConversion) {
@@ -60,16 +55,13 @@ public class UnitConversionImpl implements UnitConversionService {
 
   @Override
   public UnitConversion update(UnitConversion unitConversion) {
-    UnitConversionEntity oldUnitConversionEntity = unitConversionRepository.findById(unitConversion.getId()).orElse(null);
+    UnitConversionEntity oldUnitConversionEntity =
+        unitConversionRepository.findById(unitConversion.getId()).orElse(null);
     if (oldUnitConversionEntity == null) {
       throw new HrmCommonException(HrmConstant.ERROR.UNIT_CONVERSION.NOT_EXIST);
     }
     return Optional.ofNullable(oldUnitConversionEntity)
-        .map(
-            op ->
-                op.toBuilder()
-                    .factorConversion(unitConversion.getFactorConversion())
-                    .build())
+        .map(op -> op.toBuilder().factorConversion(unitConversion.getFactorConversion()).build())
         .map(unitConversionRepository::save)
         .map(unitConversionMapper::toDTO)
         .orElse(null);
