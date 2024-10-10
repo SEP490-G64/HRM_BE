@@ -25,7 +25,6 @@ import java.util.Objects;
 import java.util.Optional;
 
 import com.example.hrm_be.utils.PasswordGenerator;
-import jakarta.persistence.EntityManager;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -61,7 +60,6 @@ public class UserServiceImpl implements UserService {
 
   @Lazy @Autowired private PasswordEncoder passwordEncoder;
   @Autowired private EmailService emailService;
-  @Autowired private EntityManager entityManager;
 
   @Override
   public String getAuthenticatedUserEmail() throws UsernameNotFoundException {

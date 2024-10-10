@@ -26,6 +26,7 @@ import java.util.List;
 public class StaffPurchaseController {
   private final PurchaseService purchaseService;
 
+  // GET: /api/v1/staff/purchase
   // Retrieves a paginated list of Purchase entities
   // with optional sorting and searching by name or location and filter type
   @GetMapping("")
@@ -50,6 +51,7 @@ public class StaffPurchaseController {
     return ResponseEntity.ok(response);
   }
 
+  // GET: /api/v1/staff/purchase/{id}
   // Retrieves a Purchase by its ID
   @GetMapping("/{id}")
   protected ResponseEntity<BaseOutput<Purchase>> getById(@PathVariable("id") Long id) {
@@ -76,6 +78,7 @@ public class StaffPurchaseController {
     return ResponseEntity.ok(response);
   }
 
+  // POST: /api/v1/staff/purchase
   // Creates a new Purchase
   @PostMapping()
   protected ResponseEntity<BaseOutput<Purchase>> create(
@@ -103,6 +106,7 @@ public class StaffPurchaseController {
     return ResponseEntity.ok(response);
   }
 
+  // PUT: /api/v1/staff/purchase/{id}
   // Updates an existing Purchase
   @PutMapping("/{id}")
   protected ResponseEntity<BaseOutput<Purchase>> update(
@@ -134,6 +138,7 @@ public class StaffPurchaseController {
     return ResponseEntity.ok(response);
   }
 
+  // DELETE: /api/v1/staff/purchase/{id}
   // Deletes a Purchase by ID
   @DeleteMapping("/{id}")
   protected ResponseEntity<BaseOutput<String>> delete(@PathVariable("id") Long id) {

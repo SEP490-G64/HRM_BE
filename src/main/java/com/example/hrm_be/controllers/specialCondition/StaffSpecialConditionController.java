@@ -26,6 +26,7 @@ import java.util.List;
 public class StaffSpecialConditionController {
   private final SpecialConditionService specialConditionService;
 
+  // GET: /api/v1/staff/special-condition
   // Retrieves a paginated list of SpecialCondition entities
   // with optional sorting and searching by name or location and filter type
   @GetMapping("")
@@ -51,6 +52,7 @@ public class StaffSpecialConditionController {
     return ResponseEntity.ok(response);
   }
 
+  // GET: /api/v1/staff/special-condition/{id}
   // Retrieves a SpecialCondition by its ID
   @GetMapping("/{id}")
   protected ResponseEntity<BaseOutput<SpecialCondition>> getById(@PathVariable("id") Long id) {
@@ -77,6 +79,7 @@ public class StaffSpecialConditionController {
     return ResponseEntity.ok(response);
   }
 
+  // POST: /api/v1/staff/special-condition
   // Creates a new SpecialCondition
   @PostMapping()
   protected ResponseEntity<BaseOutput<SpecialCondition>> create(
@@ -105,6 +108,7 @@ public class StaffSpecialConditionController {
     return ResponseEntity.ok(response);
   }
 
+  // PUT: /api/v1/staff/special-condition/{id}
   // Updates an existing SpecialCondition
   @PutMapping("/{id}")
   protected ResponseEntity<BaseOutput<SpecialCondition>> update(
@@ -137,6 +141,7 @@ public class StaffSpecialConditionController {
     return ResponseEntity.ok(response);
   }
 
+  // DELETE: /api/v1/staff/special-condition/{id}
   // Deletes a SpecialCondition by ID
   @DeleteMapping("/{id}")
   protected ResponseEntity<BaseOutput<String>> delete(@PathVariable("id") Long id) {

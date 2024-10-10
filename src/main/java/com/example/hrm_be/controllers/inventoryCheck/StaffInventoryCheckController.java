@@ -3,6 +3,7 @@ package com.example.hrm_be.controllers.inventoryCheck;
 import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.commons.enums.ResponseStatus;
 import com.example.hrm_be.models.dtos.InventoryCheck;
+import com.example.hrm_be.models.dtos.Outbound;
 import com.example.hrm_be.models.responses.BaseOutput;
 import com.example.hrm_be.services.InventoryCheckService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -26,6 +27,7 @@ import java.util.List;
 public class StaffInventoryCheckController {
   private final InventoryCheckService inventoryCheckService;
 
+  // GET: /api/v1/staff/inventory-check
   // Retrieves a paginated list of InventoryCheck entities
   // with optional sorting and searching by name or location and filter type
   @GetMapping("")
@@ -50,6 +52,7 @@ public class StaffInventoryCheckController {
     return ResponseEntity.ok(response);
   }
 
+  // GET: /api/v1/staff/inventory-check/{id}
   // Retrieves a InventoryCheck by its ID
   @GetMapping("/{id}")
   protected ResponseEntity<BaseOutput<InventoryCheck>> getById(@PathVariable("id") Long id) {
@@ -76,6 +79,7 @@ public class StaffInventoryCheckController {
     return ResponseEntity.ok(response);
   }
 
+  // POST: /api/v1/staff/inventory-check
   // Creates a new InventoryCheck
   @PostMapping()
   protected ResponseEntity<BaseOutput<InventoryCheck>> create(
@@ -103,6 +107,7 @@ public class StaffInventoryCheckController {
     return ResponseEntity.ok(response);
   }
 
+  // PUT: /api/v1/staff/inventory-check/{id}
   // Updates an existing InventoryCheck
   @PutMapping("/{id}")
   protected ResponseEntity<BaseOutput<InventoryCheck>> update(
@@ -134,6 +139,34 @@ public class StaffInventoryCheckController {
     return ResponseEntity.ok(response);
   }
 
+  // PUT: /api/v1/staff/inventory-check/approve/{id}
+  // Approve an Inventory Check by Manager
+  @PutMapping("/approve/{id}")
+  protected ResponseEntity<BaseOutput<InventoryCheck>> approve(@PathVariable("id") Long id) {
+    // Validate the path variable ID
+    if (id <= 0 || id == null) {
+      BaseOutput<InventoryCheck> response =
+              BaseOutput.<InventoryCheck>builder()
+                      .status(com.example.hrm_be.commons.enums.ResponseStatus.FAILED)
+                      .errors(List.of(HrmConstant.ERROR.REQUEST.INVALID_PATH_VARIABLE))
+                      .build();
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    // Update the InventoryCheck
+    InventoryCheck updateInventoryCheck = inventoryCheckService.approve(id);
+
+    // Build the response with the updated InventoryCheck data
+    BaseOutput<InventoryCheck> response =
+            BaseOutput.<InventoryCheck>builder()
+                    .message(HttpStatus.OK.toString())
+                    .data(updateInventoryCheck)
+                    .status(com.example.hrm_be.commons.enums.ResponseStatus.SUCCESS)
+                    .build();
+    return ResponseEntity.ok(response);
+  }
+
+  // DELETE: /api/v1/staff/inventory-check/{id}
   // Deletes a InventoryCheck by ID
   @DeleteMapping("/{id}")
   protected ResponseEntity<BaseOutput<String>> delete(@PathVariable("id") Long id) {

@@ -26,6 +26,7 @@ import java.util.List;
 public class StaffOutboundController {
   private final OutboundService outboundService;
 
+  // GET: /api/v1/staff/outbound
   // Retrieves a paginated list of Outbound entities
   // with optional sorting and searching by name or location and filter type
   @GetMapping("")
@@ -50,6 +51,7 @@ public class StaffOutboundController {
     return ResponseEntity.ok(response);
   }
 
+  // GET: /api/v1/staff/outbound/{id}
   // Retrieves a Outbound by its ID
   @GetMapping("/{id}")
   protected ResponseEntity<BaseOutput<Outbound>> getById(@PathVariable("id") Long id) {
@@ -76,6 +78,7 @@ public class StaffOutboundController {
     return ResponseEntity.ok(response);
   }
 
+  // POST: /api/v1/staff/outbound
   // Creates a new Outbound
   @PostMapping()
   protected ResponseEntity<BaseOutput<Outbound>> create(
@@ -103,6 +106,7 @@ public class StaffOutboundController {
     return ResponseEntity.ok(response);
   }
 
+  // PUT: /api/v1/staff/outbound/{id}
   // Updates an existing Outbound
   @PutMapping("/{id}")
   protected ResponseEntity<BaseOutput<Outbound>> update(
@@ -134,6 +138,34 @@ public class StaffOutboundController {
     return ResponseEntity.ok(response);
   }
 
+  // PUT: /api/v1/staff/outbound/approve/{id}
+  // Approve an Outbound by Manager
+  @PutMapping("/approve/{id}")
+  protected ResponseEntity<BaseOutput<Outbound>> approve(@PathVariable("id") Long id) {
+    // Validate the path variable ID
+    if (id <= 0 || id == null) {
+      BaseOutput<Outbound> response =
+              BaseOutput.<Outbound>builder()
+                      .status(com.example.hrm_be.commons.enums.ResponseStatus.FAILED)
+                      .errors(List.of(HrmConstant.ERROR.REQUEST.INVALID_PATH_VARIABLE))
+                      .build();
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    // Update the Outbound
+    Outbound updateOutbound = outboundService.approve(id);
+
+    // Build the response with the updated Outbound data
+    BaseOutput<Outbound> response =
+            BaseOutput.<Outbound>builder()
+                    .message(HttpStatus.OK.toString())
+                    .data(updateOutbound)
+                    .status(com.example.hrm_be.commons.enums.ResponseStatus.SUCCESS)
+                    .build();
+    return ResponseEntity.ok(response);
+  }
+
+  // DELETE: /api/v1/staff/outbound/{id}
   // Deletes a Outbound by ID
   @DeleteMapping("/{id}")
   protected ResponseEntity<BaseOutput<String>> delete(@PathVariable("id") Long id) {

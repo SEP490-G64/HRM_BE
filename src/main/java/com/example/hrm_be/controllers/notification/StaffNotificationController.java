@@ -26,6 +26,7 @@ import java.util.List;
 public class StaffNotificationController {
   private final NotificationService notificationService;
 
+  // GET: /api/v1/staff/notification
   // Retrieves a paginated list of notification entities
   // with optional sorting and searching by name or location and filter type
   @GetMapping("")
@@ -50,6 +51,7 @@ public class StaffNotificationController {
     return ResponseEntity.ok(response);
   }
 
+  // GET: /api/v1/staff/notification/{id}
   // Retrieves a notification by its ID
   @GetMapping("/{id}")
   protected ResponseEntity<BaseOutput<Notification>> getById(@PathVariable("id") Long id) {
@@ -76,6 +78,7 @@ public class StaffNotificationController {
     return ResponseEntity.ok(response);
   }
 
+  // POST: /api/v1/staff/notification
   // Creates a new notification
   @PostMapping()
   protected ResponseEntity<BaseOutput<Notification>> create(
@@ -103,6 +106,7 @@ public class StaffNotificationController {
     return ResponseEntity.ok(response);
   }
 
+  // PUT: /api/v1/staff/notification/{id}
   // Updates an existing notification
   @PutMapping("/{id}")
   protected ResponseEntity<BaseOutput<Notification>> update(
@@ -134,6 +138,7 @@ public class StaffNotificationController {
     return ResponseEntity.ok(response);
   }
 
+  // DELETE: /api/v1/staff/notification/{id}
   // Deletes a notification by ID
   @DeleteMapping("/{id}")
   protected ResponseEntity<BaseOutput<String>> delete(@PathVariable("id") Long id) {

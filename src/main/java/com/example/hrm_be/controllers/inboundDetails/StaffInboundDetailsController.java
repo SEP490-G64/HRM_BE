@@ -26,6 +26,7 @@ import java.util.List;
 public class StaffInboundDetailsController {
   private final InboundDetailsService inboundDetailsService;
 
+  // GET: /api/v1/staff/inbound-details
   // Retrieves a paginated list of InboundDetails entities
   // with optional sorting and searching by name or location and filter type
   @GetMapping("")
@@ -50,6 +51,7 @@ public class StaffInboundDetailsController {
     return ResponseEntity.ok(response);
   }
 
+  // GET: /api/v1/staff/inbound-details/{id}
   // Retrieves a InboundDetails by its ID
   @GetMapping("/{id}")
   protected ResponseEntity<BaseOutput<InboundDetails>> getById(@PathVariable("id") Long id) {
@@ -76,6 +78,7 @@ public class StaffInboundDetailsController {
     return ResponseEntity.ok(response);
   }
 
+  // POST: /api/v1/staff/inbound-details
   // Creates a new InboundDetails
   @PostMapping()
   protected ResponseEntity<BaseOutput<InboundDetails>> create(
@@ -103,6 +106,7 @@ public class StaffInboundDetailsController {
     return ResponseEntity.ok(response);
   }
 
+  // PUT: /api/v1/staff/inbound-details/{id}
   // Updates an existing InboundDetails
   @PutMapping("/{id}")
   protected ResponseEntity<BaseOutput<InboundDetails>> update(
@@ -134,6 +138,7 @@ public class StaffInboundDetailsController {
     return ResponseEntity.ok(response);
   }
 
+  // DELETE: /api/v1/staff/inbound-details/{id}
   // Deletes a InboundDetails by ID
   @DeleteMapping("/{id}")
   protected ResponseEntity<BaseOutput<String>> delete(@PathVariable("id") Long id) {

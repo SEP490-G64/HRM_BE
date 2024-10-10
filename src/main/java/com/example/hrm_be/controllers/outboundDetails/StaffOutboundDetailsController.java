@@ -20,12 +20,13 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v1/staff/outboundDetail-details")
+@RequestMapping("/api/v1/staff/outbound-details")
 @Tag(name = "Staff-Outbound-Details API")
 @SecurityRequirement(name = "Authorization")
 public class StaffOutboundDetailsController {
   private final OutboundDetailService outboundDetailService;
 
+  // GET: /api/v1/staff/outbound-details
   // Retrieves a paginated list of OutboundDetail entities
   // with optional sorting and searching by name or location and filter type
   @GetMapping("")
@@ -50,6 +51,7 @@ public class StaffOutboundDetailsController {
     return ResponseEntity.ok(response);
   }
 
+  // GET: /api/v1/staff/outbound-details/{id}
   // Retrieves a OutboundDetail by its ID
   @GetMapping("/{id}")
   protected ResponseEntity<BaseOutput<OutboundDetail>> getById(@PathVariable("id") Long id) {
@@ -76,6 +78,7 @@ public class StaffOutboundDetailsController {
     return ResponseEntity.ok(response);
   }
 
+  // POST: /api/v1/staff/outbound-details
   // Creates a new OutboundDetail
   @PostMapping()
   protected ResponseEntity<BaseOutput<OutboundDetail>> create(
@@ -103,6 +106,7 @@ public class StaffOutboundDetailsController {
     return ResponseEntity.ok(response);
   }
 
+  // PUT: /api/v1/staff/outbound-details/{id}
   // Updates an existing OutboundDetail
   @PutMapping("/{id}")
   protected ResponseEntity<BaseOutput<OutboundDetail>> update(
@@ -134,6 +138,7 @@ public class StaffOutboundDetailsController {
     return ResponseEntity.ok(response);
   }
 
+  // DELETE: /api/v1/staff/outbound-details/{id}
   // Deletes a OutboundDetail by ID
   @DeleteMapping("/{id}")
   protected ResponseEntity<BaseOutput<String>> delete(@PathVariable("id") Long id) {

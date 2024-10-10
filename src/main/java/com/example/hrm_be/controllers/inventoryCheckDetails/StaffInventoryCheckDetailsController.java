@@ -26,6 +26,7 @@ import java.util.List;
 public class StaffInventoryCheckDetailsController {
   private final InventoryCheckDetailsService inventoryCheckDetailsService;
 
+  // GET: /api/v1/staff/inventory-check-details
   // Retrieves a paginated list of InventoryCheckDetails entities
   // with optional sorting and searching by name or location and filter type
   @GetMapping("")
@@ -51,6 +52,7 @@ public class StaffInventoryCheckDetailsController {
     return ResponseEntity.ok(response);
   }
 
+  // GET: /api/v1/staff/inventory-check-details/{id}
   // Retrieves a InventoryCheckDetails by its ID
   @GetMapping("/{id}")
   protected ResponseEntity<BaseOutput<InventoryCheckDetails>> getById(@PathVariable("id") Long id) {
@@ -77,6 +79,7 @@ public class StaffInventoryCheckDetailsController {
     return ResponseEntity.ok(response);
   }
 
+  // POST: /api/v1/staff/inventory-check-details
   // Creates a new InventoryCheckDetails
   @PostMapping()
   protected ResponseEntity<BaseOutput<InventoryCheckDetails>> create(
@@ -106,6 +109,7 @@ public class StaffInventoryCheckDetailsController {
     return ResponseEntity.ok(response);
   }
 
+  // PUT: /api/v1/staff/inventory-check-details/{id}
   // Updates an existing InventoryCheckDetails
   @PutMapping("/{id}")
   protected ResponseEntity<BaseOutput<InventoryCheckDetails>> update(
@@ -139,6 +143,7 @@ public class StaffInventoryCheckDetailsController {
     return ResponseEntity.ok(response);
   }
 
+  // DELETE: /api/v1/staff/inventory-check-details/{id}
   // Deletes a InventoryCheckDetails by ID
   @DeleteMapping("/{id}")
   protected ResponseEntity<BaseOutput<String>> delete(@PathVariable("id") Long id) {
