@@ -33,14 +33,12 @@ public class UnitConversionEntity extends CommonEntity {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(
       name = "larger_unit",
-      nullable = false,
       foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   UnitOfMeasurementEntity largerUnit;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(
       name = "smaller_unit",
-      nullable = false,
       foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   UnitOfMeasurementEntity smallerUnit;
 
@@ -50,7 +48,6 @@ public class UnitConversionEntity extends CommonEntity {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(
       name = "batch_id",
-      nullable = false,
       foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   BatchEntity batch;
 }
