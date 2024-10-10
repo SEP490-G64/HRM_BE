@@ -69,8 +69,10 @@ public class UnitConversionImpl implements UnitConversionService {
 
   @Override
   public void delete(Long id) {
-    if (id == null) {
-      return;
+
+    UnitConversionEntity unitConversion = unitConversionRepository.findById(id).orElse(null);
+    if (unitConversion == null) {
+      throw new HrmCommonException(HrmConstant.ERROR.UNIT_CONVERSION.NOT_EXIST);
     }
     unitConversionRepository.deleteById(id);
   }
