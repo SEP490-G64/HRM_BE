@@ -3,6 +3,7 @@ package com.example.hrm_be.models.entities;
 import com.example.hrm_be.commons.enums.ProductStatus;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
@@ -71,7 +72,10 @@ public class ProductEntity extends CommonEntity {
   @Column(name = "formulation", length = 255, nullable = true)
   String formulation;
 
-  @Column(name = "sell_price")
+  @Column(name = "inbound_price", nullable = false)
+  BigDecimal inboundPrice;
+
+  @Column(name = "sell_price", nullable = false)
   BigDecimal sellPrice;
 
   @Enumerated(EnumType.STRING)

@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.io.Serial;
 import java.io.Serializable;
+
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldDefaults;
@@ -25,7 +27,7 @@ import jakarta.validation.constraints.NotBlank;
 public class AuthRequest implements Serializable {
   @Serial private static final long serialVersionUID = -8075627584991337938L;
 
-  @NotBlank(message = HrmConstant.ERROR.REQUEST.INVALID_BODY_EMAIL)
+  @NotNull(message = HrmConstant.ERROR.REQUEST.INVALID_BODY_EMAIL)
   @Email(message = HrmConstant.ERROR.REQUEST.INVALID_BODY_EMAIL)
   String email;
 

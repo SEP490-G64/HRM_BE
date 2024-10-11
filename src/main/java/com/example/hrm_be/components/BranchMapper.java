@@ -107,4 +107,21 @@ public class BranchMapper {
                     .build())
         .orElse(null);
   }
+
+  public Branch convertToDTOBasicInfo(BranchEntity entity) {
+    return Optional.ofNullable(entity)
+        .map(
+            e ->
+                Branch.builder()
+                    .id(e.getId())
+                    .branchName(e.getBranchName())
+                    .branchType(e.getBranchType())
+                    .location(e.getLocation())
+                    .contactPerson(e.getContactPerson())
+                    .phoneNumber(e.getPhoneNumber())
+                    .capacity(e.getCapacity())
+                    .activeStatus(e.getActiveStatus())
+                    .build())
+        .orElse(null);
+  }
 }

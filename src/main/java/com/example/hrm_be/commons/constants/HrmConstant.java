@@ -125,28 +125,39 @@ public class HrmConstant {
       public static final String EXIST = "error.device.exist";
       public static final String NOT_EXIST = "error.device.not_exist";
       public static final String DOWNLOAD = "error.device.download";
+    public static class STORAGE_LOCATION {
+      public static final String CREATE = "error.type.create";
+      public static final String UPDATE = "error.type.update";
+      public static final String DELETE = "error.type.delete";
+      public static final String EXIST = "error.type.exist";
+      public static final String NOT_CHILD = "error.type.not_child";
+      public static final String NOT_EXIST = "error.type.not_exist";
     }
 
-    public static class SECURITY {
-      public static final String GENERATE_KEY_PAIR = "error.security.generate_key_pair";
-      public static final String ENCODE_KEY = "error.security.encode_key_pair";
-      public static final String DECODE_KEY = "error.security.decode_key_pair";
+    public static class UNIT_CONVERSION {
+      public static final String CREATE = "error.type.create";
+      public static final String UPDATE = "error.type.update";
+      public static final String DELETE = "error.type.delete";
+      public static final String EXIST = "error.type.exist";
+      public static final String NOT_CHILD = "error.type.not_child";
+      public static final String NOT_EXIST = "error.type.not_exist";
     }
 
-    public static class SCHEDULE {
-      public static final String CREATE = "error.schedule.create";
-      public static final String UPDATE = "error.schedule.update";
-      public static final String DELETE = "error.schedule.delete";
-      public static final String EXIST = "error.schedule.exist";
-      public static final String NOT_EXIST = "error.schedule.not_exist";
-      public static final String INVALID = "error.schedule.invalid";
-      public static final String DOWNLOAD = "error.schedule.download";
+    public static class UNIT_OF_MEASUREMENT {
+      public static final String CREATE = "error.type.create";
+      public static final String UPDATE = "error.type.update";
+      public static final String DELETE = "error.type.delete";
+      public static final String EXIST = "error.type.exist";
+      public static final String NOT_CHILD = "error.type.not_child";
+      public static final String NOT_EXIST = "error.type.not_exist";
     }
 
     public static class USER {
       public static final String NOT_EXIST = "error.user.not_exist";
       public static final String EXIST = "error.user.exist";
       public static final String NOT_ASSIGNED_ROLE = "error.user.not_assigned_role";
+      public static final String NOT_MATCH_CONFIRM_PASSWORD =
+          "error.user.not_match_confirm_password";
     }
 
     public static class ROLE {
@@ -178,6 +189,15 @@ public class HrmConstant {
       public static final String NOT_EXIST = "error.branch.not_exist";
     }
 
+    public static class BATCH {
+      public static final String CREATE = "error.batch.create";
+      public static final String UPDATE = "error.batch.update";
+      public static final String DELETE = "error.batch.delete";
+      public static final String EXIST = "error.batch.exist";
+      public static final String NOT_CHILD = "error.batch.not_child";
+      public static final String NOT_EXIST = "error.batch.not_exist";
+    }
+
     public static class INGREDIENT {
       public static final String CREATE = "error.ingredient.create";
       public static final String UPDATE = "error.ingredient.update";
@@ -185,6 +205,15 @@ public class HrmConstant {
       public static final String EXIST = "error.ingredient.exist";
       public static final String NOT_CHILD = "error.ingredient.not_child";
       public static final String NOT_EXIST = "error.ingredient.not_exist";
+    }
+
+    public static class MANUFACTURER {
+      public static final String CREATE = "error.branch.create";
+      public static final String UPDATE = "error.branch.update";
+      public static final String DELETE = "error.branch.delete";
+      public static final String EXIST = "error.branch.exist";
+      public static final String NOT_CHILD = "error.branch.not_child";
+      public static final String NOT_EXIST = "error.branch.not_exist";
     }
   }
 }

@@ -4,6 +4,9 @@ import com.example.hrm_be.models.dtos.Role;
 import com.example.hrm_be.models.dtos.User;
 import com.example.hrm_be.models.requests.RegisterRequest;
 import java.util.List;
+
+import com.example.hrm_be.models.requests.user.UserCreateRequest;
+import com.example.hrm_be.models.requests.user.UserUpdateRequest;
 import lombok.NonNull;
 import org.springframework.data.domain.Page;
 
@@ -14,11 +17,13 @@ public interface UserService {
   Page<User> getByPaging(
       int pageNo, int pageSize, String sortBy, String sortDirection, String keyword);
 
+  Page<User> getRegistrationRequests();
+
   User getById(Long id);
 
-  User create(User user);
+  User create(UserCreateRequest user);
 
-  User update(User user);
+  User update(UserUpdateRequest user, boolean profile);
 
   void delete(@NonNull Long id);
 
@@ -36,5 +41,7 @@ public interface UserService {
 
   User register(RegisterRequest registerRequest);
 
-  User verifyUser(Long userId);
+  User verifyUser(Long userId, boolean accept);
+
+  User activateUser(Long userId);
 }

@@ -24,7 +24,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder(toBuilder = true)
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(name = "categories")
+@Table(name = "category")
 public class ProductCategoryEntity extends CommonEntity {
   @Column(name = "category_name")
   String categoryName;
