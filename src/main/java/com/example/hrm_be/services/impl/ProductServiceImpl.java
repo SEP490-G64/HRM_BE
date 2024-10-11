@@ -7,7 +7,6 @@ import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.Product;
 import com.example.hrm_be.models.entities.AllowedProductEntity;
 import com.example.hrm_be.models.entities.ProductEntity;
-import com.example.hrm_be.models.entities.UnitConversionEntity;
 import com.example.hrm_be.repositories.AllowedProductRepository;
 import com.example.hrm_be.repositories.ProductRepository;
 import com.example.hrm_be.services.ProductService;
@@ -101,43 +100,44 @@ public class ProductServiceImpl implements ProductService {
         .findProductByPagingAndTypeId(TypeId, pageable)
         .map(dao -> productMapper.toDTO(dao));
   }
-@Override
-  public List<AllowedProductEntity> addProductFromJson(List<Map<String, Object>> productJsonList) {
-  List<AllowedProductEntity> savedProducts = new ArrayList<>();
 
-  for (Map<String, Object> productJson : productJsonList) {
+  @Override
+  public List<AllowedProductEntity> addProductFromJson(List<Map<String, Object>> productJsonList) {
+    List<AllowedProductEntity> savedProducts = new ArrayList<>();
+
+    for (Map<String, Object> productJson : productJsonList) {
       AllowedProductEntity product = new AllowedProductEntity();
 
-    if (productJson.containsKey("tenThuoc")) {
-      product.setProductName((String) productJson.get("tenThuoc"));
-    }
-    if (productJson.containsKey("id")) {
-      product.setProductCode((String) productJson.get("id"));
-    }
-    if (productJson.containsKey("soDangKy")) {
-      product.setRegistrationCode((String) productJson.get("soDangKy"));
-    }
-    if (productJson.containsKey("images")) {
-      List<String> images = (List<String>) productJson.get("images");
-      if (images != null && !images.isEmpty()) {
-        product.setUrlImage(images.get(0));  // Assuming first image as URL
+      if (productJson.containsKey("tenThuoc")) {
+        product.setProductName((String) productJson.get("tenThuoc"));
       }
-    }
-    if (productJson.containsKey("hoatChat")) {
-      product.setActiveIngredient((String) productJson.get("hoatChat"));
-    }
-    if (productJson.containsKey("taDuoc")) {
-      product.setExcipient((String) productJson.get("taDuoc"));
-    }
-    if (productJson.containsKey("baoChe")) {
-      product.setFormulation((String) productJson.get("baoChe"));
+      if (productJson.containsKey("id")) {
+        product.setProductCode((String) productJson.get("id"));
+      }
+      if (productJson.containsKey("soDangKy")) {
+        product.setRegistrationCode((String) productJson.get("soDangKy"));
+      }
+      if (productJson.containsKey("images")) {
+        List<String> images = (List<String>) productJson.get("images");
+        if (images != null && !images.isEmpty()) {
+          product.setUrlImage(images.get(0)); // Assuming first image as URL
+        }
+      }
+      if (productJson.containsKey("hoatChat")) {
+        product.setActiveIngredient((String) productJson.get("hoatChat"));
+      }
+      if (productJson.containsKey("taDuoc")) {
+        product.setExcipient((String) productJson.get("taDuoc"));
+      }
+      if (productJson.containsKey("baoChe")) {
+        product.setFormulation((String) productJson.get("baoChe"));
+      }
+
+      // Save product to the database
+      AllowedProductEntity savedProduct = allowedProductRepository.save(product);
+      savedProducts.add(savedProduct);
     }
 
-    // Save product to the database
-    AllowedProductEntity savedProduct = allowedProductRepository.save(product);
-    savedProducts.add(savedProduct);
+    return savedProducts;
   }
-
-  return savedProducts;
-}
 }

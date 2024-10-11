@@ -22,11 +22,11 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Admin-allowed API")
 @SecurityRequirement(name = "Authorization")
 public class AdminAllowedProductController {
-  @Autowired
-  private ProductService productService;
+  @Autowired private ProductService productService;
 
   @PostMapping("/add")
-  public ResponseEntity<List<AllowedProductEntity>> addProduct(@RequestBody List<Map<String, Object>> productJson) {
+  public ResponseEntity<List<AllowedProductEntity>> addProduct(
+      @RequestBody List<Map<String, Object>> productJson) {
     List<AllowedProductEntity> product = productService.addProductFromJson(productJson);
     return ResponseEntity.ok(product);
   }

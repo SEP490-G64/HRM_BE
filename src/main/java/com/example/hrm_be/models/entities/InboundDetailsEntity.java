@@ -41,7 +41,7 @@ public class InboundDetailsEntity extends CommonEntity {
       foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   ProductEntity product;
 
-    @Column(name = "request_quantity", nullable = false)
+  @Column(name = "request_quantity", nullable = false)
   Integer requestQuantity;
 
   @Column(name = "receive_quantity")
