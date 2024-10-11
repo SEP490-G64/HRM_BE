@@ -74,6 +74,59 @@ public class HrmConstant {
       public static final String NOT_EXIST = "error.type.not_exist";
     }
 
+    public static class PRODUCT {
+      public static final String CREATE = "error.category.create";
+      public static final String UPDATE = "error.category.update";
+      public static final String DELETE = "error.category.delete";
+      public static final String EXIST = "error.category.exist";
+      public static final String NOT_CHILD = "error.category.not_child";
+      public static final String NOT_EXIST = "error.category.not_exist";
+    }
+
+    public static class PLAYLIST {
+      public static final String CREATE = "error.playlist.create";
+      public static final String UPDATE = "error.playlist.update";
+      public static final String DELETE = "error.playlist.delete";
+      public static final String EXIST = "error.playlist.exist";
+      public static final String NOT_EXIST = "error.playlist.not_exist";
+    }
+
+    public static class PLAYLIST_FILE_MAP {
+      public static final String NULL_OR_EMPTY_IDS =
+          "error.playlist_file_map.playlist_ids.file_ids_null_or_empty";
+    }
+
+    public static class LICENSE {
+      public static final String CREATE = "error.license.create";
+      public static final String UPDATE = "error.license.update";
+      public static final String DELETE = "error.license.delete";
+      public static final String EXIST = "error.license.exist";
+      public static final String NOT_EXIST = "error.license.not_exist";
+      public static final String UNMATCHED = "error.license.unmatched";
+      public static final String EXPIRED = "error.license.expired";
+      public static final String INVALID = "error.license.invalid";
+      public static final String EXPAND_FAILED = "error.license.expand_failed";
+      public static final String NOT_ASSIGNED_USER = "error.license.not_assigned_user";
+      public static final String EXIST_BY_USER = "error.license.exist_by_user";
+    }
+
+    public static class DEVICE_GROUP {
+      public static final String CREATE = "error.device_group.create";
+      public static final String UPDATE = "error.device_group.update";
+      public static final String DELETE = "error.device_group.delete";
+      public static final String EXIST = "error.device_group.exist";
+      public static final String NOT_EXIST = "error.device_group.not_exist";
+    }
+
+    public static class DEVICE {
+      public static final String CREATE = "error.device.create";
+      public static final String UPDATE = "error.device.update";
+      public static final String DELETE = "error.device.delete";
+      public static final String EXIST = "error.device.exist";
+      public static final String NOT_EXIST = "error.device.not_exist";
+      public static final String DOWNLOAD = "error.device.download";
+    }
+
     public static class STORAGE_LOCATION {
       public static final String CREATE = "error.type.create";
       public static final String UPDATE = "error.type.update";

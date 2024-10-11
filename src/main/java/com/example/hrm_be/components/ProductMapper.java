@@ -102,9 +102,6 @@ public class ProductMapper {
             entity.getManufacturer() != null
                 ? manufacturerMapper.toDTO(entity.getManufacturer())
                 : null)
-        .category(
-            entity.getCategory() != null ? productCategoryMapper.toDTO(entity.getCategory()) : null)
-        .type(entity.getType() != null ? productTypeMapper.toDTO(entity.getType()) : null)
         .activeIngredient(entity.getActiveIngredient())
         .excipient(entity.getExcipient())
         .formulation(entity.getFormulation())
@@ -114,12 +111,6 @@ public class ProductMapper {
         .baseUnit(
             entity.getBaseUnit() != null
                 ? unitOfMeasurementMapper.toDTO(entity.getBaseUnit())
-                : null)
-        .inboundDetails(
-            entity.getInboundDetails() != null
-                ? entity.getInboundDetails().stream()
-                    .map(inboundDetailsMapper::toDTO)
-                    .collect(Collectors.toList())
                 : null)
         .specialConditions(
             entity.getSpecialConditions() != null
