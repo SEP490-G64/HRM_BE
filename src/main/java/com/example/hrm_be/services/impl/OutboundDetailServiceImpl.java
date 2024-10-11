@@ -30,7 +30,11 @@ public class OutboundDetailServiceImpl implements OutboundDetailService {
   public OutboundDetail getById(Long id) {
     // Fetch outbound detail by ID, map the entity to DTO, and return it
     return Optional.ofNullable(id)
-        .flatMap(e -> outboundDetailRepository.findById(e).map(b -> outboundDetailMapper.toDTOWithOutBoundDetails(b)))
+        .flatMap(
+            e ->
+                outboundDetailRepository
+                    .findById(e)
+                    .map(b -> outboundDetailMapper.toDTOWithOutBoundDetails(b)))
         .orElse(null);
   }
 

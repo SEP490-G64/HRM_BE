@@ -45,15 +45,15 @@ public class InboundDetailsMapper {
   // Helper method to convert InboundDetailEntity to InboundDetailDTO with Inbound Information
   public InboundDetails toDTOWithInBoundDetails(InboundDetailsEntity entity) {
     return Optional.ofNullable(entity)
-            .map(this::convertToDTO)
-            .map(
-                    e ->
-                            e.toBuilder()
-                                    .inbound(
-                                            entity.getInbound() != null
-                                                    ? inboundMapper.toDTO(entity.getInbound())
-                                                    : null)
-                                    .build())
-            .orElse(null);
+        .map(this::convertToDTO)
+        .map(
+            e ->
+                e.toBuilder()
+                    .inbound(
+                        entity.getInbound() != null
+                            ? inboundMapper.toDTO(entity.getInbound())
+                            : null)
+                    .build())
+        .orElse(null);
   }
 }
