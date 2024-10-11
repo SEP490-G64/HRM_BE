@@ -102,7 +102,7 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
   }
 
   @Override
-  public InventoryCheck approve(Long id) {
+  public InventoryCheck approve(Long id, boolean accept) {
     // Find the existing InventoryCheck by ID
     InventoryCheckEntity oldInventoryCheckEntity =
         inventoryCheckRepository.findById(id).orElse(null);
@@ -120,7 +120,7 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
         .map(
             op ->
                 op.toBuilder()
-                    .isApproved(true) // Set approval flag
+                    .isApproved(accept) // Set approval flag
                     .approvedBy(userEntity) // Set approver
                     .build())
         .map(inventoryCheckRepository::save) // Save updated entity

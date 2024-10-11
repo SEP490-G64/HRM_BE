@@ -14,7 +14,7 @@ public interface OutboundService {
 
   Outbound update(Outbound outbound);
 
-  Outbound approve(Long id);
+  Outbound approve(Long id, boolean accept);
 
   void delete(Long id);
 }

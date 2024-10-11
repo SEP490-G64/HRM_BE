@@ -1,7 +1,9 @@
 package com.example.hrm_be.components;
 
 import com.example.hrm_be.models.dtos.InboundBatchDetail;
+import com.example.hrm_be.models.dtos.InboundDetails;
 import com.example.hrm_be.models.entities.InboundBatchDetailEntity;
+import com.example.hrm_be.models.entities.InboundDetailsEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -35,9 +37,23 @@ public class InboundBatchDetailMapper {
   // Helper method to convert InboundBatchDetailEntity to InboundBatchDetailDTO
   private InboundBatchDetail convertToDTO(InboundBatchDetailEntity entity) {
     return InboundBatchDetail.builder()
-        .inbound(entity.getInbound() != null ? inboundMapper.toDTO(entity.getInbound()) : null)
         .batch(entity.getBatch() != null ? batchMapper.toDTO(entity.getBatch()) : null)
         .quantity(entity.getQuantity())
         .build();
+  }
+
+  // Helper method to convert InboundBatchDetailEntity to InboundBatchDetailDTO with Inbound Information
+  private InboundBatchDetail toDTOWithInBoundDetails(InboundBatchDetailEntity entity) {
+    return Optional.ofNullable(entity)
+            .map(this::convertToDTO)
+            .map(
+                    e ->
+                            e.toBuilder()
+                                    .inbound(
+                                            entity.getInbound() != null
+                                                    ? inboundMapper.toDTO(entity.getInbound())
+                                                    : null)
+                                    .build())
+            .orElse(null);
   }
 }

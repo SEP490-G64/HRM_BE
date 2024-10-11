@@ -14,7 +14,7 @@ public interface InventoryCheckService {
 
   InventoryCheck update(InventoryCheck inventoryCheck);
 
-  InventoryCheck approve(Long id);
+  InventoryCheck approve(Long id, boolean accept);
 
   void delete(Long id);
 }

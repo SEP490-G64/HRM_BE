@@ -141,7 +141,7 @@ public class StaffInventoryCheckController {
   // PUT: /api/v1/staff/inventory-check/approve/{id}
   // Approve an Inventory Check by Manager
   @PutMapping("/approve/{id}")
-  protected ResponseEntity<BaseOutput<InventoryCheck>> approve(@PathVariable("id") Long id) {
+  protected ResponseEntity<BaseOutput<InventoryCheck>> approve(@PathVariable("id") Long id, @RequestParam boolean accept) {
     // Validate the path variable ID
     if (id <= 0 || id == null) {
       BaseOutput<InventoryCheck> response =
@@ -153,7 +153,7 @@ public class StaffInventoryCheckController {
     }
 
     // Update the InventoryCheck
-    InventoryCheck updateInventoryCheck = inventoryCheckService.approve(id);
+    InventoryCheck updateInventoryCheck = inventoryCheckService.approve(id, accept);
 
     // Build the response with the updated InventoryCheck data
     BaseOutput<InventoryCheck> response =

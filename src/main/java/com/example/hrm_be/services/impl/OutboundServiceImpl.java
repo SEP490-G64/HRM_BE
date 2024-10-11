@@ -97,7 +97,7 @@ public class OutboundServiceImpl implements OutboundService {
 
   // Method to approve an outbound record
   @Override
-  public Outbound approve(Long id) {
+  public Outbound approve(Long id, boolean accept) {
     OutboundEntity oldoutboundEntity = outboundRepository.findById(id).orElse(null);
     if (oldoutboundEntity == null) {
       throw new HrmCommonException(
@@ -108,7 +108,7 @@ public class OutboundServiceImpl implements OutboundService {
     UserEntity userEntity = userMapper.toEntity(userService.findLoggedInfoByEmail(email));
 
     return Optional.ofNullable(oldoutboundEntity)
-        .map(op -> op.toBuilder().isApproved(true).approvedBy(userEntity).build())
+        .map(op -> op.toBuilder().isApproved(accept).approvedBy(userEntity).build())
         .map(outboundRepository::save)
         .map(outboundMapper::toDTO)
         .orElse(null);

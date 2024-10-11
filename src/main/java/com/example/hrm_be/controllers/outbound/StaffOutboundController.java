@@ -141,7 +141,7 @@ public class StaffOutboundController {
   // PUT: /api/v1/staff/outbound/approve/{id}
   // Approve an Outbound by Manager
   @PutMapping("/approve/{id}")
-  protected ResponseEntity<BaseOutput<Outbound>> approve(@PathVariable("id") Long id) {
+  protected ResponseEntity<BaseOutput<Outbound>> approve(@PathVariable("id") Long id, @RequestParam boolean accept) {
     // Validate the path variable ID
     if (id <= 0 || id == null) {
       BaseOutput<Outbound> response =
@@ -153,7 +153,7 @@ public class StaffOutboundController {
     }
 
     // Update the Outbound
-    Outbound updateOutbound = outboundService.approve(id);
+    Outbound updateOutbound = outboundService.approve(id, accept);
 
     // Build the response with the updated Outbound data
     BaseOutput<Outbound> response =

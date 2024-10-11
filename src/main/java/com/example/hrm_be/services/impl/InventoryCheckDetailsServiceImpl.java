@@ -34,7 +34,7 @@ public class InventoryCheckDetailsServiceImpl implements InventoryCheckDetailsSe
             e ->
                 inventoryCheckDetailsRepository
                     .findById(e)
-                    .map(b -> inventoryCheckDetailsMapper.toDTO(b)))
+                    .map(b -> inventoryCheckDetailsMapper.toDTOWithInventoryCheckDetails(b)))
         .orElse(null);
   }
 
