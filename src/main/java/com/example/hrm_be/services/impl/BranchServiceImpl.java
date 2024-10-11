@@ -83,6 +83,7 @@ public class BranchServiceImpl implements BranchService {
                     .contactPerson(branch.getContactPerson())
                     .phoneNumber(branch.getPhoneNumber())
                     .location(branch.getLocation())
+                    .activeStatus(branch.getActiveStatus())
                     .build())
         .map(branchRepository::save)
         .map(branchMapper::toDTO)
