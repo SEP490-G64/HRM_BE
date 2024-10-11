@@ -25,24 +25,24 @@ import lombok.experimental.SuperBuilder;
 @Table(name = "allowed-product")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class AllowedProductEntity extends CommonEntity {
-  @Column(name = "product_name", length = 50, nullable = false)
+  @Column(name = "product_name")
   String productName;
 
-  @Column(name = "product_code", length = 30, nullable = false)
+  @Column(name = "product_code")
   String productCode;
 
-  @Column(name = "registration_code", length = 30, nullable = false)
+  @Column(name = "registration_code")
   String registrationCode;
 
-  @Column(name = "url_image", length = 255, nullable = true)
+  @Column(name = "url_image")
   String urlImage;
 
-  @Column(name = "active_ingredient", length = 255, nullable = true)
+  @Column(name = "active_ingredient", length = 1000)
   String activeIngredient;
 
-  @Column(name = "excipient", length = 255, nullable = true)
+  @Column(name = "excipient", length = 1000)
   String excipient;
 
-  @Column(name = "formulation", length = 255, nullable = true)
+  @Column(name = "formulation", length = 1000)
   String formulation;
 }

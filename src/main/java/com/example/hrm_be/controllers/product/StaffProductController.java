@@ -5,6 +5,8 @@ import com.example.hrm_be.commons.enums.ResponseStatus;
 import com.example.hrm_be.models.dtos.Product;
 import com.example.hrm_be.models.responses.BaseOutput;
 import com.example.hrm_be.services.ProductService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +28,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/staff/product")
+@Tag(name = "Staff-Product API")
+@SecurityRequirement(name = "Authorization")
 public class StaffProductController {
   private final ProductService productService;
 
@@ -55,8 +59,7 @@ public class StaffProductController {
       @PathVariable("id") Long id,
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size,
-      @RequestParam(required = false, defaultValue = "id") String sortBy,
-      @RequestParam(defaultValue = "") String name) {
+      @RequestParam(required = false, defaultValue = "id") String sortBy) {
     Page<Product> productPage = productService.getByPagingAndCateId(page, size, sortBy, id);
 
     BaseOutput<List<Product>> response =

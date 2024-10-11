@@ -125,6 +125,8 @@ public class HrmConstant {
       public static final String EXIST = "error.device.exist";
       public static final String NOT_EXIST = "error.device.not_exist";
       public static final String DOWNLOAD = "error.device.download";
+    }
+
     public static class STORAGE_LOCATION {
       public static final String CREATE = "error.type.create";
       public static final String UPDATE = "error.type.update";
