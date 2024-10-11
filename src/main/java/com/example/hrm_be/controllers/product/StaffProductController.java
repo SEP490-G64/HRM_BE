@@ -7,7 +7,9 @@ import com.example.hrm_be.models.responses.BaseOutput;
 import com.example.hrm_be.services.ProductService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -178,5 +180,21 @@ public class StaffProductController {
             .data(HttpStatus.OK.toString())
             .status(ResponseStatus.SUCCESS)
             .build());
+  }
+
+  @PostMapping("/addProduct")
+  public String addProductToOrder(HttpSession session, @RequestBody Product product) {
+    List<Product> products = (List<Product>) session.getAttribute("products");
+    if (products == null) {
+      products = new ArrayList<>();
+    }
+    products.add(product);
+    session.setAttribute("products", products);
+    return "Product added to order temporarily.";
+  }
+  @GetMapping("/getProducts")
+  public List<Product> getProductsFromOrder(HttpSession session) {
+    List<Product> products = (List<Product>) session.getAttribute("products");
+    return products != null ? products : new ArrayList<>();
   }
 }
