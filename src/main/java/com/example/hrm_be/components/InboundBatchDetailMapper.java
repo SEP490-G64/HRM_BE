@@ -42,4 +42,19 @@ public class InboundBatchDetailMapper {
         .quantity(entity.getQuantity())
         .build();
   }
+
+  // Helper method to convert InboundBatchDetailEntity to InboundBatchDetailDTO with Inbound Information
+  private InboundBatchDetail toDTOWithInBoundDetails(InboundBatchDetailEntity entity) {
+    return Optional.ofNullable(entity)
+            .map(this::convertToDTO)
+            .map(
+                    e ->
+                            e.toBuilder()
+                                    .inbound(
+                                            entity.getInbound() != null
+                                                    ? inboundMapper.toDTO(entity.getInbound())
+                                                    : null)
+                                    .build())
+            .orElse(null);
+  }
 }

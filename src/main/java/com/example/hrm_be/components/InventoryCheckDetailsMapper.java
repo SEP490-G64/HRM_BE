@@ -1,6 +1,5 @@
 package com.example.hrm_be.components;
 
-import com.example.hrm_be.models.dtos.InboundDetails;
 import com.example.hrm_be.models.dtos.InventoryCheckDetails;
 import com.example.hrm_be.models.entities.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,18 +51,19 @@ public class InventoryCheckDetailsMapper {
         .build();
   }
 
-  // Helper method to convert InventoryCheckDetailEntity to InventoryCheckDetailDTO with Inventory Check Information
+  // Helper method to convert InventoryCheckDetailEntity to InventoryCheckDetailDTO with Inventory
+  // Check Information
   public InventoryCheckDetails toDTOWithInventoryCheckDetails(InventoryCheckDetailsEntity entity) {
     return Optional.ofNullable(entity)
-            .map(this::convertToDTO)
-            .map(
-                    e ->
-                            e.toBuilder()
-                                    .inventoryCheck(
-                                            entity.getInventoryCheck() != null
-                                                    ? inventoryCheckMapper.toDTO(entity.getInventoryCheck())
-                                                    : null)
-                                    .build())
-            .orElse(null);
+        .map(this::convertToDTO)
+        .map(
+            e ->
+                e.toBuilder()
+                    .inventoryCheck(
+                        entity.getInventoryCheck() != null
+                            ? inventoryCheckMapper.toDTO(entity.getInventoryCheck())
+                            : null)
+                    .build())
+        .orElse(null);
   }
 }
