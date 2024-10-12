@@ -41,7 +41,8 @@ public class StaffProductController {
       @RequestParam(required = false, defaultValue = "ASC") String sortDirection,
       @RequestParam(required = false, defaultValue = "name") String searchType,
       @RequestParam(defaultValue = "") String searchValue) {
-    Page<Product> productPage = productService.getByPaging(page, size, sortBy, sortDirection, searchType, searchValue);
+    Page<Product> productPage =
+        productService.getByPaging(page, size, sortBy, sortDirection, searchType, searchValue);
 
     BaseOutput<List<Product>> response =
         BaseOutput.<List<Product>>builder()

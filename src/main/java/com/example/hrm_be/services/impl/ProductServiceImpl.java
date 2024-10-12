@@ -36,7 +36,13 @@ public class ProductServiceImpl implements ProductService {
   }
 
   @Override
-  public Page<Product> getByPaging(int pageNo, int pageSize, String sortBy, String sortDirection, String searchType, String searchValue) {
+  public Page<Product> getByPaging(
+      int pageNo,
+      int pageSize,
+      String sortBy,
+      String sortDirection,
+      String searchType,
+      String searchValue) {
     Sort.Direction direction = Sort.Direction.fromString(sortDirection);
     Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(direction, sortBy));
 
