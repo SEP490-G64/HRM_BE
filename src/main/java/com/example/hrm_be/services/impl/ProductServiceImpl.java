@@ -36,12 +36,27 @@ public class ProductServiceImpl implements ProductService {
   }
 
   @Override
-  public Page<Product> getByPaging(int pageNo, int pageSize, String sortBy, String name) {
-    Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(sortBy).descending());
-    // Tìm kiếm theo tên
-    return productRepository
-        .findProductEntitiesByProductNameContainingIgnoreCase(name, pageable)
-        .map(dao -> productMapper.toDTO(dao));
+  public Page<Product> getByPaging(int pageNo, int pageSize, String sortBy, String sortDirection, String searchType, String searchValue) {
+    Sort.Direction direction = Sort.Direction.fromString(sortDirection);
+    Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(direction, sortBy));
+
+    if (searchValue != null && !searchValue.isEmpty()) {
+      // Search by name if searchType is "name"
+      if ("name".equalsIgnoreCase(searchType)) {
+        return productRepository
+            .findProductEntitiesByProductNameContainingIgnoreCase(searchValue, pageable)
+            .map(dao -> productMapper.toDTO(dao));
+      }
+      // Search by code if searchType is "code"
+      else if ("code".equalsIgnoreCase(searchType)) {
+        return productRepository
+            .findProductEntitiesByRegistrationCodeContainingIgnoreCase(searchValue, pageable)
+            .map(dao -> productMapper.toDTO(dao));
+      }
+    }
+
+    // Return all products if no search value is provided
+    return productRepository.findAll(pageable).map(dao -> productMapper.toDTO(dao));
   }
 
   @Override

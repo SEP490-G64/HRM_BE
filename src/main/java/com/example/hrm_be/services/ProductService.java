@@ -9,7 +9,13 @@ import org.springframework.data.domain.Page;
 public interface ProductService {
   Product getById(Long id);
 
-  Page<Product> getByPaging(int pageNo, int pageSize, String sortBy, String name);
+  Page<Product> getByPaging(
+      int pageNo,
+      int pageSize,
+      String sortBy,
+      String sortDirection,
+      String searchType,
+      String searchValue);
 
   Product create(Product product);
 

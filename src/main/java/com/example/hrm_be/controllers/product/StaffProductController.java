@@ -38,8 +38,10 @@ public class StaffProductController {
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size,
       @RequestParam(required = false, defaultValue = "id") String sortBy,
-      @RequestParam(defaultValue = "") String name) {
-    Page<Product> productPage = productService.getByPaging(page, size, sortBy, name);
+      @RequestParam(required = false, defaultValue = "ASC") String sortDirection,
+      @RequestParam(required = false, defaultValue = "name") String searchType,
+      @RequestParam(defaultValue = "") String searchValue) {
+    Page<Product> productPage = productService.getByPaging(page, size, sortBy, sortDirection, searchType, searchValue);
 
     BaseOutput<List<Product>> response =
         BaseOutput.<List<Product>>builder()
