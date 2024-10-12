@@ -280,5 +280,14 @@ public class HrmConstant {
       public static final String NOT_CHILD = "error.notification.not_child";
       public static final String NOT_EXIST = "error.notification.not_exist";
     }
+
+    public static class BRANCHBATCH {
+      public static final String CREATE = "error.notification.create";
+      public static final String UPDATE = "error.notification.update";
+      public static final String DELETE = "error.notification.delete";
+      public static final String EXIST = "error.notification.exist";
+      public static final String NOT_CHILD = "error.notification.not_child";
+      public static final String NOT_EXIST = "error.notification.not_exist";
+    }
   }
 }
