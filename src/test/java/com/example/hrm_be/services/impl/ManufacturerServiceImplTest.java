@@ -145,8 +145,16 @@ public class ManufacturerServiceImplTest {
 
   @Test
   void shouldDeleteManufacturer() {
+    // Create a mock ManufacturerEntity that simulates the entity in the database
+    ManufacturerEntity manufacturer = new ManufacturerEntity();
+    manufacturer.setId(1L); // Set the ID to match the one we're deleting
+
+    // Mock the repository to return the manufacturer when findById is called
+    when(manufacturerRepository.findById(1L)).thenReturn(Optional.of(manufacturer));
+    // Mock the deleteById method to do nothing
     doNothing().when(manufacturerRepository).deleteById(anyLong());
 
+    // Now call the delete method and verify
     assertDoesNotThrow(() -> manufacturerService.delete(1L));
     verify(manufacturerRepository, times(1)).deleteById(1L);
   }

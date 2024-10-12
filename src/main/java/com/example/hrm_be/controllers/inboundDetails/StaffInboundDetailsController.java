@@ -1,10 +1,10 @@
-package com.example.hrm_be.controllers.productType;
+package com.example.hrm_be.controllers.inboundDetails;
 
 import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.commons.enums.ResponseStatus;
-import com.example.hrm_be.models.dtos.ProductType;
+import com.example.hrm_be.models.dtos.InboundDetails;
 import com.example.hrm_be.models.responses.BaseOutput;
-import com.example.hrm_be.services.ProductTypeService;
+import com.example.hrm_be.services.InboundDetailsService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotNull;
@@ -20,121 +20,129 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v1/staff/type")
-@Tag(name = "Staff-Types API")
+@RequestMapping("/api/v1/staff/inbound-details")
+@Tag(name = "Staff-Inbound-Details API")
 @SecurityRequirement(name = "Authorization")
-public class StaffProductTypeController {
-  // Injecting ProductTypeService to handle business logic for ProductType
-  private final ProductTypeService productTypeService;
+public class StaffInboundDetailsController {
+  private final InboundDetailsService inboundDetailsService;
 
-  // Handles GET requests for paginated list of ProductType entities
+  // GET: /api/v1/staff/inbound-details
+  // Retrieves a paginated list of InboundDetails entities
+  // with optional sorting and searching by name or location and filter type
   @GetMapping("")
-  protected ResponseEntity<BaseOutput<List<ProductType>>> getByPaging(
+  protected ResponseEntity<BaseOutput<List<InboundDetails>>> getByPaging(
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "20") int size,
       @RequestParam(required = false, defaultValue = "id") String sortBy,
       @RequestParam(required = false, defaultValue = "") String keyword) {
-    Page<ProductType> categoryPage = productTypeService.getByPaging(page, size, sortBy, keyword);
+    Page<InboundDetails> InboundDetailsPage = inboundDetailsService.getByPaging(page, size, sortBy);
 
-    // Building response object with the retrieved data and pagination details
-    BaseOutput<List<ProductType>> response =
-        BaseOutput.<List<ProductType>>builder()
+    // Build the response with pagination details
+    BaseOutput<List<InboundDetails>> response =
+        BaseOutput.<List<InboundDetails>>builder()
             .message(HttpStatus.OK.toString())
-            .totalPages(categoryPage.getTotalPages())
+            .totalPages(InboundDetailsPage.getTotalPages())
             .currentPage(page)
             .pageSize(size)
-            .total(categoryPage.getTotalElements())
-            .data(categoryPage.getContent())
+            .total(InboundDetailsPage.getTotalElements())
+            .data(InboundDetailsPage.getContent())
             .status(com.example.hrm_be.commons.enums.ResponseStatus.SUCCESS)
             .build();
     return ResponseEntity.ok(response);
   }
 
-  // Handles GET requests to retrieve a single ProductType by ID
+  // GET: /api/v1/staff/inbound-details/{id}
+  // Retrieves a InboundDetails by its ID
   @GetMapping("/{id}")
-  protected ResponseEntity<BaseOutput<ProductType>> getById(@PathVariable("id") Long id) {
-    // Validation: If the provided ID is invalid, return a bad request response
+  protected ResponseEntity<BaseOutput<InboundDetails>> getById(@PathVariable("id") Long id) {
+    // Validate the path variable ID
     if (id <= 0 || id == null) {
-      BaseOutput<ProductType> response =
-          BaseOutput.<ProductType>builder()
+      BaseOutput<InboundDetails> response =
+          BaseOutput.<InboundDetails>builder()
               .status(com.example.hrm_be.commons.enums.ResponseStatus.FAILED)
               .errors(List.of(HrmConstant.ERROR.REQUEST.INVALID_PATH_VARIABLE))
               .build();
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
-    // Retrieve ProductType by ID
-    ProductType productType = productTypeService.getById(id);
+    // Fetch InboundDetails by ID
+    InboundDetails InboundDetails = inboundDetailsService.getById(id);
 
-    // Building success response
-    BaseOutput<ProductType> response =
-        BaseOutput.<ProductType>builder()
+    // Build the response with the found InboundDetails data
+    BaseOutput<InboundDetails> response =
+        BaseOutput.<InboundDetails>builder()
             .message(HttpStatus.OK.toString())
-            .data(productType)
+            .data(InboundDetails)
             .status(com.example.hrm_be.commons.enums.ResponseStatus.SUCCESS)
             .build();
     return ResponseEntity.ok(response);
   }
 
-  // Handles POST requests to create a new ProductType
+  // POST: /api/v1/staff/inbound-details
+  // Creates a new InboundDetails
   @PostMapping()
-  protected ResponseEntity<BaseOutput<ProductType>> create(
-      @RequestBody @NotNull(message = "error.request.body.invalid") ProductType productType) {
-    // Validation: If the request body is null, return a bad request response
-    if (productType == null) {
-      BaseOutput<ProductType> response =
-          BaseOutput.<ProductType>builder()
+  protected ResponseEntity<BaseOutput<InboundDetails>> create(
+      @RequestBody @NotNull(message = "error.request.body.invalid") InboundDetails InboundDetails) {
+    // Validate the request body
+    if (InboundDetails == null) {
+      BaseOutput<InboundDetails> response =
+          BaseOutput.<InboundDetails>builder()
               .errors(List.of(HrmConstant.ERROR.REQUEST.INVALID_BODY))
               .status(com.example.hrm_be.commons.enums.ResponseStatus.FAILED)
               .build();
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
-    // Create the new ProductType via service
-    ProductType createdType = productTypeService.create(productType);
+    // Create the InboundDetails
+    InboundDetails createdInboundDetails = inboundDetailsService.create(InboundDetails);
 
-    // Building success response
-    BaseOutput<ProductType> response =
-        BaseOutput.<ProductType>builder()
+    // Build the response with the created InboundDetails data
+    BaseOutput<InboundDetails> response =
+        BaseOutput.<InboundDetails>builder()
             .message(HttpStatus.OK.toString())
-            .data(createdType)
+            .data(createdInboundDetails)
             .status(com.example.hrm_be.commons.enums.ResponseStatus.SUCCESS)
             .build();
     return ResponseEntity.ok(response);
   }
 
-  // Handles PUT requests to update an existing ProductType by ID
+  // PUT: /api/v1/staff/inbound-details/{id}
+  // Updates an existing InboundDetails
   @PutMapping("/{id}")
-  protected ResponseEntity<BaseOutput<ProductType>> update(
+  protected ResponseEntity<BaseOutput<InboundDetails>> update(
       @PathVariable("id") Long id,
-      @RequestBody @NotNull(message = "error.request.body.invalid") ProductType productType) {
-    // Validation: If the provided ID is invalid, return a bad request response
+      @RequestBody @NotNull(message = "error.request.body.invalid") InboundDetails InboundDetails) {
+    // Validate the path variable ID
     if (id <= 0 || id == null) {
-      BaseOutput<ProductType> response =
-          BaseOutput.<ProductType>builder()
+      BaseOutput<InboundDetails> response =
+          BaseOutput.<InboundDetails>builder()
               .status(com.example.hrm_be.commons.enums.ResponseStatus.FAILED)
               .errors(List.of(HrmConstant.ERROR.REQUEST.INVALID_PATH_VARIABLE))
               .build();
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
-    // Set the ID to the existing product type before updating
-    productType.setId(id);
-    ProductType updateType = productTypeService.update(productType);
+    // Set the ID for the InboundDetails to update
+    InboundDetails.setId(id);
 
-    // Building success response
-    BaseOutput<ProductType> response =
-        BaseOutput.<ProductType>builder()
+    // Update the InboundDetails
+    InboundDetails updateInboundDetails = inboundDetailsService.update(InboundDetails);
+
+    // Build the response with the updated InboundDetails data
+    BaseOutput<InboundDetails> response =
+        BaseOutput.<InboundDetails>builder()
             .message(HttpStatus.OK.toString())
-            .data(updateType)
+            .data(updateInboundDetails)
             .status(com.example.hrm_be.commons.enums.ResponseStatus.SUCCESS)
             .build();
     return ResponseEntity.ok(response);
   }
 
-  // Handles DELETE requests to remove a ProductType by ID
+  // DELETE: /api/v1/staff/inbound-details/{id}
+  // Deletes a InboundDetails by ID
   @DeleteMapping("/{id}")
   protected ResponseEntity<BaseOutput<String>> delete(@PathVariable("id") Long id) {
+    // Validate the path variable ID
     if (id <= 0 || id == null) {
       BaseOutput<String> response =
           BaseOutput.<String>builder()
@@ -144,10 +152,10 @@ public class StaffProductTypeController {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
-    // Delete the ProductType via service
-    productTypeService.delete(id);
+    // Delete the InboundDetails by ID
+    inboundDetailsService.delete(id);
 
-    // Building success response after deletion
+    // Build the response indicating success
     return ResponseEntity.ok(
         BaseOutput.<String>builder()
             .data(HttpStatus.OK.toString())

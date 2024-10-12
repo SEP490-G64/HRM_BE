@@ -16,7 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/staff/image")
-@Tag(name = "Admin-Users API")
+@Tag(name = "Staff-Images API")
 @SecurityRequirement(name = "Authorization")
 public class StaffImageController {
   @Autowired ImageService imageService;

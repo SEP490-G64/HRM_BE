@@ -5,6 +5,8 @@ import com.example.hrm_be.commons.enums.ResponseStatus;
 import com.example.hrm_be.models.dtos.Role;
 import com.example.hrm_be.models.responses.BaseOutput;
 import com.example.hrm_be.services.RoleService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
@@ -27,6 +29,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/admin/role")
+@Tag(name = "Admin-Roles API")
+@SecurityRequirement(name = "Authorization")
 public class AdminRoleController {
   private final RoleService roleService;
 
