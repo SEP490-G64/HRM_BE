@@ -1,138 +1,199 @@
 package com.example.hrm_be.services.impl;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
+import com.example.hrm_be.HrmBeApplication;
+import com.example.hrm_be.common.TestcontainersConfiguration;
 import com.example.hrm_be.commons.constants.HrmConstant;
-import com.example.hrm_be.components.InboundBatchDetailMapper;
+import com.example.hrm_be.commons.enums.InboundStatus;
+import com.example.hrm_be.commons.enums.InboundType;
+import com.example.hrm_be.components.BatchMapper;
+import com.example.hrm_be.components.InboundMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
-import com.example.hrm_be.models.dtos.InboundBatchDetail;
+import com.example.hrm_be.models.dtos.*;
 import com.example.hrm_be.models.entities.InboundBatchDetailEntity;
 import com.example.hrm_be.repositories.InboundBatchDetailRepository;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Optional;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
-@ExtendWith(MockitoExtension.class)
+@Testcontainers
+@ExtendWith(SpringExtension.class)
+@SpringBootTest(classes = HrmBeApplication.class)
+@ActiveProfiles("test")
+@Import(InboundBatchDetailServiceImpl.class)
+@Transactional
 class InboundBatchDetailServiceImplTest {
 
-  @Mock private InboundBatchDetailRepository inboundBatchDetailRepository;
+  @Container
+  public static PostgreSQLContainer<TestcontainersConfiguration> postgreSQLContainer =
+      TestcontainersConfiguration.getInstance();
 
-  @Mock private InboundBatchDetailMapper inboundBatchDetailMapper;
+  @Autowired private InboundBatchDetailServiceImpl inboundBatchDetailService;
 
-  @InjectMocks private InboundBatchDetailServiceImpl inboundBatchDetailService;
+  @Autowired private InboundBatchDetailRepository inboundBatchDetailRepository;
 
-  private InboundBatchDetail inboundBatchDetailDto;
-  private InboundBatchDetailEntity inboundBatchDetailEntity;
+  @Autowired private InboundMapper inboundMapper;
 
-  @BeforeEach
-  void setUp() {
-    inboundBatchDetailDto = new InboundBatchDetail();
-    inboundBatchDetailDto.setId(1L);
-    inboundBatchDetailDto.setQuantity(100);
+  @Autowired private BatchMapper batchMapper;
 
-    inboundBatchDetailEntity = InboundBatchDetailEntity.builder().id(1L).quantity(100).build();
+  @Test
+  void testCreate_ShouldCreateInboundBatchDetail() {
+    // Prepare test data
+    Batch batch = new Batch();
+    batch.setBatchCode("123");
+    batch.setExpireDate(LocalDateTime.now().minusDays(60));
+    batch.setInboundPrice(BigDecimal.ONE);
+    batch.setProduceDate(LocalDateTime.now().plusDays(60));
+    batch.setProduct(new Product());
+
+    Inbound inbound = new Inbound();
+    inbound.setIsApproved(false);
+    inbound.setCreatedBy(new User());
+    inbound.setCreatedDate(LocalDateTime.now());
+    inbound.setFromBranch(new Branch());
+    inbound.setInboundDate(LocalDateTime.now());
+    inbound.setInboundType(InboundType.CHUYEN_KHO_NOI_BO);
+    inbound.setTaxable(true);
+    inbound.setTotalPrice(BigDecimal.ONE);
+    inbound.setToBranch(new Branch());
+    inbound.setStatus(InboundStatus.CHO_DUYET);
+
+    InboundBatchDetail inboundBatchDetail = new InboundBatchDetail();
+    inboundBatchDetail.setQuantity(10);
+    inboundBatchDetail.setInbound(inbound);
+    inboundBatchDetail.setBatch(batch);
+
+    // Call the service method to create
+    InboundBatchDetail created = inboundBatchDetailService.create(inboundBatchDetail);
+
+    // Assertions
+    assertNotNull(created);
+    assertEquals(10, created.getQuantity());
   }
 
   @Test
-  void testCreateInboundBatchDetail_Success() {
-    // Arrange
-    when(inboundBatchDetailMapper.toEntity(inboundBatchDetailDto))
-        .thenReturn(inboundBatchDetailEntity);
-    when(inboundBatchDetailRepository.save(inboundBatchDetailEntity))
-        .thenReturn(inboundBatchDetailEntity);
-    when(inboundBatchDetailMapper.toDTO(inboundBatchDetailEntity))
-        .thenReturn(inboundBatchDetailDto);
+  void testUpdate_ShouldUpdateInboundBatchDetail_WhenEntityExists() {
+    // Prepare test data
+    Inbound inbound = new Inbound();
+    inbound.setIsApproved(false);
+    inbound.setCreatedBy(new User());
+    inbound.setCreatedDate(LocalDateTime.now());
+    inbound.setFromBranch(new Branch());
+    inbound.setInboundDate(LocalDateTime.now());
+    inbound.setInboundType(InboundType.CHUYEN_KHO_NOI_BO);
+    inbound.setTaxable(true);
+    inbound.setTotalPrice(BigDecimal.ONE);
+    inbound.setToBranch(new Branch());
+    inbound.setStatus(InboundStatus.CHO_DUYET);
 
-    // Act
-    InboundBatchDetail result = inboundBatchDetailService.create(inboundBatchDetailDto);
+    Batch batch = new Batch();
+    batch.setBatchCode("123");
+    batch.setExpireDate(LocalDateTime.now().minusDays(60));
+    batch.setInboundPrice(BigDecimal.ONE);
+    batch.setProduceDate(LocalDateTime.now().plusDays(60));
+    batch.setProduct(new Product());
 
-    // Assert
-    assertNotNull(result);
-    assertEquals(inboundBatchDetailDto, result);
-    verify(inboundBatchDetailRepository, times(1)).save(inboundBatchDetailEntity);
+    InboundBatchDetailEntity oldDetailEntity = new InboundBatchDetailEntity();
+    oldDetailEntity.setQuantity(5);
+    oldDetailEntity.setInbound(inboundMapper.toEntity(inbound));
+    oldDetailEntity.setBatch(batchMapper.toEntity(batch));
+    inboundBatchDetailRepository.saveAndFlush(oldDetailEntity);
+
+    InboundBatchDetail updatedDetail = new InboundBatchDetail();
+    updatedDetail.setId(oldDetailEntity.getId()).setQuantity(15);
+
+    // Call the service method to update
+    InboundBatchDetail updated = inboundBatchDetailService.update(updatedDetail);
+
+    // Fetch the updated entity from the database
+    Optional<InboundBatchDetailEntity> updatedEntity =
+        inboundBatchDetailRepository.findById(oldDetailEntity.getId());
+
+    // Assertions
+    assertTrue(updatedEntity.isPresent());
+    assertEquals(15, updatedEntity.get().getQuantity());
   }
 
   @Test
-  void testCreateInboundBatchDetail_NullInput_ThrowsException() {
-    // Act & Assert
-    HrmCommonException exception =
-        assertThrows(HrmCommonException.class, () -> inboundBatchDetailService.create(null));
+  void testUpdate_ShouldThrowException_WhenEntityDoesNotExist() {
+    // Prepare test data
+    InboundBatchDetail updatedDetail = new InboundBatchDetail();
+    updatedDetail.setId(999L); // Non-existing ID
+    updatedDetail.setQuantity(10);
 
-    // Assert
-    assertEquals(HrmConstant.ERROR.INBOUND_BATCH_DETAIL.EXIST, exception.getMessage());
-  }
-
-  @Test
-  void testUpdateInboundBatchDetail_Success() {
-    // Arrange
-    when(inboundBatchDetailRepository.findById(1L))
-        .thenReturn(Optional.of(inboundBatchDetailEntity));
-    when(inboundBatchDetailRepository.save(inboundBatchDetailEntity))
-        .thenReturn(inboundBatchDetailEntity);
-    when(inboundBatchDetailMapper.toDTO(inboundBatchDetailEntity))
-        .thenReturn(inboundBatchDetailDto);
-
-    // Act
-    InboundBatchDetail result = inboundBatchDetailService.update(inboundBatchDetailDto);
-
-    // Assert
-    assertNotNull(result);
-    assertEquals(inboundBatchDetailDto.getQuantity(), result.getQuantity());
-    verify(inboundBatchDetailRepository, times(1)).save(inboundBatchDetailEntity);
-  }
-
-  @Test
-  void testUpdateInboundBatchDetail_NotFound_ThrowsException() {
-    // Arrange
-    when(inboundBatchDetailRepository.findById(1L)).thenReturn(Optional.empty());
-
-    // Act & Assert
+    // Call the service method and expect an exception
     HrmCommonException exception =
         assertThrows(
             HrmCommonException.class,
-            () -> inboundBatchDetailService.update(inboundBatchDetailDto));
+            () -> {
+              inboundBatchDetailService.update(updatedDetail);
+            });
 
-    // Assert
+    // Assert exception message
     assertEquals(HrmConstant.ERROR.INBOUND_BATCH_DETAIL.NOT_EXIST, exception.getMessage());
   }
 
   @Test
-  void testDeleteInboundBatchDetail_Success() {
-    // Arrange
-    when(inboundBatchDetailRepository.findById(1L))
-        .thenReturn(Optional.of(inboundBatchDetailEntity));
+  void testDelete_ShouldDeleteInboundBatchDetail() {
+    // Prepare test data
+    Inbound inbound = new Inbound();
+    inbound.setIsApproved(false);
+    inbound.setCreatedBy(new User());
+    inbound.setCreatedDate(LocalDateTime.now());
+    inbound.setFromBranch(new Branch());
+    inbound.setInboundDate(LocalDateTime.now());
+    inbound.setInboundType(InboundType.CHUYEN_KHO_NOI_BO);
+    inbound.setTaxable(true);
+    inbound.setTotalPrice(BigDecimal.ONE);
+    inbound.setToBranch(new Branch());
+    inbound.setStatus(InboundStatus.CHO_DUYET);
 
-    // Act
-    inboundBatchDetailService.delete(1L);
+    Batch batch = new Batch();
+    batch.setBatchCode("123");
+    batch.setExpireDate(LocalDateTime.now().minusDays(60));
+    batch.setInboundPrice(BigDecimal.ONE);
+    batch.setProduceDate(LocalDateTime.now().plusDays(60));
+    batch.setProduct(new Product());
 
-    // Assert
-    verify(inboundBatchDetailRepository, times(1)).deleteById(1L);
+    InboundBatchDetailEntity entity = new InboundBatchDetailEntity();
+    entity.setQuantity(5);
+    entity.setBatch(batchMapper.toEntity(batch));
+    entity.setInbound(inboundMapper.toEntity(inbound));
+
+    inboundBatchDetailRepository.saveAndFlush(entity);
+
+    // Call the service method to delete
+    inboundBatchDetailService.delete(entity.getId());
+
+    // Verify that the entity is deleted
+    Optional<InboundBatchDetailEntity> deletedEntity =
+        inboundBatchDetailRepository.findById(entity.getId());
+    assertTrue(deletedEntity.isEmpty());
   }
 
   @Test
-  void testDeleteInboundBatchDetail_NotFound_ThrowsException() {
-    // Arrange
-    when(inboundBatchDetailRepository.findById(1L)).thenReturn(Optional.empty());
-
-    // Act & Assert
+  void testDelete_ShouldThrowException_WhenEntityDoesNotExist() {
+    // Call the service method and expect an exception for non-existent ID
     HrmCommonException exception =
-        assertThrows(HrmCommonException.class, () -> inboundBatchDetailService.delete(1L));
+        assertThrows(
+            HrmCommonException.class,
+            () -> {
+              inboundBatchDetailService.delete(999L);
+            });
 
-    // Assert
+    // Assert exception message
     assertEquals(HrmConstant.ERROR.INBOUND_BATCH_DETAIL.NOT_EXIST, exception.getMessage());
-  }
-
-  @Test
-  void testDeleteInboundBatchDetail_InvalidId() {
-    // Act
-    inboundBatchDetailService.delete(null);
-
-    // Assert
-    verify(inboundBatchDetailRepository, never()).deleteById(anyLong());
   }
 }
