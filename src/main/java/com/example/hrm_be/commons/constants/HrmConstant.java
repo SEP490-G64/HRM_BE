@@ -254,6 +254,15 @@ public class HrmConstant {
       public static final String NOT_EXIST = "error.inbound_details.not_exist";
     }
 
+    public static class BRANCHPRODUCT {
+      public static final String CREATE = "error.notification.create";
+      public static final String UPDATE = "error.notification.update";
+      public static final String DELETE = "error.notification.delete";
+      public static final String EXIST = "error.notification.exist";
+      public static final String NOT_CHILD = "error.notification.not_child";
+      public static final String NOT_EXIST = "error.notification.not_exist";
+    }
+
     public static class OUTBOUND_DETAILS {
       public static final String CREATE = "error.outbound_details.create";
       public static final String UPDATE = "error.outbound_details.update";
