@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/staff/branch-batch")
 @Tag(name = "Staff-Branch-Batch API")
 @SecurityRequirement(name = "Authorization")
-public class StaffBranchBatch {
+public class StaffBranchBatchController {
   @Autowired BranchBatchService branchBatchService;
 
   @PostMapping()
@@ -52,7 +52,7 @@ public class StaffBranchBatch {
   }
 
   // Updates an existing Branch
-  @PutMapping("/")
+  @PutMapping("")
   protected ResponseEntity<BaseOutput<BranchBatch>> update(
       @RequestBody @NotNull(message = "error.request.body.invalid") BranchBatch branchBatch) {
     // Validate the input
