@@ -263,6 +263,15 @@ public class HrmConstant {
       public static final String NOT_EXIST = "error.inbound_details.not_exist";
     }
 
+    public static class INBOUND {
+      public static final String CREATE = "error.inbound.create";
+      public static final String UPDATE = "error.inbound.update";
+      public static final String DELETE = "error.inbound.delete";
+      public static final String EXIST = "error.inbound.exist";
+      public static final String NOT_CHILD = "error.inbound.not_child";
+      public static final String NOT_EXIST = "error.inboud.not_exist";
+    }
+
     public static class OUTBOUND_DETAILS {
       public static final String CREATE = "error.outbound_details.create";
       public static final String UPDATE = "error.outbound_details.update";
