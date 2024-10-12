@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/staff/branch-product")
 @Tag(name = "Staff-Branch-Product API")
 @SecurityRequirement(name = "Authorization")
-public class StaffBranchProduct {
+public class StaffBranchProductController {
   @Autowired BranchProductService branchProductService;
 
   @PostMapping()
@@ -52,7 +52,7 @@ public class StaffBranchProduct {
   }
 
   // Updates an existing Branch
-  @PutMapping("/")
+  @PutMapping("")
   protected ResponseEntity<BaseOutput<BranchProduct>> update(
       @RequestBody @NotNull(message = "error.request.body.invalid") BranchProduct branchProduct) {
     // Validate the input
