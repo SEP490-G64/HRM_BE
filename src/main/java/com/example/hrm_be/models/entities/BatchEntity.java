@@ -64,7 +64,7 @@ public class BatchEntity extends CommonEntity {
   @OneToMany(mappedBy = "batch", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   List<InboundBatchDetailEntity> inboundBatchDetail; // 1-N with InboundBatchDetail
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   @JoinColumn(
       name = "product_id",
       nullable = false,
