@@ -26,14 +26,11 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class SupplierServiceImplTest {
 
-  @Mock
-  private SupplierRepository supplierRepository;
+  @Mock private SupplierRepository supplierRepository;
 
-  @Mock
-  private SupplierMapper supplierMapper;
+  @Mock private SupplierMapper supplierMapper;
 
-  @InjectMocks
-  private SupplierServiceImpl supplierService;
+  @InjectMocks private SupplierServiceImpl supplierService;
 
   private SupplierEntity supplierEntity;
   private Supplier supplierDTO;
@@ -81,7 +78,7 @@ class SupplierServiceImplTest {
     Page<SupplierEntity> page = new PageImpl<>(List.of(supplierEntity));
     when(supplierRepository.findBySupplierNameContainsIgnoreCaseOrAddressContainsIgnoreCase(
             anyString(), anyString(), any(Pageable.class)))
-            .thenReturn(page);
+        .thenReturn(page);
     when(supplierMapper.toDTO(any(SupplierEntity.class))).thenReturn(supplierDTO);
 
     Page<Supplier> result = supplierService.getByPaging(0, 10, "supplierName", "");
@@ -90,15 +87,15 @@ class SupplierServiceImplTest {
     assertEquals(1, result.getTotalElements());
     assertEquals("Test Supplier", result.getContent().get(0).getSupplierName());
     verify(supplierRepository, times(1))
-            .findBySupplierNameContainsIgnoreCaseOrAddressContainsIgnoreCase(
-                    anyString(), anyString(), any(Pageable.class));
+        .findBySupplierNameContainsIgnoreCaseOrAddressContainsIgnoreCase(
+            anyString(), anyString(), any(Pageable.class));
   }
 
   @Test
   void shouldCreateSupplier() {
     when(supplierMapper.toEntity(any(Supplier.class))).thenReturn(supplierEntity);
     when(supplierRepository.existsBySupplierNameAndAddress(anyString(), anyString()))
-            .thenReturn(false);
+        .thenReturn(false);
     when(supplierRepository.existsByTaxCode(anyString())).thenReturn(false); // Check tax code
     when(supplierRepository.save(any(SupplierEntity.class))).thenReturn(supplierEntity);
     when(supplierMapper.toDTO(any(SupplierEntity.class))).thenReturn(supplierDTO);
@@ -113,10 +110,10 @@ class SupplierServiceImplTest {
   @Test
   void shouldThrowExceptionWhenCreatingExistingSupplier() {
     when(supplierRepository.existsBySupplierNameAndAddress(anyString(), anyString()))
-            .thenReturn(true);
+        .thenReturn(true);
 
     HrmCommonException exception =
-            assertThrows(HrmCommonException.class, () -> supplierService.create(supplierDTO));
+        assertThrows(HrmCommonException.class, () -> supplierService.create(supplierDTO));
 
     assertEquals(HrmConstant.ERROR.SUPPLIER.EXIST, exception.getMessage());
     verify(supplierRepository, never()).save(any(SupplierEntity.class));
@@ -125,11 +122,11 @@ class SupplierServiceImplTest {
   @Test
   void shouldThrowExceptionWhenCreatingWithExistingTaxCode() {
     when(supplierRepository.existsBySupplierNameAndAddress(anyString(), anyString()))
-            .thenReturn(false);
+        .thenReturn(false);
     when(supplierRepository.existsByTaxCode(anyString())).thenReturn(true);
 
     HrmCommonException exception =
-            assertThrows(HrmCommonException.class, () -> supplierService.create(supplierDTO));
+        assertThrows(HrmCommonException.class, () -> supplierService.create(supplierDTO));
 
     assertEquals(HrmConstant.ERROR.SUPPLIER.TAXCODE_NOT_EXIST, exception.getMessage());
     verify(supplierRepository, never()).save(any(SupplierEntity.class));
@@ -139,8 +136,9 @@ class SupplierServiceImplTest {
   void shouldUpdateSupplier() {
     when(supplierRepository.findById(anyLong())).thenReturn(Optional.of(supplierEntity));
     when(supplierRepository.existsBySupplierNameAndAddress(anyString(), anyString()))
-            .thenReturn(false); // Name/Address doesn't exist for another entity
-    when(supplierRepository.existsByTaxCode(anyString())).thenReturn(false); // Tax code doesn't exist for another entity
+        .thenReturn(false); // Name/Address doesn't exist for another entity
+    when(supplierRepository.existsByTaxCode(anyString()))
+        .thenReturn(false); // Tax code doesn't exist for another entity
     when(supplierMapper.toDTO(any(SupplierEntity.class))).thenReturn(supplierDTO);
     when(supplierRepository.save(any(SupplierEntity.class))).thenReturn(supplierEntity);
 
@@ -156,7 +154,7 @@ class SupplierServiceImplTest {
     when(supplierRepository.findById(anyLong())).thenReturn(Optional.empty());
 
     HrmCommonException exception =
-            assertThrows(HrmCommonException.class, () -> supplierService.update(supplierDTO));
+        assertThrows(HrmCommonException.class, () -> supplierService.update(supplierDTO));
 
     assertEquals(HrmConstant.ERROR.SUPPLIER.NOT_EXIST, exception.getMessage());
     verify(supplierRepository, never()).save(any(SupplierEntity.class));
@@ -169,7 +167,7 @@ class SupplierServiceImplTest {
 
     // Simulate another supplier with the same name and address exists
     when(supplierRepository.existsBySupplierNameAndAddress(anyString(), anyString()))
-            .thenReturn(true);
+        .thenReturn(true);
 
     // Update both the name and address to be different to trigger the exception
     supplierDTO.setSupplierName("Different Supplier Name");
@@ -177,7 +175,7 @@ class SupplierServiceImplTest {
 
     // Now, the exception should be thrown since name/address duplication exists
     HrmCommonException exception =
-            assertThrows(HrmCommonException.class, () -> supplierService.update(supplierDTO));
+        assertThrows(HrmCommonException.class, () -> supplierService.update(supplierDTO));
 
     // Verify the correct exception is thrown with the expected message
     assertEquals(HrmConstant.ERROR.SUPPLIER.EXIST, exception.getMessage());
@@ -199,12 +197,11 @@ class SupplierServiceImplTest {
 
     // Now, the exception should be thrown since tax code duplication exists
     HrmCommonException exception =
-            assertThrows(HrmCommonException.class, () -> supplierService.update(supplierDTO));
+        assertThrows(HrmCommonException.class, () -> supplierService.update(supplierDTO));
 
     assertEquals(HrmConstant.ERROR.SUPPLIER.TAXCODE_NOT_EXIST, exception.getMessage());
     verify(supplierRepository, never()).save(any(SupplierEntity.class));
   }
-
 
   @Test
   void shouldDeleteSupplier() {
@@ -220,7 +217,6 @@ class SupplierServiceImplTest {
     // Verify that the repository's deleteById method was called once with the correct ID
     verify(supplierRepository, times(1)).deleteById(1L);
   }
-
 
   @Test
   void shouldDeleteSupplierWithBlankId() {
