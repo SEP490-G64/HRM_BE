@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/staff/manufacturer")
-@Tag(name = "Admin-Users API")
+@Tag(name = "Admin-Manufacturers API")
 @SecurityRequirement(name = "Authorization")
 public class StaffManufacturerController {
   private final ManufacturerService manufacturerService;

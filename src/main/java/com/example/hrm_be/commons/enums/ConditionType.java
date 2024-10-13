@@ -1,7 +1,7 @@
 package com.example.hrm_be.commons.enums;
 
 public enum ConditionType {
-  NHET_DO("Nhiệt độ"),
+  NHIET_DO("Nhiệt độ"),
   DO_AM("Độ ẩm"),
   ANH_SANG("Ánh sáng"),
   KHONG_KHI("Không khí"),

@@ -122,14 +122,13 @@ public class ManufacturerServiceImpl implements ManufacturerService {
     }
 
     // Retrieve existing Manufacturer entity by ID
-    ManufacturerEntity oldManufacturerEntity =
-            manufacturerRepository.findById(id).orElse(null);
-    // Check if the Manufacturer to be updated exists
+    ManufacturerEntity oldManufacturerEntity = manufacturerRepository.findById(id).orElse(null);
+    // Check if the Manufacturer to be deleted exists
     if (oldManufacturerEntity == null) {
       throw new HrmCommonException(
-              HrmConstant.ERROR
-                      .MANUFACTURER
-                      .NOT_EXIST); // Throw exception if Manufacturer does not exist
+          HrmConstant.ERROR
+              .MANUFACTURER
+              .NOT_EXIST); // Throw exception if Manufacturer does not exist
     }
 
     // Delete the Manufacturer by ID
