@@ -1,7 +1,7 @@
 package com.example.hrm_be.components;
 
 import com.example.hrm_be.models.dtos.Outbound;
-import com.example.hrm_be.models.entities.OutboundEntity;
+import com.example.hrm_be.models.entities.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -46,6 +46,7 @@ public class OutboundMapper {
                     .note(d.getNote())
                     .createdBy(
                         d.getCreatedBy() != null ? userMapper.toEntity(d.getCreatedBy()) : null)
+                    .outboundDate(d.getOutboundDate())
                     .outboundDetails(
                         d.getOutboundDetails() != null
                             ? d.getOutboundDetails().stream()
@@ -74,6 +75,7 @@ public class OutboundMapper {
         .taxable(entity.getTaxable())
         .note(entity.getNote())
         .createdBy(entity.getCreatedBy() != null ? userMapper.toDTO(entity.getCreatedBy()) : null)
+        .outboundDate(entity.getOutboundDate())
         .outboundDetails(
             entity.getOutboundDetails() != null
                 ? entity.getOutboundDetails().stream()

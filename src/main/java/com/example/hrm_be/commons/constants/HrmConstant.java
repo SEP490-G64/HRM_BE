@@ -128,30 +128,30 @@ public class HrmConstant {
     }
 
     public static class STORAGE_LOCATION {
-      public static final String CREATE = "error.type.create";
-      public static final String UPDATE = "error.type.update";
-      public static final String DELETE = "error.type.delete";
-      public static final String EXIST = "error.type.exist";
-      public static final String NOT_CHILD = "error.type.not_child";
-      public static final String NOT_EXIST = "error.type.not_exist";
+      public static final String CREATE = "error.storage_location.create";
+      public static final String UPDATE = "error.storage_location.update";
+      public static final String DELETE = "error.storage_location.delete";
+      public static final String EXIST = "error.storage_location.exist";
+      public static final String NOT_CHILD = "error.storage_location.not_child";
+      public static final String NOT_EXIST = "error.storage_location.not_exist";
     }
 
     public static class UNIT_CONVERSION {
-      public static final String CREATE = "error.type.create";
-      public static final String UPDATE = "error.type.update";
-      public static final String DELETE = "error.type.delete";
-      public static final String EXIST = "error.type.exist";
-      public static final String NOT_CHILD = "error.type.not_child";
-      public static final String NOT_EXIST = "error.type.not_exist";
+      public static final String CREATE = "error.unit_conversion.create";
+      public static final String UPDATE = "error.unit_conversion.update";
+      public static final String DELETE = "error.unit_conversion.delete";
+      public static final String EXIST = "error.unit_conversion.exist";
+      public static final String NOT_CHILD = "error.unit_conversion.not_child";
+      public static final String NOT_EXIST = "error.unit_conversion.not_exist";
     }
 
     public static class UNIT_OF_MEASUREMENT {
-      public static final String CREATE = "error.type.create";
-      public static final String UPDATE = "error.type.update";
-      public static final String DELETE = "error.type.delete";
-      public static final String EXIST = "error.type.exist";
-      public static final String NOT_CHILD = "error.type.not_child";
-      public static final String NOT_EXIST = "error.type.not_exist";
+      public static final String CREATE = "error.unit_of_measurement.create";
+      public static final String UPDATE = "error.unit_of_measurement.update";
+      public static final String DELETE = "error.unit_of_measurement.delete";
+      public static final String EXIST = "error.unit_of_measurement.exist";
+      public static final String NOT_CHILD = "error.unit_of_measurement.not_child";
+      public static final String NOT_EXIST = "error.unit_of_measurement.not_exist";
     }
 
     public static class USER {
@@ -200,22 +200,103 @@ public class HrmConstant {
       public static final String NOT_EXIST = "error.batch.not_exist";
     }
 
-    public static class INGREDIENT {
-      public static final String CREATE = "error.ingredient.create";
-      public static final String UPDATE = "error.ingredient.update";
-      public static final String DELETE = "error.ingredient.delete";
-      public static final String EXIST = "error.ingredient.exist";
-      public static final String NOT_CHILD = "error.ingredient.not_child";
-      public static final String NOT_EXIST = "error.ingredient.not_exist";
+    public static class MANUFACTURER {
+      public static final String CREATE = "error.manufacturer.create";
+      public static final String UPDATE = "error.manufacturer.update";
+      public static final String DELETE = "error.manufacturer.delete";
+      public static final String EXIST = "error.manufacturer.exist";
+      public static final String NOT_CHILD = "error.manufacturer.not_child";
+      public static final String NOT_EXIST = "error.manufacturer.not_exist";
     }
 
-    public static class MANUFACTURER {
-      public static final String CREATE = "error.branch.create";
-      public static final String UPDATE = "error.branch.update";
-      public static final String DELETE = "error.branch.delete";
-      public static final String EXIST = "error.branch.exist";
-      public static final String NOT_CHILD = "error.branch.not_child";
-      public static final String NOT_EXIST = "error.branch.not_exist";
+    public static class INVENTORY_CHECK {
+      public static final String CREATE = "error.inventory_check.create";
+      public static final String UPDATE = "error.inventory_check.update";
+      public static final String DELETE = "error.inventory_check.delete";
+      public static final String EXIST = "error.inventory_check.exist";
+      public static final String NOT_CHILD = "error.inventory_check.not_child";
+      public static final String NOT_EXIST = "error.inventory_check.not_exist";
+    }
+
+    public static class INBOUND_BATCH_DETAIL {
+      public static final String CREATE = "error.inventory_check.create";
+      public static final String UPDATE = "error.inventory_check.update";
+      public static final String DELETE = "error.inventory_check.delete";
+      public static final String EXIST = "error.inventory_check.exist";
+      public static final String NOT_CHILD = "error.inventory_check.not_child";
+      public static final String NOT_EXIST = "error.inventory_check.not_exist";
+    }
+
+    public static class SPECIAL_CONDITION {
+      public static final String CREATE = "error.special_condition.create";
+      public static final String UPDATE = "error.special_condition.update";
+      public static final String DELETE = "error.special_condition.delete";
+      public static final String EXIST = "error.special_condition.exist";
+      public static final String NOT_CHILD = "error.special_condition.not_child";
+      public static final String NOT_EXIST = "error.special_condition.not_exist";
+    }
+
+    public static class PURCHASE {
+      public static final String CREATE = "error.purchase.create";
+      public static final String UPDATE = "error.purchase.update";
+      public static final String DELETE = "error.purchase.delete";
+      public static final String EXIST = "error.purchase.exist";
+      public static final String NOT_CHILD = "error.purchase.not_child";
+      public static final String NOT_EXIST = "error.purchase.not_exist";
+    }
+
+    public static class INVENTORY_CHECK_DETAILS {
+      public static final String CREATE = "error.inventory_check_details.create";
+      public static final String UPDATE = "error.inventory_check_details.update";
+      public static final String DELETE = "error.inventory_check_details.delete";
+      public static final String EXIST = "error.inventory_check_details.exist";
+      public static final String NOT_CHILD = "error.inventory_check_details.not_child";
+      public static final String NOT_EXIST = "error.inventory_check_details.not_exist";
+    }
+
+    public static class INBOUND_DETAILS {
+      public static final String CREATE = "error.inbound_details.create";
+      public static final String UPDATE = "error.inbound_details.update";
+      public static final String DELETE = "error.inbound_details.delete";
+      public static final String EXIST = "error.inbound_details.exist";
+      public static final String NOT_CHILD = "error.inbound_details.not_child";
+      public static final String NOT_EXIST = "error.inbound_details.not_exist";
+    }
+
+    public static class INBOUND {
+      public static final String CREATE = "error.inbound.create";
+      public static final String UPDATE = "error.inbound.update";
+      public static final String DELETE = "error.inbound.delete";
+      public static final String EXIST = "error.inbound.exist";
+      public static final String NOT_CHILD = "error.inbound.not_child";
+      public static final String NOT_EXIST = "error.inboud.not_exist";
+    }
+
+    public static class OUTBOUND_DETAILS {
+      public static final String CREATE = "error.outbound_details.create";
+      public static final String UPDATE = "error.outbound_details.update";
+      public static final String DELETE = "error.outbound_details.delete";
+      public static final String EXIST = "error.outbound_details.exist";
+      public static final String NOT_CHILD = "error.outbound_details.not_child";
+      public static final String NOT_EXIST = "error.outbound_details.not_exist";
+    }
+
+    public static class OUTBOUND {
+      public static final String CREATE = "error.outbound.create";
+      public static final String UPDATE = "error.outbound.update";
+      public static final String DELETE = "error.outbound.delete";
+      public static final String EXIST = "error.outbound.exist";
+      public static final String NOT_CHILD = "error.outbound.not_child";
+      public static final String NOT_EXIST = "error.outbound.not_exist";
+    }
+
+    public static class NOTIFICATION {
+      public static final String CREATE = "error.notification.create";
+      public static final String UPDATE = "error.notification.update";
+      public static final String DELETE = "error.notification.delete";
+      public static final String EXIST = "error.notification.exist";
+      public static final String NOT_CHILD = "error.notification.not_child";
+      public static final String NOT_EXIST = "error.notification.not_exist";
     }
   }
 }

@@ -1,5 +1,6 @@
 package com.example.hrm_be.models.requests;
 
+import com.example.hrm_be.models.dtos.Branch;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import lombok.AccessLevel;
@@ -38,5 +39,5 @@ public class RegisterRequest {
 
   Long role;
 
-  Long branchId;
+  Branch branch;
 }
