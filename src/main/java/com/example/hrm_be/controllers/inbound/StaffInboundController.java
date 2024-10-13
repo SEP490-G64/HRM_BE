@@ -3,17 +3,26 @@ package com.example.hrm_be.controllers.inbound;
 import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.commons.enums.ResponseStatus;
 import com.example.hrm_be.models.dtos.Inbound;
+import com.example.hrm_be.models.dtos.Product;
 import com.example.hrm_be.models.responses.BaseOutput;
+import com.example.hrm_be.models.responses.InnitInbound;
 import com.example.hrm_be.services.InboundService;
+import com.example.hrm_be.services.UserService;
+import com.example.hrm_be.utils.WplUtil;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.session.FindByIndexNameSessionRepository;
+import org.springframework.session.Session;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -24,6 +33,10 @@ import org.springframework.web.bind.annotation.*;
 @SecurityRequirement(name = "Authorization")
 public class StaffInboundController {
   private final InboundService inboundService;
+
+  private final WplUtil wplUtil;
+  private final FindByIndexNameSessionRepository<? extends Session> sessionRepository;
+  private final UserService userService;
 
   // GET: /api/v1/staff/inbound
   // Retrieves a paginated list of Inbound entities
@@ -188,5 +201,70 @@ public class StaffInboundController {
             .data(HttpStatus.OK.toString())
             .status(ResponseStatus.SUCCESS)
             .build());
+  }
+
+  @PostMapping("/addProduct")
+  public ResponseEntity<BaseOutput<String>> addProductToOrder(
+      @RequestParam Long branchId, HttpSession session, @RequestBody Product product) {
+    if (branchId <= 0 || branchId == null) {
+      BaseOutput<String> response =
+          BaseOutput.<String>builder()
+              .status(ResponseStatus.FAILED)
+              .errors(List.of(HrmConstant.ERROR.REQUEST.INVALID_PATH_VARIABLE))
+              .build();
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+    String sessionName =  userService.getAuthenticatedUserEmail();
+    List<Product> products = (List<Product>) session.getAttribute(sessionName);
+    if (products == null) {
+      products = new ArrayList<>();
+    }
+    products.add(product);
+    session.setAttribute(sessionName, products);
+    return ResponseEntity.ok(
+        BaseOutput.<String>builder()
+            .data(HttpStatus.OK.toString())
+            .status(ResponseStatus.SUCCESS)
+            .build());
+  }
+
+  @GetMapping("/getProducts")
+  public List<Product> getProductsFromOrder(HttpSession session, @RequestParam String branchId) {
+    String sessionName = userService.getAuthenticatedUserEmail();;
+    List<Product> products = (List<Product>) session.getAttribute(sessionName);
+    return products != null ? products : new ArrayList<>();
+  }
+
+  @GetMapping("/getInboundCode")
+  protected ResponseEntity<BaseOutput<InnitInbound>> getInnitInbound(HttpSession session) {
+    String sessionId = userService.getAuthenticatedUserEmail();
+    InnitInbound innitInbound = (InnitInbound) session.getAttribute(sessionId+"innitInbound");
+
+    if (innitInbound == null) {
+      // Create new InnitInbound object if not present in the session
+      Date currentDateTime = new Date();
+      innitInbound = new InnitInbound();
+      innitInbound.setDate(currentDateTime);
+      innitInbound.setInboundCode(wplUtil.generateInboundCode(currentDateTime));
+
+      // Save the InnitInbound object in the session
+      session.setAttribute(sessionId+"innitInbound", innitInbound);
+    }
+
+    // Return the InnitInbound object (either new or from session)
+    return ResponseEntity.ok(
+        BaseOutput.<InnitInbound>builder()
+            .data(innitInbound)
+            .status(ResponseStatus.SUCCESS)
+            .build());
+  }
+
+  @GetMapping("/getSessionId")
+  protected ResponseEntity<BaseOutput<String>> getSessionId(HttpSession session) {
+    String sessionId = session.getId();
+
+    // Return the InnitInbound object (either new or from session)
+    return ResponseEntity.ok(
+        BaseOutput.<String>builder().data(sessionId).status(ResponseStatus.SUCCESS).build());
   }
 }

@@ -185,19 +185,5 @@ public class StaffProductController {
             .build());
   }
 
-  @PostMapping("/addProduct")
-  public String addProductToOrder(HttpSession session, @RequestBody Product product) {
-    List<Product> products = (List<Product>) session.getAttribute("products");
-    if (products == null) {
-      products = new ArrayList<>();
-    }
-    products.add(product);
-    session.setAttribute("products", products);
-    return "Product added to order temporarily.";
-  }
-  @GetMapping("/getProducts")
-  public List<Product> getProductsFromOrder(HttpSession session) {
-    List<Product> products = (List<Product>) session.getAttribute("products");
-    return products != null ? products : new ArrayList<>();
-  }
+
 }

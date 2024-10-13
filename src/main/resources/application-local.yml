@@ -21,6 +21,9 @@ hrm-config:
     bucket: "test"
 
 spring:
+  session:
+    redis:
+      repository-type: indexed
   mail:
     host: smtp.gmail.com
     port: 587
@@ -38,7 +41,7 @@ spring:
     password: Abcd1234
     driver-class-name: org.postgresql.Driver
   jpa:
-    hibernate.ddl-auto: create-drop
+    hibernate.ddl-auto: update
     show-sql: true
   data:
     redis:
