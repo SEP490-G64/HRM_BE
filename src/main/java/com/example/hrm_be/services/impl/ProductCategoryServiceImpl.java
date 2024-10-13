@@ -16,6 +16,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -70,6 +71,12 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
       throw new HrmCommonException(HrmConstant.ERROR.CATEGORY.NOT_EXIST);
     }
 
+    // Check if category name exist except current category
+    if (categoryRepository.existsByCategoryName(category.getCategoryName()) &&
+            !Objects.equals(category.getCategoryName(), oldCategoryEntity.getCategoryName())) {
+      throw new HrmCommonException(HrmConstant.ERROR.CATEGORY.EXIST);
+    }
+
     // Update the fields of the existing category entity, save it, and convert it back to DTO
     return Optional.ofNullable(oldCategoryEntity)
         .map(
@@ -90,6 +97,12 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
     // Validation: Check if the ID is blank
     if (StringUtils.isBlank(id.toString())) {
       return;
+    }
+
+    // Retrieve the existing category entity by ID
+    ProductCategoryEntity oldCategoryEntity = categoryRepository.findById(id).orElse(null);
+    if (oldCategoryEntity == null) {
+      throw new HrmCommonException(HrmConstant.ERROR.CATEGORY.NOT_EXIST);
     }
 
     // Delete the category by ID

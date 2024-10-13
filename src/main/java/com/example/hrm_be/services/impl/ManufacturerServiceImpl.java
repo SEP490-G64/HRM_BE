@@ -7,6 +7,8 @@ import com.example.hrm_be.models.dtos.Manufacturer;
 import com.example.hrm_be.models.entities.ManufacturerEntity;
 import com.example.hrm_be.repositories.ManufacturerRepository;
 import com.example.hrm_be.services.ManufacturerService;
+
+import java.util.Objects;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -75,6 +77,15 @@ public class ManufacturerServiceImpl implements ManufacturerService {
               .NOT_EXIST); // Throw exception if Manufacturer does not exist
     }
 
+    // Check if manufacturer name and address exist except for the current manufacturer (by comparing with old entity data)
+    if (manufacturerRepository.existsByManufacturerNameAndAddress(manufacturer.getManufacturerName(),
+            manufacturer.getAddress()) &&
+            (!Objects.equals(manufacturer.getManufacturerName(), oldManufacturerEntity.getManufacturerName()) ||
+                    !Objects.equals(manufacturer.getAddress(), oldManufacturerEntity.getAddress()))) {
+      throw new HrmCommonException(HrmConstant.ERROR.MANUFACTURER.EXIST);
+    }
+
+
     // Use Optional to map the existing Manufacturer entity to a new one with updated fields
     return Optional.ofNullable(oldManufacturerEntity)
         .map(
@@ -99,6 +110,18 @@ public class ManufacturerServiceImpl implements ManufacturerService {
     if (id == null) {
       return;
     }
+
+    // Retrieve existing Manufacturer entity by ID
+    ManufacturerEntity oldManufacturerEntity =
+            manufacturerRepository.findById(id).orElse(null);
+    // Check if the Manufacturer to be updated exists
+    if (oldManufacturerEntity == null) {
+      throw new HrmCommonException(
+              HrmConstant.ERROR
+                      .MANUFACTURER
+                      .NOT_EXIST); // Throw exception if Manufacturer does not exist
+    }
+
     // Delete the Manufacturer by ID
     manufacturerRepository.deleteById(id);
   }

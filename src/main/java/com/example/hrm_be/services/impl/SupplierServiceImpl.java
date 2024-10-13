@@ -15,6 +15,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -73,6 +74,13 @@ public class SupplierServiceImpl implements SupplierService {
           HrmConstant.ERROR.ROLE.NOT_EXIST); // Throw exception if supplier does not exist
     }
 
+    // Check if supplier name and address exist except current supplier
+    if (supplierRepository.existsBySupplierNameAndAddress(supplier.getSupplierName(), supplier.getAddress()) &&
+            (!Objects.equals(supplier.getSupplierName(), oldSupplierEntity.getSupplierName()) &&
+            !Objects.equals(supplier.getAddress(), oldSupplierEntity.getAddress()))) {
+      throw new HrmCommonException(HrmConstant.ERROR.TYPE.EXIST);
+    }
+
     // Use Optional to map the existing supplier entity to a new one with updated fields
     return Optional.ofNullable(oldSupplierEntity)
         .map(
@@ -97,6 +105,15 @@ public class SupplierServiceImpl implements SupplierService {
     if (id == null) {
       return;
     }
+
+    // Retrieve existing supplier entity by ID
+    SupplierEntity oldSupplierEntity = supplierRepository.findById(id).orElse(null);
+    // Check if the supplier to be updated exists
+    if (oldSupplierEntity == null) {
+      throw new HrmCommonException(
+              HrmConstant.ERROR.ROLE.NOT_EXIST); // Throw exception if supplier does not exist
+    }
+
     // Delete the supplier by ID
     supplierRepository.deleteById(id);
   }
