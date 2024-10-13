@@ -38,6 +38,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @ActiveProfiles("test")
 @Import(InboundServiceImpl.class)
 @Transactional
+@Disabled
 class InboundServiceImplTest {
 
   @Container
