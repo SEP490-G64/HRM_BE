@@ -30,6 +30,7 @@ public class ProductCategoryMapper {
         .map(
             d ->
                 ProductCategoryEntity.builder()
+                    .id(d.getId())
                     .categoryName(d.getCategoryName())
                     .categoryDescription(d.getCategoryDescription())
                     .taxRate(d.getTaxRate())
@@ -40,6 +41,7 @@ public class ProductCategoryMapper {
   // Helper method to convert ProductCategoryEntity to ProductCategoryDTO
   private ProductCategory convertToDTO(ProductCategoryEntity entity) {
     return ProductCategory.builder()
+        .id(entity.getId())
         .categoryName(entity.getCategoryName())
         .categoryDescription(entity.getCategoryDescription())
         .taxRate(entity.getTaxRate())
