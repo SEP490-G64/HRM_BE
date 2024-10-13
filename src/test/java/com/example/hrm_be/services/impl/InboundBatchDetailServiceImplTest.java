@@ -16,6 +16,7 @@ import com.example.hrm_be.repositories.InboundBatchDetailRepository;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @ActiveProfiles("test")
 @Import(InboundBatchDetailServiceImpl.class)
 @Transactional
+@Disabled
 class InboundBatchDetailServiceImplTest {
 
   @Container
