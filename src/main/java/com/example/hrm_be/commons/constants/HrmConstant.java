@@ -149,6 +149,7 @@ public class HrmConstant {
       public static final String EXIST = "error.manufacturer.exist";
       public static final String NOT_CHILD = "error.manufacturer.not_child";
       public static final String NOT_EXIST = "error.manufacturer.not_exist";
+      public static final String TAXCODE_NOT_EXIST = "error.manufacturer.taxcode_not_exist";
     }
 
     public static class INVENTORY_CHECK {
@@ -161,12 +162,12 @@ public class HrmConstant {
     }
 
     public static class INBOUND_BATCH_DETAIL {
-      public static final String CREATE = "error.inventory_check.create";
-      public static final String UPDATE = "error.inventory_check.update";
-      public static final String DELETE = "error.inventory_check.delete";
-      public static final String EXIST = "error.inventory_check.exist";
-      public static final String NOT_CHILD = "error.inventory_check.not_child";
-      public static final String NOT_EXIST = "error.inventory_check.not_exist";
+      public static final String CREATE = "error.inbound_batch_detail.create";
+      public static final String UPDATE = "error.inbound_batch_detail.update";
+      public static final String DELETE = "error.inbound_batch_detail.delete";
+      public static final String EXIST = "error.inbound_batch_detail.exist";
+      public static final String NOT_CHILD = "error.inbound_batch_detail.not_child";
+      public static final String NOT_EXIST = "error.inbound_batch_detail.not_exist";
     }
 
     public static class SPECIAL_CONDITION {
@@ -215,12 +216,12 @@ public class HrmConstant {
     }
 
     public static class BRANCHPRODUCT {
-      public static final String CREATE = "error.notification.create";
-      public static final String UPDATE = "error.notification.update";
-      public static final String DELETE = "error.notification.delete";
-      public static final String EXIST = "error.notification.exist";
-      public static final String NOT_CHILD = "error.notification.not_child";
-      public static final String NOT_EXIST = "error.notification.not_exist";
+      public static final String CREATE = "error.branch_product.create";
+      public static final String UPDATE = "error.branch_product.update";
+      public static final String DELETE = "error.branch_product.delete";
+      public static final String EXIST = "error.branch_product.exist";
+      public static final String NOT_CHILD = "error.branch_product.not_child";
+      public static final String NOT_EXIST = "error.branch_product.not_exist";
     }
 
     public static class OUTBOUND_DETAILS {
@@ -251,19 +252,12 @@ public class HrmConstant {
     }
 
     public static class BRANCHBATCH {
-      public static final String CREATE = "error.notification.create";
-      public static final String UPDATE = "error.notification.update";
-      public static final String DELETE = "error.notification.delete";
-      public static final String EXIST = "error.notification.exist";
-      public static final String NOT_CHILD = "error.notification.not_child";
-      public static final String NOT_EXIST = "error.notification.not_exist";
-      public static final String CREATE = "error.manufacturer.create";
-      public static final String UPDATE = "error.manufacturer.update";
-      public static final String DELETE = "error.manufacturer.delete";
-      public static final String EXIST = "error.manufacturer.exist";
-      public static final String NOT_CHILD = "error.manufacturer.not_child";
-      public static final String NOT_EXIST = "error.manufacturer.not_exist";
-      public static final String TAXCODE_NOT_EXIST = "error.manufacturer.taxcode_not_exist";
+      public static final String CREATE = "error.branch_batch.create";
+      public static final String UPDATE = "error.branch_batch.update";
+      public static final String DELETE = "error.branch_batch.delete";
+      public static final String EXIST = "error.branch_batch.exist";
+      public static final String NOT_CHILD = "error.branch_batch.not_child";
+      public static final String NOT_EXIST = "error.branch_batch.not_exist";
     }
 
     public static class SUPPLIER {
