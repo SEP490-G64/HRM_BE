@@ -218,6 +218,15 @@ public class HrmConstant {
       public static final String NOT_EXIST = "error.inventory_check.not_exist";
     }
 
+    public static class INBOUND_BATCH_DETAIL {
+      public static final String CREATE = "error.inventory_check.create";
+      public static final String UPDATE = "error.inventory_check.update";
+      public static final String DELETE = "error.inventory_check.delete";
+      public static final String EXIST = "error.inventory_check.exist";
+      public static final String NOT_CHILD = "error.inventory_check.not_child";
+      public static final String NOT_EXIST = "error.inventory_check.not_exist";
+    }
+
     public static class SPECIAL_CONDITION {
       public static final String CREATE = "error.special_condition.create";
       public static final String UPDATE = "error.special_condition.update";
@@ -252,6 +261,15 @@ public class HrmConstant {
       public static final String EXIST = "error.inbound_details.exist";
       public static final String NOT_CHILD = "error.inbound_details.not_child";
       public static final String NOT_EXIST = "error.inbound_details.not_exist";
+    }
+
+    public static class INBOUND {
+      public static final String CREATE = "error.inbound.create";
+      public static final String UPDATE = "error.inbound.update";
+      public static final String DELETE = "error.inbound.delete";
+      public static final String EXIST = "error.inbound.exist";
+      public static final String NOT_CHILD = "error.inbound.not_child";
+      public static final String NOT_EXIST = "error.inboud.not_exist";
     }
 
     public static class BRANCHPRODUCT {
