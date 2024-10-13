@@ -70,8 +70,8 @@ public class ProductTypeServiceImpl implements ProductTypeService {
     }
 
     // Check if product type name exist except current type
-    if (productTypeRepository.existsByTypeName(type.getTypeName()) &&
-            !Objects.equals(type.getTypeName(), oldTypeEntity.getTypeName())) {
+    if (productTypeRepository.existsByTypeName(type.getTypeName())
+        && !Objects.equals(type.getTypeName(), oldTypeEntity.getTypeName())) {
       throw new HrmCommonException(HrmConstant.ERROR.TYPE.EXIST);
     }
 

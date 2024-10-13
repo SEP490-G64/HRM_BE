@@ -74,8 +74,8 @@ public class BranchServiceImpl implements BranchService {
     }
 
     // Check if branch location exist except current branch
-    if (branchRepository.existsByLocation(branch.getLocation()) &&
-            !Objects.equals(branch.getLocation(), oldBranchEntity.getLocation())) {
+    if (branchRepository.existsByLocation(branch.getLocation())
+        && !Objects.equals(branch.getLocation(), oldBranchEntity.getLocation())) {
       throw new HrmCommonException(HrmConstant.ERROR.BRANCH.EXIST);
     }
 

@@ -72,8 +72,8 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
     }
 
     // Check if category name exist except current category
-    if (categoryRepository.existsByCategoryName(category.getCategoryName()) &&
-            !Objects.equals(category.getCategoryName(), oldCategoryEntity.getCategoryName())) {
+    if (categoryRepository.existsByCategoryName(category.getCategoryName())
+        && !Objects.equals(category.getCategoryName(), oldCategoryEntity.getCategoryName())) {
       throw new HrmCommonException(HrmConstant.ERROR.CATEGORY.EXIST);
     }
 

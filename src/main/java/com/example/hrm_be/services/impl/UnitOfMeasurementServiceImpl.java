@@ -73,8 +73,8 @@ public class UnitOfMeasurementServiceImpl implements UnitOfMeasurementService {
     }
 
     // Check if unit name exist except current unit
-    if (unitOfMeasurementRepository.existsByUnitName(unit.getUnitName()) &&
-            !Objects.equals(unit.getUnitName(), oldUnitOfMeasurementEntity.getUnitName())) {
+    if (unitOfMeasurementRepository.existsByUnitName(unit.getUnitName())
+        && !Objects.equals(unit.getUnitName(), oldUnitOfMeasurementEntity.getUnitName())) {
       throw new HrmCommonException(HrmConstant.ERROR.UNIT_OF_MEASUREMENT.EXIST);
     }
 

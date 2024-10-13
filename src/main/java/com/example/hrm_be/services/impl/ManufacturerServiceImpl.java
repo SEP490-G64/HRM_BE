@@ -82,17 +82,20 @@ public class ManufacturerServiceImpl implements ManufacturerService {
               .NOT_EXIST); // Throw exception if Manufacturer does not exist
     }
 
-    // Check if manufacturer name and address exist except for the current manufacturer (by comparing with old entity data)
-    if (manufacturerRepository.existsByManufacturerNameAndAddress(manufacturer.getManufacturerName(),
-            manufacturer.getAddress()) &&
-            (!Objects.equals(manufacturer.getManufacturerName(), oldManufacturerEntity.getManufacturerName()) ||
-                    !Objects.equals(manufacturer.getAddress(), oldManufacturerEntity.getAddress()))) {
+    // Check if manufacturer name and address exist except for the current manufacturer (by
+    // comparing with old entity data)
+    if (manufacturerRepository.existsByManufacturerNameAndAddress(
+            manufacturer.getManufacturerName(), manufacturer.getAddress())
+        && (!Objects.equals(
+                manufacturer.getManufacturerName(), oldManufacturerEntity.getManufacturerName())
+            || !Objects.equals(manufacturer.getAddress(), oldManufacturerEntity.getAddress()))) {
       throw new HrmCommonException(HrmConstant.ERROR.MANUFACTURER.EXIST);
     }
 
-    // Check if manufacturer tax code exist except for the current manufacturer (by comparing with old entity data)
-    if (manufacturerRepository.existsByTaxCode(manufacturer.getTaxCode()) &&
-            (!Objects.equals(manufacturer.getTaxCode(), oldManufacturerEntity.getTaxCode()))) {
+    // Check if manufacturer tax code exist except for the current manufacturer (by comparing with
+    // old entity data)
+    if (manufacturerRepository.existsByTaxCode(manufacturer.getTaxCode())
+        && (!Objects.equals(manufacturer.getTaxCode(), oldManufacturerEntity.getTaxCode()))) {
       throw new HrmCommonException(HrmConstant.ERROR.MANUFACTURER.TAXCODE_NOT_EXIST);
     }
 

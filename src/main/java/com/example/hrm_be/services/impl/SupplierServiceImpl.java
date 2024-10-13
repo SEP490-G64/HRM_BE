@@ -56,7 +56,8 @@ public class SupplierServiceImpl implements SupplierService {
       throw new HrmCommonException(HrmConstant.ERROR.SUPPLIER.EXIST);
     }
 
-    // Check if supplier tax code exist except for the current supplier (by comparing with old entity data)
+    // Check if supplier tax code exist except for the current supplier (by comparing with old
+    // entity data)
     if (supplierRepository.existsByTaxCode(supplier.getTaxCode())) {
       throw new HrmCommonException(HrmConstant.ERROR.SUPPLIER.TAXCODE_NOT_EXIST);
     }
@@ -80,15 +81,17 @@ public class SupplierServiceImpl implements SupplierService {
     }
 
     // Check if supplier name and address exist except current supplier
-    if (supplierRepository.existsBySupplierNameAndAddress(supplier.getSupplierName(), supplier.getAddress()) &&
-            (!Objects.equals(supplier.getSupplierName(), oldSupplierEntity.getSupplierName()) &&
-            !Objects.equals(supplier.getAddress(), oldSupplierEntity.getAddress()))) {
+    if (supplierRepository.existsBySupplierNameAndAddress(
+            supplier.getSupplierName(), supplier.getAddress())
+        && (!Objects.equals(supplier.getSupplierName(), oldSupplierEntity.getSupplierName())
+            && !Objects.equals(supplier.getAddress(), oldSupplierEntity.getAddress()))) {
       throw new HrmCommonException(HrmConstant.ERROR.SUPPLIER.EXIST);
     }
 
-    // Check if supplier tax code exist except for the current supplier (by comparing with old entity data)
-    if (supplierRepository.existsByTaxCode(supplier.getTaxCode()) &&
-            (!Objects.equals(supplier.getTaxCode(), oldSupplierEntity.getTaxCode()))) {
+    // Check if supplier tax code exist except for the current supplier (by comparing with old
+    // entity data)
+    if (supplierRepository.existsByTaxCode(supplier.getTaxCode())
+        && (!Objects.equals(supplier.getTaxCode(), oldSupplierEntity.getTaxCode()))) {
       throw new HrmCommonException(HrmConstant.ERROR.SUPPLIER.TAXCODE_NOT_EXIST);
     }
 
@@ -122,7 +125,7 @@ public class SupplierServiceImpl implements SupplierService {
     // Check if the supplier to be updated exists
     if (oldSupplierEntity == null) {
       throw new HrmCommonException(
-              HrmConstant.ERROR.SUPPLIER.NOT_EXIST); // Throw exception if supplier does not exist
+          HrmConstant.ERROR.SUPPLIER.NOT_EXIST); // Throw exception if supplier does not exist
     }
 
     // Delete the supplier by ID
