@@ -8,5 +8,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface UnitOfMeasurementRepository extends JpaRepository<UnitOfMeasurementEntity, Long> {
+  boolean existsByUnitName(String name);
+
   Page<UnitOfMeasurementEntity> findByUnitNameContainingIgnoreCase(String name, Pageable pageable);
 }

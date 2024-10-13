@@ -56,6 +56,11 @@ public class ManufacturerServiceImpl implements ManufacturerService {
       throw new HrmCommonException(HrmConstant.ERROR.MANUFACTURER.EXIST);
     }
 
+    // Check if manufacturer tax code exist
+    if (manufacturerRepository.existsByTaxCode(manufacturer.getTaxCode())) {
+      throw new HrmCommonException(HrmConstant.ERROR.MANUFACTURER.TAXCODE_NOT_EXIST);
+    }
+
     // Map Manufacturer DTO to entity and save it to the repository
     return Optional.ofNullable(manufacturer)
         .map(e -> manufacturerMapper.toEntity(e)) // Convert DTO to entity
@@ -85,6 +90,11 @@ public class ManufacturerServiceImpl implements ManufacturerService {
       throw new HrmCommonException(HrmConstant.ERROR.MANUFACTURER.EXIST);
     }
 
+    // Check if manufacturer tax code exist except for the current manufacturer (by comparing with old entity data)
+    if (manufacturerRepository.existsByTaxCode(manufacturer.getTaxCode()) &&
+            (!Objects.equals(manufacturer.getTaxCode(), oldManufacturerEntity.getTaxCode()))) {
+      throw new HrmCommonException(HrmConstant.ERROR.MANUFACTURER.TAXCODE_NOT_EXIST);
+    }
 
     // Use Optional to map the existing Manufacturer entity to a new one with updated fields
     return Optional.ofNullable(oldManufacturerEntity)

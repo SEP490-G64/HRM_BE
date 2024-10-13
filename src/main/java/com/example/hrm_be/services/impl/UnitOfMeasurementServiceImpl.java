@@ -9,6 +9,8 @@ import com.example.hrm_be.models.dtos.UnitOfMeasurement;
 import com.example.hrm_be.models.entities.UnitOfMeasurementEntity;
 import com.example.hrm_be.repositories.UnitOfMeasurementRepository;
 import com.example.hrm_be.services.UnitOfMeasurementService;
+
+import java.util.Objects;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -45,11 +47,17 @@ public class UnitOfMeasurementServiceImpl implements UnitOfMeasurementService {
   }
 
   @Override
-  public UnitOfMeasurement create(UnitOfMeasurement storageLocation) {
-    if (storageLocation == null) {
+  public UnitOfMeasurement create(UnitOfMeasurement unit) {
+    if (unit == null) {
       throw new HrmCommonException(UNIT_OF_MEASUREMENT.NOT_EXIST);
     }
-    return Optional.ofNullable(storageLocation)
+
+    // Check if unit name exist
+    if (unitOfMeasurementRepository.existsByUnitName(unit.getUnitName())) {
+      throw new HrmCommonException(HrmConstant.ERROR.UNIT_OF_MEASUREMENT.EXIST);
+    }
+
+    return Optional.ofNullable(unit)
         .map(e -> unitOfMeasurementMapper.toEntity(e))
         .map(e -> unitOfMeasurementRepository.save(e))
         .map(e -> unitOfMeasurementMapper.toDTO(e))
@@ -57,14 +65,21 @@ public class UnitOfMeasurementServiceImpl implements UnitOfMeasurementService {
   }
 
   @Override
-  public UnitOfMeasurement update(UnitOfMeasurement storageLocation) {
+  public UnitOfMeasurement update(UnitOfMeasurement unit) {
     UnitOfMeasurementEntity oldUnitOfMeasurementEntity =
-        unitOfMeasurementRepository.findById(storageLocation.getId()).orElse(null);
+        unitOfMeasurementRepository.findById(unit.getId()).orElse(null);
     if (oldUnitOfMeasurementEntity == null) {
       throw new HrmCommonException(HrmConstant.ERROR.UNIT_OF_MEASUREMENT.NOT_EXIST);
     }
+
+    // Check if unit name exist except current unit
+    if (unitOfMeasurementRepository.existsByUnitName(unit.getUnitName()) &&
+            !Objects.equals(unit.getUnitName(), oldUnitOfMeasurementEntity.getUnitName())) {
+      throw new HrmCommonException(HrmConstant.ERROR.UNIT_OF_MEASUREMENT.EXIST);
+    }
+
     return Optional.ofNullable(oldUnitOfMeasurementEntity)
-        .map(op -> op.toBuilder().unitName(storageLocation.getUnitName()).build())
+        .map(op -> op.toBuilder().unitName(unit.getUnitName()).build())
         .map(unitOfMeasurementRepository::save)
         .map(unitOfMeasurementMapper::toDTO)
         .orElse(null);

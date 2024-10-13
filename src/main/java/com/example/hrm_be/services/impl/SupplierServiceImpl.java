@@ -53,7 +53,12 @@ public class SupplierServiceImpl implements SupplierService {
         || supplierRepository.existsBySupplierNameAndAddress(
             supplier.getSupplierName(), supplier.getAddress())) {
       // Throw exception if supplier already exists
-      throw new HrmCommonException(HrmConstant.ERROR.ROLE.EXIST);
+      throw new HrmCommonException(HrmConstant.ERROR.SUPPLIER.EXIST);
+    }
+
+    // Check if supplier tax code exist except for the current supplier (by comparing with old entity data)
+    if (supplierRepository.existsByTaxCode(supplier.getTaxCode())) {
+      throw new HrmCommonException(HrmConstant.ERROR.SUPPLIER.TAXCODE_NOT_EXIST);
     }
 
     // Map supplier DTO to entity and save it to the repository
@@ -71,14 +76,20 @@ public class SupplierServiceImpl implements SupplierService {
     // Check if the supplier to be updated exists
     if (oldSupplierEntity == null) {
       throw new HrmCommonException(
-          HrmConstant.ERROR.ROLE.NOT_EXIST); // Throw exception if supplier does not exist
+          HrmConstant.ERROR.SUPPLIER.NOT_EXIST); // Throw exception if supplier does not exist
     }
 
     // Check if supplier name and address exist except current supplier
     if (supplierRepository.existsBySupplierNameAndAddress(supplier.getSupplierName(), supplier.getAddress()) &&
             (!Objects.equals(supplier.getSupplierName(), oldSupplierEntity.getSupplierName()) &&
             !Objects.equals(supplier.getAddress(), oldSupplierEntity.getAddress()))) {
-      throw new HrmCommonException(HrmConstant.ERROR.TYPE.EXIST);
+      throw new HrmCommonException(HrmConstant.ERROR.SUPPLIER.EXIST);
+    }
+
+    // Check if supplier tax code exist except for the current supplier (by comparing with old entity data)
+    if (supplierRepository.existsByTaxCode(supplier.getTaxCode()) &&
+            (!Objects.equals(supplier.getTaxCode(), oldSupplierEntity.getTaxCode()))) {
+      throw new HrmCommonException(HrmConstant.ERROR.SUPPLIER.TAXCODE_NOT_EXIST);
     }
 
     // Use Optional to map the existing supplier entity to a new one with updated fields
@@ -111,7 +122,7 @@ public class SupplierServiceImpl implements SupplierService {
     // Check if the supplier to be updated exists
     if (oldSupplierEntity == null) {
       throw new HrmCommonException(
-              HrmConstant.ERROR.ROLE.NOT_EXIST); // Throw exception if supplier does not exist
+              HrmConstant.ERROR.SUPPLIER.NOT_EXIST); // Throw exception if supplier does not exist
     }
 
     // Delete the supplier by ID
