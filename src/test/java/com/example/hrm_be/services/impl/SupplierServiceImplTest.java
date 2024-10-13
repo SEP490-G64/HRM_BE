@@ -114,7 +114,7 @@ class SupplierServiceImplTest {
     HrmCommonException exception =
         assertThrows(HrmCommonException.class, () -> supplierService.create(supplierDTO));
 
-    assertEquals(HrmConstant.ERROR.ROLE.EXIST, exception.getMessage());
+    assertEquals(HrmConstant.ERROR.SUPPLIER.EXIST, exception.getMessage());
     verify(supplierRepository, never()).save(any(SupplierEntity.class));
   }
 
@@ -138,7 +138,7 @@ class SupplierServiceImplTest {
     HrmCommonException exception =
         assertThrows(HrmCommonException.class, () -> supplierService.update(supplierDTO));
 
-    assertEquals(HrmConstant.ERROR.ROLE.NOT_EXIST, exception.getMessage());
+    assertEquals(HrmConstant.ERROR.SUPPLIER.NOT_EXIST, exception.getMessage());
     verify(supplierRepository, never()).save(any(SupplierEntity.class));
   }
 
