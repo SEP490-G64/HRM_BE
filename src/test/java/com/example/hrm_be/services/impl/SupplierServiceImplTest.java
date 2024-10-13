@@ -164,23 +164,40 @@ class SupplierServiceImplTest {
 
   @Test
   void shouldThrowExceptionWhenUpdatingWithExistingNameAndAddress() {
+    // Simulate finding the supplier to update (the one being updated)
     when(supplierRepository.findById(anyLong())).thenReturn(Optional.of(supplierEntity));
-    when(supplierRepository.existsBySupplierNameAndAddress(anyString(), anyString()))
-            .thenReturn(true); // Another supplier exists with the same name and address
 
+    // Simulate another supplier with the same name and address exists
+    when(supplierRepository.existsBySupplierNameAndAddress(anyString(), anyString()))
+            .thenReturn(true);
+
+    // Update both the name and address to be different to trigger the exception
+    supplierDTO.setSupplierName("Different Supplier Name");
+    supplierDTO.setAddress("Different Address");
+
+    // Now, the exception should be thrown since name/address duplication exists
     HrmCommonException exception =
             assertThrows(HrmCommonException.class, () -> supplierService.update(supplierDTO));
 
+    // Verify the correct exception is thrown with the expected message
     assertEquals(HrmConstant.ERROR.SUPPLIER.EXIST, exception.getMessage());
+
+    // Ensure the save method is never called since the exception is thrown
     verify(supplierRepository, never()).save(any(SupplierEntity.class));
   }
 
   @Test
   void shouldThrowExceptionWhenUpdatingWithExistingTaxCode() {
+    // Simulate finding the supplier to update
     when(supplierRepository.findById(anyLong())).thenReturn(Optional.of(supplierEntity));
-    when(supplierRepository.existsByTaxCode(anyString()))
-            .thenReturn(true); // Another supplier exists with the same tax code
 
+    // Simulate another supplier exists with the same tax code
+    when(supplierRepository.existsByTaxCode(anyString())).thenReturn(true);
+
+    // Ensure the supplierDTO has a different tax code than the existing supplier
+    supplierDTO.setTaxCode("Different Tax Code");
+
+    // Now, the exception should be thrown since tax code duplication exists
     HrmCommonException exception =
             assertThrows(HrmCommonException.class, () -> supplierService.update(supplierDTO));
 
@@ -188,13 +205,22 @@ class SupplierServiceImplTest {
     verify(supplierRepository, never()).save(any(SupplierEntity.class));
   }
 
+
   @Test
   void shouldDeleteSupplier() {
+    // Simulate the supplier entity being present in the repository
+    when(supplierRepository.findById(anyLong())).thenReturn(Optional.of(supplierEntity));
+
+    // No action required when deleteById is called
     doNothing().when(supplierRepository).deleteById(anyLong());
 
+    // Assert that no exception is thrown when deleting the supplier
     assertDoesNotThrow(() -> supplierService.delete(1L));
+
+    // Verify that the repository's deleteById method was called once with the correct ID
     verify(supplierRepository, times(1)).deleteById(1L);
   }
+
 
   @Test
   void shouldDeleteSupplierWithBlankId() {
