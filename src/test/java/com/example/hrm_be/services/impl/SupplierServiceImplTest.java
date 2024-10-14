@@ -135,17 +135,13 @@ class SupplierServiceImplTest {
   @Test
   void shouldUpdateSupplier() {
     when(supplierRepository.findById(anyLong())).thenReturn(Optional.of(supplierEntity));
-    when(supplierRepository.existsBySupplierNameAndAddress(anyString(), anyString()))
-        .thenReturn(false); // Name/Address doesn't exist for another entity
-    when(supplierRepository.existsByTaxCode(anyString()))
-        .thenReturn(false); // Tax code doesn't exist for another entity
     when(supplierMapper.toDTO(any(SupplierEntity.class))).thenReturn(supplierDTO);
     when(supplierRepository.save(any(SupplierEntity.class))).thenReturn(supplierEntity);
 
     Supplier result = supplierService.update(supplierDTO);
 
     assertNotNull(result);
-    assertEquals("Test Supplier", result.getSupplierName());
+    assertEquals("Test Supplier", result.getSupplierName()); // Sửa ở đây
     verify(supplierRepository, times(1)).save(any(SupplierEntity.class));
   }
 

@@ -58,8 +58,10 @@ public class SupplierServiceImpl implements SupplierService {
 
     // Check if supplier tax code exist except for the current supplier (by comparing with old
     // entity data)
-    if (supplierRepository.existsByTaxCode(supplier.getTaxCode())) {
-      throw new HrmCommonException(HrmConstant.ERROR.SUPPLIER.TAXCODE_NOT_EXIST);
+    if (supplier.getTaxCode() != null && !supplier.getTaxCode().trim().isEmpty()) {
+      if (supplierRepository.existsByTaxCode(supplier.getTaxCode())) {
+        throw new HrmCommonException(HrmConstant.ERROR.SUPPLIER.TAXCODE_NOT_EXIST);
+      }
     }
 
     // Map supplier DTO to entity and save it to the repository
@@ -90,9 +92,11 @@ public class SupplierServiceImpl implements SupplierService {
 
     // Check if supplier tax code exist except for the current supplier (by comparing with old
     // entity data)
-    if (supplierRepository.existsByTaxCode(supplier.getTaxCode())
-        && (!Objects.equals(supplier.getTaxCode(), oldSupplierEntity.getTaxCode()))) {
-      throw new HrmCommonException(HrmConstant.ERROR.SUPPLIER.TAXCODE_NOT_EXIST);
+    if (supplier.getTaxCode() != null && !supplier.getTaxCode().trim().isEmpty()) {
+      if (!supplier.getTaxCode().equals(oldSupplierEntity.getTaxCode()) &&
+              supplierRepository.existsByTaxCode(supplier.getTaxCode())) {
+        throw new HrmCommonException(HrmConstant.ERROR.SUPPLIER.TAXCODE_NOT_EXIST);
+      }
     }
 
     // Use Optional to map the existing supplier entity to a new one with updated fields
