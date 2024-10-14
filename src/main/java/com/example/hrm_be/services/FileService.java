@@ -7,10 +7,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
-public interface ImageService {
+public interface FileService {
   long saveFile(MultipartFile multipartFile) throws IOException;
 
-  void deleteFile(Long id) throws Exception;
+  boolean deleteFile(Long id) throws Exception;
 
-  List<Image> getImages();
+  List<Image> getFiles();
+
+  byte[] getFileById(Long id);
 }
