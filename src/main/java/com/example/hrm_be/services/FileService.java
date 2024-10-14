@@ -1,6 +1,6 @@
 package com.example.hrm_be.services;
 
-import com.example.hrm_be.models.dtos.Image;
+import com.example.hrm_be.models.dtos.File;
 import java.io.IOException;
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -12,7 +12,7 @@ public interface FileService {
 
   boolean deleteFile(Long id) throws Exception;
 
-  List<Image> getFiles();
+  List<File> getFiles();
 
-  byte[] getFileById(Long id);
+  String getFileById(Long id);
 }

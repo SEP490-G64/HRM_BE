@@ -1,7 +1,7 @@
 package com.example.hrm_be.controllers.file;
 
 import com.example.hrm_be.commons.constants.HrmConstant;
-import com.example.hrm_be.models.dtos.Image;
+import com.example.hrm_be.models.dtos.File;
 import com.example.hrm_be.models.responses.BaseOutput;
 import com.example.hrm_be.services.FileService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -27,13 +27,13 @@ public class StaffFileController {
 
   // This method will return all the row in the DB
   @GetMapping("")
-  public ResponseEntity<BaseOutput<List<Image>>> getFiles() {
-    List<Image> images = fileService.getFiles();
+  public ResponseEntity<BaseOutput<List<File>>> getFiles() {
+    List<File> files = fileService.getFiles();
 
-    BaseOutput<List<Image>> response =
-        BaseOutput.<List<Image>>builder()
+    BaseOutput<List<File>> response =
+        BaseOutput.<List<File>>builder()
             .message(HttpStatus.OK.toString())
-            .data(images)
+            .data(files)
             .status(com.example.hrm_be.commons.enums.ResponseStatus.SUCCESS)
             .build();
     return ResponseEntity.ok(response);
@@ -41,13 +41,13 @@ public class StaffFileController {
 
   // This method will get file from DO Space
   @GetMapping("/{fileId}")
-  public ResponseEntity<BaseOutput<byte[]>> getFile(@PathVariable long fileId) {
-    byte[] fileByte = fileService.getFileById(fileId);
+  public ResponseEntity<BaseOutput<String>> getFile(@PathVariable long fileId) {
+    String linkFile = fileService.getFileById(fileId);
 
-    BaseOutput<byte[]> response =
-        BaseOutput.<byte[]>builder()
+    BaseOutput<String> response =
+        BaseOutput.<String>builder()
             .message(HttpStatus.OK.toString())
-            .data(fileByte)
+            .data(linkFile)
             .status(com.example.hrm_be.commons.enums.ResponseStatus.SUCCESS)
             .build();
     return ResponseEntity.ok(response);

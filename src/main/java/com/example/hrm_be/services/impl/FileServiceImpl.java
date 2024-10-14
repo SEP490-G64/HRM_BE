@@ -2,10 +2,11 @@ package com.example.hrm_be.services.impl;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;
-import com.example.hrm_be.components.ImageMapper;
-import com.example.hrm_be.models.dtos.Image;
-import com.example.hrm_be.models.entities.ImageEntity;
-import com.example.hrm_be.repositories.ImageRepository;
+import com.example.hrm_be.commons.constants.HrmConstant;
+import com.example.hrm_be.components.FileMapper;
+import com.example.hrm_be.models.dtos.File;
+import com.example.hrm_be.models.entities.FileEntity;
+import com.example.hrm_be.repositories.FileRepository;
 import com.example.hrm_be.services.FileService;
 import jakarta.transaction.Transactional;
 import java.io.IOException;
@@ -23,59 +24,65 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 @Transactional
 public class FileServiceImpl implements FileService {
-  @Autowired ImageRepository imageRepo;
+  @Autowired FileRepository fileRepo;
 
   @Autowired AmazonS3 s3Client;
 
-  @Autowired ImageMapper imageMapper;
+  @Autowired FileMapper fileMapper;
 
   @Value("${hrm-config.s3.bucket:default}")
   private String doSpaceBucket;
 
   @Override
-  public byte[] getFileById(Long id) {
-    ImageEntity foundImage = imageRepo.findById(id).orElse(null);
+  public String getFileById(Long id) {
+    FileEntity foundImage = fileRepo.findById(id).orElse(null);
     if (foundImage == null) {
       return null;
     }
 
-    String folder = getFolderFromFileType(foundImage.getExt());
-    String key = folder + foundImage.getName() + "." + foundImage.getExt();
-    return getImageFromS3(key);
+    return foundImage.getLink();
   }
 
   @Override
   public long saveFile(MultipartFile multipartFile) {
-    String extension = FilenameUtils.getExtension(multipartFile.getOriginalFilename());
+    String key, extension;
     String imgName = FilenameUtils.removeExtension(multipartFile.getOriginalFilename());
-    String key = getFolderFromFileType(extension) + imgName + "." + extension;
+    try {
+      extension = FilenameUtils.getExtension(multipartFile.getOriginalFilename());
+      key = getFolderFromFileType(extension + "/") + imgName + "." + extension;
+    } catch (Exception e) {
+      extension = "";
+      key = multipartFile.getOriginalFilename();
+    }
     PutObjectResult result = saveImageToS3(multipartFile, key);
     if (result == null) {
       return -1L; // save fail
     }
-    ImageEntity image = new ImageEntity();
+    FileEntity image = new FileEntity();
     image.setName(imgName);
     image.setExt(extension);
     image.setCreatedTime(new Timestamp(new Date().getTime()));
+    image.setLink(HrmConstant.S3LINK + "/" + key);
     // Map Image DTO to entity and save it to the repository
-    ImageEntity saveImage =
+    FileEntity saveImage =
         Optional.ofNullable(image)
-            .map(e -> imageRepo.save(e)) // Save entity to the repository
+            .map(e -> fileRepo.save(e)) // Save entity to the repository
             .orElse(null); // Return null if the Manufacturer creation fails
     return saveImage != null ? image.getId() : -1L;
   }
 
   @Override
   public boolean deleteFile(Long fileId) throws Exception {
-    Optional<ImageEntity> imageOpt = imageRepo.findById(fileId);
+    Optional<FileEntity> imageOpt = fileRepo.findById(fileId);
     if (imageOpt.get() == null) {
       return false;
     }
-    ImageEntity image = imageOpt.get();
-    String key = getFolderFromFileType(image.getExt()) + image.getName() + "." + image.getExt();
+    FileEntity image = imageOpt.get();
+    String key =
+        getFolderFromFileType(image.getExt() + "/") + image.getName() + "." + image.getExt();
     try {
       s3Client.deleteObject(new DeleteObjectRequest(doSpaceBucket, key));
-      imageRepo.delete(image);
+      fileRepo.delete(image);
       return true;
     } catch (Exception e) {
       return false;
@@ -83,13 +90,13 @@ public class FileServiceImpl implements FileService {
   }
 
   @Override
-  public List<Image> getFiles() {
-    List<Image> images = new ArrayList<>();
-    List<ImageEntity> existImages = imageRepo.findAll();
-    for (ImageEntity existImage : existImages) {
-      images.add(imageMapper.toDTO(existImage));
+  public List<File> getFiles() {
+    List<File> files = new ArrayList<>();
+    List<FileEntity> existImages = fileRepo.findAll();
+    for (FileEntity existImage : existImages) {
+      files.add(fileMapper.toDTO(existImage));
     }
-    return images;
+    return files;
   }
 
   private PutObjectResult saveImageToS3(MultipartFile multipartFile, String key) {
@@ -99,18 +106,11 @@ public class FileServiceImpl implements FileService {
       if (multipartFile.getContentType() != null && !"".equals(multipartFile.getContentType())) {
         metadata.setContentType(multipartFile.getContentType());
       }
-      return s3Client.putObject(
-          new PutObjectRequest(doSpaceBucket, key, multipartFile.getInputStream(), metadata)
-              .withCannedAcl(CannedAccessControlList.PublicRead));
-    } catch (IOException e) {
-      return null;
-    }
-  }
-
-  private byte[] getImageFromS3(String key) {
-    try {
-      S3Object image = s3Client.getObject(new GetObjectRequest(doSpaceBucket, key));
-      return image.getObjectContent().readAllBytes();
+      PutObjectResult test =
+          s3Client.putObject(
+              new PutObjectRequest(doSpaceBucket, key, multipartFile.getInputStream(), metadata)
+                  .withCannedAcl(CannedAccessControlList.PublicRead));
+      return test;
     } catch (IOException e) {
       return null;
     }
@@ -118,8 +118,8 @@ public class FileServiceImpl implements FileService {
 
   private String getFolderFromFileType(String extension) {
     return switch (extension) {
-      case "jpg", "png", "jpeg" -> "images/";
-      case "xlsx", "docx", "pdf" -> "documents/";
+      case "jpg", "png", "jpeg" -> "images";
+      case "xlsx", "docx", "pdf" -> "documents";
       default -> "defaults/";
     };
   }

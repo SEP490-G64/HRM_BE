@@ -317,4 +317,6 @@ public class HrmConstant {
       public static final String NOT_EXIST = "error.notification.not_exist";
     }
   }
+
+  public static String S3LINK = "https://hrm-be-bucket.sgp1.digitaloceanspaces.com";
 }
