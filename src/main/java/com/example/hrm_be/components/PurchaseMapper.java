@@ -1,7 +1,7 @@
 package com.example.hrm_be.components;
 
 import com.example.hrm_be.models.dtos.Purchase;
-import com.example.hrm_be.models.entities.PurchaseEntity;
+import com.example.hrm_be.models.entities.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;

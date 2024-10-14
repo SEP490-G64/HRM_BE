@@ -1,7 +1,7 @@
 package com.example.hrm_be.components;
 
 import com.example.hrm_be.models.dtos.InboundDetails;
-import com.example.hrm_be.models.entities.InboundDetailsEntity;
+import com.example.hrm_be.models.entities.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -36,10 +36,24 @@ public class InboundDetailsMapper {
   // Helper method to convert InboundDetailsEntity to InboundDetailsDTO
   private InboundDetails convertToDTO(InboundDetailsEntity entity) {
     return InboundDetails.builder()
-        .inbound(entity.getInbound() != null ? inboundMapper.toDTO(entity.getInbound()) : null)
         .product(entity.getProduct() != null ? productMapper.toDTO(entity.getProduct()) : null)
         .requestQuantity(entity.getRequestQuantity())
         .receiveQuantity(entity.getReceiveQuantity())
         .build();
+  }
+
+  // Helper method to convert InboundDetailEntity to InboundDetailDTO with Inbound Information
+  public InboundDetails toDTOWithInBoundDetails(InboundDetailsEntity entity) {
+    return Optional.ofNullable(entity)
+        .map(this::convertToDTO)
+        .map(
+            e ->
+                e.toBuilder()
+                    .inbound(
+                        entity.getInbound() != null
+                            ? inboundMapper.toDTO(entity.getInbound())
+                            : null)
+                    .build())
+        .orElse(null);
   }
 }
