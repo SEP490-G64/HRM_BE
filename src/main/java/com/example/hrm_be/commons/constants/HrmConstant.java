@@ -270,4 +270,6 @@ public class HrmConstant {
       public static final String TAXCODE_NOT_EXIST = "error.supplier.taxcode_not_exist";
     }
   }
+
+  public static String S3LINK = "https://hrm-be-bucket.sgp1.digitaloceanspaces.com";
 }

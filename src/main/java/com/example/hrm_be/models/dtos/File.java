@@ -18,9 +18,10 @@ import lombok.extern.jackson.Jacksonized;
 @EqualsAndHashCode
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Image extends CommonEntity {
+public class File extends CommonEntity {
   Long id;
   private String name;
   private String ext;
   private Timestamp createdTime;
+  private String link;
 }
