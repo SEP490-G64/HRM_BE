@@ -49,7 +49,7 @@ public class FileServiceImpl implements FileService {
     String imgName = FilenameUtils.removeExtension(multipartFile.getOriginalFilename());
     try {
       extension = FilenameUtils.getExtension(multipartFile.getOriginalFilename());
-      key = getFolderFromFileType(extension + "/") + imgName + "." + extension;
+      key = getFolderFromFileType(extension) + "/" + imgName + "." + extension;
     } catch (Exception e) {
       extension = "";
       key = multipartFile.getOriginalFilename();
@@ -79,7 +79,7 @@ public class FileServiceImpl implements FileService {
     }
     FileEntity image = imageOpt.get();
     String key =
-        getFolderFromFileType(image.getExt() + "/") + image.getName() + "." + image.getExt();
+        getFolderFromFileType(image.getExt()) + "/" + image.getName() + "." + image.getExt();
     try {
       s3Client.deleteObject(new DeleteObjectRequest(doSpaceBucket, key));
       fileRepo.delete(image);

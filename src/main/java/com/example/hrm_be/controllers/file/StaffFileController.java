@@ -54,7 +54,7 @@ public class StaffFileController {
   }
 
   // This method will save file to DO Space
-  @PutMapping("/save")
+  @PostMapping("/save")
   public ResponseEntity<BaseOutput<Boolean>> saveFile(
       @RequestParam(value = "file", required = true) MultipartFile file) throws IOException {
     long result = fileService.saveFile(file);
