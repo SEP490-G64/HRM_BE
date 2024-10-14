@@ -93,8 +93,8 @@ public class SupplierServiceImpl implements SupplierService {
     // Check if supplier tax code exist except for the current supplier (by comparing with old
     // entity data)
     if (supplier.getTaxCode() != null && !supplier.getTaxCode().trim().isEmpty()) {
-      if (!supplier.getTaxCode().equals(oldSupplierEntity.getTaxCode()) &&
-              supplierRepository.existsByTaxCode(supplier.getTaxCode())) {
+      if (!supplier.getTaxCode().equals(oldSupplierEntity.getTaxCode())
+          && supplierRepository.existsByTaxCode(supplier.getTaxCode())) {
         throw new HrmCommonException(HrmConstant.ERROR.SUPPLIER.TAXCODE_NOT_EXIST);
       }
     }

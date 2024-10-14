@@ -97,8 +97,8 @@ public class ManufacturerServiceImpl implements ManufacturerService {
     // Check if manufacturer tax code exist except for the current manufacturer (by comparing with
     // old entity data)
     if (manufacturer.getTaxCode() != null && !manufacturer.getTaxCode().trim().isEmpty()) {
-      if (!manufacturer.getTaxCode().equals(oldManufacturerEntity.getTaxCode()) &&
-              manufacturerRepository.existsByTaxCode(manufacturer.getTaxCode())) {
+      if (!manufacturer.getTaxCode().equals(oldManufacturerEntity.getTaxCode())
+          && manufacturerRepository.existsByTaxCode(manufacturer.getTaxCode())) {
         throw new HrmCommonException(HrmConstant.ERROR.MANUFACTURER.TAXCODE_NOT_EXIST);
       }
     }
