@@ -41,7 +41,7 @@ public class FileServiceImpl implements FileService {
 
     String folder = getFolderFromFileType(foundImage.getExt());
     String key = folder + foundImage.getName() + "." + foundImage.getExt();
-    return getImageFromServer(key);
+    return getImageFromS3(key);
   }
 
   @Override
@@ -49,7 +49,7 @@ public class FileServiceImpl implements FileService {
     String extension = FilenameUtils.getExtension(multipartFile.getOriginalFilename());
     String imgName = FilenameUtils.removeExtension(multipartFile.getOriginalFilename());
     String key = getFolderFromFileType(extension) + imgName + "." + extension;
-    PutObjectResult result = saveImageToServer(multipartFile, key);
+    PutObjectResult result = saveImageToS3(multipartFile, key);
     if (result == null) {
       return -1L; // save fail
     }
@@ -92,7 +92,7 @@ public class FileServiceImpl implements FileService {
     return images;
   }
 
-  private PutObjectResult saveImageToServer(MultipartFile multipartFile, String key) {
+  private PutObjectResult saveImageToS3(MultipartFile multipartFile, String key) {
     try {
       ObjectMetadata metadata = new ObjectMetadata();
       metadata.setContentLength(multipartFile.getInputStream().available());
@@ -107,7 +107,7 @@ public class FileServiceImpl implements FileService {
     }
   }
 
-  private byte[] getImageFromServer(String key) {
+  private byte[] getImageFromS3(String key) {
     try {
       S3Object image = s3Client.getObject(new GetObjectRequest(doSpaceBucket, key));
       return image.getObjectContent().readAllBytes();
