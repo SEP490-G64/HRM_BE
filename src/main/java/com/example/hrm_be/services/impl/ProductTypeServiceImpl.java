@@ -16,6 +16,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -68,6 +69,12 @@ public class ProductTypeServiceImpl implements ProductTypeService {
       throw new HrmCommonException(HrmConstant.ERROR.TYPE.NOT_EXIST);
     }
 
+    // Check if product type name exist except current type
+    if (productTypeRepository.existsByTypeName(type.getTypeName())
+        && !Objects.equals(type.getTypeName(), oldTypeEntity.getTypeName())) {
+      throw new HrmCommonException(HrmConstant.ERROR.TYPE.EXIST);
+    }
+
     // Update the fields of the existing type entity, save it, and convert it back to DTO
     return Optional.ofNullable(oldTypeEntity)
         .map(
@@ -87,6 +94,12 @@ public class ProductTypeServiceImpl implements ProductTypeService {
     // Validation: Check if the ID is blank
     if (StringUtils.isBlank(id.toString())) {
       return;
+    }
+
+    // Retrieve the existing type entity by ID
+    ProductTypeEntity oldTypeEntity = productTypeRepository.findById(id).orElse(null);
+    if (oldTypeEntity == null) {
+      throw new HrmCommonException(HrmConstant.ERROR.TYPE.NOT_EXIST);
     }
 
     // Delete the type by ID
