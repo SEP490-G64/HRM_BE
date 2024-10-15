@@ -59,7 +59,7 @@ public class Product {
 
   List<Batch> batches;
 
-  List<BranchProduct> branchProducs;
+  List<BranchProduct> branchProducts;
 
   List<ProductSuppliers> productSuppliers;
 }

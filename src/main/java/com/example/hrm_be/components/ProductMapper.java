@@ -57,36 +57,6 @@ public class ProductMapper {
                         d.getBaseUnit() != null
                             ? unitOfMeasurementMapper.toEntity(d.getBaseUnit())
                             : null)
-                    .inboundDetails(
-                        d.getInboundDetails() != null
-                            ? d.getInboundDetails().stream()
-                                .map(inboundDetailsMapper::toEntity)
-                                .collect(Collectors.toList())
-                            : null)
-                    .specialConditions(
-                        d.getSpecialConditions() != null
-                            ? d.getSpecialConditions().stream()
-                                .map(specialConditionMapper::toEntity)
-                                .collect(Collectors.toList())
-                            : null)
-                    .batches(
-                        d.getBatches() != null
-                            ? d.getBatches().stream()
-                                .map(batchMapper::toEntity)
-                                .collect(Collectors.toList())
-                            : null)
-                    .branchProducs(
-                        d.getBranchProducs() != null
-                            ? d.getBranchProducs().stream()
-                                .map(branchProductMapper::toEntity)
-                                .collect(Collectors.toList())
-                            : null)
-                    .productSuppliers(
-                        d.getProductSuppliers() != null
-                            ? d.getProductSuppliers().stream()
-                                .map(productSuppliersMapper::toEntity)
-                                .collect(Collectors.toList())
-                            : null)
                     .build())
         .orElse(null);
   }
@@ -122,7 +92,7 @@ public class ProductMapper {
             entity.getBatches() != null
                 ? entity.getBatches().stream().map(batchMapper::toDTO).collect(Collectors.toList())
                 : null)
-        .branchProducs(
+        .branchProducts(
             entity.getBranchProducs() != null
                 ? entity.getBranchProducs().stream()
                     .map(branchProductMapper::toDTO)
