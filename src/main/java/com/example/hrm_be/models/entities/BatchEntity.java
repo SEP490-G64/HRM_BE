@@ -67,7 +67,6 @@ public class BatchEntity extends CommonEntity {
   @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   @JoinColumn(
       name = "product_id",
-      nullable = false,
       foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   ProductEntity product;
 

@@ -37,7 +37,6 @@ public class SpecialConditionEntity extends CommonEntity {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(
       name = "product_id",
-      nullable = false,
       foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
   ProductEntity product;
 

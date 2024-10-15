@@ -28,12 +28,6 @@ public class UnitOfMeasurementMapper {
                 UnitOfMeasurementEntity.builder()
                     .id(d.getId())
                     .unitName(d.getUnitName())
-                    .products(
-                        d.getProducts() != null
-                            ? d.getProducts().stream()
-                                .map(productMapper::toEntity)
-                                .collect(Collectors.toList())
-                            : null)
                     .largerUnitConversions(
                         d.getLargerUnitConversions() != null
                             ? d.getLargerUnitConversions().stream()
@@ -55,12 +49,6 @@ public class UnitOfMeasurementMapper {
     return UnitOfMeasurement.builder()
         .id(entity.getId())
         .unitName(entity.getUnitName())
-        .products(
-            entity.getProducts() != null
-                ? entity.getProducts().stream()
-                    .map(productMapper::toDTO)
-                    .collect(Collectors.toList())
-                : null)
         .largerUnitConversions(
             entity.getLargerUnitConversions() != null
                 ? entity.getLargerUnitConversions().stream()

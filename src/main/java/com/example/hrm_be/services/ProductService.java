@@ -28,4 +28,7 @@ public interface ProductService {
   Page<Product> getByPagingAndTypeId(int pageNo, int pageSize, String sortBy, Long TypeId);
 
   List<AllowedProductEntity> addProductFromJson(List<Map<String, Object>> productJsonList);
+
+
+
 }

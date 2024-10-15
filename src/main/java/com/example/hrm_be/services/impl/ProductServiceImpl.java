@@ -1,32 +1,68 @@
 package com.example.hrm_be.services.impl;
 
 import com.example.hrm_be.commons.constants.HrmConstant;
+import com.example.hrm_be.commons.constants.HrmConstant.ERROR.BRANCHPRODUCT;
+import com.example.hrm_be.commons.constants.HrmConstant.ERROR.CATEGORY;
+import com.example.hrm_be.commons.constants.HrmConstant.ERROR.MANUFACTURER;
 import com.example.hrm_be.commons.constants.HrmConstant.ERROR.REQUEST;
+import com.example.hrm_be.commons.constants.HrmConstant.ERROR.TYPE;
+import com.example.hrm_be.commons.constants.HrmConstant.ERROR.UNIT_OF_MEASUREMENT;
+import com.example.hrm_be.components.BranchMapper;
 import com.example.hrm_be.components.ProductMapper;
+import com.example.hrm_be.components.SpecialConditionMapper;
+import com.example.hrm_be.components.StorageLocationMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
+import com.example.hrm_be.models.dtos.BranchProduct;
 import com.example.hrm_be.models.dtos.Product;
+import com.example.hrm_be.models.dtos.SpecialCondition;
 import com.example.hrm_be.models.entities.AllowedProductEntity;
+import com.example.hrm_be.models.entities.BranchProductEntity;
 import com.example.hrm_be.models.entities.ProductEntity;
+import com.example.hrm_be.models.entities.SpecialConditionEntity;
+import com.example.hrm_be.models.entities.StorageLocationEntity;
 import com.example.hrm_be.repositories.AllowedProductRepository;
+import com.example.hrm_be.repositories.BatchRepository;
+import com.example.hrm_be.repositories.BranchProductRepository;
+import com.example.hrm_be.repositories.ManufacturerRepository;
+import com.example.hrm_be.repositories.ProductCategoryRepository;
 import com.example.hrm_be.repositories.ProductRepository;
+import com.example.hrm_be.repositories.ProductTypeRepository;
+import com.example.hrm_be.repositories.SpecialConditionRepository;
+import com.example.hrm_be.repositories.StorageLocationRepository;
+import com.example.hrm_be.repositories.UnitOfMeasurementRepository;
 import com.example.hrm_be.services.ProductService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ProductServiceImpl implements ProductService {
   @Autowired private ProductRepository productRepository;
   @Autowired private AllowedProductRepository allowedProductRepository;
+  @Autowired private StorageLocationRepository storageLocationRepository;
+  @Autowired private ProductTypeRepository productTypeRepository;
 
+  @Autowired private ProductCategoryRepository productCategoryRepository;
+
+  @Autowired private UnitOfMeasurementRepository unitOfMeasurementRepository;
+
+  @Autowired private ManufacturerRepository manufacturerRepository;
   @Autowired private ProductMapper productMapper;
+  @Autowired private SpecialConditionMapper specialConditionMapper;
+  @Autowired private BranchMapper branchMapper;
+  @Autowired private SpecialConditionRepository specialConditionRepository;
+  @Autowired private StorageLocationMapper storageLocationMapper;
+  @Autowired private BatchRepository batchRepository;
+  @Autowired private BranchProductRepository branchProductRepository;
 
   @Override
   public Product getById(Long id) {
@@ -66,15 +102,79 @@ public class ProductServiceImpl implements ProductService {
   }
 
   @Override
+  @Transactional
   public Product create(Product product) {
     if (product == null) {
       throw new HrmCommonException(REQUEST.INVALID_BODY);
     }
-    return Optional.ofNullable(product)
-        .map(e -> productMapper.toEntity(e))
-        .map(e -> productRepository.save(e))
-        .map(e -> productMapper.toDTO(e))
-        .orElse(null);
+    if (product.getType().getId() != null
+        && !productTypeRepository.existsById(product.getType().getId())) {
+      throw new HrmCommonException(TYPE.NOT_EXIST);
+    }
+
+    // Check if the category exists
+    if (product.getCategory().getId() != null
+        && !productCategoryRepository.existsById(product.getCategory().getId())) {
+      throw new HrmCommonException(CATEGORY.NOT_EXIST);
+    }
+
+    // Check if the base unit exists
+    if (product.getBaseUnit().getId() != null
+        && !unitOfMeasurementRepository.existsById(product.getBaseUnit().getId())) {
+      throw new HrmCommonException(UNIT_OF_MEASUREMENT.NOT_EXIST);
+    }
+
+    // Check if the manufacturer exists
+    if (product.getManufacturer().getId() != null
+        && !manufacturerRepository.existsById(product.getManufacturer().getId())) {
+      throw new HrmCommonException(MANUFACTURER.NOT_EXIST);
+    }
+    if (product.getBaseUnit() != null) {
+      product.getBaseUnit().getId();
+    }
+    ProductEntity savedProduct = productRepository.save(productMapper.toEntity(product));
+
+    // Add SpecialCondition
+    if (product.getSpecialConditions() != null && !product.getSpecialConditions().isEmpty()) {
+      List<SpecialConditionEntity> specialConditions = new ArrayList<>();
+
+      for (SpecialCondition specialConditionDTO : product.getSpecialConditions()) {
+        // Create a new SpecialConditionEntity
+        SpecialConditionEntity specialConditionEntity = new SpecialConditionEntity();
+        specialConditionEntity.setHandlingInstruction(specialConditionDTO.getHandlingInstruction());
+        specialConditionEntity.setConditionType(specialConditionDTO.getConditionType());
+
+        // Set the product to this special condition
+        specialConditionEntity.setProduct(savedProduct);
+
+        // Add to the list for any future use or associations
+        specialConditions.add(specialConditionMapper.toEntity(specialConditionDTO));
+      }
+      List<SpecialConditionEntity> savedSpecialCondition =
+          specialConditionRepository.saveAll(specialConditions);
+      specialConditionRepository.assignToProductByProductIdAndIds(
+          savedProduct.getId(),
+          savedSpecialCondition.stream()
+              .map(SpecialConditionEntity::getId)
+              .collect(Collectors.toList()));
+    }
+    // Add BranchProduct for Product
+    BranchProductEntity branchProductEntity = new BranchProductEntity();
+
+    BranchProduct branchProduct = product.getBranchProducts().get(0);
+    if (branchProduct == null) {
+      throw new HrmCommonException(BRANCHPRODUCT.NOT_EXIST);
+    }
+    StorageLocationEntity savedStorageLocation =
+        storageLocationRepository.save(
+            storageLocationMapper.toEntity(branchProduct.getStorageLocation()));
+
+    branchProductEntity.setBranch(branchMapper.toEntity(branchProduct.getBranch()));
+    branchProductEntity.setProduct(savedProduct);
+    branchProductEntity.setStorageLocation(savedStorageLocation);
+    branchProductRepository.save(branchProductEntity);
+
+    return Optional.ofNullable(savedProduct).map(e -> productMapper.toDTO(e)).orElse(null);
   }
 
   @Override

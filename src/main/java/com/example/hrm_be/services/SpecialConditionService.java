@@ -1,6 +1,8 @@
 package com.example.hrm_be.services;
 
 import com.example.hrm_be.models.dtos.SpecialCondition;
+import java.util.List;
+import lombok.NonNull;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
@@ -15,4 +17,6 @@ public interface SpecialConditionService {
   SpecialCondition update(SpecialCondition specialCondition);
 
   void delete(Long id);
+  void assignToProductByProductIdAndIds(
+      @NonNull Long productId, @NonNull List<Long> ids) ;
 }

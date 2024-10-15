@@ -33,30 +33,27 @@ public class BranchProductEntity extends CommonEntity {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(
       name = "product_id",
-      nullable = false,
       foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   ProductEntity product;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(
       name = "branch_id",
-      nullable = false,
       foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   BranchEntity branch;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(
       name = "location_id",
-      nullable = false,
       foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   StorageLocationEntity storageLocation;
 
-  @Column(name = "min_quantity", nullable = false)
+  @Column(name = "min_quantity")
   Integer minQuantity;
 
-  @Column(name = "max_quantity", nullable = false)
+  @Column(name = "max_quantity")
   Integer maxQuantity;
 
-  @Column(name = "quantity", nullable = false)
+  @Column(name = "quantity")
   Integer quantity;
 }
