@@ -20,11 +20,10 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class) // Sử dụng Mockito để test
+@ExtendWith(MockitoExtension.class)
 class SupplierServiceImplTest {
 
   @Mock private SupplierRepository supplierRepository;
@@ -33,21 +32,22 @@ class SupplierServiceImplTest {
 
   @InjectMocks private SupplierServiceImpl supplierService;
 
-  private SupplierEntity supplierEntity; // Đối tượng SupplierEntity dùng để test
-  private Supplier supplierDTO; // Đối tượng Supplier DTO dùng để test
+  private SupplierEntity supplierEntity;
+  private Supplier supplierDTO;
 
   @BeforeEach
   void setup() {
-    // Khởi tạo các đối tượng trước mỗi test case
     supplierEntity = new SupplierEntity();
     supplierEntity.setId(1L);
     supplierEntity.setSupplierName("Test Supplier");
     supplierEntity.setAddress("123 Test Street");
+    supplierEntity.setTaxCode("12345");
 
     supplierDTO = new Supplier();
     supplierDTO.setId(1L);
     supplierDTO.setSupplierName("Test Supplier");
     supplierDTO.setAddress("123 Test Street");
+    supplierDTO.setTaxCode("12345");
   }
 
   @Test
@@ -96,6 +96,7 @@ class SupplierServiceImplTest {
     when(supplierMapper.toEntity(any(Supplier.class))).thenReturn(supplierEntity);
     when(supplierRepository.existsBySupplierNameAndAddress(anyString(), anyString()))
         .thenReturn(false);
+    when(supplierRepository.existsByTaxCode(anyString())).thenReturn(false); // Check tax code
     when(supplierRepository.save(any(SupplierEntity.class))).thenReturn(supplierEntity);
     when(supplierMapper.toDTO(any(SupplierEntity.class))).thenReturn(supplierDTO);
 
@@ -114,7 +115,20 @@ class SupplierServiceImplTest {
     HrmCommonException exception =
         assertThrows(HrmCommonException.class, () -> supplierService.create(supplierDTO));
 
-    assertEquals(HrmConstant.ERROR.ROLE.EXIST, exception.getMessage());
+    assertEquals(HrmConstant.ERROR.SUPPLIER.EXIST, exception.getMessage());
+    verify(supplierRepository, never()).save(any(SupplierEntity.class));
+  }
+
+  @Test
+  void shouldThrowExceptionWhenCreatingWithExistingTaxCode() {
+    when(supplierRepository.existsBySupplierNameAndAddress(anyString(), anyString()))
+        .thenReturn(false);
+    when(supplierRepository.existsByTaxCode(anyString())).thenReturn(true);
+
+    HrmCommonException exception =
+        assertThrows(HrmCommonException.class, () -> supplierService.create(supplierDTO));
+
+    assertEquals(HrmConstant.ERROR.SUPPLIER.TAXCODE_NOT_EXIST, exception.getMessage());
     verify(supplierRepository, never()).save(any(SupplierEntity.class));
   }
 
@@ -127,7 +141,7 @@ class SupplierServiceImplTest {
     Supplier result = supplierService.update(supplierDTO);
 
     assertNotNull(result);
-    assertEquals("Test Supplier", result.getSupplierName());
+    assertEquals("Test Supplier", result.getSupplierName()); // Sửa ở đây
     verify(supplierRepository, times(1)).save(any(SupplierEntity.class));
   }
 
@@ -138,15 +152,65 @@ class SupplierServiceImplTest {
     HrmCommonException exception =
         assertThrows(HrmCommonException.class, () -> supplierService.update(supplierDTO));
 
-    assertEquals(HrmConstant.ERROR.ROLE.NOT_EXIST, exception.getMessage());
+    assertEquals(HrmConstant.ERROR.SUPPLIER.NOT_EXIST, exception.getMessage());
+    verify(supplierRepository, never()).save(any(SupplierEntity.class));
+  }
+
+  @Test
+  void shouldThrowExceptionWhenUpdatingWithExistingNameAndAddress() {
+    // Simulate finding the supplier to update (the one being updated)
+    when(supplierRepository.findById(anyLong())).thenReturn(Optional.of(supplierEntity));
+
+    // Simulate another supplier with the same name and address exists
+    when(supplierRepository.existsBySupplierNameAndAddress(anyString(), anyString()))
+        .thenReturn(true);
+
+    // Update both the name and address to be different to trigger the exception
+    supplierDTO.setSupplierName("Different Supplier Name");
+    supplierDTO.setAddress("Different Address");
+
+    // Now, the exception should be thrown since name/address duplication exists
+    HrmCommonException exception =
+        assertThrows(HrmCommonException.class, () -> supplierService.update(supplierDTO));
+
+    // Verify the correct exception is thrown with the expected message
+    assertEquals(HrmConstant.ERROR.SUPPLIER.EXIST, exception.getMessage());
+
+    // Ensure the save method is never called since the exception is thrown
+    verify(supplierRepository, never()).save(any(SupplierEntity.class));
+  }
+
+  @Test
+  void shouldThrowExceptionWhenUpdatingWithExistingTaxCode() {
+    // Simulate finding the supplier to update
+    when(supplierRepository.findById(anyLong())).thenReturn(Optional.of(supplierEntity));
+
+    // Simulate another supplier exists with the same tax code
+    when(supplierRepository.existsByTaxCode(anyString())).thenReturn(true);
+
+    // Ensure the supplierDTO has a different tax code than the existing supplier
+    supplierDTO.setTaxCode("Different Tax Code");
+
+    // Now, the exception should be thrown since tax code duplication exists
+    HrmCommonException exception =
+        assertThrows(HrmCommonException.class, () -> supplierService.update(supplierDTO));
+
+    assertEquals(HrmConstant.ERROR.SUPPLIER.TAXCODE_NOT_EXIST, exception.getMessage());
     verify(supplierRepository, never()).save(any(SupplierEntity.class));
   }
 
   @Test
   void shouldDeleteSupplier() {
+    // Simulate the supplier entity being present in the repository
+    when(supplierRepository.findById(anyLong())).thenReturn(Optional.of(supplierEntity));
+
+    // No action required when deleteById is called
     doNothing().when(supplierRepository).deleteById(anyLong());
 
+    // Assert that no exception is thrown when deleting the supplier
     assertDoesNotThrow(() -> supplierService.delete(1L));
+
+    // Verify that the repository's deleteById method was called once with the correct ID
     verify(supplierRepository, times(1)).deleteById(1L);
   }
 

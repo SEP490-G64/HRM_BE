@@ -19,8 +19,9 @@ import lombok.experimental.SuperBuilder;
 @Entity
 @Table(name = "image")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-public class ImageEntity extends CommonEntity {
+public class FileEntity extends CommonEntity {
   private String name;
   private String ext;
   private Timestamp createdTime;
+  private String link;
 }
