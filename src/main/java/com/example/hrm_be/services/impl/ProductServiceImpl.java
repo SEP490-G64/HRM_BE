@@ -107,8 +107,7 @@ public class ProductServiceImpl implements ProductService {
     if (product == null) {
       throw new HrmCommonException(REQUEST.INVALID_BODY);
     }
-    if (product.getType() != null
-        && !productTypeRepository.existsById(product.getType().getId())) {
+    if (product.getType() != null && !productTypeRepository.existsById(product.getType().getId())) {
       throw new HrmCommonException(TYPE.NOT_EXIST);
     }
 
@@ -125,7 +124,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     // Check if the manufacturer exists
-    if (product.getManufacturer()!= null
+    if (product.getManufacturer() != null
         && !manufacturerRepository.existsById(product.getManufacturer().getId())) {
       throw new HrmCommonException(MANUFACTURER.NOT_EXIST);
     }
