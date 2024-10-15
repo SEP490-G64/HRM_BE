@@ -107,30 +107,27 @@ public class ProductServiceImpl implements ProductService {
     if (product == null) {
       throw new HrmCommonException(REQUEST.INVALID_BODY);
     }
-    if (product.getType().getId() != null
+    if (product.getType() != null
         && !productTypeRepository.existsById(product.getType().getId())) {
       throw new HrmCommonException(TYPE.NOT_EXIST);
     }
 
     // Check if the category exists
-    if (product.getCategory().getId() != null
+    if (product.getCategory() != null
         && !productCategoryRepository.existsById(product.getCategory().getId())) {
       throw new HrmCommonException(CATEGORY.NOT_EXIST);
     }
 
     // Check if the base unit exists
-    if (product.getBaseUnit().getId() != null
+    if (product.getBaseUnit() != null
         && !unitOfMeasurementRepository.existsById(product.getBaseUnit().getId())) {
       throw new HrmCommonException(UNIT_OF_MEASUREMENT.NOT_EXIST);
     }
 
     // Check if the manufacturer exists
-    if (product.getManufacturer().getId() != null
+    if (product.getManufacturer()!= null
         && !manufacturerRepository.existsById(product.getManufacturer().getId())) {
       throw new HrmCommonException(MANUFACTURER.NOT_EXIST);
-    }
-    if (product.getBaseUnit() != null) {
-      product.getBaseUnit().getId();
     }
     ProductEntity savedProduct = productRepository.save(productMapper.toEntity(product));
 
