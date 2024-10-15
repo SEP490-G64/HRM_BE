@@ -35,9 +35,7 @@ import lombok.experimental.SuperBuilder;
 public class SpecialConditionEntity extends CommonEntity {
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(
-      name = "product_id",
-      foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
+  @JoinColumn(name = "product_id", foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
   ProductEntity product;
 
   @Enumerated(EnumType.STRING)

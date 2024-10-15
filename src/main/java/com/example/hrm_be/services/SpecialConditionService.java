@@ -17,6 +17,6 @@ public interface SpecialConditionService {
   SpecialCondition update(SpecialCondition specialCondition);
 
   void delete(Long id);
-  void assignToProductByProductIdAndIds(
-      @NonNull Long productId, @NonNull List<Long> ids) ;
+
+  void assignToProductByProductIdAndIds(@NonNull Long productId, @NonNull List<Long> ids);
 }

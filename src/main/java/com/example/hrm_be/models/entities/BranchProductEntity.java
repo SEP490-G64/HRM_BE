@@ -31,21 +31,15 @@ import lombok.experimental.SuperBuilder;
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class BranchProductEntity extends CommonEntity {
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(
-      name = "product_id",
-      foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+  @JoinColumn(name = "product_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   ProductEntity product;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(
-      name = "branch_id",
-      foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+  @JoinColumn(name = "branch_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   BranchEntity branch;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(
-      name = "location_id",
-      foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+  @JoinColumn(name = "location_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   StorageLocationEntity storageLocation;
 
   @Column(name = "min_quantity")
