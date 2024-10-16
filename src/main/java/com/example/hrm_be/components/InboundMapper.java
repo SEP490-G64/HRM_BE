@@ -28,6 +28,7 @@ public class InboundMapper {
         .map(
             d ->
                 InboundEntity.builder()
+                    .id(d.getId())
                     .inboundType(d.getInboundType())
                     .fromBranch(
                         d.getFromBranch() != null ? branchMapper.toEntity(d.getFromBranch()) : null)
@@ -60,6 +61,7 @@ public class InboundMapper {
   // Helper method to convert InboundEntity to InboundDTO
   private Inbound convertToDTO(InboundEntity entity) {
     return Inbound.builder()
+        .id(entity.getId())
         .inboundType(entity.getInboundType())
         .fromBranch(
             entity.getFromBranch() != null ? branchMapper.toDTO(entity.getFromBranch()) : null)

@@ -27,6 +27,7 @@ public class InventoryCheckMapper {
         .map(
             d ->
                 InventoryCheckEntity.builder()
+                    .id(d.getId())
                     .branch(d.getBranch() != null ? branchMapper.toEntity(d.getBranch()) : null)
                     .createdBy(
                         d.getCreatedBy() != null ? userMapper.toEntity(d.getCreatedBy()) : null)
@@ -49,6 +50,7 @@ public class InventoryCheckMapper {
   // Helper method to convert InventoryCheckEntity to InventoryCheckDTO
   private InventoryCheck convertToDTO(InventoryCheckEntity entity) {
     return InventoryCheck.builder()
+        .id(entity.getId())
         .branch(entity.getBranch() != null ? branchMapper.toDTO(entity.getBranch()) : null)
         .createdBy(entity.getCreatedBy() != null ? userMapper.toDTO(entity.getCreatedBy()) : null)
         .approvedBy(

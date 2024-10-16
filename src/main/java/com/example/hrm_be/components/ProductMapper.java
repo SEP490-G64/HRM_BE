@@ -34,6 +34,7 @@ public class ProductMapper {
         .map(
             d ->
                 ProductEntity.builder()
+                    .id(d.getId())
                     .productName(d.getProductName())
                     .productCode(d.getProductCode())
                     .registrationCode(d.getRegistrationCode())
@@ -94,6 +95,7 @@ public class ProductMapper {
   // Helper method to convert ProductEntity to ProductDTO
   private Product convertToDTO(ProductEntity entity) {
     return Product.builder()
+        .id(entity.getId())
         .productName(entity.getProductName())
         .productCode(entity.getProductCode())
         .registrationCode(entity.getRegistrationCode())

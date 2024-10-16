@@ -26,6 +26,7 @@ public class InventoryCheckDetailsMapper {
         .map(
             d ->
                 InventoryCheckDetailsEntity.builder()
+                    .id(d.getId())
                     .inventoryCheck(
                         d.getInventoryCheck() != null
                             ? inventoryCheckMapper.toEntity(d.getInventoryCheck())
@@ -43,6 +44,7 @@ public class InventoryCheckDetailsMapper {
   // Helper method to convert InventoryCheckDetailsEntity to InventoryCheckDetailsDTO
   private InventoryCheckDetails convertToDTO(InventoryCheckDetailsEntity entity) {
     return InventoryCheckDetails.builder()
+        .id(entity.getId())
         .batch(entity.getBatch() != null ? batchMapper.toDTO(entity.getBatch()) : null)
         .systemQuantity(entity.getSystemQuantity())
         .countedQuantity(entity.getCountedQuantity())

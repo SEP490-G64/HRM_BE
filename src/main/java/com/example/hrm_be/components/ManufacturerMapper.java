@@ -25,6 +25,7 @@ public class ManufacturerMapper {
         .map(
             d ->
                 ManufacturerEntity.builder()
+                    .id(d.getId())
                     .manufacturerName(d.getManufacturerName())
                     .address(d.getAddress())
                     .email(d.getEmail())
@@ -45,6 +46,7 @@ public class ManufacturerMapper {
   // Helper method to convert ManufacturerEntity to ManufacturerDTO
   private Manufacturer convertToDTO(ManufacturerEntity entity) {
     return Manufacturer.builder()
+        .id(entity.getId())
         .manufacturerName(entity.getManufacturerName())
         .address(entity.getAddress())
         .email(entity.getEmail())
