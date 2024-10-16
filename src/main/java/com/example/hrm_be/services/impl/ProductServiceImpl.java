@@ -161,14 +161,12 @@ public class ProductServiceImpl implements ProductService {
     if (branchProduct == null) {
       throw new HrmCommonException(BRANCHPRODUCT.NOT_EXIST);
     }
-    if(branchProduct.getStorageLocation()!= null)
-    {
+    if (branchProduct.getStorageLocation() != null) {
       StorageLocationEntity savedStorageLocation =
           storageLocationRepository.save(
               storageLocationMapper.toEntity(branchProduct.getStorageLocation()));
       branchProductEntity.setStorageLocation(savedStorageLocation);
     }
-
 
     branchProductEntity.setBranch(branchMapper.toEntity(branchProduct.getBranch()));
     branchProductEntity.setProduct(savedProduct);
