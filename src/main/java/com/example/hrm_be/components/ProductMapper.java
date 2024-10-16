@@ -68,42 +68,12 @@ public class ProductMapper {
         .productCode(entity.getProductCode())
         .registrationCode(entity.getRegistrationCode())
         .urlImage(entity.getUrlImage())
-        .manufacturer(
-            entity.getManufacturer() != null
-                ? manufacturerMapper.toDTO(entity.getManufacturer())
-                : null)
         .activeIngredient(entity.getActiveIngredient())
         .excipient(entity.getExcipient())
         .formulation(entity.getFormulation())
         .inboundPrice(entity.getInboundPrice())
         .sellPrice(entity.getSellPrice())
         .status(entity.getStatus())
-        .baseUnit(
-            entity.getBaseUnit() != null
-                ? unitOfMeasurementMapper.toDTO(entity.getBaseUnit())
-                : null)
-        .specialConditions(
-            entity.getSpecialConditions() != null
-                ? entity.getSpecialConditions().stream()
-                    .map(specialConditionMapper::toDTO)
-                    .collect(Collectors.toList())
-                : null)
-        .batches(
-            entity.getBatches() != null
-                ? entity.getBatches().stream().map(batchMapper::toDTO).collect(Collectors.toList())
-                : null)
-        .branchProducts(
-            entity.getBranchProducs() != null
-                ? entity.getBranchProducs().stream()
-                    .map(branchProductMapper::toDTO)
-                    .collect(Collectors.toList())
-                : null)
-        .productSuppliers(
-            entity.getProductSuppliers() != null
-                ? entity.getProductSuppliers().stream()
-                    .map(productSuppliersMapper::toDTO)
-                    .collect(Collectors.toList())
-                : null)
         .build();
   }
 }

@@ -42,12 +42,6 @@ public class StorageLocationMapper {
     return StorageLocation.builder()
         .id(entity.getId())
         .shelfName(entity.getShelfName())
-        .branchProducts(
-            entity.getBranchProducts() != null
-                ? entity.getBranchProducts().stream()
-                    .map(branchProductMapper::toDTO)
-                    .collect(Collectors.toList())
-                : null)
         .build();
   }
 }

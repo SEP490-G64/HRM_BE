@@ -80,18 +80,6 @@ public class BranchMapper {
                     .phoneNumber(e.getPhoneNumber())
                     .capacity(e.getCapacity())
                     .activeStatus(e.getActiveStatus())
-                    .branchBatches(
-                        e.getBranchBatches() != null
-                            ? e.getBranchBatches().stream()
-                                .map(branchBatchMapper::toDTO)
-                                .collect(Collectors.toList())
-                            : null)
-                    .branchProducts(
-                        e.getBranchProducts() != null
-                            ? e.getBranchProducts().stream()
-                                .map(branchProductMapper::toDTO)
-                                .collect(Collectors.toList())
-                            : null)
                     .inventoryChecks(
                         e.getInventoryChecks() != null
                             ? e.getInventoryChecks().stream()
