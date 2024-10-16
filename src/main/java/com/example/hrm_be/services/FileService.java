@@ -8,7 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public interface FileService {
-  long saveFile(MultipartFile multipartFile) throws IOException;
+  String saveFile(MultipartFile multipartFile) throws IOException;
 
   boolean deleteFile(Long id) throws Exception;
 

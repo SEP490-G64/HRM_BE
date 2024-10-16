@@ -44,7 +44,7 @@ public class FileServiceImpl implements FileService {
   }
 
   @Override
-  public long saveFile(MultipartFile multipartFile) {
+  public String saveFile(MultipartFile multipartFile) {
     String key, extension;
     String imgName = FilenameUtils.removeExtension(multipartFile.getOriginalFilename());
     try {
@@ -56,19 +56,20 @@ public class FileServiceImpl implements FileService {
     }
     PutObjectResult result = saveImageToS3(multipartFile, key);
     if (result == null) {
-      return -1L; // save fail
+      return null; // save fail
     }
+    String imageLink = HrmConstant.S3LINK + "/" + key;
     FileEntity image = new FileEntity();
     image.setName(imgName);
     image.setExt(extension);
     image.setCreatedTime(new Timestamp(new Date().getTime()));
-    image.setLink(HrmConstant.S3LINK + "/" + key);
+    image.setLink(imageLink);
     // Map Image DTO to entity and save it to the repository
     FileEntity saveImage =
         Optional.ofNullable(image)
             .map(e -> fileRepo.save(e)) // Save entity to the repository
             .orElse(null); // Return null if the Manufacturer creation fails
-    return saveImage != null ? image.getId() : -1L;
+    return saveImage != null ? imageLink : null;
   }
 
   @Override

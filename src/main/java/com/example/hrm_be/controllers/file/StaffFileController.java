@@ -55,26 +55,25 @@ public class StaffFileController {
 
   // This method will save file to DO Space
   @PostMapping("/save")
-  public ResponseEntity<BaseOutput<Boolean>> saveFile(
+  public ResponseEntity<BaseOutput<String>> saveFile(
       @RequestParam(value = "file", required = true) MultipartFile file) throws IOException {
-    long result = fileService.saveFile(file);
-    BaseOutput<Boolean> response;
-    if (result == -1L) {
+    String result = fileService.saveFile(file);
+    BaseOutput<String> response;
+    if (result == null) {
       response =
-          BaseOutput.<Boolean>builder()
+          BaseOutput.<String>builder()
               .status(com.example.hrm_be.commons.enums.ResponseStatus.FAILED)
               .errors(List.of(HrmConstant.ERROR.REQUEST.INVALID_PATH_VARIABLE))
               .build();
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-    } else {
-      response =
-          BaseOutput.<Boolean>builder()
-              .message(HttpStatus.OK.toString())
-              .data(true)
-              .status(com.example.hrm_be.commons.enums.ResponseStatus.SUCCESS)
-              .build();
-      return ResponseEntity.ok(response);
     }
+    response =
+        BaseOutput.<String>builder()
+            .message(HttpStatus.OK.toString())
+            .data(result)
+            .status(com.example.hrm_be.commons.enums.ResponseStatus.SUCCESS)
+            .build();
+    return ResponseEntity.ok(response);
   }
 
   // This method will delete file from DO Space
