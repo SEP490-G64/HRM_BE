@@ -2,6 +2,10 @@ package com.example.hrm_be.controllers;
 
 import com.example.hrm_be.commons.constants.HrmConstant.ERROR.REQUEST;
 import com.example.hrm_be.commons.enums.UserStatusType;
+import com.example.hrm_be.components.DateUtil;
+import com.example.hrm_be.components.MailUtil;
+import com.example.hrm_be.models.entities.PasswordResetTokenEntity;
+import com.example.hrm_be.services.PasswordTokenService;
 import com.example.hrm_be.utils.JwtUtil;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.configs.exceptions.JwtAuthenticationException;
@@ -11,15 +15,18 @@ import com.example.hrm_be.models.requests.RegisterRequest;
 import com.example.hrm_be.models.responses.AccessToken;
 import com.example.hrm_be.models.responses.BaseOutput;
 import com.example.hrm_be.services.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -32,6 +39,9 @@ public class AuthenticationController {
   private final UserDetailsService userDetailsService;
   private final UserService userService;
   private final JwtUtil jwtUtil;
+  private final DateUtil dateUtil;
+  private final MailUtil mailUtil;
+  private final PasswordTokenService passwordTokenService;
 
   // POST: /api/v1/auth/login
   // Allow user to login into the system
@@ -99,5 +109,37 @@ public class AuthenticationController {
 
     // Return a response entity with status OK and the user data
     return ResponseEntity.ok(response);
+  }
+
+  @PostMapping("/forget-password")
+  public ResponseEntity<BaseOutput<String>> forgetPassword(HttpServletRequest request, @RequestBody String email) {
+    User user = userService.getByEmail(email);
+    if (user == null) {
+      throw new HrmCommonException("Not found user regarding the email, please check again");
+    }
+    String token = jwtUtil.generateToken(email);
+    JavaMailSender mailSender = mailUtil.getJavaMailSender();
+    PasswordResetTokenEntity prt = new PasswordResetTokenEntity(token, email, dateUtil.addHours(1));
+    passwordTokenService.create(prt);
+        String scheme = request.getScheme();              // "http" or "https"
+    String serverName = request.getServerName();      // example.com
+    int serverPort = request.getServerPort();         // 80, 443, etc.
+    String contextPath = request.getContextPath();
+    String fullPath = scheme + "://" + serverName +
+        ((serverPort == 80 || serverPort == 443) ? "" : ":" + serverPort) +
+        contextPath + "/api/v1/auth/changePassword?token=" + token;
+    mailSender.send(mailUtil.constructResetTokenEmail(fullPath,
+        token, user.getEmail()));
+    BaseOutput<String> response =
+        BaseOutput.<String>builder()
+            .message(HttpStatus.OK.toString())
+            .build();
+    return ResponseEntity.ok(response);
+  }
+  @GetMapping("/changePassword")
+  public String changePassword(@RequestParam("token") String token, Model model) {
+    // Add the token to the model if needed
+    model.addAttribute("token", token);
+    return "index"; // This will render index.html from the templates folder
   }
 }

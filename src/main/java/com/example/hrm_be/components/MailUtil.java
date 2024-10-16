@@ -31,10 +31,9 @@ public class MailUtil {
   }
 
   public SimpleMailMessage constructResetTokenEmail(
-      String contextPath, String token, String userEmail) {
-    String url = contextPath + "/auth/changePassword?token=" + token;
+      String fullPath, String token, String userEmail) {
     String message = "Please click on the link for reset your password:";
-    return constructEmail("Reset Password", message + " \r\n" + url, userEmail);
+    return constructEmail("Reset Password", message + " \r\n" + fullPath, userEmail);
   }
 
   private SimpleMailMessage constructEmail(String subject, String body, String userEmail) {
