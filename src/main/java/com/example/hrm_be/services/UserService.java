@@ -42,4 +42,6 @@ public interface UserService {
   User verifyUser(Long userId, boolean accept);
 
   User activateUser(Long userId);
+
+  void updatePassword(User user, String newPassword);
 }

@@ -444,4 +444,10 @@ public class UserServiceImpl implements UserService {
         .map(userMapper::toDTO)
         .orElse(null); // Return null if verification fails
   }
+  @Override
+  public void updatePassword(User user, String newPassword) {
+    // Hash the new password before saving it
+    user.setPassword(newPassword);
+    userRepository.save(userMapper.toEntity(user)); // Save the updated user
+  }
 }

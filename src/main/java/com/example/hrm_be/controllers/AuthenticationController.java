@@ -5,6 +5,7 @@ import com.example.hrm_be.commons.enums.UserStatusType;
 import com.example.hrm_be.components.DateUtil;
 import com.example.hrm_be.components.MailUtil;
 import com.example.hrm_be.models.entities.PasswordResetTokenEntity;
+import com.example.hrm_be.models.requests.ResetPasswordRequest;
 import com.example.hrm_be.services.PasswordTokenService;
 import com.example.hrm_be.utils.JwtUtil;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
@@ -25,13 +26,15 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RequiredArgsConstructor
-@RestController
+@Controller
 @RequestMapping("/api/v1/auth")
 public class AuthenticationController {
 
@@ -127,7 +130,7 @@ public class AuthenticationController {
     String contextPath = request.getContextPath();
     String fullPath = scheme + "://" + serverName +
         ((serverPort == 80 || serverPort == 443) ? "" : ":" + serverPort) +
-        contextPath + "/api/v1/auth/changePassword?token=" + token;
+        contextPath + "/api/v1/auth/change_password?token=" + token;
     mailSender.send(mailUtil.constructResetTokenEmail(fullPath,
         token, user.getEmail()));
     BaseOutput<String> response =
@@ -136,10 +139,42 @@ public class AuthenticationController {
             .build();
     return ResponseEntity.ok(response);
   }
-  @GetMapping("/changePassword")
+  @GetMapping("/change_password")
   public String changePassword(@RequestParam("token") String token, Model model) {
     // Add the token to the model if needed
     model.addAttribute("token", token);
     return "index"; // This will render index.html from the templates folder
   }
+  @PostMapping("/reset_password")
+  public ResponseEntity<String> resetPassword(@RequestBody ResetPasswordRequest resetPasswordRequest) {
+    String token = resetPasswordRequest.getToken();
+    String newPassword = resetPasswordRequest.getPassword();
+
+    // Validate the token
+    String email = jwtUtil.extractEmail(token);
+
+    // If the token is invalid or email is null
+    if (email == null) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid or expired token");
+    }
+
+    // Load the user details using the email
+    UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+    if (userDetails == null || !jwtUtil.validateToken(token, userDetails)) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid or expired token");
+    }
+
+    // Find the user in the database by email
+    User user = userService.getByEmail(email);
+    if (user == null) {
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+    }
+
+    // Hash and update the user's password
+    userService.updatePassword(user, newPassword);
+
+    // Respond with success message
+    return ResponseEntity.ok("Password successfully reset");
+  }
+
 }
