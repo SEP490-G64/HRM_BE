@@ -1,7 +1,6 @@
 package com.example.hrm_be.models.requests;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.SerializableString;
 import java.io.Serial;
 import java.io.Serializable;
 import lombok.AccessLevel;
@@ -25,8 +24,7 @@ import lombok.extern.jackson.Jacksonized;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ResetPasswordRequest implements Serializable {
 
-  @Serial
-  private static final long serialVersionUID = -981802214483104674L;
+  @Serial private static final long serialVersionUID = -981802214483104674L;
   private String token;
   private String password;
 }

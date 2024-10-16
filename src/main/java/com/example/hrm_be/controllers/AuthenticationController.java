@@ -115,7 +115,8 @@ public class AuthenticationController {
   }
 
   @PostMapping("/forget-password")
-  public ResponseEntity<BaseOutput<String>> forgetPassword(HttpServletRequest request, @RequestBody String email) {
+  public ResponseEntity<BaseOutput<String>> forgetPassword(
+      HttpServletRequest request, @RequestBody String email) {
     User user = userService.getByEmail(email);
     if (user == null) {
       throw new HrmCommonException("Not found user regarding the email, please check again");
@@ -124,29 +125,34 @@ public class AuthenticationController {
     JavaMailSender mailSender = mailUtil.getJavaMailSender();
     PasswordResetTokenEntity prt = new PasswordResetTokenEntity(token, email, dateUtil.addHours(1));
     passwordTokenService.create(prt);
-        String scheme = request.getScheme();              // "http" or "https"
-    String serverName = request.getServerName();      // example.com
-    int serverPort = request.getServerPort();         // 80, 443, etc.
+    String scheme = request.getScheme(); // "http" or "https"
+    String serverName = request.getServerName(); // example.com
+    int serverPort = request.getServerPort(); // 80, 443, etc.
     String contextPath = request.getContextPath();
-    String fullPath = scheme + "://" + serverName +
-        ((serverPort == 80 || serverPort == 443) ? "" : ":" + serverPort) +
-        contextPath + "/api/v1/auth/change_password?token=" + token;
-    mailSender.send(mailUtil.constructResetTokenEmail(fullPath,
-        token, user.getEmail()));
+    String fullPath =
+        scheme
+            + "://"
+            + serverName
+            + ((serverPort == 80 || serverPort == 443) ? "" : ":" + serverPort)
+            + contextPath
+            + "/api/v1/auth/change_password?token="
+            + token;
+    mailSender.send(mailUtil.constructResetTokenEmail(fullPath, token, user.getEmail()));
     BaseOutput<String> response =
-        BaseOutput.<String>builder()
-            .message(HttpStatus.OK.toString())
-            .build();
+        BaseOutput.<String>builder().message(HttpStatus.OK.toString()).build();
     return ResponseEntity.ok(response);
   }
+
   @GetMapping("/change_password")
   public String changePassword(@RequestParam("token") String token, Model model) {
     // Add the token to the model if needed
     model.addAttribute("token", token);
     return "index"; // This will render index.html from the templates folder
   }
+
   @PostMapping("/reset_password")
-  public ResponseEntity<String> resetPassword(@RequestBody ResetPasswordRequest resetPasswordRequest) {
+  public ResponseEntity<String> resetPassword(
+      @RequestBody ResetPasswordRequest resetPasswordRequest) {
     String token = resetPasswordRequest.getToken();
     String newPassword = resetPasswordRequest.getPassword();
 
@@ -176,5 +182,4 @@ public class AuthenticationController {
     // Respond with success message
     return ResponseEntity.ok("Password successfully reset");
   }
-
 }
