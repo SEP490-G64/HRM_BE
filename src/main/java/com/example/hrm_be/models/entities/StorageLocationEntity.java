@@ -27,11 +27,11 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder(toBuilder = true)
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(name = "special_condition")
+@Table(name = "storage_location")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class StorageLocationEntity extends CommonEntity {
 
-  @Column(name = "shelf_name", length = 50, nullable = false)
+  @Column(name = "shelf_name", length = 50)
   String shelfName;
 
   @ToString.Exclude

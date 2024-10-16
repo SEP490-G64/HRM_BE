@@ -3,13 +3,10 @@ package com.example.hrm_be.controllers.user;
 import com.example.hrm_be.commons.constants.HrmConstant.ERROR.REQUEST;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.User;
-import com.example.hrm_be.models.requests.user.UserCreateRequest;
-import com.example.hrm_be.models.requests.user.UserUpdateRequest;
 import com.example.hrm_be.models.responses.BaseOutput;
 import com.example.hrm_be.services.UserService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -152,7 +149,7 @@ public class AdminUserController {
   @PostMapping
   public ResponseEntity<BaseOutput<User>> create(
       @RequestBody @NotNull(message = "error.request.body.invalid")
-          UserCreateRequest user) { // Validate user object
+          User user) { // Validate user object
     if (user == null) { // Check if user is null
       BaseOutput<User> response =
           BaseOutput.<User>builder()
@@ -179,7 +176,7 @@ public class AdminUserController {
   public ResponseEntity<BaseOutput<User>> update(
       @PathVariable("id") @NotNull(message = "error.request.path.variable.id.invalid") Long id,
       @RequestBody @NotNull(message = "error.request.body.invalid")
-          UserUpdateRequest user) { // Validate user object
+          User user) { // Validate user object
     if (id == null) { // Check if ID is null
       BaseOutput<User> response =
           BaseOutput.<User>builder()

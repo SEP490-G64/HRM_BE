@@ -5,6 +5,8 @@ import com.example.hrm_be.commons.enums.ResponseStatus;
 import com.example.hrm_be.models.dtos.ProductType;
 import com.example.hrm_be.models.responses.BaseOutput;
 import com.example.hrm_be.services.ProductTypeService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +20,8 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/staff/type")
+@Tag(name = "Staff-Types API")
+@SecurityRequirement(name = "Authorization")
 public class StaffProductTypeController {
   // Injecting ProductTypeService to handle business logic for ProductType
   private final ProductTypeService productTypeService;

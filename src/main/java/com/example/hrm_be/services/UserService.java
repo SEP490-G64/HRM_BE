@@ -3,9 +3,8 @@ package com.example.hrm_be.services;
 import com.example.hrm_be.models.dtos.Role;
 import com.example.hrm_be.models.dtos.User;
 import com.example.hrm_be.models.requests.RegisterRequest;
-import com.example.hrm_be.models.requests.user.UserCreateRequest;
-import com.example.hrm_be.models.requests.user.UserUpdateRequest;
 import java.util.List;
+
 import lombok.NonNull;
 import org.springframework.data.domain.Page;
 
@@ -20,9 +19,9 @@ public interface UserService {
 
   User getById(Long id);
 
-  User create(UserCreateRequest user);
+  User create(User user);
 
-  User update(UserUpdateRequest user, boolean profile);
+  User update(User user, boolean profile);
 
   void delete(@NonNull Long id);
 

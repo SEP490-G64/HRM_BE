@@ -1,11 +1,12 @@
 package com.example.hrm_be.components;
 
 import com.example.hrm_be.models.dtos.InventoryCheckDetails;
-import com.example.hrm_be.models.entities.InventoryCheckDetailsEntity;
-import java.util.Optional;
+import com.example.hrm_be.models.entities.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+
+import java.util.Optional;
 
 @Component
 public class InventoryCheckDetailsMapper {
@@ -42,15 +43,27 @@ public class InventoryCheckDetailsMapper {
   // Helper method to convert InventoryCheckDetailsEntity to InventoryCheckDetailsDTO
   private InventoryCheckDetails convertToDTO(InventoryCheckDetailsEntity entity) {
     return InventoryCheckDetails.builder()
-        .inventoryCheck(
-            entity.getInventoryCheck() != null
-                ? inventoryCheckMapper.toDTO(entity.getInventoryCheck())
-                : null)
         .batch(entity.getBatch() != null ? batchMapper.toDTO(entity.getBatch()) : null)
         .systemQuantity(entity.getSystemQuantity())
         .countedQuantity(entity.getCountedQuantity())
         .difference(entity.getDifference())
         .reason(entity.getReason())
         .build();
+  }
+
+  // Helper method to convert InventoryCheckDetailEntity to InventoryCheckDetailDTO with Inventory
+  // Check Information
+  public InventoryCheckDetails toDTOWithInventoryCheckDetails(InventoryCheckDetailsEntity entity) {
+    return Optional.ofNullable(entity)
+        .map(this::convertToDTO)
+        .map(
+            e ->
+                e.toBuilder()
+                    .inventoryCheck(
+                        entity.getInventoryCheck() != null
+                            ? inventoryCheckMapper.toDTO(entity.getInventoryCheck())
+                            : null)
+                    .build())
+        .orElse(null);
   }
 }

@@ -88,7 +88,7 @@ public class SecurityConfig {
                     .hasAnyAuthority(RoleType.ADMIN.getValue())
                     .requestMatchers("api/v1/manager/**")
                     .hasAnyAuthority(RoleType.ADMIN.getValue(), RoleType.MANAGER.getValue())
-                    .requestMatchers("api/v1/signed/**")
+                    .requestMatchers("api/v1/staff/**")
                     .hasAnyAuthority(
                         RoleType.ADMIN.getValue(),
                         RoleType.STAFF.getValue(),

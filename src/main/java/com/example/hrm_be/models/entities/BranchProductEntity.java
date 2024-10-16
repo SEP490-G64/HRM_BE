@@ -1,5 +1,7 @@
 package com.example.hrm_be.models.entities;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.Column;
 import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
@@ -25,35 +27,27 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder(toBuilder = true)
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(name = "inbound_batch_details")
+@Table(name = "branch_product")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class BranchProductEntity extends CommonEntity {
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(
-      name = "product_id",
-      nullable = false,
-      foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+  @JoinColumn(name = "product_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   ProductEntity product;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(
-      name = "branch_id",
-      nullable = false,
-      foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+  @JoinColumn(name = "branch_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   BranchEntity branch;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(
-      name = "location_id",
-      nullable = false,
-      foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+  @JoinColumn(name = "location_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   StorageLocationEntity storageLocation;
 
-  @Column(name = "min_quantity", nullable = false)
+  @Column(name = "min_quantity")
   Integer minQuantity;
 
-  @Column(name = "max_quantity", nullable = false)
+  @Column(name = "max_quantity")
   Integer maxQuantity;
 
-  @Column(name = "quantity", nullable = false)
+  @Column(name = "quantity")
   Integer quantity;
 }

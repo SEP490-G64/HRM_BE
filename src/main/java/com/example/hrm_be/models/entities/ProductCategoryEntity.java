@@ -1,9 +1,7 @@
 package com.example.hrm_be.models.entities;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
@@ -26,7 +24,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder(toBuilder = true)
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(name = "categories")
+@Table(name = "category")
 public class ProductCategoryEntity extends CommonEntity {
   @Column(name = "category_name")
   String categoryName;
@@ -38,6 +36,6 @@ public class ProductCategoryEntity extends CommonEntity {
   BigDecimal taxRate;
 
   @ToString.Exclude
-  @OneToMany(mappedBy = "category", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "category")
   List<ProductEntity> products;
 }

@@ -44,6 +44,6 @@ public class InboundDetailsEntity extends CommonEntity {
   @Column(name = "request_quantity", nullable = false)
   Integer requestQuantity;
 
-  @Column(name = "receive_quantity", nullable = false)
+  @Column(name = "receive_quantity")
   Integer receiveQuantity;
 }

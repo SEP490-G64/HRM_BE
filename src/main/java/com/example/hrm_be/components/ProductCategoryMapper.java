@@ -2,11 +2,17 @@ package com.example.hrm_be.components;
 
 import com.example.hrm_be.models.dtos.ProductCategory;
 import com.example.hrm_be.models.entities.ProductCategoryEntity;
-import java.util.Optional;
-import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Component;
+
+import java.util.Optional;
 
 @Component
 public class ProductCategoryMapper {
@@ -24,15 +30,10 @@ public class ProductCategoryMapper {
         .map(
             d ->
                 ProductCategoryEntity.builder()
+                    .id(d.getId())
                     .categoryName(d.getCategoryName())
                     .categoryDescription(d.getCategoryDescription())
                     .taxRate(d.getTaxRate())
-                    .products(
-                        d.getProducts() != null
-                            ? d.getProducts().stream()
-                                .map(productMapper::toEntity)
-                                .collect(Collectors.toList())
-                            : null)
                     .build())
         .orElse(null);
   }
@@ -40,15 +41,10 @@ public class ProductCategoryMapper {
   // Helper method to convert ProductCategoryEntity to ProductCategoryDTO
   private ProductCategory convertToDTO(ProductCategoryEntity entity) {
     return ProductCategory.builder()
+        .id(entity.getId())
         .categoryName(entity.getCategoryName())
         .categoryDescription(entity.getCategoryDescription())
         .taxRate(entity.getTaxRate())
-        .products(
-            entity.getProducts() != null
-                ? entity.getProducts().stream()
-                    .map(productMapper::toDTO)
-                    .collect(Collectors.toList())
-                : null)
         .build();
   }
 }

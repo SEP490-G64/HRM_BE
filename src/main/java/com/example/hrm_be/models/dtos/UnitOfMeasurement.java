@@ -25,11 +25,7 @@ public class UnitOfMeasurement {
   Long id;
   String unitName;
 
-  Double conversionFactor;
-
-  Double pricePerUnit;
-
-  Product product;
+  List<Product> products;
 
   List<UnitConversion> largerUnitConversions; // 1-N with UnitConversion as larger unit
 

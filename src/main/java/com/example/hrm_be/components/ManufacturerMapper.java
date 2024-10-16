@@ -2,11 +2,11 @@ package com.example.hrm_be.components;
 
 import com.example.hrm_be.models.dtos.Manufacturer;
 import com.example.hrm_be.models.entities.ManufacturerEntity;
-import java.util.Optional;
-import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+
+import java.util.Optional;
 
 @Component
 public class ManufacturerMapper {
@@ -24,6 +24,7 @@ public class ManufacturerMapper {
         .map(
             d ->
                 ManufacturerEntity.builder()
+                    .id(d.getId())
                     .manufacturerName(d.getManufacturerName())
                     .address(d.getAddress())
                     .email(d.getEmail())
@@ -31,12 +32,6 @@ public class ManufacturerMapper {
                     .taxCode(d.getTaxCode())
                     .origin(d.getOrigin())
                     .status(d.getStatus())
-                    .products(
-                        d.getProducts() != null
-                            ? d.getProducts().stream()
-                                .map(productMapper::toEntity)
-                                .collect(Collectors.toList())
-                            : null)
                     .build())
         .orElse(null);
   }
@@ -44,6 +39,7 @@ public class ManufacturerMapper {
   // Helper method to convert ManufacturerEntity to ManufacturerDTO
   private Manufacturer convertToDTO(ManufacturerEntity entity) {
     return Manufacturer.builder()
+        .id(entity.getId())
         .manufacturerName(entity.getManufacturerName())
         .address(entity.getAddress())
         .email(entity.getEmail())
@@ -51,12 +47,6 @@ public class ManufacturerMapper {
         .taxCode(entity.getTaxCode())
         .origin(entity.getOrigin())
         .status(entity.getStatus())
-        .products(
-            entity.getProducts() != null
-                ? entity.getProducts().stream()
-                    .map(productMapper::toDTO)
-                    .collect(Collectors.toList())
-                : null)
         .build();
   }
 }

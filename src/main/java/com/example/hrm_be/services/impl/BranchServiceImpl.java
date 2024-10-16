@@ -9,7 +9,6 @@ import com.example.hrm_be.models.entities.BranchEntity;
 import com.example.hrm_be.repositories.BranchRepository;
 import com.example.hrm_be.services.BranchService;
 import io.micrometer.common.util.StringUtils;
-import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,6 +16,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -71,6 +73,12 @@ public class BranchServiceImpl implements BranchService {
       throw new HrmCommonException(HrmConstant.ERROR.BRANCH.NOT_EXIST);
     }
 
+    // Check if branch location exist except current branch
+    if (branchRepository.existsByLocation(branch.getLocation())
+        && !Objects.equals(branch.getLocation(), oldBranchEntity.getLocation())) {
+      throw new HrmCommonException(HrmConstant.ERROR.BRANCH.EXIST);
+    }
+
     // Update the fields of the existing branch entity with new values
     return Optional.ofNullable(oldBranchEntity)
         .map(
@@ -82,6 +90,7 @@ public class BranchServiceImpl implements BranchService {
                     .contactPerson(branch.getContactPerson())
                     .phoneNumber(branch.getPhoneNumber())
                     .location(branch.getLocation())
+                    .activeStatus(branch.getActiveStatus())
                     .build())
         .map(branchRepository::save)
         .map(branchMapper::toDTO)
@@ -94,6 +103,12 @@ public class BranchServiceImpl implements BranchService {
     // Validation: Check if the ID is blank
     if (StringUtils.isBlank(id.toString())) {
       return;
+    }
+
+    // Retrieve the existing branch entity by ID
+    BranchEntity oldBranchEntity = branchRepository.findById(id).orElse(null);
+    if (oldBranchEntity == null) {
+      throw new HrmCommonException(HrmConstant.ERROR.BRANCH.NOT_EXIST);
     }
 
     // Delete the branch by ID

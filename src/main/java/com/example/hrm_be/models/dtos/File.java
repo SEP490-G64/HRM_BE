@@ -1,6 +1,8 @@
-package com.example.hrm_be.models.requests.user;
+package com.example.hrm_be.models.dtos;
 
+import com.example.hrm_be.models.entities.CommonEntity;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import java.sql.Timestamp;
 import lombok.*;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldDefaults;
@@ -16,18 +18,10 @@ import lombok.extern.jackson.Jacksonized;
 @EqualsAndHashCode
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class UserCreateRequest {
-  String userName;
-
-  String email;
-
-  String phone;
-
-  String firstName;
-
-  String lastName;
-
-  Long role;
-
-  Long branchId;
+public class File extends CommonEntity {
+  Long id;
+  private String name;
+  private String ext;
+  private Timestamp createdTime;
+  private String link;
 }

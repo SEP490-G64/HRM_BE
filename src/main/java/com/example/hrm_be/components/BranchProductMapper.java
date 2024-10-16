@@ -43,12 +43,6 @@ public class BranchProductMapper {
   private BranchProduct convertToDTO(BranchProductEntity entity) {
     return BranchProduct.builder()
         .id(entity.getId())
-        .product(entity.getProduct() != null ? productMapper.toDTO(entity.getProduct()) : null)
-        .branch(entity.getBranch() != null ? branchMapper.toDTO(entity.getBranch()) : null)
-        .storageLocation(
-            entity.getStorageLocation() != null
-                ? storageLocationMapper.toDTO(entity.getStorageLocation())
-                : null)
         .minQuantity(entity.getMinQuantity())
         .maxQuantity(entity.getMaxQuantity())
         .quantity(entity.getQuantity())

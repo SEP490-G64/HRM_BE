@@ -1,13 +1,9 @@
 package com.example.hrm_be.components;
 
-import com.example.hrm_be.commons.enums.UserStatusType;
 import com.example.hrm_be.models.dtos.User;
-import com.example.hrm_be.models.entities.BranchEntity;
 import com.example.hrm_be.models.entities.UserEntity;
 import com.example.hrm_be.models.entities.UserRoleMapEntity;
 import com.example.hrm_be.models.requests.RegisterRequest;
-import com.example.hrm_be.models.requests.user.UserCreateRequest;
-import com.example.hrm_be.models.requests.user.UserUpdateRequest;
 import com.example.hrm_be.repositories.BranchRepository;
 import com.example.hrm_be.services.RoleService;
 import java.util.Optional;
@@ -89,92 +85,19 @@ public class UserMapper {
         .orElse(null);
   }
 
-  // Convert UserCreateRequest to UserEntity
-  public UserEntity toEntity(UserCreateRequest dto) {
-    return Optional.ofNullable(dto)
-        .map(
-            request -> {
-              BranchEntity branch = null;
-              if (dto.getBranchId() != null) {
-                // Find BranchEntity by branchId
-                branch =
-                    branchRepository
-                        .findById(request.getBranchId())
-                        .orElseThrow(
-                            () ->
-                                new RuntimeException(
-                                    "Branch not found with id: " + request.getBranchId()));
-              }
-
-              // Create UserEntity from UserCreateRequest
-              return UserEntity.builder()
-                  .userName(request.getUserName())
-                  .email(request.getEmail())
-                  .phone(request.getPhone())
-                  .firstName(request.getFirstName())
-                  .lastName(request.getLastName())
-                  .branch(branch)
-                  .build();
-            })
-        .orElse(null);
-  }
-
-  // Convert UserUpdateRequest to UserEntity
-  public UserEntity toEntity(UserUpdateRequest dto) {
-    return Optional.ofNullable(dto)
-        .map(
-            request -> {
-              BranchEntity branch = null;
-              if (dto.getBranchId() != null) {
-                // Find BranchEntity by branchId
-                branch =
-                    branchRepository
-                        .findById(request.getBranchId())
-                        .orElseThrow(
-                            () ->
-                                new RuntimeException(
-                                    "Branch not found with id: " + request.getBranchId()));
-              }
-
-              // Create UserEntity from UserCreateRequest
-              return UserEntity.builder()
-                  .userName(request.getUserName())
-                  .email(request.getEmail())
-                  .phone(request.getPhone())
-                  .firstName(request.getFirstName())
-                  .lastName(request.getLastName())
-                  .status(UserStatusType.valueOf(request.getStatus()))
-                  .branch(branch)
-                  .build();
-            })
-        .orElse(null);
-  }
-
   // Convert RegisterRequest to UserEntity
   public UserEntity toEntity(RegisterRequest dto) {
     return Optional.ofNullable(dto)
         .map(
             request -> {
-              BranchEntity branch = null;
-              if (dto.getBranchId() != null) {
-                // Find BranchEntity by branchId
-                branch =
-                    branchRepository
-                        .findById(request.getBranchId())
-                        .orElseThrow(
-                            () ->
-                                new RuntimeException(
-                                    "Branch not found with id: " + request.getBranchId()));
-              }
-
-              // Create UserEntity from UserCreateRequest
+              // Create UserEntity from RegisterRequest
               return UserEntity.builder()
                   .userName(request.getUserName())
                   .email(request.getEmail())
                   .phone(request.getPhone())
                   .firstName(request.getFirstName())
                   .lastName(request.getLastName())
-                  .branch(branch)
+                  .branch(dto.getBranch() != null ? branchMapper.toEntity(dto.getBranch()) : null)
                   .password(passwordEncoder.encode(request.getPassword()))
                   .build();
             })

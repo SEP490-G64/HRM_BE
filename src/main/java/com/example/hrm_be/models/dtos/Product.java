@@ -45,6 +45,8 @@ public class Product {
 
   String formulation;
 
+  BigDecimal inboundPrice;
+
   BigDecimal sellPrice;
 
   ProductStatus status;
@@ -57,7 +59,7 @@ public class Product {
 
   List<Batch> batches;
 
-  List<BranchProduct> branchProducs;
+  List<BranchProduct> branchProducts;
 
   List<ProductSuppliers> productSuppliers;
 }

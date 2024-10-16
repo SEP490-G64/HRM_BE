@@ -32,6 +32,7 @@ public class BatchMapper {
                     .batchCode(e.getBatchCode())
                     .produceDate(e.getProduceDate())
                     .expireDate(e.getExpireDate())
+                    .inboundPrice(e.getInboundPrice())
                     .unitConversions(
                         e.getUnitConversions() != null
                             ? e.getUnitConversions().stream()
@@ -51,8 +52,10 @@ public class BatchMapper {
                                 .collect(Collectors.toList())
                             : null)
                     .inboundBatchDetail(
-                        e.getInboundBatchDetail() != null
-                            ? inboundBatchDetailMapper.toEntity(e.getInboundBatchDetail())
+                        e.getInboundBatchDetails() != null
+                            ? e.getInboundBatchDetails().stream()
+                                .map(inboundBatchDetailMapper::toEntity)
+                                .collect(Collectors.toList())
                             : null)
                     .product(e.getProduct() != null ? productMapper.toEntity(e.getProduct()) : null)
                     .build())
@@ -69,6 +72,7 @@ public class BatchMapper {
                     .batchCode(e.getBatchCode())
                     .produceDate(e.getProduceDate())
                     .expireDate(e.getExpireDate())
+                    .inboundPrice(e.getInboundPrice())
                     .unitConversions(
                         e.getUnitConversions() != null
                             ? e.getUnitConversions().stream()
@@ -87,9 +91,11 @@ public class BatchMapper {
                                 .map(branchBatchMapper::toDTO)
                                 .collect(Collectors.toList())
                             : null)
-                    .inboundBatchDetail(
+                    .inboundBatchDetails(
                         e.getInboundBatchDetail() != null
-                            ? inboundBatchDetailMapper.toDTO(e.getInboundBatchDetail())
+                            ? e.getInboundBatchDetail().stream()
+                                .map(inboundBatchDetailMapper::toDTO)
+                                .collect(Collectors.toList())
                             : null)
                     .product(e.getProduct() != null ? productMapper.toDTO(e.getProduct()) : null)
                     .build())

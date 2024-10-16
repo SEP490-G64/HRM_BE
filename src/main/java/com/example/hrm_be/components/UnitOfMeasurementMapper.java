@@ -27,9 +27,6 @@ public class UnitOfMeasurementMapper {
                 UnitOfMeasurementEntity.builder()
                     .id(d.getId())
                     .unitName(d.getUnitName())
-                    .conversionFactor(d.getConversionFactor())
-                    .pricePerUnit(d.getPricePerUnit())
-                    .product(d.getProduct() != null ? productMapper.toEntity(d.getProduct()) : null)
                     .largerUnitConversions(
                         d.getLargerUnitConversions() != null
                             ? d.getLargerUnitConversions().stream()
@@ -51,9 +48,6 @@ public class UnitOfMeasurementMapper {
     return UnitOfMeasurement.builder()
         .id(entity.getId())
         .unitName(entity.getUnitName())
-        .conversionFactor(entity.getConversionFactor())
-        .pricePerUnit(entity.getPricePerUnit())
-        .product(entity.getProduct() != null ? productMapper.toDTO(entity.getProduct()) : null)
         .largerUnitConversions(
             entity.getLargerUnitConversions() != null
                 ? entity.getLargerUnitConversions().stream()

@@ -2,6 +2,8 @@ package com.example.hrm_be.models.dtos;
 
 import com.example.hrm_be.models.entities.CommonEntity;
 import com.fasterxml.jackson.annotation.JsonInclude;
+
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AccessLevel;
@@ -31,13 +33,15 @@ public class Batch extends CommonEntity {
 
   LocalDateTime expireDate;
 
+  BigDecimal inboundPrice;
+
   List<UnitConversion> unitConversions; // 1-N with UnitConversion
 
   List<OutboundDetail> outboundDetails; // 1-N with OutboundDetails
 
   List<BranchBatch> branchBatches; // 1-N with BranchBatch
 
-  InboundBatchDetail inboundBatchDetail;
+  List<InboundBatchDetail> inboundBatchDetails;
 
   List<InventoryCheckDetails> inventoryCheckDetails;
 

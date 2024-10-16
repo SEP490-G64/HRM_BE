@@ -41,7 +41,7 @@ public class ManufacturerEntity extends CommonEntity {
   @Column(name = "phone_number", nullable = false, length = 11)
   String phoneNumber;
 
-  @Column(name = "tax_code", length = 13)
+  @Column(name = "tax_code", length = 14)
   String taxCode;
 
   @Column(name = "origin", length = 20)

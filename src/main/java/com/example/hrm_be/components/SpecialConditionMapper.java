@@ -24,7 +24,6 @@ public class SpecialConditionMapper {
             d ->
                 SpecialConditionEntity.builder()
                     .id(d.getId())
-                    .product(d.getProduct() != null ? productMapper.toEntity(d.getProduct()) : null)
                     .conditionType(d.getConditionType())
                     .handlingInstruction(d.getHandlingInstruction())
                     .build())
@@ -35,7 +34,6 @@ public class SpecialConditionMapper {
   private SpecialCondition convertToDTO(SpecialConditionEntity entity) {
     return SpecialCondition.builder()
         .id(entity.getId())
-        .product(entity.getProduct() != null ? productMapper.toDTO(entity.getProduct()) : null)
         .conditionType(entity.getConditionType())
         .handlingInstruction(entity.getHandlingInstruction())
         .build();

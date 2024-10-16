@@ -38,15 +38,6 @@ public class StorageLocationMapper {
 
   // Helper method to convert StorageLocationEntity to StorageLocationDTO
   private StorageLocation convertToDTO(StorageLocationEntity entity) {
-    return StorageLocation.builder()
-        .id(entity.getId())
-        .shelfName(entity.getShelfName())
-        .branchProducts(
-            entity.getBranchProducts() != null
-                ? entity.getBranchProducts().stream()
-                    .map(branchProductMapper::toDTO)
-                    .collect(Collectors.toList())
-                : null)
-        .build();
+    return StorageLocation.builder().id(entity.getId()).shelfName(entity.getShelfName()).build();
   }
 }

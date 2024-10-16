@@ -1,4 +1,4 @@
-package com.example.hrm_be.components;
+package com.example.hrm_be.utils;
 
 import com.example.hrm_be.configs.objects.HrmJwtProp;
 import com.example.hrm_be.models.dtos.User;

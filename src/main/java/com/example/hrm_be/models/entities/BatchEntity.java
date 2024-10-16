@@ -60,18 +60,12 @@ public class BatchEntity extends CommonEntity {
   @OneToMany(mappedBy = "batch", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   List<BranchBatchEntity> branchBatches; // 1-N with BranchBatch
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(
-      name = "inbound_batch_detail_id",
-      nullable = false,
-      foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-  InboundBatchDetailEntity inboundBatchDetail;
+  @ToString.Exclude
+  @OneToMany(mappedBy = "batch", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  List<InboundBatchDetailEntity> inboundBatchDetail; // 1-N with InboundBatchDetail
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(
-      name = "product_id",
-      nullable = false,
-      foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+  @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @JoinColumn(name = "product_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   ProductEntity product;
 
   @ToString.Exclude
