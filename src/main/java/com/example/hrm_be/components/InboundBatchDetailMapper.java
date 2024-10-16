@@ -2,11 +2,10 @@ package com.example.hrm_be.components;
 
 import com.example.hrm_be.models.dtos.InboundBatchDetail;
 import com.example.hrm_be.models.entities.InboundBatchDetailEntity;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
-
-import java.util.Optional;
 
 @Component
 public class InboundBatchDetailMapper {

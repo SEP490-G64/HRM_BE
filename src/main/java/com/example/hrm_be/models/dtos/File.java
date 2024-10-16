@@ -1,12 +1,9 @@
-package com.example.hrm_be.models.requests;
+package com.example.hrm_be.models.dtos;
 
-import com.example.hrm_be.models.dtos.Branch;
+import com.example.hrm_be.models.entities.CommonEntity;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import java.sql.Timestamp;
+import lombok.*;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
@@ -21,22 +18,10 @@ import lombok.extern.jackson.Jacksonized;
 @EqualsAndHashCode
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class RegisterRequest {
-  String userName;
-
-  String email;
-
-  String phone;
-
-  String firstName;
-
-  String lastName;
-
-  String password;
-
-  String confirmPassword;
-
-  Long role;
-
-  Branch branch;
+public class File extends CommonEntity {
+  Long id;
+  private String name;
+  private String ext;
+  private Timestamp createdTime;
+  private String link;
 }

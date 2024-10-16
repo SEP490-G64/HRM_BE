@@ -2,12 +2,11 @@ package com.example.hrm_be.components;
 
 import com.example.hrm_be.models.dtos.UnitOfMeasurement;
 import com.example.hrm_be.models.entities.UnitOfMeasurementEntity;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
-
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Component
 public class UnitOfMeasurementMapper {
@@ -28,12 +27,6 @@ public class UnitOfMeasurementMapper {
                 UnitOfMeasurementEntity.builder()
                     .id(d.getId())
                     .unitName(d.getUnitName())
-                    .products(
-                        d.getProducts() != null
-                            ? d.getProducts().stream()
-                                .map(productMapper::toEntity)
-                                .collect(Collectors.toList())
-                            : null)
                     .largerUnitConversions(
                         d.getLargerUnitConversions() != null
                             ? d.getLargerUnitConversions().stream()
@@ -55,12 +48,6 @@ public class UnitOfMeasurementMapper {
     return UnitOfMeasurement.builder()
         .id(entity.getId())
         .unitName(entity.getUnitName())
-        .products(
-            entity.getProducts() != null
-                ? entity.getProducts().stream()
-                    .map(productMapper::toDTO)
-                    .collect(Collectors.toList())
-                : null)
         .largerUnitConversions(
             entity.getLargerUnitConversions() != null
                 ? entity.getLargerUnitConversions().stream()
