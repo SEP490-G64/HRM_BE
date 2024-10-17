@@ -2,6 +2,7 @@ package com.example.hrm_be.controllers.productCategory;
 
 import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.commons.enums.ResponseStatus;
+import com.example.hrm_be.models.dtos.Manufacturer;
 import com.example.hrm_be.models.dtos.ProductCategory;
 import com.example.hrm_be.models.responses.BaseOutput;
 import com.example.hrm_be.services.ProductCategoryService;
@@ -25,7 +26,26 @@ import org.springframework.web.bind.annotation.*;
 public class StaffProductCategoryController {
   // Injecting ProductCategoryService to handle business logic for ProductCategory
   private final ProductCategoryService productCategoryService;
+  // GET: /api/v1/staff/get-all
+  // Get List of ProductCategory
+  // GET all ProductCategory
+  @GetMapping("/get-all")
+  protected ResponseEntity<BaseOutput<List<ProductCategory>>> getAll() {
 
+    // Retrieve paginated list of unitConversions from the service
+    List<ProductCategory> productCategories =productCategoryService.getAll();
+
+    // Construct response object with unitConversion data and pagination details
+    BaseOutput<List<ProductCategory>> response =
+        BaseOutput.<List<ProductCategory>>builder()
+            .message(HttpStatus.OK.toString())
+            .data(productCategories)
+            .status(ResponseStatus.SUCCESS) // Set response tatus to SUCCESS
+            .build();
+
+    // Return response with status OK
+    return ResponseEntity.ok(response);
+  }
   // Handles GET requests for paginated list of ProductCategory entities
   @GetMapping("")
   protected ResponseEntity<BaseOutput<List<ProductCategory>>> getByPaging(

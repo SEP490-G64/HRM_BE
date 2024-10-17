@@ -4,12 +4,16 @@ import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.components.ManufacturerMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.Manufacturer;
+import com.example.hrm_be.models.dtos.ProductCategory;
 import com.example.hrm_be.models.entities.ManufacturerEntity;
+import com.example.hrm_be.models.entities.ProductCategoryEntity;
 import com.example.hrm_be.repositories.ManufacturerRepository;
 import com.example.hrm_be.services.ManufacturerService;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,7 +28,13 @@ public class ManufacturerServiceImpl implements ManufacturerService {
   @Autowired private ManufacturerRepository manufacturerRepository;
 
   @Autowired private ManufacturerMapper manufacturerMapper;
-
+  @Override
+  public List<Manufacturer> getAll() {
+    List<ManufacturerEntity> manufacturerEntities = manufacturerRepository.findAll();
+    return manufacturerEntities.stream()
+        .map(dao -> manufacturerMapper.toDTO(dao))
+        .collect(Collectors.toList());
+  }
   @Override
   public Manufacturer getById(Long id) {
     // Use Optional to handle potential null values for the Manufacturer ID

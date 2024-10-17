@@ -8,6 +8,10 @@ import com.example.hrm_be.models.entities.ProductTypeEntity;
 import com.example.hrm_be.repositories.ProductTypeRepository;
 import com.example.hrm_be.services.ProductTypeService;
 import io.micrometer.common.util.StringUtils;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,9 +20,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Objects;
-import java.util.Optional;
-
 @Service
 @Transactional
 public class ProductTypeServiceImpl implements ProductTypeService {
@@ -26,7 +27,13 @@ public class ProductTypeServiceImpl implements ProductTypeService {
   @Autowired private ProductTypeRepository productTypeRepository;
   // Injects the mapper to convert between DTO and Entity objects
   @Autowired private ProductTypeMapper productTypeMapper;
-
+  @Override
+  public List<ProductType> getAll() {
+    List<ProductTypeEntity> productTypeEntities = productTypeRepository.findAll();
+    return productTypeEntities.stream()
+        .map(dao -> productTypeMapper.toDTO(dao))
+        .collect(Collectors.toList());
+  }
   // Retrieves a ProductType by ID
   @Override
   public ProductType getById(Long id) {

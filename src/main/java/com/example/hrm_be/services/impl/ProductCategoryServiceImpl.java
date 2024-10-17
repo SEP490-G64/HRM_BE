@@ -4,10 +4,14 @@ import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.components.ProductCategoryMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.ProductCategory;
+import com.example.hrm_be.models.dtos.ProductType;
 import com.example.hrm_be.models.entities.ProductCategoryEntity;
+import com.example.hrm_be.models.entities.ProductTypeEntity;
 import com.example.hrm_be.repositories.ProductCategoryRepository;
 import com.example.hrm_be.services.ProductCategoryService;
 import io.micrometer.common.util.StringUtils;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -28,6 +32,13 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
   // Injects the mapper to convert between DTO and Entity objects
   @Autowired private ProductCategoryMapper categoryMapper;
 
+  @Override
+  public List<ProductCategory> getAll() {
+    List<ProductCategoryEntity> productCategoryEntities = categoryRepository.findAll();
+    return productCategoryEntities.stream()
+        .map(dao -> categoryMapper.toDTO(dao))
+        .collect(Collectors.toList());
+  }
   // Retrieves a ProductCategory by ID
   @Override
   public ProductCategory getById(Long id) {

@@ -46,6 +46,7 @@ public class StaffUnitConversionController {
     BaseOutput<List<UnitConversion>> response =
         BaseOutput.<List<UnitConversion>>builder()
             .message(HttpStatus.OK.toString())
+            .data(unitConversionPage)
             .status(ResponseStatus.SUCCESS) // Set response tatus to SUCCESS
             .build();
 

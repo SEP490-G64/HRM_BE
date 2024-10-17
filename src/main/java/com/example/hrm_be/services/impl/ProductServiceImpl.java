@@ -41,6 +41,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -259,5 +260,46 @@ public class ProductServiceImpl implements ProductService {
     }
 
     return savedProducts;
+  }
+
+  @Override
+  public List<Product> searchProducts(Optional<String> keyword, Optional<Long> manufacturerId,
+      Optional<Long> categoryId, Optional<Long> typeId, Optional<String> status) {
+    Specification<ProductEntity> specification = Specification.where(null);
+
+    // Keyword search for product name, registration code, and active ingredient
+    if (keyword.isPresent()) {
+      String key = "%" + keyword.get().toLowerCase() + "%";
+      specification = specification.and((root, query, criteriaBuilder) -> criteriaBuilder.or(
+          criteriaBuilder.like(criteriaBuilder.lower(root.get("productName")), key),
+          criteriaBuilder.like(criteriaBuilder.lower(root.get("registrationCode")), key),
+          criteriaBuilder.like(criteriaBuilder.lower(root.get("activeIngredient")), key)
+      ));
+    }
+
+    if (manufacturerId.isPresent()) {
+      specification = specification.and((root, query, criteriaBuilder) ->
+          criteriaBuilder.equal(root.get("manufacturer").get("id"), manufacturerId.get()));
+    }
+
+    if (categoryId.isPresent()) {
+      specification = specification.and((root, query, criteriaBuilder) ->
+          criteriaBuilder.equal(root.get("category").get("id"), categoryId.get()));
+    }
+
+    if (typeId.isPresent()) {
+      specification = specification.and((root, query, criteriaBuilder) ->
+          criteriaBuilder.equal(root.get("type").get("id"), typeId.get()));
+    }
+
+    if (status.isPresent()) {
+      specification = specification.and((root, query, criteriaBuilder) ->
+          criteriaBuilder.equal(root.get("status"), status.get()));
+    }
+
+    return productRepository.findAll(specification)
+        .stream()
+        .map(productMapper::toDTO)
+        .collect(Collectors.toList());
   }
 }

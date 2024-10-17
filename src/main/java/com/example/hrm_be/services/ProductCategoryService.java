@@ -1,11 +1,14 @@
 package com.example.hrm_be.services;
 
 import com.example.hrm_be.models.dtos.ProductCategory;
+import com.example.hrm_be.models.dtos.ProductType;
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 @Service
 public interface ProductCategoryService {
+  List<ProductCategory> getAll();
   // Retrieves a ProductCategory by its ID
   ProductCategory getById(Long id);
 
