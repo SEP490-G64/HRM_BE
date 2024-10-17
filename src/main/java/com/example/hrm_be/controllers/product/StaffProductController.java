@@ -58,18 +58,24 @@ public class StaffProductController {
     return ResponseEntity.ok(response);
   }
 
-  @GetMapping("/api/products/search")
-  public ResponseEntity<List<Product>> searchProducts(
-      @RequestParam("productName") Optional<String> productName,
-      @RequestParam("manufacturerId") Optional<Long> manufacturerId,
-      @RequestParam("categoryId") Optional<Long> categoryId,
-      @RequestParam("typeId") Optional<Long> typeId,
-      @RequestParam("status") Optional<String> status) {
+  @GetMapping("/search")
+  public ResponseEntity<BaseOutput<List<Product>>> searchProducts(
+      @RequestParam Optional<String> keyword,
+      @RequestParam Optional<Long> manufacturerId,
+      @RequestParam Optional<Long> categoryId,
+      @RequestParam Optional<Long> typeId,
+      @RequestParam Optional<String> status) {
 
     List<Product> products =
-        productService.searchProducts(productName, manufacturerId, categoryId, typeId, status);
+        productService.searchProducts(keyword, manufacturerId, categoryId, typeId, status);
 
-    return ResponseEntity.ok(products);
+    BaseOutput<List<Product>> response =
+        BaseOutput.<List<Product>>builder()
+            .message(HttpStatus.OK.toString())
+            .data(products)
+            .status(ResponseStatus.SUCCESS)
+            .build();
+    return ResponseEntity.ok(response);
   }
 
   @GetMapping("category/{id}")
