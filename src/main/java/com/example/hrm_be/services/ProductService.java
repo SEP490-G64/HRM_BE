@@ -2,7 +2,6 @@ package com.example.hrm_be.services;
 
 import com.example.hrm_be.models.dtos.Product;
 import com.example.hrm_be.models.entities.AllowedProductEntity;
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -31,6 +30,10 @@ public interface ProductService {
 
   List<AllowedProductEntity> addProductFromJson(List<Map<String, Object>> productJsonList);
 
-  List<Product> searchProducts(Optional<String> keyword, Optional<Long> manufacturerId, Optional<Long> categoryId,
-      Optional<Long> typeId, Optional<String> status);
+  List<Product> searchProducts(
+      Optional<String> keyword,
+      Optional<Long> manufacturerId,
+      Optional<Long> categoryId,
+      Optional<Long> typeId,
+      Optional<String> status);
 }

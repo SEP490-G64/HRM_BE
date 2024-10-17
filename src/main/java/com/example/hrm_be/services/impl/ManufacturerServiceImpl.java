@@ -4,9 +4,7 @@ import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.components.ManufacturerMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.Manufacturer;
-import com.example.hrm_be.models.dtos.ProductCategory;
 import com.example.hrm_be.models.entities.ManufacturerEntity;
-import com.example.hrm_be.models.entities.ProductCategoryEntity;
 import com.example.hrm_be.repositories.ManufacturerRepository;
 import com.example.hrm_be.services.ManufacturerService;
 
@@ -28,6 +26,7 @@ public class ManufacturerServiceImpl implements ManufacturerService {
   @Autowired private ManufacturerRepository manufacturerRepository;
 
   @Autowired private ManufacturerMapper manufacturerMapper;
+
   @Override
   public List<Manufacturer> getAll() {
     List<ManufacturerEntity> manufacturerEntities = manufacturerRepository.findAll();
@@ -35,6 +34,7 @@ public class ManufacturerServiceImpl implements ManufacturerService {
         .map(dao -> manufacturerMapper.toDTO(dao))
         .collect(Collectors.toList());
   }
+
   @Override
   public Manufacturer getById(Long id) {
     // Use Optional to handle potential null values for the Manufacturer ID

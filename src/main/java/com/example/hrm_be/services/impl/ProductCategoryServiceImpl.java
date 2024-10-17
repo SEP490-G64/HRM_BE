@@ -4,9 +4,7 @@ import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.components.ProductCategoryMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.ProductCategory;
-import com.example.hrm_be.models.dtos.ProductType;
 import com.example.hrm_be.models.entities.ProductCategoryEntity;
-import com.example.hrm_be.models.entities.ProductTypeEntity;
 import com.example.hrm_be.repositories.ProductCategoryRepository;
 import com.example.hrm_be.services.ProductCategoryService;
 import io.micrometer.common.util.StringUtils;
@@ -39,6 +37,7 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
         .map(dao -> categoryMapper.toDTO(dao))
         .collect(Collectors.toList());
   }
+
   // Retrieves a ProductCategory by ID
   @Override
   public ProductCategory getById(Long id) {

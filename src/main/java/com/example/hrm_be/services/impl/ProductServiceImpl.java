@@ -263,42 +263,57 @@ public class ProductServiceImpl implements ProductService {
   }
 
   @Override
-  public List<Product> searchProducts(Optional<String> keyword, Optional<Long> manufacturerId,
-      Optional<Long> categoryId, Optional<Long> typeId, Optional<String> status) {
+  public List<Product> searchProducts(
+      Optional<String> keyword,
+      Optional<Long> manufacturerId,
+      Optional<Long> categoryId,
+      Optional<Long> typeId,
+      Optional<String> status) {
     Specification<ProductEntity> specification = Specification.where(null);
 
     // Keyword search for product name, registration code, and active ingredient
     if (keyword.isPresent()) {
       String key = "%" + keyword.get().toLowerCase() + "%";
-      specification = specification.and((root, query, criteriaBuilder) -> criteriaBuilder.or(
-          criteriaBuilder.like(criteriaBuilder.lower(root.get("productName")), key),
-          criteriaBuilder.like(criteriaBuilder.lower(root.get("registrationCode")), key),
-          criteriaBuilder.like(criteriaBuilder.lower(root.get("activeIngredient")), key)
-      ));
+      specification =
+          specification.and(
+              (root, query, criteriaBuilder) ->
+                  criteriaBuilder.or(
+                      criteriaBuilder.like(criteriaBuilder.lower(root.get("productName")), key),
+                      criteriaBuilder.like(
+                          criteriaBuilder.lower(root.get("registrationCode")), key),
+                      criteriaBuilder.like(
+                          criteriaBuilder.lower(root.get("activeIngredient")), key)));
     }
 
     if (manufacturerId.isPresent()) {
-      specification = specification.and((root, query, criteriaBuilder) ->
-          criteriaBuilder.equal(root.get("manufacturer").get("id"), manufacturerId.get()));
+      specification =
+          specification.and(
+              (root, query, criteriaBuilder) ->
+                  criteriaBuilder.equal(root.get("manufacturer").get("id"), manufacturerId.get()));
     }
 
     if (categoryId.isPresent()) {
-      specification = specification.and((root, query, criteriaBuilder) ->
-          criteriaBuilder.equal(root.get("category").get("id"), categoryId.get()));
+      specification =
+          specification.and(
+              (root, query, criteriaBuilder) ->
+                  criteriaBuilder.equal(root.get("category").get("id"), categoryId.get()));
     }
 
     if (typeId.isPresent()) {
-      specification = specification.and((root, query, criteriaBuilder) ->
-          criteriaBuilder.equal(root.get("type").get("id"), typeId.get()));
+      specification =
+          specification.and(
+              (root, query, criteriaBuilder) ->
+                  criteriaBuilder.equal(root.get("type").get("id"), typeId.get()));
     }
 
     if (status.isPresent()) {
-      specification = specification.and((root, query, criteriaBuilder) ->
-          criteriaBuilder.equal(root.get("status"), status.get()));
+      specification =
+          specification.and(
+              (root, query, criteriaBuilder) ->
+                  criteriaBuilder.equal(root.get("status"), status.get()));
     }
 
-    return productRepository.findAll(specification)
-        .stream()
+    return productRepository.findAll(specification).stream()
         .map(productMapper::toDTO)
         .collect(Collectors.toList());
   }

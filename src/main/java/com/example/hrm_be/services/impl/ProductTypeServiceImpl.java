@@ -27,6 +27,7 @@ public class ProductTypeServiceImpl implements ProductTypeService {
   @Autowired private ProductTypeRepository productTypeRepository;
   // Injects the mapper to convert between DTO and Entity objects
   @Autowired private ProductTypeMapper productTypeMapper;
+
   @Override
   public List<ProductType> getAll() {
     List<ProductTypeEntity> productTypeEntities = productTypeRepository.findAll();
@@ -34,6 +35,7 @@ public class ProductTypeServiceImpl implements ProductTypeService {
         .map(dao -> productTypeMapper.toDTO(dao))
         .collect(Collectors.toList());
   }
+
   // Retrieves a ProductType by ID
   @Override
   public ProductType getById(Long id) {

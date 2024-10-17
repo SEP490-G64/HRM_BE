@@ -2,7 +2,6 @@ package com.example.hrm_be.controllers.productType;
 
 import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.commons.enums.ResponseStatus;
-import com.example.hrm_be.models.dtos.ProductCategory;
 import com.example.hrm_be.models.dtos.ProductType;
 import com.example.hrm_be.models.responses.BaseOutput;
 import com.example.hrm_be.services.ProductTypeService;
@@ -26,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 public class StaffProductTypeController {
   // Injecting ProductTypeService to handle business logic for ProductType
   private final ProductTypeService productTypeService;
+
   // GET: /api/v1/staff/get-all
   // Get List of ProductType
   // GET all Product Type
@@ -33,7 +33,7 @@ public class StaffProductTypeController {
   protected ResponseEntity<BaseOutput<List<ProductType>>> getAll() {
 
     // Retrieve paginated list of unitConversions from the service
-    List<ProductType> productTypes =productTypeService.getAll();
+    List<ProductType> productTypes = productTypeService.getAll();
 
     // Construct response object with unitConversion data and pagination details
     BaseOutput<List<ProductType>> response =
@@ -46,6 +46,7 @@ public class StaffProductTypeController {
     // Return response with status OK
     return ResponseEntity.ok(response);
   }
+
   // Handles GET requests for paginated list of ProductType entities
   @GetMapping("")
   protected ResponseEntity<BaseOutput<List<ProductType>>> getByPaging(

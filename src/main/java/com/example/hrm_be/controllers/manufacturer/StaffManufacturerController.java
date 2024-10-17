@@ -3,7 +3,6 @@ package com.example.hrm_be.controllers.manufacturer;
 import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.commons.enums.ResponseStatus;
 import com.example.hrm_be.models.dtos.Manufacturer;
-import com.example.hrm_be.models.dtos.UnitConversion;
 import com.example.hrm_be.models.responses.BaseOutput;
 import com.example.hrm_be.services.ManufacturerService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -25,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 @SecurityRequirement(name = "Authorization")
 public class StaffManufacturerController {
   private final ManufacturerService manufacturerService;
+
   // GET: /api/v1/staff/get-all
   // Get List of Manufacturer
   // GET all Manufacturer
@@ -32,7 +32,7 @@ public class StaffManufacturerController {
   protected ResponseEntity<BaseOutput<List<Manufacturer>>> getAll() {
 
     // Retrieve paginated list of unitConversions from the service
-    List<Manufacturer> manufacturers =manufacturerService.getAll();
+    List<Manufacturer> manufacturers = manufacturerService.getAll();
 
     // Construct response object with unitConversion data and pagination details
     BaseOutput<List<Manufacturer>> response =
@@ -45,6 +45,7 @@ public class StaffManufacturerController {
     // Return response with status OK
     return ResponseEntity.ok(response);
   }
+
   // GET: /api/v1/staff/Manufacturer
   // Get List of Manufacturers
   // Allows paging, sorting, and searching by name or location
