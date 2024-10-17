@@ -59,7 +59,7 @@ public class StaffProductController {
   }
 
   @GetMapping("/search")
-  public ResponseEntity<List<Product>> searchProducts(
+  public ResponseEntity<BaseOutput<List<Product>>> searchProducts(
       @RequestParam Optional<String> keyword,
       @RequestParam Optional<Long> manufacturerId,
       @RequestParam Optional<Long> categoryId,
@@ -69,7 +69,13 @@ public class StaffProductController {
     List<Product> products = productService.searchProducts(
         keyword, manufacturerId, categoryId, typeId, status);
 
-    return ResponseEntity.ok(products);
+    BaseOutput<List<Product>> response =
+        BaseOutput.<List<Product>>builder()
+            .message(HttpStatus.OK.toString())
+            .data(products)
+            .status(ResponseStatus.SUCCESS)
+            .build();
+    return ResponseEntity.ok(response);
   }
 
   @GetMapping("category/{id}")
