@@ -36,8 +36,7 @@ public class StaffUnitConversionController {
   // Get List of UnitConversions
   // GET all unit conversion
   @GetMapping("")
-  protected ResponseEntity<BaseOutput<List<UnitConversion>>> getAll(
-      @RequestParam(required = false, defaultValue = "id") String sortBy) {
+  protected ResponseEntity<BaseOutput<List<UnitConversion>>> getAll() {
 
     // Retrieve paginated list of unitConversions from the service
     List<UnitConversion> unitConversionPage = unitConversionService.getAll();
