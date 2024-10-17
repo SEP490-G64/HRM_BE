@@ -58,16 +58,16 @@ public class StaffProductController {
     return ResponseEntity.ok(response);
   }
 
-  @GetMapping("/api/products/search")
+  @GetMapping("/search")
   public ResponseEntity<List<Product>> searchProducts(
-      @RequestParam("productName") Optional<String> productName,
-      @RequestParam("manufacturerId") Optional<Long> manufacturerId,
-      @RequestParam("categoryId") Optional<Long> categoryId,
-      @RequestParam("typeId") Optional<Long> typeId,
-      @RequestParam("status") Optional<String> status) {
+      @RequestParam Optional<String> keyword,
+      @RequestParam Optional<Long> manufacturerId,
+      @RequestParam Optional<Long> categoryId,
+      @RequestParam Optional<Long> typeId,
+      @RequestParam Optional<String> status) {
 
-    List<Product> products =
-        productService.searchProducts(productName, manufacturerId, categoryId, typeId, status);
+    List<Product> products = productService.searchProducts(
+        keyword, manufacturerId, categoryId, typeId, status);
 
     return ResponseEntity.ok(products);
   }
