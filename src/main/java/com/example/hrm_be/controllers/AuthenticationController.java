@@ -2,8 +2,8 @@ package com.example.hrm_be.controllers;
 
 import com.example.hrm_be.commons.constants.HrmConstant.ERROR.REQUEST;
 import com.example.hrm_be.commons.enums.UserStatusType;
-import com.example.hrm_be.components.DateUtil;
-import com.example.hrm_be.components.MailUtil;
+import com.example.hrm_be.utils.DateUtil;
+import com.example.hrm_be.utils.MailUtil;
 import com.example.hrm_be.models.entities.PasswordResetTokenEntity;
 import com.example.hrm_be.models.requests.ResetPasswordRequest;
 import com.example.hrm_be.services.PasswordTokenService;

@@ -28,6 +28,7 @@ public class OutboundMapper {
         .map(
             d ->
                 OutboundEntity.builder()
+                    .id(d.getId())
                     .outboundType(d.getOutboundType())
                     .fromBranch(
                         d.getFromBranch() != null ? branchMapper.toEntity(d.getFromBranch()) : null)
@@ -60,6 +61,7 @@ public class OutboundMapper {
   // Helper method to convert OutboundEntity to OutboundDTO
   private Outbound convertToDTO(OutboundEntity entity) {
     return Outbound.builder()
+        .id(entity.getId())
         .outboundType(entity.getOutboundType())
         .fromBranch(
             entity.getFromBranch() != null ? branchMapper.toDTO(entity.getFromBranch()) : null)

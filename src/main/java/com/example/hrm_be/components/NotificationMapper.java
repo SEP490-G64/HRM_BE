@@ -23,6 +23,7 @@ public class NotificationMapper {
         .map(
             d ->
                 NotificationEntity.builder()
+                    .id(d.getId())
                     .notiType(d.getNotiType())
                     .notiName(d.getNotiName())
                     .message(d.getMessage())
@@ -37,6 +38,7 @@ public class NotificationMapper {
   // Helper method to convert NotificationEntity to NotificationDTO
   private Notification convertToDTO(NotificationEntity entity) {
     return Notification.builder()
+        .id(entity.getId())
         .notiType(entity.getNotiType())
         .notiName(entity.getNotiName())
         .message(entity.getMessage())
