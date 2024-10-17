@@ -3,7 +3,7 @@ server:
   forward-headers-strategy: framework
   port: 8080
   servlet:
-    context-path: /whm
+    context-path: /dsd
 
 spring:
   profiles:
