@@ -66,8 +66,8 @@ public class StaffProductController {
       @RequestParam Optional<Long> typeId,
       @RequestParam Optional<String> status) {
 
-    List<Product> products = productService.searchProducts(
-        keyword, manufacturerId, categoryId, typeId, status);
+    List<Product> products =
+        productService.searchProducts(keyword, manufacturerId, categoryId, typeId, status);
 
     BaseOutput<List<Product>> response =
         BaseOutput.<List<Product>>builder()
