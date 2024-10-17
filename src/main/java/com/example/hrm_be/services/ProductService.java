@@ -4,6 +4,7 @@ import com.example.hrm_be.models.dtos.Product;
 import com.example.hrm_be.models.entities.AllowedProductEntity;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 
 public interface ProductService {
@@ -28,4 +29,11 @@ public interface ProductService {
   Page<Product> getByPagingAndTypeId(int pageNo, int pageSize, String sortBy, Long TypeId);
 
   List<AllowedProductEntity> addProductFromJson(List<Map<String, Object>> productJsonList);
+
+  List<Product> searchProducts(
+      Optional<String> keyword,
+      Optional<Long> manufacturerId,
+      Optional<Long> categoryId,
+      Optional<Long> typeId,
+      Optional<String> status);
 }

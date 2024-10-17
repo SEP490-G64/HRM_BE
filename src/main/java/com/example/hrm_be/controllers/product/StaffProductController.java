@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -55,6 +56,20 @@ public class StaffProductController {
             .status(ResponseStatus.SUCCESS)
             .build();
     return ResponseEntity.ok(response);
+  }
+
+  @GetMapping("/api/products/search")
+  public ResponseEntity<List<Product>> searchProducts(
+      @RequestParam("productName") Optional<String> productName,
+      @RequestParam("manufacturerId") Optional<Long> manufacturerId,
+      @RequestParam("categoryId") Optional<Long> categoryId,
+      @RequestParam("typeId") Optional<Long> typeId,
+      @RequestParam("status") Optional<String> status) {
+
+    List<Product> products =
+        productService.searchProducts(productName, manufacturerId, categoryId, typeId, status);
+
+    return ResponseEntity.ok(products);
   }
 
   @GetMapping("category/{id}")

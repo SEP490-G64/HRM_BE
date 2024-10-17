@@ -8,6 +8,8 @@ import com.example.hrm_be.models.entities.ProductCategoryEntity;
 import com.example.hrm_be.repositories.ProductCategoryRepository;
 import com.example.hrm_be.services.ProductCategoryService;
 import io.micrometer.common.util.StringUtils;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -27,6 +29,14 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
   @Autowired private ProductCategoryRepository categoryRepository;
   // Injects the mapper to convert between DTO and Entity objects
   @Autowired private ProductCategoryMapper categoryMapper;
+
+  @Override
+  public List<ProductCategory> getAll() {
+    List<ProductCategoryEntity> productCategoryEntities = categoryRepository.findAll();
+    return productCategoryEntities.stream()
+        .map(dao -> categoryMapper.toDTO(dao))
+        .collect(Collectors.toList());
+  }
 
   // Retrieves a ProductCategory by ID
   @Override

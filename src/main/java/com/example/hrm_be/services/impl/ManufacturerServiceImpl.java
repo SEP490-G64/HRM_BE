@@ -8,8 +8,10 @@ import com.example.hrm_be.models.entities.ManufacturerEntity;
 import com.example.hrm_be.repositories.ManufacturerRepository;
 import com.example.hrm_be.services.ManufacturerService;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,6 +26,14 @@ public class ManufacturerServiceImpl implements ManufacturerService {
   @Autowired private ManufacturerRepository manufacturerRepository;
 
   @Autowired private ManufacturerMapper manufacturerMapper;
+
+  @Override
+  public List<Manufacturer> getAll() {
+    List<ManufacturerEntity> manufacturerEntities = manufacturerRepository.findAll();
+    return manufacturerEntities.stream()
+        .map(dao -> manufacturerMapper.toDTO(dao))
+        .collect(Collectors.toList());
+  }
 
   @Override
   public Manufacturer getById(Long id) {

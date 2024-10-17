@@ -26,6 +26,27 @@ public class StaffProductCategoryController {
   // Injecting ProductCategoryService to handle business logic for ProductCategory
   private final ProductCategoryService productCategoryService;
 
+  // GET: /api/v1/staff/get-all
+  // Get List of ProductCategory
+  // GET all ProductCategory
+  @GetMapping("/get-all")
+  protected ResponseEntity<BaseOutput<List<ProductCategory>>> getAll() {
+
+    // Retrieve paginated list of unitConversions from the service
+    List<ProductCategory> productCategories = productCategoryService.getAll();
+
+    // Construct response object with unitConversion data and pagination details
+    BaseOutput<List<ProductCategory>> response =
+        BaseOutput.<List<ProductCategory>>builder()
+            .message(HttpStatus.OK.toString())
+            .data(productCategories)
+            .status(ResponseStatus.SUCCESS) // Set response tatus to SUCCESS
+            .build();
+
+    // Return response with status OK
+    return ResponseEntity.ok(response);
+  }
+
   // Handles GET requests for paginated list of ProductCategory entities
   @GetMapping("")
   protected ResponseEntity<BaseOutput<List<ProductCategory>>> getByPaging(
