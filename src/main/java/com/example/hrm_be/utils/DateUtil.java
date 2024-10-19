@@ -1,4 +1,4 @@
-package com.example.hrm_be.components;
+package com.example.hrm_be.utils;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
