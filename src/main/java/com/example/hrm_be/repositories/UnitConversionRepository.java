@@ -12,11 +12,11 @@ import java.util.List;
 
 @Repository
 public interface UnitConversionRepository extends JpaRepository<UnitConversionEntity, Long> {
-    List<UnitConversionEntity> getByProductId(long productId);
+  List<UnitConversionEntity> getByProductId(long productId);
 
-    @Modifying
-    @Transactional
-    @Query("UPDATE UnitConversionEntity u SET u.product.id = :productId WHERE u.id IN :ids")
-    void assignToProductByProductIdAndIds(
-            @Param("productId") Long productId, @Param("ids") List<Long> ids);
+  @Modifying
+  @Transactional
+  @Query("UPDATE UnitConversionEntity u SET u.product.id = :productId WHERE u.id IN :ids")
+  void assignToProductByProductIdAndIds(
+      @Param("productId") Long productId, @Param("ids") List<Long> ids);
 }

@@ -34,7 +34,8 @@ public class UnitConversionMapper {
                             ? unitOfMeasurementMapper.toEntity(d.getSmallerUnit())
                             : null)
                     .factorConversion(d.getFactorConversion())
-//                    .product(d.getProduct() != null ? productMapper.toEntity(d.getProduct()) : null)
+                    //                    .product(d.getProduct() != null ?
+                    // productMapper.toEntity(d.getProduct()) : null)
                     .build())
         .orElse(null);
   }
@@ -52,7 +53,8 @@ public class UnitConversionMapper {
                 ? unitOfMeasurementMapper.toDTO(entity.getSmallerUnit())
                 : null)
         .factorConversion(entity.getFactorConversion())
-//        .product(entity.getProduct() != null ? productMapper.toDTO(entity.getProduct()) : null)
+        //        .product(entity.getProduct() != null ? productMapper.toDTO(entity.getProduct()) :
+        // null)
         .build();
   }
 }

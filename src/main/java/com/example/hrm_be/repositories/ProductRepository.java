@@ -24,5 +24,6 @@ public interface ProductRepository
   Page<ProductEntity> findProductByPagingAndTypeId(Long typeId, Pageable pageable);
 
   boolean existsByProductCode(String productCode);
+
   boolean existsByRegistrationCode(String code);
 }

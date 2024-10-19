@@ -66,7 +66,10 @@ public class UserMapper {
                                 .collect(Collectors.toList())
                             : null)
                     .status(String.valueOf(e.getStatus()))
-                    .branch(e.getBranch() != null ? branchMapper.convertToDTOBasicInfo(e.getBranch()) : null)
+                    .branch(
+                        e.getBranch() != null
+                            ? branchMapper.convertToDTOBasicInfo(e.getBranch())
+                            : null)
                     .build())
         .orElse(null);
   }
@@ -83,7 +86,10 @@ public class UserMapper {
                   .phone(request.getPhone())
                   .firstName(request.getFirstName())
                   .lastName(request.getLastName())
-                  .branch(request.getBranch() != null ? branchMapper.toEntity(request.getBranch()) : null)
+                  .branch(
+                      request.getBranch() != null
+                          ? branchMapper.toEntity(request.getBranch())
+                          : null)
                   .password(passwordEncoder.encode(request.getPassword()))
                   .build();
             })
