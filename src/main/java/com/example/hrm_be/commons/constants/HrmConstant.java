@@ -65,6 +65,7 @@ public class HrmConstant {
       public static final String UPDATE = "error.product.update";
       public static final String DELETE = "error.product.delete";
       public static final String EXIST = "error.product.exist";
+      public static final String REGISTRATION_EXIST = "error.product.registration_exist";
       public static final String NOT_CHILD = "error.product.not_child";
       public static final String NOT_EXIST = "error.product.not_exist";
     }

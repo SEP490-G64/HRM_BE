@@ -40,7 +40,7 @@ public class UserMapper {
                   .phone(e.getPhone())
                   .firstName(e.getFirstName())
                   .lastName(e.getLastName())
-                  .createdDate(e.getCreatedDate())
+                  .branch(e.getBranch() != null ? branchMapper.toEntity(e.getBranch()) : null)
                   .build();
             })
         .orElse(null);
@@ -66,21 +66,7 @@ public class UserMapper {
                                 .collect(Collectors.toList())
                             : null)
                     .status(String.valueOf(e.getStatus()))
-                    .createdDate(e.getCreatedDate())
-                    .build())
-        .orElse(null);
-  }
-
-  public User convertToDtoWithBranch(UserEntity entity) {
-    return Optional.ofNullable(entity)
-        .map(this::convertToDto)
-        .map(
-            e ->
-                e.toBuilder()
-                    .branch(
-                        entity.getBranch() != null
-                            ? branchMapper.convertToDTOBasicInfo(entity.getBranch())
-                            : null)
+                    .branch(e.getBranch() != null ? branchMapper.convertToDTOBasicInfo(e.getBranch()) : null)
                     .build())
         .orElse(null);
   }
@@ -97,7 +83,7 @@ public class UserMapper {
                   .phone(request.getPhone())
                   .firstName(request.getFirstName())
                   .lastName(request.getLastName())
-                  .branch(dto.getBranch() != null ? branchMapper.toEntity(dto.getBranch()) : null)
+                  .branch(request.getBranch() != null ? branchMapper.toEntity(request.getBranch()) : null)
                   .password(passwordEncoder.encode(request.getPassword()))
                   .build();
             })

@@ -22,4 +22,7 @@ public interface ProductRepository
 
   @Query("SELECT p FROM ProductEntity p WHERE p.category.id=:typeId")
   Page<ProductEntity> findProductByPagingAndTypeId(Long typeId, Pageable pageable);
+
+  boolean existsByProductCode(String productCode);
+  boolean existsByRegistrationCode(String code);
 }

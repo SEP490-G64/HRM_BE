@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 public class UnitConversionMapper {
 
   @Autowired @Lazy private UnitOfMeasurementMapper unitOfMeasurementMapper;
-  @Autowired @Lazy private BatchMapper batchMapper;
+  @Autowired @Lazy private ProductMapper productMapper;
 
   // Convert UnitConversionEntity to UnitConversionDTO
   public UnitConversion toDTO(UnitConversionEntity entity) {
@@ -34,7 +34,7 @@ public class UnitConversionMapper {
                             ? unitOfMeasurementMapper.toEntity(d.getSmallerUnit())
                             : null)
                     .factorConversion(d.getFactorConversion())
-                    .batch(d.getBatch() != null ? batchMapper.toEntity(d.getBatch()) : null)
+//                    .product(d.getProduct() != null ? productMapper.toEntity(d.getProduct()) : null)
                     .build())
         .orElse(null);
   }
@@ -52,7 +52,7 @@ public class UnitConversionMapper {
                 ? unitOfMeasurementMapper.toDTO(entity.getSmallerUnit())
                 : null)
         .factorConversion(entity.getFactorConversion())
-        .batch(entity.getBatch() != null ? batchMapper.toDTO(entity.getBatch()) : null)
+//        .product(entity.getProduct() != null ? productMapper.toDTO(entity.getProduct()) : null)
         .build();
   }
 }

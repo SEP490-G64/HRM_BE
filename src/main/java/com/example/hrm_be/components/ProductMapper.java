@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component
 public class ProductMapper {
@@ -15,6 +16,7 @@ public class ProductMapper {
   @Autowired @Lazy private ProductCategoryMapper productCategoryMapper;
   @Autowired @Lazy private ProductTypeMapper productTypeMapper;
   @Autowired @Lazy private UnitOfMeasurementMapper unitOfMeasurementMapper;
+  @Autowired @Lazy private UnitConversionMapper unitConversionMapper;
   @Autowired @Lazy private InboundDetailsMapper inboundDetailsMapper;
   @Autowired @Lazy private SpecialConditionMapper specialConditionMapper;
   @Autowired @Lazy private BatchMapper batchMapper;
@@ -38,6 +40,18 @@ public class ProductMapper {
                     .productCode(d.getProductCode())
                     .registrationCode(d.getRegistrationCode())
                     .urlImage(d.getUrlImage())
+//                    .unitConversions(
+//                        d.getUnitConversions() != null
+//                             ? d.getUnitConversions().stream()
+//                                 .map(unitConversionMapper::toEntity)
+//                                        .collect(Collectors.toList())
+//                                        : null)
+                    .specialConditions(
+                        d.getSpecialConditions() != null
+                             ? d.getSpecialConditions().stream()
+                                 .map(specialConditionMapper::toEntity)
+                                        .collect(Collectors.toList())
+                                        : null)
                     .manufacturer(
                         d.getManufacturer() != null
                             ? manufacturerMapper.toEntity(d.getManufacturer())
@@ -57,6 +71,12 @@ public class ProductMapper {
                         d.getBaseUnit() != null
                             ? unitOfMeasurementMapper.toEntity(d.getBaseUnit())
                             : null)
+                    .branchProducs(
+                        d.getBranchProducts() != null
+                            ? d.getBranchProducts().stream()
+                                    .map(branchProductMapper::toEntity)
+                                    .collect(Collectors.toList())
+                                    : null)
                     .build())
         .orElse(null);
   }
@@ -75,6 +95,28 @@ public class ProductMapper {
         .inboundPrice(entity.getInboundPrice())
         .sellPrice(entity.getSellPrice())
         .status(entity.getStatus())
+        .unitConversions(
+            entity.getUnitConversions() != null
+                            ? entity.getUnitConversions().stream()
+                            .map(unitConversionMapper::toDTO)
+                            .collect(Collectors.toList())
+                            : null)
+        .specialConditions(
+            entity.getSpecialConditions() != null
+                            ? entity.getSpecialConditions().stream()
+                            .map(specialConditionMapper::toDTO)
+                            .collect(Collectors.toList())
+                            : null)
+        .baseUnit(
+            entity.getBaseUnit() != null
+                            ? unitOfMeasurementMapper.toDTO(entity.getBaseUnit())
+                            : null)
+        .branchProducts(
+                    entity.getBranchProducs() != null
+                            ? entity.getBranchProducs().stream()
+                            .map(branchProductMapper::toDTO)
+                            .collect(Collectors.toList())
+                            : null)
         .build();
   }
 }

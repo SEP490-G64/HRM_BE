@@ -44,9 +44,6 @@ public class UserEntity extends CommonEntity {
   @Column(name = "status")
   UserStatusType status;
 
-  @Column(name = "created_date")
-  LocalDateTime createdDate;
-
   @ToString.Exclude
   @OneToMany(mappedBy = "user")
   List<UserRoleMapEntity> userRoleMap;
