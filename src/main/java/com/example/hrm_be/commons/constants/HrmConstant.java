@@ -100,6 +100,7 @@ public class HrmConstant {
       public static final String NOT_EXIST = "error.user.not_exist";
       public static final String EXIST = "error.user.exist";
       public static final String NOT_ASSIGNED_ROLE = "error.user.not_assigned_role";
+      public static final String NOT_ASSIGNED_BRANCH = "error.user.not_assigned_branch";
       public static final String NOT_MATCH_CONFIRM_PASSWORD =
           "error.user.not_match_confirm_password";
     }
