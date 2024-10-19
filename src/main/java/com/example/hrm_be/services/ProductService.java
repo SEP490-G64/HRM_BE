@@ -1,6 +1,7 @@
 package com.example.hrm_be.services;
 
 import com.example.hrm_be.models.dtos.Product;
+import com.example.hrm_be.models.dtos.ProductBaseDTO;
 import com.example.hrm_be.models.entities.AllowedProductEntity;
 import java.util.List;
 import java.util.Map;
@@ -10,7 +11,7 @@ import org.springframework.data.domain.Page;
 public interface ProductService {
   Product getById(Long id);
 
-  Page<Product> getByPaging(
+  Page<ProductBaseDTO> getByPaging(
       int pageNo,
       int pageSize,
       String sortBy,

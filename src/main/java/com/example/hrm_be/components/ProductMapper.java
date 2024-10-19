@@ -1,6 +1,7 @@
 package com.example.hrm_be.components;
 
 import com.example.hrm_be.models.dtos.Product;
+import com.example.hrm_be.models.dtos.ProductBaseDTO;
 import com.example.hrm_be.models.entities.ProductEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -73,6 +74,23 @@ public class ProductMapper {
         .inboundPrice(entity.getInboundPrice())
         .sellPrice(entity.getSellPrice())
         .status(entity.getStatus())
+        .build();
+  }
+  public ProductBaseDTO convertToProductBaseDTO(ProductEntity entity) {
+    return ProductBaseDTO.builder()
+        .productName(entity.getProductName())
+        .registrationCode(entity.getRegistrationCode())
+        .urlImage(entity.getUrlImage())
+        .activeIngredient(entity.getActiveIngredient())
+        .excipient(entity.getExcipient())
+        .formulation(entity.getFormulation())
+        .inboundPrice(entity.getInboundPrice())
+        .sellPrice(entity.getSellPrice())
+        .status(entity.getStatus())
+        .baseUnit(entity.getBaseUnit() != null ? entity.getBaseUnit().getUnitName() : null)
+        .categoryName(entity.getCategory() != null ? entity.getCategory().getCategoryName() : null)
+        .typeName(entity.getType() != null ? entity.getType().getTypeName() : null)
+        .manufacturerName(entity.getManufacturer() != null ? entity.getManufacturer().getManufacturerName() : null)
         .build();
   }
 }

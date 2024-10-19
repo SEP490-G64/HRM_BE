@@ -14,6 +14,7 @@ import com.example.hrm_be.components.StorageLocationMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.BranchProduct;
 import com.example.hrm_be.models.dtos.Product;
+import com.example.hrm_be.models.dtos.ProductBaseDTO;
 import com.example.hrm_be.models.dtos.SpecialCondition;
 import com.example.hrm_be.models.entities.AllowedProductEntity;
 import com.example.hrm_be.models.entities.BranchProductEntity;
@@ -73,7 +74,7 @@ public class ProductServiceImpl implements ProductService {
   }
 
   @Override
-  public Page<Product> getByPaging(
+  public Page<ProductBaseDTO> getByPaging(
       int pageNo,
       int pageSize,
       String sortBy,
@@ -88,18 +89,18 @@ public class ProductServiceImpl implements ProductService {
       if ("name".equalsIgnoreCase(searchType)) {
         return productRepository
             .findProductEntitiesByProductNameContainingIgnoreCase(searchValue, pageable)
-            .map(dao -> productMapper.toDTO(dao));
+            .map(dao -> productMapper.convertToProductBaseDTO(dao));
       }
       // Search by code if searchType is "code"
       else if ("code".equalsIgnoreCase(searchType)) {
         return productRepository
             .findProductEntitiesByRegistrationCodeContainingIgnoreCase(searchValue, pageable)
-            .map(dao -> productMapper.toDTO(dao));
+            .map(dao -> productMapper.convertToProductBaseDTO(dao));
       }
     }
 
     // Return all products if no search value is provided
-    return productRepository.findAll(pageable).map(dao -> productMapper.toDTO(dao));
+    return productRepository.findAll(pageable).map(dao -> productMapper.convertToProductBaseDTO(dao));
   }
 
   @Override

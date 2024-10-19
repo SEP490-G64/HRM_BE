@@ -3,6 +3,7 @@ package com.example.hrm_be.controllers.product;
 import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.commons.enums.ResponseStatus;
 import com.example.hrm_be.models.dtos.Product;
+import com.example.hrm_be.models.dtos.ProductBaseDTO;
 import com.example.hrm_be.models.responses.BaseOutput;
 import com.example.hrm_be.services.ProductService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -35,18 +36,18 @@ public class StaffProductController {
   private final ProductService productService;
 
   @GetMapping("")
-  protected ResponseEntity<BaseOutput<List<Product>>> getByPaging(
+  protected ResponseEntity<BaseOutput<List<ProductBaseDTO>>> getByPaging(
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size,
       @RequestParam(required = false, defaultValue = "id") String sortBy,
       @RequestParam(required = false, defaultValue = "ASC") String sortDirection,
       @RequestParam(required = false, defaultValue = "name") String searchType,
       @RequestParam(defaultValue = "") String searchValue) {
-    Page<Product> productPage =
+    Page<ProductBaseDTO> productPage =
         productService.getByPaging(page, size, sortBy, sortDirection, searchType, searchValue);
 
-    BaseOutput<List<Product>> response =
-        BaseOutput.<List<Product>>builder()
+    BaseOutput<List<ProductBaseDTO>> response =
+        BaseOutput.<List<ProductBaseDTO>>builder()
             .message(HttpStatus.OK.toString())
             .totalPages(productPage.getTotalPages())
             .currentPage(page)
