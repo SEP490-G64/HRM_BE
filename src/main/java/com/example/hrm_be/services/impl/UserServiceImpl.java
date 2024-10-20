@@ -234,15 +234,14 @@ public class UserServiceImpl implements UserService {
             ue -> {
               UserEntity.UserEntityBuilder builder =
                   ue.toBuilder()
-                      .firstName(user.getFirstName())
-                      .lastName(user.getLastName())
+                      .fullName(user.getFullName())
                       .phone(user.getPhone())
                       .userName(user.getUserName())
                       .email(user.getEmail())
                       .branch(branchMapper.toEntity(user.getBranch()));
 
-              // Only set new status if status is not null
-              if (user.getStatus() != null) {
+              // Only set new status if status is not null or not update user profile
+              if (user.getStatus() != null || !profile) {
                 builder.status(UserStatusType.valueOf(user.getStatus()));
               }
               return builder.build();
@@ -387,18 +386,7 @@ public class UserServiceImpl implements UserService {
             })
         .map(
             e -> {
-              // Check role to assign role for user
-              if (registerRequest.getRole() != null) {
-                if (registerRequest.getRole() == 1) {
-                  userRoleMapService.setStaffRoleForUser(e.getId());
-                } else if (registerRequest.getRole() == 2) {
-                  userRoleMapService.setManagerRoleForUser(e.getId());
-                } else if (registerRequest.getRole() == 3) {
-                  userRoleMapService.setAdminRoleForUser(e.getId());
-                }
-              } else {
-                userRoleMapService.setStaffRoleForUser(e.getId());
-              }
+              userRoleMapService.setStaffRoleForUser(e.getId());
               return e;
             })
         .map(userMapper::toDTO)

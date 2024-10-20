@@ -68,10 +68,10 @@ public class AuthenticationController {
         && !Objects.equals(userDetails.getStatus(), UserStatusType.ACTIVATE.toString())) {
 
       // Return a Bad Request response with message about account not being activated
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST) // Change the status to BAD_REQUEST
+      return ResponseEntity.status(HttpStatus.FORBIDDEN) // Change the status to BAD_REQUEST
           .body(
               BaseOutput.<AccessToken>builder()
-                  .message("Account not activated, unable to login.") // Descriptive message
+                  .message("Tài khoản chưa được kích hoạt") // Descriptive message
                   .data(null) // Do not return AccessToken
                   .build());
     }

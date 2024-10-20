@@ -34,11 +34,8 @@ public class UserEntity extends CommonEntity {
   @Column(name = "phone")
   String phone;
 
-  @Column(name = "first_name")
-  String firstName;
-
-  @Column(name = "last_name")
-  String lastName;
+  @Column(name = "full_name")
+  String fullName;
 
   @Enumerated(EnumType.STRING)
   @Column(name = "status")

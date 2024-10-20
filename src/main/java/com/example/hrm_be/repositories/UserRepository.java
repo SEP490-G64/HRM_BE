@@ -26,8 +26,7 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
       "SELECT u FROM UserEntity u "
           + "WHERE (LOWER(u.userName) LIKE LOWER(CONCAT('%', :searchKeyword, '%')) "
           + "OR LOWER(u.email) LIKE LOWER(CONCAT('%', :searchKeyword, '%')) "
-          + "OR LOWER(u.firstName) LIKE LOWER(CONCAT('%', :searchKeyword, '%')) "
-          + "OR LOWER(u.lastName) LIKE LOWER(CONCAT('%', :searchKeyword, '%'))) "
+          + "OR LOWER(u.fullName) LIKE LOWER(CONCAT('%', :searchKeyword, '%'))) "
           + "AND (u.status <> :status)")
   Page<UserEntity> searchUsers(String searchKeyword, UserStatusType status, Pageable pageable);
 

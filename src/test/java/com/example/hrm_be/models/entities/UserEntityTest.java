@@ -72,7 +72,6 @@ class UserEntityTest {
     assertEquals("chuduong1811", savedUserEntity.getUserName());
     assertEquals("duongcdhe176312@gmail.com", savedUserEntity.getEmail());
     assertEquals("0915435790", savedUserEntity.getPhone());
-    assertEquals("chu", savedUserEntity.getFirstName());
-    assertEquals("duong", savedUserEntity.getLastName());
+    assertEquals("chu duong", savedUserEntity.getFullName());
   }
 }

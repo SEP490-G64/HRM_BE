@@ -38,8 +38,7 @@ public class UserMapper {
                   .password(
                       e.getPassword() != null ? passwordEncoder.encode(e.getPassword()) : null)
                   .phone(e.getPhone())
-                  .firstName(e.getFirstName())
-                  .lastName(e.getLastName())
+                  .fullName(e.getFullName())
                   .branch(e.getBranch() != null ? branchMapper.toEntity(e.getBranch()) : null)
                   .build();
             })
@@ -56,8 +55,7 @@ public class UserMapper {
                     .email(e.getEmail())
                     .password(e.getPassword())
                     .phone(e.getPhone())
-                    .firstName(e.getFirstName())
-                    .lastName(e.getLastName())
+                    .fullName(e.getFullName())
                     .roles(
                         e.getUserRoleMap() != null
                             ? e.getUserRoleMap().stream()
@@ -81,9 +79,7 @@ public class UserMapper {
                   .userName(request.getUserName())
                   .email(request.getEmail())
                   .phone(request.getPhone())
-                  .firstName(request.getFirstName())
-                  .lastName(request.getLastName())
-                  .branch(request.getBranch() != null ? branchMapper.toEntity(request.getBranch()) : null)
+                  .fullName(request.getFullName())
                   .password(passwordEncoder.encode(request.getPassword()))
                   .build();
             })

@@ -28,15 +28,9 @@ public class RegisterRequest {
 
   String phone;
 
-  String firstName;
-
-  String lastName;
+  String fullName;
 
   String password;
 
   String confirmPassword;
-
-  Long role;
-
-  Branch branch;
 }

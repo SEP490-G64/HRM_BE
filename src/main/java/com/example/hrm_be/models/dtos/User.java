@@ -33,9 +33,7 @@ public class User implements Serializable {
 
   String phone;
 
-  String firstName;
-
-  String lastName;
+  String fullName;
 
   String status;
 

@@ -13,8 +13,7 @@ public class TestUtils {
         .userName("chuduong1811")
         .email("duongcdhe176312@gmail.com")
         .phone("0915435790")
-        .firstName("chu")
-        .lastName("duong")
+        .fullName("chu duong")
         .password(passwordEncoder.encode("Abcd1234"))
         .build();
   }
