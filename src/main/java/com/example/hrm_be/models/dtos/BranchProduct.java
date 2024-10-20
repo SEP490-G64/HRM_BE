@@ -23,6 +23,7 @@ import lombok.extern.jackson.Jacksonized;
 public class BranchProduct {
   Long id;
   Product product;
+  ProductBaseDTO productBaseDTO;
 
   Branch branch;
 

@@ -7,13 +7,16 @@ import com.example.hrm_be.commons.constants.HrmConstant.ERROR.MANUFACTURER;
 import com.example.hrm_be.commons.constants.HrmConstant.ERROR.REQUEST;
 import com.example.hrm_be.commons.constants.HrmConstant.ERROR.TYPE;
 import com.example.hrm_be.commons.constants.HrmConstant.ERROR.UNIT_OF_MEASUREMENT;
+import com.example.hrm_be.commons.constants.HrmConstant.ERROR.USER;
 import com.example.hrm_be.components.BranchMapper;
+import com.example.hrm_be.components.BranchProductMapper;
 import com.example.hrm_be.components.ProductMapper;
 import com.example.hrm_be.components.SpecialConditionMapper;
 import com.example.hrm_be.components.StorageLocationMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.BranchProduct;
 import com.example.hrm_be.models.dtos.Product;
+import com.example.hrm_be.models.dtos.ProductBaseDTO;
 import com.example.hrm_be.models.dtos.SpecialCondition;
 import com.example.hrm_be.models.entities.AllowedProductEntity;
 import com.example.hrm_be.models.entities.BranchProductEntity;
@@ -30,7 +33,9 @@ import com.example.hrm_be.repositories.ProductTypeRepository;
 import com.example.hrm_be.repositories.SpecialConditionRepository;
 import com.example.hrm_be.repositories.StorageLocationRepository;
 import com.example.hrm_be.repositories.UnitOfMeasurementRepository;
+import com.example.hrm_be.repositories.UserRepository;
 import com.example.hrm_be.services.ProductService;
+import com.example.hrm_be.services.UserService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -55,6 +60,7 @@ public class ProductServiceImpl implements ProductService {
   @Autowired private ProductCategoryRepository productCategoryRepository;
 
   @Autowired private UnitOfMeasurementRepository unitOfMeasurementRepository;
+  @Autowired private UserService userService;
 
   @Autowired private ManufacturerRepository manufacturerRepository;
   @Autowired private ProductMapper productMapper;
@@ -62,7 +68,9 @@ public class ProductServiceImpl implements ProductService {
   @Autowired private BranchMapper branchMapper;
   @Autowired private SpecialConditionRepository specialConditionRepository;
   @Autowired private StorageLocationMapper storageLocationMapper;
+  @Autowired private BranchProductMapper branchProductMapper;
   @Autowired private BatchRepository batchRepository;
+  @Autowired private UserRepository userRepository;
   @Autowired private BranchProductRepository branchProductRepository;
 
   @Override
@@ -73,7 +81,7 @@ public class ProductServiceImpl implements ProductService {
   }
 
   @Override
-  public Page<Product> getByPaging(
+  public Page<ProductBaseDTO> getByPaging(
       int pageNo,
       int pageSize,
       String sortBy,
@@ -82,24 +90,10 @@ public class ProductServiceImpl implements ProductService {
       String searchValue) {
     Sort.Direction direction = Sort.Direction.fromString(sortDirection);
     Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(direction, sortBy));
-
-    if (searchValue != null && !searchValue.isEmpty()) {
-      // Search by name if searchType is "name"
-      if ("name".equalsIgnoreCase(searchType)) {
-        return productRepository
-            .findProductEntitiesByProductNameContainingIgnoreCase(searchValue, pageable)
-            .map(dao -> productMapper.toDTO(dao));
-      }
-      // Search by code if searchType is "code"
-      else if ("code".equalsIgnoreCase(searchType)) {
-        return productRepository
-            .findProductEntitiesByRegistrationCodeContainingIgnoreCase(searchValue, pageable)
-            .map(dao -> productMapper.toDTO(dao));
-      }
-    }
-
     // Return all products if no search value is provided
-    return productRepository.findAll(pageable).map(dao -> productMapper.toDTO(dao));
+    return productRepository
+        .findAll(pageable)
+        .map(dao -> productMapper.convertToProductBaseDTO(dao));
   }
 
   @Override
@@ -214,11 +208,11 @@ public class ProductServiceImpl implements ProductService {
   }
 
   @Override
-  public Page<Product> getByPagingAndTypeId(int pageNo, int pageSize, String sortBy, Long TypeId) {
+  public Page<Product> getByPagingAndTypeId(int pageNo, int pageSize, String sortBy, Long typeId) {
     Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(sortBy).descending());
     // Tìm kiếm theo tên
     return productRepository
-        .findProductByPagingAndTypeId(TypeId, pageable)
+        .findProductByPagingAndTypeId(typeId, pageable)
         .map(dao -> productMapper.toDTO(dao));
   }
 
@@ -263,58 +257,98 @@ public class ProductServiceImpl implements ProductService {
   }
 
   @Override
-  public List<Product> searchProducts(
+  public Page<BranchProduct> searchProducts(
+      int pageNo,
+      int pageSize,
+      String sortBy,
+      String sortDirection,
       Optional<String> keyword,
       Optional<Long> manufacturerId,
       Optional<Long> categoryId,
       Optional<Long> typeId,
-      Optional<String> status) {
-    Specification<ProductEntity> specification = Specification.where(null);
+      Optional<String> status,
+      Optional<Long> branchId) {
+    Specification<BranchProductEntity> specification = Specification.where(null);
+    Sort.Direction direction = Sort.Direction.fromString(sortDirection);
+    Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(direction, sortBy));
+    // Filter by branchId if present
+    if (branchId.isPresent()) {
+      Optional<Long> finalBranchId = branchId;
+      specification =
+          specification.and(
+              (root, query, criteriaBuilder) ->
+                  criteriaBuilder.equal(root.get("branch").get("id"), finalBranchId.get()));
+    } else {
+      String loggedEmail = userService.getAuthenticatedUserEmail();
+      branchId = userRepository.findBranchIdByUserEmail(loggedEmail);
+      if (branchId.isEmpty()) {
+        throw new HrmCommonException(USER.NOT_ASSIGNED_BRANCH);
+      }
+      Optional<Long> finalBranchId1 = branchId;
+      specification =
+          specification.and(
+              (root, query, criteriaBuilder) ->
+                  criteriaBuilder.equal(root.get("branch").get("id"), finalBranchId1.get()));
+    }
 
     // Keyword search for product name, registration code, and active ingredient
     if (keyword.isPresent()) {
-      String key = "%" + keyword.get().toLowerCase() + "%";
+      String searchPattern = "%" + keyword.get().toLowerCase() + "%";
       specification =
           specification.and(
               (root, query, criteriaBuilder) ->
                   criteriaBuilder.or(
-                      criteriaBuilder.like(criteriaBuilder.lower(root.get("productName")), key),
                       criteriaBuilder.like(
-                          criteriaBuilder.lower(root.get("registrationCode")), key),
+                          criteriaBuilder.lower(root.get("product").get("productName")),
+                          searchPattern),
                       criteriaBuilder.like(
-                          criteriaBuilder.lower(root.get("activeIngredient")), key)));
+                          criteriaBuilder.lower(root.get("product").get("registrationCode")),
+                          searchPattern),
+                      criteriaBuilder.like(
+                          criteriaBuilder.lower(root.get("product").get("activeIngredient")),
+                          searchPattern)));
     }
 
     if (manufacturerId.isPresent()) {
       specification =
           specification.and(
               (root, query, criteriaBuilder) ->
-                  criteriaBuilder.equal(root.get("manufacturer").get("id"), manufacturerId.get()));
+                  criteriaBuilder.equal(
+                      root.get("product").get("manufacturer").get("id"), manufacturerId.get()));
     }
 
+    // Filter by categoryId
     if (categoryId.isPresent()) {
       specification =
           specification.and(
               (root, query, criteriaBuilder) ->
-                  criteriaBuilder.equal(root.get("category").get("id"), categoryId.get()));
+                  criteriaBuilder.equal(
+                      root.get("product").get("category").get("id"), categoryId.get()));
     }
 
+    // Filter by typeId
     if (typeId.isPresent()) {
       specification =
           specification.and(
               (root, query, criteriaBuilder) ->
-                  criteriaBuilder.equal(root.get("type").get("id"), typeId.get()));
+                  criteriaBuilder.equal(root.get("product").get("type").get("id"), typeId.get()));
     }
 
+    // Filter by status
     if (status.isPresent()) {
       specification =
           specification.and(
               (root, query, criteriaBuilder) ->
-                  criteriaBuilder.equal(root.get("status"), status.get()));
+                  criteriaBuilder.equal(root.get("product").get("status"), status.get()));
     }
+    return branchProductRepository
+        .findAll(specification, pageable)
+        .map(branchProductMapper::toDTOWithProduct);
+  }
 
-    return productRepository.findAll(specification).stream()
-        .map(productMapper::toDTO)
-        .collect(Collectors.toList());
+  @Transactional(readOnly = true)
+  public List<ProductEntity> getProductWithBranchProducts(Long branchId) {
+    // Fetch the product along with only the BranchProductEntity related to the given branchId
+    return productRepository.findProductByBranchId(branchId);
   }
 }
