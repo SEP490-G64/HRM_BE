@@ -79,7 +79,6 @@ public class ProductServiceImpl implements ProductService {
   @Autowired private BranchProductMapper branchProductMapper;
   @Autowired private BatchRepository batchRepository;
   @Autowired private UserRepository userRepository;
-  @Autowired private UserService userService;
   @Autowired private BranchProductRepository branchProductRepository;
   @Autowired private UnitConversionRepository unitConversionRepository;
   @Autowired private UnitConversionMapper unitConversionMapper;
