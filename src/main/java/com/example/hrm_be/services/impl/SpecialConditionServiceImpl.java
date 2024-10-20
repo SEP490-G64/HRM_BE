@@ -8,6 +8,8 @@ import com.example.hrm_be.models.entities.SpecialConditionEntity;
 import com.example.hrm_be.repositories.SpecialConditionRepository;
 import com.example.hrm_be.services.SpecialConditionService;
 import io.micrometer.common.util.StringUtils;
+import java.util.List;
+import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -103,4 +105,11 @@ public class SpecialConditionServiceImpl implements SpecialConditionService {
     // Delete the entity from the repository
     specialConditionRepository.deleteById(id);
   }
+
+  @Override
+  public void assignToProductByProductIdAndIds(@NonNull Long productId, @NonNull List<Long> ids) {
+
+    specialConditionRepository.assignToProductByProductIdAndIds(productId, ids);
+  }
+  ;
 }

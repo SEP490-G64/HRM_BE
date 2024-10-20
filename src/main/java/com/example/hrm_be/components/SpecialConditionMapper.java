@@ -2,11 +2,10 @@ package com.example.hrm_be.components;
 
 import com.example.hrm_be.models.dtos.SpecialCondition;
 import com.example.hrm_be.models.entities.SpecialConditionEntity;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
-
-import java.util.Optional;
 
 @Component
 public class SpecialConditionMapper {
@@ -25,7 +24,6 @@ public class SpecialConditionMapper {
             d ->
                 SpecialConditionEntity.builder()
                     .id(d.getId())
-                    .product(d.getProduct() != null ? productMapper.toEntity(d.getProduct()) : null)
                     .conditionType(d.getConditionType())
                     .handlingInstruction(d.getHandlingInstruction())
                     .build())
@@ -36,7 +34,6 @@ public class SpecialConditionMapper {
   private SpecialCondition convertToDTO(SpecialConditionEntity entity) {
     return SpecialCondition.builder()
         .id(entity.getId())
-        .product(entity.getProduct() != null ? productMapper.toDTO(entity.getProduct()) : null)
         .conditionType(entity.getConditionType())
         .handlingInstruction(entity.getHandlingInstruction())
         .build();

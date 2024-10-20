@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
@@ -36,8 +35,7 @@ public class StaffUnitConversionController {
   // Get List of UnitConversions
   // GET all unit conversion
   @GetMapping("")
-  protected ResponseEntity<BaseOutput<List<UnitConversion>>> getAll(
-      @RequestParam(required = false, defaultValue = "id") String sortBy) {
+  protected ResponseEntity<BaseOutput<List<UnitConversion>>> getAll() {
 
     // Retrieve paginated list of unitConversions from the service
     List<UnitConversion> unitConversionPage = unitConversionService.getAll();
@@ -46,6 +44,7 @@ public class StaffUnitConversionController {
     BaseOutput<List<UnitConversion>> response =
         BaseOutput.<List<UnitConversion>>builder()
             .message(HttpStatus.OK.toString())
+            .data(unitConversionPage)
             .status(ResponseStatus.SUCCESS) // Set response tatus to SUCCESS
             .build();
 

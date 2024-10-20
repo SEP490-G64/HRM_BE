@@ -2,11 +2,10 @@ package com.example.hrm_be.components;
 
 import com.example.hrm_be.models.dtos.Notification;
 import com.example.hrm_be.models.entities.NotificationEntity;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
-
-import java.util.Optional;
 
 @Component
 public class NotificationMapper {
@@ -24,6 +23,7 @@ public class NotificationMapper {
         .map(
             d ->
                 NotificationEntity.builder()
+                    .id(d.getId())
                     .notiType(d.getNotiType())
                     .notiName(d.getNotiName())
                     .message(d.getMessage())
@@ -38,6 +38,7 @@ public class NotificationMapper {
   // Helper method to convert NotificationEntity to NotificationDTO
   private Notification convertToDTO(NotificationEntity entity) {
     return Notification.builder()
+        .id(entity.getId())
         .notiType(entity.getNotiType())
         .notiName(entity.getNotiName())
         .message(entity.getMessage())

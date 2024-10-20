@@ -25,6 +25,7 @@ public class InboundDetailsMapper {
         .map(
             d ->
                 InboundDetailsEntity.builder()
+                    .id(d.getId())
                     .inbound(d.getInbound() != null ? inboundMapper.toEntity(d.getInbound()) : null)
                     .product(d.getProduct() != null ? productMapper.toEntity(d.getProduct()) : null)
                     .requestQuantity(d.getRequestQuantity())
@@ -36,6 +37,7 @@ public class InboundDetailsMapper {
   // Helper method to convert InboundDetailsEntity to InboundDetailsDTO
   private InboundDetails convertToDTO(InboundDetailsEntity entity) {
     return InboundDetails.builder()
+        .id(entity.getId())
         .product(entity.getProduct() != null ? productMapper.toDTO(entity.getProduct()) : null)
         .requestQuantity(entity.getRequestQuantity())
         .receiveQuantity(entity.getReceiveQuantity())

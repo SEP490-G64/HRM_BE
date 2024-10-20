@@ -1,32 +1,77 @@
 package com.example.hrm_be.services.impl;
 
 import com.example.hrm_be.commons.constants.HrmConstant;
+import com.example.hrm_be.commons.constants.HrmConstant.ERROR.BRANCHPRODUCT;
+import com.example.hrm_be.commons.constants.HrmConstant.ERROR.CATEGORY;
+import com.example.hrm_be.commons.constants.HrmConstant.ERROR.MANUFACTURER;
 import com.example.hrm_be.commons.constants.HrmConstant.ERROR.REQUEST;
+import com.example.hrm_be.commons.constants.HrmConstant.ERROR.TYPE;
+import com.example.hrm_be.commons.constants.HrmConstant.ERROR.UNIT_OF_MEASUREMENT;
+import com.example.hrm_be.commons.constants.HrmConstant.ERROR.USER;
+import com.example.hrm_be.components.BranchMapper;
+import com.example.hrm_be.components.BranchProductMapper;
 import com.example.hrm_be.components.ProductMapper;
+import com.example.hrm_be.components.SpecialConditionMapper;
+import com.example.hrm_be.components.StorageLocationMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
+import com.example.hrm_be.models.dtos.BranchProduct;
 import com.example.hrm_be.models.dtos.Product;
+import com.example.hrm_be.models.dtos.ProductBaseDTO;
+import com.example.hrm_be.models.dtos.SpecialCondition;
 import com.example.hrm_be.models.entities.AllowedProductEntity;
+import com.example.hrm_be.models.entities.BranchProductEntity;
 import com.example.hrm_be.models.entities.ProductEntity;
+import com.example.hrm_be.models.entities.SpecialConditionEntity;
+import com.example.hrm_be.models.entities.StorageLocationEntity;
 import com.example.hrm_be.repositories.AllowedProductRepository;
+import com.example.hrm_be.repositories.BatchRepository;
+import com.example.hrm_be.repositories.BranchProductRepository;
+import com.example.hrm_be.repositories.ManufacturerRepository;
+import com.example.hrm_be.repositories.ProductCategoryRepository;
 import com.example.hrm_be.repositories.ProductRepository;
+import com.example.hrm_be.repositories.ProductTypeRepository;
+import com.example.hrm_be.repositories.SpecialConditionRepository;
+import com.example.hrm_be.repositories.StorageLocationRepository;
+import com.example.hrm_be.repositories.UnitOfMeasurementRepository;
+import com.example.hrm_be.repositories.UserRepository;
 import com.example.hrm_be.services.ProductService;
+import com.example.hrm_be.services.UserService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ProductServiceImpl implements ProductService {
   @Autowired private ProductRepository productRepository;
   @Autowired private AllowedProductRepository allowedProductRepository;
+  @Autowired private StorageLocationRepository storageLocationRepository;
+  @Autowired private ProductTypeRepository productTypeRepository;
 
+  @Autowired private ProductCategoryRepository productCategoryRepository;
+
+  @Autowired private UnitOfMeasurementRepository unitOfMeasurementRepository;
+  @Autowired private UserService userService;
+
+  @Autowired private ManufacturerRepository manufacturerRepository;
   @Autowired private ProductMapper productMapper;
+  @Autowired private SpecialConditionMapper specialConditionMapper;
+  @Autowired private BranchMapper branchMapper;
+  @Autowired private SpecialConditionRepository specialConditionRepository;
+  @Autowired private StorageLocationMapper storageLocationMapper;
+  @Autowired private BranchProductMapper branchProductMapper;
+  @Autowired private BatchRepository batchRepository;
+  @Autowired private UserRepository userRepository;
+  @Autowired private BranchProductRepository branchProductRepository;
 
   @Override
   public Product getById(Long id) {
@@ -36,7 +81,7 @@ public class ProductServiceImpl implements ProductService {
   }
 
   @Override
-  public Page<Product> getByPaging(
+  public Page<ProductBaseDTO> getByPaging(
       int pageNo,
       int pageSize,
       String sortBy,
@@ -45,36 +90,85 @@ public class ProductServiceImpl implements ProductService {
       String searchValue) {
     Sort.Direction direction = Sort.Direction.fromString(sortDirection);
     Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(direction, sortBy));
-
-    if (searchValue != null && !searchValue.isEmpty()) {
-      // Search by name if searchType is "name"
-      if ("name".equalsIgnoreCase(searchType)) {
-        return productRepository
-            .findProductEntitiesByProductNameContainingIgnoreCase(searchValue, pageable)
-            .map(dao -> productMapper.toDTO(dao));
-      }
-      // Search by code if searchType is "code"
-      else if ("code".equalsIgnoreCase(searchType)) {
-        return productRepository
-            .findProductEntitiesByRegistrationCodeContainingIgnoreCase(searchValue, pageable)
-            .map(dao -> productMapper.toDTO(dao));
-      }
-    }
-
     // Return all products if no search value is provided
-    return productRepository.findAll(pageable).map(dao -> productMapper.toDTO(dao));
+    return productRepository
+        .findAll(pageable)
+        .map(dao -> productMapper.convertToProductBaseDTO(dao));
   }
 
   @Override
+  @Transactional
   public Product create(Product product) {
     if (product == null) {
       throw new HrmCommonException(REQUEST.INVALID_BODY);
     }
-    return Optional.ofNullable(product)
-        .map(e -> productMapper.toEntity(e))
-        .map(e -> productRepository.save(e))
-        .map(e -> productMapper.toDTO(e))
-        .orElse(null);
+    if (product.getType() != null && !productTypeRepository.existsById(product.getType().getId())) {
+      throw new HrmCommonException(TYPE.NOT_EXIST);
+    }
+
+    // Check if the category exists
+    if (product.getCategory() != null
+        && !productCategoryRepository.existsById(product.getCategory().getId())) {
+      throw new HrmCommonException(CATEGORY.NOT_EXIST);
+    }
+
+    // Check if the base unit exists
+    if (product.getBaseUnit() != null
+        && !unitOfMeasurementRepository.existsById(product.getBaseUnit().getId())) {
+      throw new HrmCommonException(UNIT_OF_MEASUREMENT.NOT_EXIST);
+    }
+
+    // Check if the manufacturer exists
+    if (product.getManufacturer() != null
+        && !manufacturerRepository.existsById(product.getManufacturer().getId())) {
+      throw new HrmCommonException(MANUFACTURER.NOT_EXIST);
+    }
+    ProductEntity savedProduct = productRepository.save(productMapper.toEntity(product));
+
+    // Add SpecialCondition
+    if (product.getSpecialConditions() != null && !product.getSpecialConditions().isEmpty()) {
+      List<SpecialConditionEntity> specialConditions = new ArrayList<>();
+
+      for (SpecialCondition specialConditionDTO : product.getSpecialConditions()) {
+        // Create a new SpecialConditionEntity
+        SpecialConditionEntity specialConditionEntity = new SpecialConditionEntity();
+        specialConditionEntity.setHandlingInstruction(specialConditionDTO.getHandlingInstruction());
+        specialConditionEntity.setConditionType(specialConditionDTO.getConditionType());
+
+        // Set the product to this special condition
+        specialConditionEntity.setProduct(savedProduct);
+
+        // Add to the list for any future use or associations
+        specialConditions.add(specialConditionMapper.toEntity(specialConditionDTO));
+      }
+      List<SpecialConditionEntity> savedSpecialCondition =
+          specialConditionRepository.saveAll(specialConditions);
+      specialConditionRepository.assignToProductByProductIdAndIds(
+          savedProduct.getId(),
+          savedSpecialCondition.stream()
+              .map(SpecialConditionEntity::getId)
+              .collect(Collectors.toList()));
+    }
+    // Add BranchProduct for Product
+    BranchProductEntity branchProductEntity = new BranchProductEntity();
+
+    BranchProduct branchProduct = product.getBranchProducts().get(0);
+    if (branchProduct == null) {
+      throw new HrmCommonException(BRANCHPRODUCT.NOT_EXIST);
+    }
+    if (branchProduct.getStorageLocation() != null) {
+      StorageLocationEntity savedStorageLocation =
+          storageLocationRepository.save(
+              storageLocationMapper.toEntity(branchProduct.getStorageLocation()));
+      branchProductEntity.setStorageLocation(savedStorageLocation);
+    }
+
+    branchProductEntity.setBranch(branchMapper.toEntity(branchProduct.getBranch()));
+    branchProductEntity.setProduct(savedProduct);
+
+    branchProductRepository.save(branchProductEntity);
+
+    return Optional.ofNullable(savedProduct).map(e -> productMapper.toDTO(e)).orElse(null);
   }
 
   @Override
@@ -114,11 +208,11 @@ public class ProductServiceImpl implements ProductService {
   }
 
   @Override
-  public Page<Product> getByPagingAndTypeId(int pageNo, int pageSize, String sortBy, Long TypeId) {
+  public Page<Product> getByPagingAndTypeId(int pageNo, int pageSize, String sortBy, Long typeId) {
     Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(sortBy).descending());
     // Tìm kiếm theo tên
     return productRepository
-        .findProductByPagingAndTypeId(TypeId, pageable)
+        .findProductByPagingAndTypeId(typeId, pageable)
         .map(dao -> productMapper.toDTO(dao));
   }
 
@@ -160,5 +254,101 @@ public class ProductServiceImpl implements ProductService {
     }
 
     return savedProducts;
+  }
+
+  @Override
+  public Page<BranchProduct> searchProducts(
+      int pageNo,
+      int pageSize,
+      String sortBy,
+      String sortDirection,
+      Optional<String> keyword,
+      Optional<Long> manufacturerId,
+      Optional<Long> categoryId,
+      Optional<Long> typeId,
+      Optional<String> status,
+      Optional<Long> branchId) {
+    Specification<BranchProductEntity> specification = Specification.where(null);
+    Sort.Direction direction = Sort.Direction.fromString(sortDirection);
+    Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(direction, sortBy));
+    // Filter by branchId if present
+    if (branchId.isPresent()) {
+      Optional<Long> finalBranchId = branchId;
+      specification =
+          specification.and(
+              (root, query, criteriaBuilder) ->
+                  criteriaBuilder.equal(root.get("branch").get("id"), finalBranchId.get()));
+    } else {
+      String loggedEmail = userService.getAuthenticatedUserEmail();
+      branchId = userRepository.findBranchIdByUserEmail(loggedEmail);
+      if (branchId.isEmpty()) {
+        throw new HrmCommonException(USER.NOT_ASSIGNED_BRANCH);
+      }
+      Optional<Long> finalBranchId1 = branchId;
+      specification =
+          specification.and(
+              (root, query, criteriaBuilder) ->
+                  criteriaBuilder.equal(root.get("branch").get("id"), finalBranchId1.get()));
+    }
+
+    // Keyword search for product name, registration code, and active ingredient
+    if (keyword.isPresent()) {
+      String searchPattern = "%" + keyword.get().toLowerCase() + "%";
+      specification =
+          specification.and(
+              (root, query, criteriaBuilder) ->
+                  criteriaBuilder.or(
+                      criteriaBuilder.like(
+                          criteriaBuilder.lower(root.get("product").get("productName")),
+                          searchPattern),
+                      criteriaBuilder.like(
+                          criteriaBuilder.lower(root.get("product").get("registrationCode")),
+                          searchPattern),
+                      criteriaBuilder.like(
+                          criteriaBuilder.lower(root.get("product").get("activeIngredient")),
+                          searchPattern)));
+    }
+
+    if (manufacturerId.isPresent()) {
+      specification =
+          specification.and(
+              (root, query, criteriaBuilder) ->
+                  criteriaBuilder.equal(
+                      root.get("product").get("manufacturer").get("id"), manufacturerId.get()));
+    }
+
+    // Filter by categoryId
+    if (categoryId.isPresent()) {
+      specification =
+          specification.and(
+              (root, query, criteriaBuilder) ->
+                  criteriaBuilder.equal(
+                      root.get("product").get("category").get("id"), categoryId.get()));
+    }
+
+    // Filter by typeId
+    if (typeId.isPresent()) {
+      specification =
+          specification.and(
+              (root, query, criteriaBuilder) ->
+                  criteriaBuilder.equal(root.get("product").get("type").get("id"), typeId.get()));
+    }
+
+    // Filter by status
+    if (status.isPresent()) {
+      specification =
+          specification.and(
+              (root, query, criteriaBuilder) ->
+                  criteriaBuilder.equal(root.get("product").get("status"), status.get()));
+    }
+    return branchProductRepository
+        .findAll(specification, pageable)
+        .map(branchProductMapper::toDTOWithProduct);
+  }
+
+  @Transactional(readOnly = true)
+  public List<ProductEntity> getProductWithBranchProducts(Long branchId) {
+    // Fetch the product along with only the BranchProductEntity related to the given branchId
+    return productRepository.findProductByBranchId(branchId);
   }
 }

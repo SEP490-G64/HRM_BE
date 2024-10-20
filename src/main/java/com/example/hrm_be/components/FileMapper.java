@@ -1,36 +1,38 @@
 package com.example.hrm_be.components;
 
-import com.example.hrm_be.models.dtos.Image;
-import com.example.hrm_be.models.entities.ImageEntity;
+import com.example.hrm_be.models.dtos.File;
+import com.example.hrm_be.models.entities.FileEntity;
 import java.util.Optional;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ImageMapper {
+public class FileMapper {
   // Convert ImageEntity to ImageDTO
-  public Image toDTO(ImageEntity entity) {
+  public File toDTO(FileEntity entity) {
     return Optional.ofNullable(entity).map(this::convertToDTO).orElse(null);
   }
 
   // Convert ImageDTO to ImageEntity
-  public ImageEntity toEntity(Image dto) {
+  public FileEntity toEntity(File dto) {
     return Optional.ofNullable(dto)
         .map(
             d ->
-                ImageEntity.builder()
+                FileEntity.builder()
                     .name(d.getName())
                     .ext(d.getExt())
                     .createdTime(d.getCreatedTime())
+                    .link(d.getLink())
                     .build())
         .orElse(null);
   }
 
   // Helper method to convert ImageEntity to ImageDTO
-  private Image convertToDTO(ImageEntity entity) {
-    return Image.builder()
+  private File convertToDTO(FileEntity entity) {
+    return File.builder()
         .name(entity.getName())
         .ext(entity.getExt())
         .createdTime(entity.getCreatedTime())
+        .link(entity.getLink())
         .build();
   }
 }

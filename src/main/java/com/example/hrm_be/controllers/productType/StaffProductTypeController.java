@@ -8,14 +8,13 @@ import com.example.hrm_be.services.ProductTypeService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotNull;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -26,6 +25,27 @@ import java.util.List;
 public class StaffProductTypeController {
   // Injecting ProductTypeService to handle business logic for ProductType
   private final ProductTypeService productTypeService;
+
+  // GET: /api/v1/staff/get-all
+  // Get List of ProductType
+  // GET all Product Type
+  @GetMapping("/get-all")
+  protected ResponseEntity<BaseOutput<List<ProductType>>> getAll() {
+
+    // Retrieve paginated list of unitConversions from the service
+    List<ProductType> productTypes = productTypeService.getAll();
+
+    // Construct response object with unitConversion data and pagination details
+    BaseOutput<List<ProductType>> response =
+        BaseOutput.<List<ProductType>>builder()
+            .message(HttpStatus.OK.toString())
+            .data(productTypes)
+            .status(ResponseStatus.SUCCESS) // Set response tatus to SUCCESS
+            .build();
+
+    // Return response with status OK
+    return ResponseEntity.ok(response);
+  }
 
   // Handles GET requests for paginated list of ProductType entities
   @GetMapping("")

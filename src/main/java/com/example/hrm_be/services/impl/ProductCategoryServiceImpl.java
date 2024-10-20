@@ -8,6 +8,8 @@ import com.example.hrm_be.models.entities.ProductCategoryEntity;
 import com.example.hrm_be.repositories.ProductCategoryRepository;
 import com.example.hrm_be.services.ProductCategoryService;
 import io.micrometer.common.util.StringUtils;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,6 +18,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -26,6 +29,14 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
   @Autowired private ProductCategoryRepository categoryRepository;
   // Injects the mapper to convert between DTO and Entity objects
   @Autowired private ProductCategoryMapper categoryMapper;
+
+  @Override
+  public List<ProductCategory> getAll() {
+    List<ProductCategoryEntity> productCategoryEntities = categoryRepository.findAll();
+    return productCategoryEntities.stream()
+        .map(dao -> categoryMapper.toDTO(dao))
+        .collect(Collectors.toList());
+  }
 
   // Retrieves a ProductCategory by ID
   @Override
@@ -70,6 +81,12 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
       throw new HrmCommonException(HrmConstant.ERROR.CATEGORY.NOT_EXIST);
     }
 
+    // Check if category name exist except current category
+    if (categoryRepository.existsByCategoryName(category.getCategoryName())
+        && !Objects.equals(category.getCategoryName(), oldCategoryEntity.getCategoryName())) {
+      throw new HrmCommonException(HrmConstant.ERROR.CATEGORY.EXIST);
+    }
+
     // Update the fields of the existing category entity, save it, and convert it back to DTO
     return Optional.ofNullable(oldCategoryEntity)
         .map(
@@ -90,6 +107,12 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
     // Validation: Check if the ID is blank
     if (StringUtils.isBlank(id.toString())) {
       return;
+    }
+
+    // Retrieve the existing category entity by ID
+    ProductCategoryEntity oldCategoryEntity = categoryRepository.findById(id).orElse(null);
+    if (oldCategoryEntity == null) {
+      throw new HrmCommonException(HrmConstant.ERROR.CATEGORY.NOT_EXIST);
     }
 
     // Delete the category by ID

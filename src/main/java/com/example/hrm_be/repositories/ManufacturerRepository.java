@@ -10,6 +10,8 @@ import org.springframework.stereotype.Repository;
 public interface ManufacturerRepository extends JpaRepository<ManufacturerEntity, Long> {
   boolean existsByManufacturerNameAndAddress(String name, String address);
 
+  boolean existsByTaxCode(String code);
+
   Page<ManufacturerEntity> findByManufacturerNameContainsIgnoreCaseOrAddressContainsIgnoreCase(
       String searchSupplier, String searchName, Pageable pageable);
 }

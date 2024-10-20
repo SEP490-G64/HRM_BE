@@ -6,6 +6,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,8 +16,6 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
-
-import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -42,7 +41,7 @@ public class ManufacturerEntity extends CommonEntity {
   @Column(name = "phone_number", nullable = false, length = 11)
   String phoneNumber;
 
-  @Column(name = "tax_code", length = 13)
+  @Column(name = "tax_code", length = 14)
   String taxCode;
 
   @Column(name = "origin", length = 20)

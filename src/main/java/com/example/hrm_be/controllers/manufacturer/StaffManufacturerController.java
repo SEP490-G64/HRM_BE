@@ -25,6 +25,27 @@ import org.springframework.web.bind.annotation.*;
 public class StaffManufacturerController {
   private final ManufacturerService manufacturerService;
 
+  // GET: /api/v1/staff/get-all
+  // Get List of Manufacturer
+  // GET all Manufacturer
+  @GetMapping("/get-all")
+  protected ResponseEntity<BaseOutput<List<Manufacturer>>> getAll() {
+
+    // Retrieve paginated list of unitConversions from the service
+    List<Manufacturer> manufacturers = manufacturerService.getAll();
+
+    // Construct response object with unitConversion data and pagination details
+    BaseOutput<List<Manufacturer>> response =
+        BaseOutput.<List<Manufacturer>>builder()
+            .message(HttpStatus.OK.toString())
+            .data(manufacturers)
+            .status(ResponseStatus.SUCCESS) // Set response tatus to SUCCESS
+            .build();
+
+    // Return response with status OK
+    return ResponseEntity.ok(response);
+  }
+
   // GET: /api/v1/staff/Manufacturer
   // Get List of Manufacturers
   // Allows paging, sorting, and searching by name or location

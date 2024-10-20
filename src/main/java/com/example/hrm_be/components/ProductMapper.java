@@ -1,13 +1,13 @@
 package com.example.hrm_be.components;
 
 import com.example.hrm_be.models.dtos.Product;
+import com.example.hrm_be.models.dtos.ProductBaseDTO;
 import com.example.hrm_be.models.entities.ProductEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Component
 public class ProductMapper {
@@ -34,6 +34,7 @@ public class ProductMapper {
         .map(
             d ->
                 ProductEntity.builder()
+                    .id(d.getId())
                     .productName(d.getProductName())
                     .productCode(d.getProductCode())
                     .registrationCode(d.getRegistrationCode())
@@ -57,36 +58,6 @@ public class ProductMapper {
                         d.getBaseUnit() != null
                             ? unitOfMeasurementMapper.toEntity(d.getBaseUnit())
                             : null)
-                    .inboundDetails(
-                        d.getInboundDetails() != null
-                            ? d.getInboundDetails().stream()
-                                .map(inboundDetailsMapper::toEntity)
-                                .collect(Collectors.toList())
-                            : null)
-                    .specialConditions(
-                        d.getSpecialConditions() != null
-                            ? d.getSpecialConditions().stream()
-                                .map(specialConditionMapper::toEntity)
-                                .collect(Collectors.toList())
-                            : null)
-                    .batches(
-                        d.getBatches() != null
-                            ? d.getBatches().stream()
-                                .map(batchMapper::toEntity)
-                                .collect(Collectors.toList())
-                            : null)
-                    .branchProducs(
-                        d.getBranchProducs() != null
-                            ? d.getBranchProducs().stream()
-                                .map(branchProductMapper::toEntity)
-                                .collect(Collectors.toList())
-                            : null)
-                    .productSuppliers(
-                        d.getProductSuppliers() != null
-                            ? d.getProductSuppliers().stream()
-                                .map(productSuppliersMapper::toEntity)
-                                .collect(Collectors.toList())
-                            : null)
                     .build())
         .orElse(null);
   }
@@ -94,45 +65,38 @@ public class ProductMapper {
   // Helper method to convert ProductEntity to ProductDTO
   private Product convertToDTO(ProductEntity entity) {
     return Product.builder()
+        .id(entity.getId())
         .productName(entity.getProductName())
         .productCode(entity.getProductCode())
         .registrationCode(entity.getRegistrationCode())
         .urlImage(entity.getUrlImage())
-        .manufacturer(
-            entity.getManufacturer() != null
-                ? manufacturerMapper.toDTO(entity.getManufacturer())
-                : null)
         .activeIngredient(entity.getActiveIngredient())
         .excipient(entity.getExcipient())
         .formulation(entity.getFormulation())
         .inboundPrice(entity.getInboundPrice())
         .sellPrice(entity.getSellPrice())
         .status(entity.getStatus())
-        .baseUnit(
-            entity.getBaseUnit() != null
-                ? unitOfMeasurementMapper.toDTO(entity.getBaseUnit())
-                : null)
-        .specialConditions(
-            entity.getSpecialConditions() != null
-                ? entity.getSpecialConditions().stream()
-                    .map(specialConditionMapper::toDTO)
-                    .collect(Collectors.toList())
-                : null)
-        .batches(
-            entity.getBatches() != null
-                ? entity.getBatches().stream().map(batchMapper::toDTO).collect(Collectors.toList())
-                : null)
-        .branchProducs(
-            entity.getBranchProducs() != null
-                ? entity.getBranchProducs().stream()
-                    .map(branchProductMapper::toDTO)
-                    .collect(Collectors.toList())
-                : null)
-        .productSuppliers(
-            entity.getProductSuppliers() != null
-                ? entity.getProductSuppliers().stream()
-                    .map(productSuppliersMapper::toDTO)
-                    .collect(Collectors.toList())
+        .build();
+  }
+
+  public ProductBaseDTO convertToProductBaseDTO(ProductEntity entity) {
+    return ProductBaseDTO.builder()
+        .id(entity.getId())
+        .productName(entity.getProductName())
+        .registrationCode(entity.getRegistrationCode())
+        .urlImage(entity.getUrlImage())
+        .activeIngredient(entity.getActiveIngredient())
+        .excipient(entity.getExcipient())
+        .formulation(entity.getFormulation())
+        .inboundPrice(entity.getInboundPrice())
+        .sellPrice(entity.getSellPrice())
+        .status(entity.getStatus())
+        .baseUnit(entity.getBaseUnit() != null ? entity.getBaseUnit().getUnitName() : null)
+        .categoryName(entity.getCategory() != null ? entity.getCategory().getCategoryName() : null)
+        .typeName(entity.getType() != null ? entity.getType().getTypeName() : null)
+        .manufacturerName(
+            entity.getManufacturer() != null
+                ? entity.getManufacturer().getManufacturerName()
                 : null)
         .build();
   }

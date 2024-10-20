@@ -7,7 +7,11 @@ import com.example.hrm_be.models.dtos.Manufacturer;
 import com.example.hrm_be.models.entities.ManufacturerEntity;
 import com.example.hrm_be.repositories.ManufacturerRepository;
 import com.example.hrm_be.services.ManufacturerService;
+
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,6 +26,14 @@ public class ManufacturerServiceImpl implements ManufacturerService {
   @Autowired private ManufacturerRepository manufacturerRepository;
 
   @Autowired private ManufacturerMapper manufacturerMapper;
+
+  @Override
+  public List<Manufacturer> getAll() {
+    List<ManufacturerEntity> manufacturerEntities = manufacturerRepository.findAll();
+    return manufacturerEntities.stream()
+        .map(dao -> manufacturerMapper.toDTO(dao))
+        .collect(Collectors.toList());
+  }
 
   @Override
   public Manufacturer getById(Long id) {
@@ -54,6 +66,13 @@ public class ManufacturerServiceImpl implements ManufacturerService {
       throw new HrmCommonException(HrmConstant.ERROR.MANUFACTURER.EXIST);
     }
 
+    // Check if manufacturer tax code exist
+    if (manufacturer.getTaxCode() != null && !manufacturer.getTaxCode().trim().isEmpty()) {
+      if (manufacturerRepository.existsByTaxCode(manufacturer.getTaxCode())) {
+        throw new HrmCommonException(HrmConstant.ERROR.MANUFACTURER.TAXCODE_NOT_EXIST);
+      }
+    }
+
     // Map Manufacturer DTO to entity and save it to the repository
     return Optional.ofNullable(manufacturer)
         .map(e -> manufacturerMapper.toEntity(e)) // Convert DTO to entity
@@ -73,6 +92,25 @@ public class ManufacturerServiceImpl implements ManufacturerService {
           HrmConstant.ERROR
               .MANUFACTURER
               .NOT_EXIST); // Throw exception if Manufacturer does not exist
+    }
+
+    // Check if manufacturer name and address exist except for the current manufacturer (by
+    // comparing with old entity data)
+    if (manufacturerRepository.existsByManufacturerNameAndAddress(
+            manufacturer.getManufacturerName(), manufacturer.getAddress())
+        && (!Objects.equals(
+                manufacturer.getManufacturerName(), oldManufacturerEntity.getManufacturerName())
+            || !Objects.equals(manufacturer.getAddress(), oldManufacturerEntity.getAddress()))) {
+      throw new HrmCommonException(HrmConstant.ERROR.MANUFACTURER.EXIST);
+    }
+
+    // Check if manufacturer tax code exist except for the current manufacturer (by comparing with
+    // old entity data)
+    if (manufacturer.getTaxCode() != null && !manufacturer.getTaxCode().trim().isEmpty()) {
+      if (!manufacturer.getTaxCode().equals(oldManufacturerEntity.getTaxCode())
+          && manufacturerRepository.existsByTaxCode(manufacturer.getTaxCode())) {
+        throw new HrmCommonException(HrmConstant.ERROR.MANUFACTURER.TAXCODE_NOT_EXIST);
+      }
     }
 
     // Use Optional to map the existing Manufacturer entity to a new one with updated fields

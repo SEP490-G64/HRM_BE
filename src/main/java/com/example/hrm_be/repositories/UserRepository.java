@@ -50,4 +50,7 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
   @Query("UPDATE UserEntity f SET f.branch.id = :branchId WHERE f.id IN :ids")
   void assignToBranchByBranchIdAndIds(
       @Param("branchId") Long branchId, @Param("ids") List<Long> ids);
+
+  @Query("SELECT u.branch.id FROM UserEntity u WHERE u.email = :userEmail")
+  Optional<Long> findBranchIdByUserEmail(@Param("userEmail") String userEmail);
 }

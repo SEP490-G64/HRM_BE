@@ -31,7 +31,7 @@ import lombok.experimental.SuperBuilder;
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class StorageLocationEntity extends CommonEntity {
 
-  @Column(name = "shelf_name", length = 50, nullable = false)
+  @Column(name = "shelf_name", length = 50)
   String shelfName;
 
   @ToString.Exclude

@@ -18,13 +18,11 @@ import com.example.hrm_be.repositories.UserRoleMapRepository;
 import com.example.hrm_be.services.EmailService;
 import com.example.hrm_be.services.UserRoleMapService;
 import com.example.hrm_be.services.UserService;
-
+import com.example.hrm_be.utils.PasswordGenerator;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-
-import com.example.hrm_be.utils.PasswordGenerator;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -445,5 +443,12 @@ public class UserServiceImpl implements UserService {
         .map(userRepository::save)
         .map(userMapper::toDTO)
         .orElse(null); // Return null if verification fails
+  }
+
+  @Override
+  public void updatePassword(User user, String newPassword) {
+    // Hash the new password before saving it
+    user.setPassword(newPassword);
+    userRepository.save(userMapper.toEntity(user)); // Save the updated user
   }
 }

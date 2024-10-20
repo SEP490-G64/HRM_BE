@@ -2,12 +2,11 @@ package com.example.hrm_be.components;
 
 import com.example.hrm_be.models.dtos.Branch;
 import com.example.hrm_be.models.entities.BranchEntity;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
-
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Component
 public class BranchMapper {
@@ -80,18 +79,6 @@ public class BranchMapper {
                     .phoneNumber(e.getPhoneNumber())
                     .capacity(e.getCapacity())
                     .activeStatus(e.getActiveStatus())
-                    .branchBatches(
-                        e.getBranchBatches() != null
-                            ? e.getBranchBatches().stream()
-                                .map(branchBatchMapper::toDTO)
-                                .collect(Collectors.toList())
-                            : null)
-                    .branchProducts(
-                        e.getBranchProducts() != null
-                            ? e.getBranchProducts().stream()
-                                .map(branchProductMapper::toDTO)
-                                .collect(Collectors.toList())
-                            : null)
                     .inventoryChecks(
                         e.getInventoryChecks() != null
                             ? e.getInventoryChecks().stream()

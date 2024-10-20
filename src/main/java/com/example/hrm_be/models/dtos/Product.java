@@ -66,7 +66,7 @@ public final class Product implements Serializable {
 
   List<Batch> batches;
 
-  List<BranchProduct> branchProducs;
+  List<BranchProduct> branchProducts;
 
   List<ProductSuppliers> productSuppliers;
 }

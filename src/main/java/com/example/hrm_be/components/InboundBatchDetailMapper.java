@@ -2,11 +2,10 @@ package com.example.hrm_be.components;
 
 import com.example.hrm_be.models.dtos.InboundBatchDetail;
 import com.example.hrm_be.models.entities.InboundBatchDetailEntity;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
-
-import java.util.Optional;
 
 @Component
 public class InboundBatchDetailMapper {
@@ -25,6 +24,7 @@ public class InboundBatchDetailMapper {
         .map(
             d ->
                 InboundBatchDetailEntity.builder()
+                    .id(d.getId())
                     .inbound(d.getInbound() != null ? inboundMapper.toEntity(d.getInbound()) : null)
                     .batch(d.getBatch() != null ? batchMapper.toEntity(d.getBatch()) : null)
                     .quantity(d.getQuantity())
@@ -35,6 +35,7 @@ public class InboundBatchDetailMapper {
   // Helper method to convert InboundBatchDetailEntity to InboundBatchDetailDTO
   private InboundBatchDetail convertToDTO(InboundBatchDetailEntity entity) {
     return InboundBatchDetail.builder()
+        .id(entity.getId())
         .inbound(entity.getInbound() != null ? inboundMapper.toDTO(entity.getInbound()) : null)
         .batch(entity.getBatch() != null ? batchMapper.toDTO(entity.getBatch()) : null)
         .quantity(entity.getQuantity())

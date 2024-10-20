@@ -2,12 +2,11 @@ package com.example.hrm_be.components;
 
 import com.example.hrm_be.models.dtos.Inbound;
 import com.example.hrm_be.models.entities.InboundEntity;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
-
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Component
 public class InboundMapper {
@@ -28,6 +27,7 @@ public class InboundMapper {
         .map(
             d ->
                 InboundEntity.builder()
+                    .id(d.getId())
                     .inboundType(d.getInboundType())
                     .fromBranch(
                         d.getFromBranch() != null ? branchMapper.toEntity(d.getFromBranch()) : null)
@@ -60,6 +60,7 @@ public class InboundMapper {
   // Helper method to convert InboundEntity to InboundDTO
   private Inbound convertToDTO(InboundEntity entity) {
     return Inbound.builder()
+        .id(entity.getId())
         .inboundType(entity.getInboundType())
         .fromBranch(
             entity.getFromBranch() != null ? branchMapper.toDTO(entity.getFromBranch()) : null)

@@ -8,6 +8,10 @@ import com.example.hrm_be.models.entities.ProductTypeEntity;
 import com.example.hrm_be.repositories.ProductTypeRepository;
 import com.example.hrm_be.services.ProductTypeService;
 import io.micrometer.common.util.StringUtils;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,8 +20,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
 @Service
 @Transactional
 public class ProductTypeServiceImpl implements ProductTypeService {
@@ -25,6 +27,14 @@ public class ProductTypeServiceImpl implements ProductTypeService {
   @Autowired private ProductTypeRepository productTypeRepository;
   // Injects the mapper to convert between DTO and Entity objects
   @Autowired private ProductTypeMapper productTypeMapper;
+
+  @Override
+  public List<ProductType> getAll() {
+    List<ProductTypeEntity> productTypeEntities = productTypeRepository.findAll();
+    return productTypeEntities.stream()
+        .map(dao -> productTypeMapper.toDTO(dao))
+        .collect(Collectors.toList());
+  }
 
   // Retrieves a ProductType by ID
   @Override
@@ -68,6 +78,12 @@ public class ProductTypeServiceImpl implements ProductTypeService {
       throw new HrmCommonException(HrmConstant.ERROR.TYPE.NOT_EXIST);
     }
 
+    // Check if product type name exist except current type
+    if (productTypeRepository.existsByTypeName(type.getTypeName())
+        && !Objects.equals(type.getTypeName(), oldTypeEntity.getTypeName())) {
+      throw new HrmCommonException(HrmConstant.ERROR.TYPE.EXIST);
+    }
+
     // Update the fields of the existing type entity, save it, and convert it back to DTO
     return Optional.ofNullable(oldTypeEntity)
         .map(
@@ -87,6 +103,12 @@ public class ProductTypeServiceImpl implements ProductTypeService {
     // Validation: Check if the ID is blank
     if (StringUtils.isBlank(id.toString())) {
       return;
+    }
+
+    // Retrieve the existing type entity by ID
+    ProductTypeEntity oldTypeEntity = productTypeRepository.findById(id).orElse(null);
+    if (oldTypeEntity == null) {
+      throw new HrmCommonException(HrmConstant.ERROR.TYPE.NOT_EXIST);
     }
 
     // Delete the type by ID

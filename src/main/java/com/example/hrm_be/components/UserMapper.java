@@ -6,7 +6,6 @@ import com.example.hrm_be.models.entities.UserRoleMapEntity;
 import com.example.hrm_be.models.requests.RegisterRequest;
 import com.example.hrm_be.repositories.BranchRepository;
 import com.example.hrm_be.services.RoleService;
-
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;

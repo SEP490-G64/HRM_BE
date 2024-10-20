@@ -2,7 +2,6 @@ package com.example.hrm_be.models.requests;
 
 import com.example.hrm_be.models.dtos.Branch;
 import com.fasterxml.jackson.annotation.JsonInclude;
-
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
