@@ -80,6 +80,7 @@ public class ProductMapper {
   }
   public ProductBaseDTO convertToProductBaseDTO(ProductEntity entity) {
     return ProductBaseDTO.builder()
+        .id(entity.getId())
         .productName(entity.getProductName())
         .registrationCode(entity.getRegistrationCode())
         .urlImage(entity.getUrlImage())
