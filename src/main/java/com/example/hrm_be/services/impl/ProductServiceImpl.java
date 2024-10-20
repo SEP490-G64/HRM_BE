@@ -341,7 +341,8 @@ public class ProductServiceImpl implements ProductService {
               (root, query, criteriaBuilder) ->
                   criteriaBuilder.equal(root.get("product").get("status"), status.get()));
     }
-    return branchProductRepository.findAll(specification, pageable)
+    return branchProductRepository
+        .findAll(specification, pageable)
         .map(branchProductMapper::toDTOWithProduct);
   }
 

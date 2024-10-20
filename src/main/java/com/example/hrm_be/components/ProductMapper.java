@@ -78,6 +78,7 @@ public class ProductMapper {
         .status(entity.getStatus())
         .build();
   }
+
   public ProductBaseDTO convertToProductBaseDTO(ProductEntity entity) {
     return ProductBaseDTO.builder()
         .id(entity.getId())
@@ -93,7 +94,10 @@ public class ProductMapper {
         .baseUnit(entity.getBaseUnit() != null ? entity.getBaseUnit().getUnitName() : null)
         .categoryName(entity.getCategory() != null ? entity.getCategory().getCategoryName() : null)
         .typeName(entity.getType() != null ? entity.getType().getTypeName() : null)
-        .manufacturerName(entity.getManufacturer() != null ? entity.getManufacturer().getManufacturerName() : null)
+        .manufacturerName(
+            entity.getManufacturer() != null
+                ? entity.getManufacturer().getManufacturerName()
+                : null)
         .build();
   }
 }

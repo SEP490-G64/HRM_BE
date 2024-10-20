@@ -66,12 +66,12 @@ public class StaffProductController {
       @RequestParam(defaultValue = "10") int size,
       @RequestParam(required = false, defaultValue = "id") String sortBy,
       @RequestParam(required = false, defaultValue = "ASC") String sortDirection,
-      @RequestParam (required = false) Optional<String> keyword,
-      @RequestParam (required = false) Optional<Long> categoryId,
-      @RequestParam (required = false) Optional<Long> typeId,
-      @RequestParam (required = false) Optional<Long> manufacturerId,
-      @RequestParam (required = false) Optional<String> status,
-      @RequestParam (required = false) Optional<Long> branchId) {
+      @RequestParam(required = false) Optional<String> keyword,
+      @RequestParam(required = false) Optional<Long> categoryId,
+      @RequestParam(required = false) Optional<Long> typeId,
+      @RequestParam(required = false) Optional<Long> manufacturerId,
+      @RequestParam(required = false) Optional<String> status,
+      @RequestParam(required = false) Optional<Long> branchId) {
 
     Page<BranchProduct> products =
         productService.searchProducts(

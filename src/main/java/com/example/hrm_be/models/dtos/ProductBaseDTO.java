@@ -42,5 +42,5 @@ public class ProductBaseDTO {
   private String manufacturerName;
   private Integer quantity;
 
-  private  BranchProduct branchProduct;
+  private BranchProduct branchProduct;
 }
