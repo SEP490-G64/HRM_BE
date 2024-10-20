@@ -36,7 +36,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class StaffProductController {
   private final ProductService productService;
 
-  @GetMapping("")
+  @GetMapping("/search")
   protected ResponseEntity<BaseOutput<List<ProductBaseDTO>>> getByPaging(
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size,
@@ -60,7 +60,7 @@ public class StaffProductController {
     return ResponseEntity.ok(response);
   }
 
-  @GetMapping("/search")
+  @GetMapping("")
   public ResponseEntity<BaseOutput<List<BranchProduct>>> searchProducts(
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size,
