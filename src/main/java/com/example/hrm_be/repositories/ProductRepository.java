@@ -25,6 +25,8 @@ public interface ProductRepository
   @Query("SELECT p FROM ProductEntity p WHERE p.category.id=:typeId")
   Page<ProductEntity> findProductByPagingAndTypeId(Long typeId, Pageable pageable);
 
+  boolean existsByRegistrationCode(String code);
+
   @Query(
       "SELECT p FROM ProductEntity p JOIN FETCH p.branchProducs bp WHERE bp.branch.id = :branchId ")
   List<ProductEntity> findProductByBranchId(@Param("branchId") Long branchId);

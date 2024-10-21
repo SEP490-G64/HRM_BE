@@ -4,6 +4,7 @@ import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.commons.constants.HrmConstant.ERROR.USER;
 import com.example.hrm_be.commons.enums.RoleType;
 import com.example.hrm_be.commons.enums.UserStatusType;
+import com.example.hrm_be.components.BranchMapper;
 import com.example.hrm_be.components.RoleMapper;
 import com.example.hrm_be.components.UserMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
@@ -19,7 +20,6 @@ import com.example.hrm_be.services.EmailService;
 import com.example.hrm_be.services.UserRoleMapService;
 import com.example.hrm_be.services.UserService;
 import com.example.hrm_be.utils.PasswordGenerator;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -52,6 +52,8 @@ public class UserServiceImpl implements UserService {
 
   @Lazy @Autowired RoleRepository roleRepository;
   @Lazy @Autowired RoleMapper roleMapper;
+
+  @Lazy @Autowired BranchMapper branchMapper;
 
   @Lazy @Autowired UserRoleMapService userRoleMapService;
   @Lazy @Autowired UserRoleMapRepository userRoleMapRepository;
@@ -128,7 +130,7 @@ public class UserServiceImpl implements UserService {
     // Retrieve user by ID and map to DTO
     return Optional.ofNullable(id)
         .flatMap(e -> userRepository.findById(id))
-        .map(userMapper::convertToDtoWithBranch)
+        .map(userMapper::toDTO)
         .orElse(null); // Return null if user not found
   }
 
@@ -158,7 +160,6 @@ public class UserServiceImpl implements UserService {
         .map(
             e -> {
               e.setStatus(UserStatusType.ACTIVATE);
-              e.setCreatedDate(LocalDateTime.now());
               e.setPassword(encodedPassword); // Set the encoded password to the entity
               return userRepository.save(e);
             })
@@ -183,9 +184,8 @@ public class UserServiceImpl implements UserService {
               // Send email to user with the generated password
               emailService.sendEmail(
                   user.getEmail(),
-                  "Mật khẩu của tài khoản ứng dụng Quản lí kho của Hệ thống nhà thuốc Long Tâm của"
-                      + " bạn",
-                  "Mật khẩu: " + rawPassword);
+                  "Tài khoản ứng dụng Quản lí kho của Hệ thống nhà thuốc của bạn",
+                  "Tài khoản: " + user.getEmail() + "\nMật khẩu: " + rawPassword);
 
               return e;
             })
@@ -237,7 +237,8 @@ public class UserServiceImpl implements UserService {
                       .lastName(user.getLastName())
                       .phone(user.getPhone())
                       .userName(user.getUserName())
-                      .email(user.getEmail());
+                      .email(user.getEmail())
+                      .branch(branchMapper.toEntity(user.getBranch()));
 
               // Only set new status if status is not null
               if (user.getStatus() != null) {
@@ -351,6 +352,13 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
+  public boolean isManager() {
+    // Get the email of the authenticated user and check if they have admin role
+    String userEmail = this.getAuthenticatedUserEmail();
+    return userRoleMapRepository.existsByEmailAndRole(userEmail, RoleType.MANAGER);
+  }
+
+  @Override
   public List<Role> findRolesByEmail(@NonNull String email) {
     // Retrieve roles associated with the given email
     return userRepository.findRolesByEmail(email).stream().map(r -> roleMapper.toDTO(r)).toList();
@@ -374,7 +382,6 @@ public class UserServiceImpl implements UserService {
         .map(
             e -> {
               e.setStatus(UserStatusType.PENDING);
-              e.setCreatedDate(LocalDateTime.now());
               return userRepository.save(e);
             })
         .map(

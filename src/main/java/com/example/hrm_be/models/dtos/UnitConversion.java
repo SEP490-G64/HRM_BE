@@ -28,5 +28,5 @@ public class UnitConversion {
 
   Double factorConversion;
 
-  Batch batch;
+  Product product;
 }

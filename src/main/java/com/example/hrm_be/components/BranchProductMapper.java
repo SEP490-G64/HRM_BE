@@ -60,6 +60,14 @@ public class BranchProductMapper {
         .minQuantity(entity.getMinQuantity())
         .maxQuantity(entity.getMaxQuantity())
         .quantity(entity.getQuantity())
+        .storageLocation(
+            entity.getStorageLocation() != null
+                ? storageLocationMapper.toDTO(entity.getStorageLocation())
+                : null)
+        .branch(
+            entity.getBranch() != null
+                ? branchMapper.convertToDTOBasicInfo(entity.getBranch())
+                : null)
         .build();
   }
 }

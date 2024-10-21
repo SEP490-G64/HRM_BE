@@ -50,10 +50,6 @@ public class BatchEntity extends CommonEntity {
 
   @ToString.Exclude
   @OneToMany(mappedBy = "batch", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-  List<UnitConversionEntity> unitConversions; // 1-N with UnitConversion
-
-  @ToString.Exclude
-  @OneToMany(mappedBy = "batch", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   List<OutboundDetailEntity> outboundDetails; // 1-N with OutboundDetails
 
   @ToString.Exclude

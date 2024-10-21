@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serial;
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.List;
 import lombok.*;
 import lombok.experimental.Accessors;
@@ -39,8 +38,6 @@ public class User implements Serializable {
   String lastName;
 
   String status;
-
-  LocalDateTime createdDate;
 
   transient List<Role> roles;
 
