@@ -135,7 +135,7 @@ public class AuthenticationController {
             + serverName
             + ((serverPort == 80 || serverPort == 443) ? "" : ":" + serverPort)
             + contextPath
-            + "/api/v1/auth/change_password?token="
+            + "/api/v1/auth/forget-page?token="
             + token;
     mailSender.send(mailUtil.constructResetTokenEmail(fullPath, token, user.getEmail()));
     BaseOutput<String> response =
