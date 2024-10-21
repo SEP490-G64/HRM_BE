@@ -28,4 +28,7 @@ public interface ProductRepository
   @Query(
       "SELECT p FROM ProductEntity p JOIN FETCH p.branchProducs bp WHERE bp.branch.id = :branchId ")
   List<ProductEntity> findProductByBranchId(@Param("branchId") Long branchId);
+
+  // Method to find a ProductInbound by registrationCode
+  boolean existsByRegistrationCode(String registrationCode);
 }

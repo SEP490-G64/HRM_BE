@@ -28,7 +28,7 @@ import lombok.extern.jackson.Jacksonized;
 public class Inbound {
   Long id;
   InboundType inboundType; // Custom enum representing: Nhà cung cấp, Chuyển kho nội bộ
-
+  String inboundCode;
   Branch fromBranch;
 
   Branch toBranch;

@@ -1,9 +1,11 @@
 package com.example.hrm_be.models.responses;
 
+import com.example.hrm_be.models.dtos.ProductInbound;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,6 +13,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.jackson.Jacksonized;
+import org.springframework.cglib.core.Local;
 
 @Builder(toBuilder = true)
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -21,5 +24,6 @@ import lombok.extern.jackson.Jacksonized;
 @AllArgsConstructor
 public class InnitInbound {
   String inboundCode;
-  Date date;
+  LocalDateTime date;
+  List<ProductInbound> productInbounds;
 }

@@ -2,6 +2,7 @@ package com.example.hrm_be.utils;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,13 +14,13 @@ import org.springframework.stereotype.Component;
 public class WplUtil {
   private static int counter = 1; // to generate the sequential number
 
-  public static String generateInboundCode(Date theDate) {
+  public static String generateInboundCode(LocalDateTime theDate) {
     // Format the date to YYMMDD
-    SimpleDateFormat dateFormat = new SimpleDateFormat("yyMMdd");
+    DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyMMdd");
     String datePart = dateFormat.format(theDate);
 
     // Format the time to HHMMSS
-    SimpleDateFormat timeFormat = new SimpleDateFormat("HHmmss");
+    DateTimeFormatter timeFormat =  DateTimeFormatter.ofPattern("HHmmss");
     String timePart = timeFormat.format(theDate);
 
     // Generate the sequential part (3 digits, padded with zeros)

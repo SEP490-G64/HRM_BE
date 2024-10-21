@@ -3,9 +3,10 @@ package com.example.hrm_be.controllers.inbound;
 import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.commons.enums.ResponseStatus;
 import com.example.hrm_be.models.dtos.Inbound;
-import com.example.hrm_be.models.dtos.Product;
+import com.example.hrm_be.models.dtos.ProductInbound;
 import com.example.hrm_be.models.responses.BaseOutput;
 import com.example.hrm_be.models.responses.InnitInbound;
+import com.example.hrm_be.services.FileService;
 import com.example.hrm_be.services.InboundService;
 import com.example.hrm_be.services.UserService;
 import com.example.hrm_be.utils.WplUtil;
@@ -13,17 +14,27 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.constraints.NotNull;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.Page;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.session.FindByIndexNameSessionRepository;
 import org.springframework.session.Session;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -37,6 +48,8 @@ public class StaffInboundController {
   private final WplUtil wplUtil;
   private final FindByIndexNameSessionRepository<? extends Session> sessionRepository;
   private final UserService userService;
+  private final RedisTemplate<String, Object> redisTemplate;
+  private final FileService fileService;
 
   // GET: /api/v1/staff/inbound
   // Retrieves a paginated list of Inbound entities
@@ -203,19 +216,12 @@ public class StaffInboundController {
             .build());
   }
 
-  @PostMapping("/addProduct")
+  @PostMapping("/add-product")
   public ResponseEntity<BaseOutput<String>> addProductToOrder(
-      @RequestParam Long branchId, HttpSession session, @RequestBody Product product) {
-    if (branchId <= 0 || branchId == null) {
-      BaseOutput<String> response =
-          BaseOutput.<String>builder()
-              .status(ResponseStatus.FAILED)
-              .errors(List.of(HrmConstant.ERROR.REQUEST.INVALID_PATH_VARIABLE))
-              .build();
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-    }
-    String sessionName =  userService.getAuthenticatedUserEmail();
-    List<Product> products = (List<Product>) session.getAttribute(sessionName);
+      HttpSession session, @RequestBody ProductInbound product) {
+
+    String sessionName = userService.getAuthenticatedUserEmail();
+    List<ProductInbound> products = (List<ProductInbound>) session.getAttribute(sessionName);
     if (products == null) {
       products = new ArrayList<>();
     }
@@ -228,27 +234,29 @@ public class StaffInboundController {
             .build());
   }
 
+
   @GetMapping("/getProducts")
-  public List<Product> getProductsFromOrder(HttpSession session, @RequestParam String branchId) {
-    String sessionName = userService.getAuthenticatedUserEmail();;
-    List<Product> products = (List<Product>) session.getAttribute(sessionName);
+  public List<ProductInbound> getProductsFromOrder(HttpSession session) {
+    String sessionName = userService.getAuthenticatedUserEmail();
+    ;
+    List<ProductInbound> products = (List<ProductInbound>) session.getAttribute(sessionName);
     return products != null ? products : new ArrayList<>();
   }
 
   @GetMapping("/getInboundCode")
   protected ResponseEntity<BaseOutput<InnitInbound>> getInnitInbound(HttpSession session) {
     String sessionId = userService.getAuthenticatedUserEmail();
-    InnitInbound innitInbound = (InnitInbound) session.getAttribute(sessionId+"innitInbound");
+    InnitInbound innitInbound = (InnitInbound) session.getAttribute(sessionId + "innitInbound");
 
     if (innitInbound == null) {
       // Create new InnitInbound object if not present in the session
-      Date currentDateTime = new Date();
+      LocalDateTime currentDateTime =  LocalDateTime.now();
       innitInbound = new InnitInbound();
       innitInbound.setDate(currentDateTime);
       innitInbound.setInboundCode(wplUtil.generateInboundCode(currentDateTime));
 
       // Save the InnitInbound object in the session
-      session.setAttribute(sessionId+"innitInbound", innitInbound);
+      session.setAttribute(sessionId + "innitInbound", innitInbound);
     }
 
     // Return the InnitInbound object (either new or from session)
@@ -267,4 +275,63 @@ public class StaffInboundController {
     return ResponseEntity.ok(
         BaseOutput.<String>builder().data(sessionId).status(ResponseStatus.SUCCESS).build());
   }
+
+  @PostMapping("/clear-session")
+  public void clearAllSessions() {
+    // Assuming session keys are prefixed with "spring:session:"
+    Set<String> sessionKeys = redisTemplate.keys("spring:session:*");
+
+    if (sessionKeys != null) {
+      redisTemplate.delete(sessionKeys);
+    }
+  }
+
+  @PostMapping("/download")
+  public ResponseEntity<InputStreamResource> encodeAndDownload(@RequestBody List<Object> userList)
+      throws IOException {
+    // Call the service to encode the list of User objects
+    String encodedJson = fileService.encodeJsonToFile(userList);
+
+    // Create a byte array from the encoded string
+    ByteArrayInputStream byteArrayInputStream =
+        new ByteArrayInputStream(encodedJson.getBytes(StandardCharsets.UTF_8));
+
+    // Set headers to indicate file download
+    HttpHeaders headers = new HttpHeaders();
+    headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=encodedData.txt");
+
+    // Return the file as a downloadable response
+    return ResponseEntity.ok()
+        .headers(headers)
+        .contentLength(encodedJson.length())
+        .contentType(MediaType.APPLICATION_OCTET_STREAM)
+        .body(new InputStreamResource(byteArrayInputStream));
+  }
+
+  // POST request to upload Base64 file, decode it, and return the original JSON as List<User>
+  @PostMapping("/decode-file")
+  public ResponseEntity<List<ProductInbound>> decodeFile(
+      @RequestParam(value = "file") MultipartFile file) {
+    try {
+
+      String encodedJson = new String(file.getBytes(), StandardCharsets.UTF_8);
+
+      // Decode the Base64 encoded content to a list of ProductInbound objects
+      List<ProductInbound> decodedProducts = fileService.decodeJsonList(encodedJson);
+
+      // Return the decoded list of products
+      return ResponseEntity.ok(decodedProducts);
+    } catch (IOException e) {
+      e.printStackTrace();
+      return ResponseEntity.status(500).body(null);
+    }
+  }
+//
+//  @PostMapping("submit-inbound")
+//  public  ResponseEntity<List<ProductInbound>> submit( )
+//  {
+//
+//  }
+
+
 }

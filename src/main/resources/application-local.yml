@@ -50,4 +50,4 @@ spring:
 server:
   servlet:
     session:
-      timeout: 30m
+      timeout: 3600m

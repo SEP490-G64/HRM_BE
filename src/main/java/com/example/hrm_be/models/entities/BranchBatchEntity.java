@@ -41,7 +41,7 @@ public class BranchBatchEntity extends CommonEntity {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(
       name = "branch_id",
-      nullable = false,
+        nullable = false,
       foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   BranchEntity branch;
 

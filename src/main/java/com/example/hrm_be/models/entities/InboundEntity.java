@@ -36,14 +36,12 @@ public class InboundEntity extends CommonEntity {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(
       name = "from_branch_id",
-      nullable = false,
       foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   BranchEntity fromBranch;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(
       name = "to_branch_id",
-      nullable = false,
       foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   BranchEntity toBranch;
 
@@ -55,23 +53,26 @@ public class InboundEntity extends CommonEntity {
   @JoinColumn(name = "created_by", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   UserEntity createdBy;
 
-  @Column(name = "created_date", nullable = false)
+  @Column(name = "created_date")
   LocalDateTime createdDate;
 
-  @Column(name = "inbound_date", nullable = false)
+  @Column(name = "inbound_code")
+  String inboundCode;
+
+  @Column(name = "inbound_date")
   LocalDateTime inboundDate;
 
-  @Column(name = "total_price", nullable = false)
+  @Column(name = "total_price" )
   BigDecimal totalPrice;
 
-  @Column(name = "is_approved", nullable = false)
+  @Column(name = "is_approved")
   Boolean isApproved;
 
   @Enumerated(EnumType.STRING)
-  @Column(name = "status", nullable = false)
+  @Column(name = "status")
   InboundStatus status; // Custom enum: Chờ duyệt, Chờ hàng, Kiểm hàng, Đang thanh toán, Hoàn thành
 
-  @Column(name = "taxable", nullable = false)
+  @Column(name = "taxable")
   Boolean taxable;
 
   @Column(name = "note")

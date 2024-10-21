@@ -6,12 +6,17 @@ import com.example.hrm_be.components.InboundMapper;
 import com.example.hrm_be.components.UserMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.Inbound;
+import com.example.hrm_be.models.dtos.ProductInbound;
 import com.example.hrm_be.models.entities.InboundEntity;
+import com.example.hrm_be.models.entities.ProductEntity;
 import com.example.hrm_be.models.entities.UserEntity;
+import com.example.hrm_be.models.responses.InnitInbound;
 import com.example.hrm_be.repositories.InboundRepository;
+import com.example.hrm_be.repositories.ProductRepository;
 import com.example.hrm_be.services.InboundService;
 import com.example.hrm_be.services.UserService;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +34,7 @@ public class InboundServiceImpl implements InboundService {
   @Autowired private InboundMapper inboundMapper;
   @Autowired private UserService userService;
   @Autowired private UserMapper userMapper;
+  @Autowired private ProductRepository productRepository;
 
   @Override
   public Inbound getById(Long id) {
@@ -129,5 +135,33 @@ public class InboundServiceImpl implements InboundService {
     }
 
     inboundRepository.deleteById(id); // Delete the inbound entity by ID
+  }
+
+  @Override
+  @Transactional
+  public Inbound submitInbound(InnitInbound innitInbound) {
+    InboundEntity inbound = new InboundEntity();
+    inbound.setInboundCode(innitInbound.getInboundCode());
+    inbound.setInboundDate(innitInbound.getDate());
+
+    InboundEntity savedInboundEntity = inboundRepository.save(inbound);
+    addOrUpdateProductInbound();
+    return null;
+  }
+
+  public void addOrUpdateProductInbound(ProductInbound newProductInbound) {
+    // Check if a product with the same registrationCode exists in the database
+    boolean productExists = productRepository.existsByRegistrationCode(newProductInbound.getRegistrationCode());
+
+    if (productExists) {
+      // Fetch the existing product and update its quantity
+      ProductInbound existingProduct =
+          productRepository.find(newProductInbound.getRegistrationCode());
+      existingProduct.setQuantity(existingProduct.getQuantity() + newProductInbound.getQuantity());
+      productInboundRepository.save(existingProduct); // Save updated product
+    } else {
+      // If product does not exist, insert new product
+      productInboundRepository.save(newProductInbound);
+    }
   }
 }
