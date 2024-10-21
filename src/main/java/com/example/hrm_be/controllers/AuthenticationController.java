@@ -143,7 +143,7 @@ public class AuthenticationController {
     return ResponseEntity.ok(response);
   }
 
-  @GetMapping("/change_password")
+  @GetMapping("/forget-page")
   public String changePassword(@RequestParam("token") String token, Model model) {
     // Add the token to the model if needed
     model.addAttribute("token", token);
