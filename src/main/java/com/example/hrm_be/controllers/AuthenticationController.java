@@ -144,7 +144,7 @@ public class AuthenticationController {
   }
 
   @GetMapping("/forget-page")
-  public String changePassword(@RequestParam("token") String token, Model model) {
+  public String getForgetPage(@RequestParam("token") String token, Model model) {
     // Add the token to the model if needed
     model.addAttribute("token", token);
     return "index"; // This will render index.html from the templates folder
