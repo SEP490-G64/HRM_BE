@@ -121,11 +121,6 @@ public class ProductServiceImpl implements ProductService {
       }
     }
 
-    // Check if product code exists
-    if (productRepository.existsByProductCode(product.getProductCode())) {
-      throw new HrmCommonException(HrmConstant.ERROR.PRODUCT.EXIST);
-    }
-
     // Check if product registration code exists
     if (productRepository.existsByRegistrationCode(product.getRegistrationCode())) {
       throw new HrmCommonException(HrmConstant.ERROR.PRODUCT.REGISTRATION_EXIST);
@@ -248,11 +243,6 @@ public class ProductServiceImpl implements ProductService {
       }
     }
 
-    // Check for unique product code and registration code
-    if (productRepository.existsByProductCode(product.getProductCode())
-        && !Objects.equals(product.getProductCode(), oldProductEntity.getProductCode())) {
-      throw new HrmCommonException(HrmConstant.ERROR.PRODUCT.EXIST);
-    }
     if (productRepository.existsByRegistrationCode(product.getRegistrationCode())
         && !Objects.equals(product.getRegistrationCode(), oldProductEntity.getRegistrationCode())) {
       throw new HrmCommonException(HrmConstant.ERROR.PRODUCT.REGISTRATION_EXIST);
