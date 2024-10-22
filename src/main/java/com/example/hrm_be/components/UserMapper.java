@@ -29,49 +29,48 @@ public class UserMapper {
 
   public UserEntity toEntity(User dto) {
     return Optional.ofNullable(dto)
-        .map(
-            e -> {
-              return UserEntity.builder()
-                  .id(e.getId())
-                  .userName(e.getUserName())
-                  .email(e.getEmail())
-                  .password(
-                      e.getPassword() != null ? passwordEncoder.encode(e.getPassword()) : null)
-                  .phone(e.getPhone())
-                  .firstName(e.getFirstName())
-                  .lastName(e.getLastName())
-                  .branch(e.getBranch() != null ? branchMapper.toEntity(e.getBranch()) : null)
-                  .build();
-            })
-        .orElse(null);
+            .map(
+                    e -> {
+                      return UserEntity.builder()
+                              .id(e.getId())
+                              .userName(e.getUserName())
+                              .email(e.getEmail())
+                              .password(
+                                      e.getPassword() != null ? passwordEncoder.encode(e.getPassword()) : null)
+                              .phone(e.getPhone())
+                              .firstName(e.getFirstName())
+                              .lastName(e.getLastName())
+                              .branch(e.getBranch() !=null ? branchMapper.toEntity(e.getBranch()) : null)
+                              .build();
+                    })
+            .orElse(null);
   }
 
   private User convertToDto(UserEntity entity) {
     return Optional.ofNullable(entity)
-        .map(
-            e ->
-                User.builder()
-                    .id(e.getId())
-                    .userName(e.getUserName())
-                    .email(e.getEmail())
-                    .password(e.getPassword())
-                    .phone(e.getPhone())
-                    .firstName(e.getFirstName())
-                    .lastName(e.getLastName())
-                    .roles(
-                        e.getUserRoleMap() != null
-                            ? e.getUserRoleMap().stream()
-                                .map(UserRoleMapEntity::getRole)
-                                .map(urm -> roleMapper.toDTO(urm))
-                                .collect(Collectors.toList())
-                            : null)
-                    .status(String.valueOf(e.getStatus()))
-                    .branch(
-                        e.getBranch() != null
-                            ? branchMapper.convertToDTOBasicInfo(e.getBranch())
-                            : null)
-                    .build())
-        .orElse(null);
+            .map(
+                    e ->
+                            User.builder()
+                                    .id(e.getId())
+                                    .userName(e.getUserName())
+                                    .email(e.getEmail())
+                                    .password(e.getPassword())
+                                    .phone(e.getPhone())
+                                    .firstName(e.getFirstName())
+                                    .lastName(e.getLastName())
+                                    .roles(
+                                            e.getUserRoleMap() != null
+                                                    ? e.getUserRoleMap().stream()
+                                                    .map(UserRoleMapEntity::getRole)
+                                                    .map(urm -> roleMapper.toDTO(urm))
+                                                    .collect(Collectors.toList())
+                                                    : null)
+                                    .branch(e.getBranch() != null
+                                            ? branchMapper.convertToDTOBasicInfo(e.getBranch())  // If branch is a single entity
+                                            : null)
+                                    .status(String.valueOf(e.getStatus()))
+                                    .build())
+            .orElse(null);
   }
 
   // Convert RegisterRequest to UserEntity
@@ -86,10 +85,6 @@ public class UserMapper {
                   .phone(request.getPhone())
                   .firstName(request.getFirstName())
                   .lastName(request.getLastName())
-                  .branch(
-                      request.getBranch() != null
-                          ? branchMapper.toEntity(request.getBranch())
-                          : null)
                   .password(passwordEncoder.encode(request.getPassword()))
                   .build();
             })

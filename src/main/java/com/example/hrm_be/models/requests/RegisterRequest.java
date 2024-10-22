@@ -35,8 +35,4 @@ public class RegisterRequest {
   String password;
 
   String confirmPassword;
-
-  Long role;
-
-  Branch branch;
 }

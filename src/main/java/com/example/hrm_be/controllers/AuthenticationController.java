@@ -68,12 +68,12 @@ public class AuthenticationController {
         && !Objects.equals(userDetails.getStatus(), UserStatusType.ACTIVATE.toString())) {
 
       // Return a Bad Request response with message about account not being activated
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST) // Change the status to BAD_REQUEST
-          .body(
-              BaseOutput.<AccessToken>builder()
-                  .message("Account not activated, unable to login.") // Descriptive message
-                  .data(null) // Do not return AccessToken
-                  .build());
+      return ResponseEntity.status(HttpStatus.FORBIDDEN) // Change the status to BAD_REQUEST
+              .body(
+                      BaseOutput.<AccessToken>builder()
+                              .message("Tài khoản chưa được kích hoạt") // Descriptive message
+                              .data(null) // Do not return AccessToken
+                              .build());
     }
 
     // Generate JWT token for authenticated user
@@ -177,7 +177,7 @@ public class AuthenticationController {
     }
 
     // Hash and update the user's password
-    userService.updatePassword(user, newPassword);
+    userService.resetPassword(user, newPassword);
 
     // Respond with success message
     return ResponseEntity.ok("Password successfully reset");

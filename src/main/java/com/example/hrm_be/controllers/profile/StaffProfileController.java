@@ -2,6 +2,7 @@ package com.example.hrm_be.controllers.profile;
 
 import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.models.dtos.User;
+import com.example.hrm_be.models.requests.ChangePasswordRequest;
 import com.example.hrm_be.models.responses.BaseOutput;
 import com.example.hrm_be.services.UserService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -66,5 +67,31 @@ public class StaffProfileController {
             .status(com.example.hrm_be.commons.enums.ResponseStatus.SUCCESS)
             .build();
     return ResponseEntity.ok(response);
+  }
+
+  // PUT: /api/v1/staff/profile/change-password
+  // User change password
+  @PutMapping("/change-password")
+  protected ResponseEntity<String> changePassword(
+          @RequestBody @NotNull(message = "error.request.body.invalid") ChangePasswordRequest request) {
+    // Get email of logged in user
+    String email = userService.getAuthenticatedUserEmail();
+    if (email == null) {
+      BaseOutput<User> response =
+              BaseOutput.<User>builder()
+                      .status(com.example.hrm_be.commons.enums.ResponseStatus.FAILED)
+                      .errors(List.of(HrmConstant.ERROR.REQUEST.INVALID_PATH_VARIABLE))
+                      .build();
+      return ResponseEntity.badRequest().body("Người dùng không tồn tại hoặc chưa đăng nhập");
+    }
+
+    // Get detailed data of logged in user
+    User user = userService.findLoggedInfoByEmail(email);
+
+    // Change Password
+    userService.changePassword(user, request);
+
+    // Build the response with the updated profile data
+    return ResponseEntity.ok("Đổi mật khẩu thành công");
   }
 }
