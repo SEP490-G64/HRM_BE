@@ -40,6 +40,7 @@ public class UserMapper {
                   .phone(e.getPhone())
                   .firstName(e.getFirstName())
                   .lastName(e.getLastName())
+                      .branch(e.getBranch() !=null ? branchMapper.toEntity(e.getBranch()) : null)
                   .createdDate(e.getCreatedDate())
                   .build();
             })
@@ -65,7 +66,11 @@ public class UserMapper {
                                 .map(urm -> roleMapper.toDTO(urm))
                                 .collect(Collectors.toList())
                             : null)
-                    .status(String.valueOf(e.getStatus()))
+                        .branch(e.getBranch() != null
+                                ? branchMapper.convertToDTOBasicInfo(e.getBranch())  // If branch is a single entity
+                                : null)
+
+                        .status(String.valueOf(e.getStatus()))
                     .createdDate(e.getCreatedDate())
                     .build())
         .orElse(null);

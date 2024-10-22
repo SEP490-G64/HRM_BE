@@ -4,9 +4,12 @@ import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.commons.constants.HrmConstant.ERROR.USER;
 import com.example.hrm_be.commons.enums.RoleType;
 import com.example.hrm_be.commons.enums.UserStatusType;
+import com.example.hrm_be.components.BranchMapper;
 import com.example.hrm_be.components.RoleMapper;
 import com.example.hrm_be.components.UserMapper;
+import com.example.hrm_be.components.UserRoleMapMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
+import com.example.hrm_be.models.dtos.Branch;
 import com.example.hrm_be.models.dtos.Role;
 import com.example.hrm_be.models.dtos.User;
 import com.example.hrm_be.models.entities.UserEntity;
@@ -15,17 +18,28 @@ import com.example.hrm_be.models.requests.RegisterRequest;
 import com.example.hrm_be.repositories.RoleRepository;
 import com.example.hrm_be.repositories.UserRepository;
 import com.example.hrm_be.repositories.UserRoleMapRepository;
-import com.example.hrm_be.services.EmailService;
-import com.example.hrm_be.services.UserRoleMapService;
-import com.example.hrm_be.services.UserService;
+import com.example.hrm_be.services.*;
+import com.example.hrm_be.utils.ExcelUtility;
 import com.example.hrm_be.utils.PasswordGenerator;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.hibernate.validator.internal.constraintvalidators.bv.time.futureorpresent.FutureOrPresentValidatorForReadableInstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
@@ -40,6 +54,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -55,9 +70,17 @@ public class UserServiceImpl implements UserService {
 
   @Lazy @Autowired UserRoleMapService userRoleMapService;
   @Lazy @Autowired UserRoleMapRepository userRoleMapRepository;
+  @Lazy @Autowired UserRoleMapMapper userRoleMapMapper;
+
 
   @Lazy @Autowired private PasswordEncoder passwordEncoder;
   @Autowired private EmailService emailService;
+
+  @Lazy @Autowired private BranchMapper branchMapper;
+  @Lazy @Autowired private BranchService branchService;
+  @Lazy @Autowired private RoleService roleService;
+  private FutureOrPresentValidatorForReadableInstant futureOrPresentValidatorForReadableInstant;
+
 
   @Override
   public String getAuthenticatedUserEmail() throws UsernameNotFoundException {
@@ -134,63 +157,64 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public User create(User user) {
-    /** TODO Only allow admin user to call this function */
-    // Check if the logged user is an admin
+    // Only allow admin user to call this function
     if (!isAdmin()) {
       throw new HrmCommonException(HrmConstant.ERROR.ROLE.NOT_ALLOWED);
     }
 
     // Validate user details and check for existing users with the same email or username
-    if (user == null
-        || userRepository.existsByEmail(user.getEmail())
-        || userRepository.existsByUserName(user.getUserName())) {
+    if (user == null ||
+            userRepository.existsByEmail(user.getEmail()) ||
+            userRepository.existsByUserName(user.getUserName())) {
       throw new HrmCommonException(USER.EXIST);
     }
 
-    // Generate random password
+    // Generate and encode random password
     String rawPassword = PasswordGenerator.generateRandomPassword();
-
-    // Encode the generated password
     String encodedPassword = passwordEncoder.encode(rawPassword);
 
-    return Optional.of(user)
-        .map(userMapper::toEntity)
-        .map(
-            e -> {
-              e.setStatus(UserStatusType.ACTIVATE);
-              e.setCreatedDate(LocalDateTime.now());
-              e.setPassword(encodedPassword); // Set the encoded password to the entity
-              return userRepository.save(e);
-            })
-        .map(
-            e -> {
-              // Check role to assign role for user
-              if (user.getRoles() != null) {
-                if (user.getRoles()
-                    .contains(roleMapper.toDTO(roleRepository.getReferenceById(1L)))) {
-                  userRoleMapService.setStaffRoleForUser(e.getId());
-                } else if (user.getRoles()
-                    .contains(roleMapper.toDTO(roleRepository.getReferenceById(2L)))) {
-                  userRoleMapService.setManagerRoleForUser(e.getId());
-                } else if (user.getRoles()
-                    .contains(roleMapper.toDTO(roleRepository.getReferenceById(3L)))) {
-                  userRoleMapService.setAdminRoleForUser(e.getId());
-                }
-              } else {
-                userRoleMapService.setStaffRoleForUser(e.getId());
-              }
+    // Map User DTO to Entity
+    UserEntity e = userMapper.toEntity(user);
 
-              // Send email to user with the generated password
-              emailService.sendEmail(
-                  user.getEmail(),
-                  "Mật khẩu của tài khoản ứng dụng Quản lí kho của Hệ thống nhà thuốc Long Tâm của"
-                      + " bạn",
-                  "Mật khẩu: " + rawPassword);
+    // Set user properties
+    e.setStatus(UserStatusType.ACTIVATE); // Set user status to ACTIVE
+    e.setCreatedDate(LocalDateTime.now()); // Set current date for user creation
+    e.setPassword(encodedPassword); // Set encoded password for the user entity
 
-              return e;
-            })
-        .map(userMapper::toDTO)
-        .orElse(null); // Return null if user creation fails
+    // Set branch if the user has one
+    if (user.getBranch() != null) {
+      e.setBranch(branchMapper.toEntity(user.getBranch()));
+    }
+
+    // Save the user entity in the repository
+    UserEntity userEntity = userRepository.save(e);
+
+    // Handle role assignment if roles exist
+    if (user.getRoles() != null && !user.getRoles().isEmpty() && userEntity != null) {
+      List<UserRoleMapEntity> userRoleMapEntities = user.getRoles().stream()
+              .map(role -> {
+                UserRoleMapEntity userRoleMapEntity = new UserRoleMapEntity();
+                userRoleMapEntity.setUser(userEntity); // Use the saved UserEntity 'e'
+                userRoleMapEntity.setRole(roleMapper.toEntity(role)); // Set the role entity
+                return userRoleMapEntity;
+              })
+              .collect(Collectors.toList()); // Collect to a List
+
+      // Save role mappings if necessary
+      if (!userRoleMapEntities.isEmpty()) {
+        userRoleMapRepository.saveAll(userRoleMapEntities); // Save role mappings
+      }
+    }
+
+    // Send email notification with the raw password
+    emailService.sendEmail(
+            user.getEmail(),
+            "Mật khẩu của tài khoản ứng dụng Quản lí kho của Hệ thống nhà thuốc Long Tâm của bạn",
+            "Mật khẩu: " + rawPassword
+    );
+
+    // Return the saved User as a DTO
+    return userMapper.toDTO(e); // Convert the saved entity back to a DTO
   }
 
   @Override
@@ -451,4 +475,147 @@ public class UserServiceImpl implements UserService {
     user.setPassword(newPassword);
     userRepository.save(userMapper.toEntity(user)); // Save the updated user
   }
+
+
+  public List<String> importFile(MultipartFile file) {
+    // Mapper to convert Excel row into a User object
+    Function<Row, User> rowMapper = (Row row) -> {
+      User user = new User();
+      try {
+        // Mapping fields from the Excel row to the User object
+        user.setUserName(row.getCell(0) != null ? row.getCell(0).getStringCellValue() : null);
+        user.setEmail(row.getCell(1) != null ? row.getCell(1).getStringCellValue() : null);
+        user.setPhone(row.getCell(2) != null ? String.valueOf((long) row.getCell(2).getNumericCellValue()) : null);
+        user.setFirstName(row.getCell(3) != null ? row.getCell(3).getStringCellValue() : null);
+        user.setLastName(row.getCell(4) != null ? row.getCell(4).getStringCellValue() : null);
+
+        // Map branch if available
+        if (row.getCell(5) != null) {
+          Branch branch = branchService.getByLocation(row.getCell(5).getStringCellValue());
+          if (branch != null) {
+            user.setBranch(branch);
+          }
+        }
+
+        // Map roles if available
+        if (row.getCell(6) != null) {
+          String roleTypeStr = row.getCell(6).getStringCellValue().toUpperCase();
+          try {
+            RoleType roleType = RoleType.valueOf(roleTypeStr);
+            Role role = roleService.getRoleByType(roleType);
+            if (role != null) {
+              user.setRoles(Collections.singletonList(role)); // Set the role as a single-element list
+            }
+          } catch (IllegalArgumentException e) {
+            // Handle invalid RoleType value
+            throw new IllegalArgumentException("Invalid role type: " + roleTypeStr);
+          }
+        }
+      } catch (Exception e) {
+        // Handle any unexpected parsing errors
+        throw new RuntimeException("Error parsing row: " + e.getMessage(), e);
+      }
+      return user;
+    };
+
+    // Validator to check the User object for errors
+    BiConsumer<User, List<String>> validator = (User user, List<String> rowErrors) -> {
+      if (user.getUserName() == null || user.getUserName().isEmpty()) {
+        rowErrors.add("UserName is missing");
+      }
+      if (user.getEmail() == null || !user.getEmail().contains("@")) {
+        rowErrors.add("Invalid Email");
+      }
+      if (userRepository.existsByEmail(user.getEmail()) || userRepository.existsByUserName(user.getUserName())) {
+        rowErrors.add("User with email or user name already exists.");
+      }
+    };
+
+    // Call the utility method with row mapper and validator
+    List<String> errors = ExcelUtility.importFromExcelWithErrors(file, rowMapper, validator, 0); // 0 means header row is on the first row
+
+    // Save all valid users to the database
+    if (errors.isEmpty()) {
+      List<User> usersToSave = new ArrayList<>();
+      // Read the file again to collect valid users
+      try (Workbook workbook = new XSSFWorkbook(file.getInputStream())) {
+        Sheet sheet = workbook.getSheetAt(0);
+        for (int rowIndex = 1; rowIndex <= sheet.getLastRowNum(); rowIndex++) { // Skip header row
+          Row row = sheet.getRow(rowIndex);
+          if (row != null) {
+            User user = rowMapper.apply(row);
+            List<String> rowErrors = new ArrayList<>();
+            validator.accept(user, rowErrors);
+            if (rowErrors.isEmpty()) {
+              usersToSave.add(user);
+            }
+          }
+        }
+      } catch (IOException e) {
+        errors.add("Failed to parse Excel file: " + e.getMessage());
+      }
+
+      // Save all valid users to the database using the userMapper
+      if (!usersToSave.isEmpty()) {
+        userRepository.saveAll(usersToSave.stream()
+                .map(userMapper::toEntity) // Map to entity before saving
+                .collect(Collectors.toList()));
+      }
+    }
+
+    return errors;
+  }
+
+
+
+  @Override
+  public ByteArrayInputStream exportFile() throws IOException {
+      // Define the headers for the User export
+      String[] headers = { "userName", "email", "phone", "firstName", "lastName", "branch", "roles" };
+
+      // Row mapper to convert a User object to a list of cell values
+      Function<User, List<String>> rowMapper = (User user) -> {
+        List<String> cellValues = new ArrayList<>();
+        cellValues.add(user.getUserName() != null ? user.getUserName() : "");
+        cellValues.add(user.getEmail() != null ? user.getEmail() : "");
+        cellValues.add(user.getPhone() != null ? user.getPhone() : "");
+        cellValues.add(user.getFirstName() != null ? user.getFirstName() : "");
+        cellValues.add(user.getLastName() != null ? user.getLastName() : "");
+
+        // Check for branch information
+        if (user.getBranch() != null) {
+          cellValues.add(user.getBranch().getBranchName());
+        } else {
+          cellValues.add("");
+        }
+
+        // Map roles to a comma-separated string
+        if (user.getRoles() != null && !user.getRoles().isEmpty()) {
+          String roles = user.getRoles().stream()
+                  .map(Role::getName) // Assuming Role has a getName() method
+                  .collect(Collectors.joining(", "));
+          cellValues.add(roles);
+        } else {
+          cellValues.add("No roles assigned");
+        }
+
+        return cellValues;
+      };
+
+      // Fetch user data (this would typically come from your database/repository)
+      List<User> users = userRepository.findAll().stream().map(userMapper::toDTO).collect(Collectors.toList());
+
+      // Call the utility to export data
+      try {
+        return ExcelUtility.exportToExcelWithErrors(users, headers, rowMapper);
+      } catch (IOException e) {
+        throw new RuntimeException("Error exporting user data to Excel", e);
+      }
+
+  }
+
 }
+
+
+
+

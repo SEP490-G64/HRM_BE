@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface BranchRepository extends JpaRepository<BranchEntity, Long> {
   // Check if a branch exists by its location.
@@ -22,4 +24,6 @@ public interface BranchRepository extends JpaRepository<BranchEntity, Long> {
           + "AND (:branchType IS NULL OR b.branchType = :branchType)")
   Page<BranchEntity> findByBranchNameOrLocationAndBranchType(
       String keyword, BranchType branchType, Pageable pageable);
+
+  Optional<BranchEntity> findByLocation(String branchName);
 }
