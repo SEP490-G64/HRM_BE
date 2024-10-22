@@ -193,8 +193,16 @@ public class UserServiceImpl implements UserService {
     // Send email notification with the raw password
     emailService.sendEmail(
             user.getEmail(),
-            "Tài khoản ứng dụng Quản lí kho Hệ thống nhà thuốc của bạn",
-            "Tài khoản: " + user.getEmail() + "\nMật khẩu: " + rawPassword
+            "Tài khoản ứng dụng Quản lý kho Hệ thống nhà thuốc của bạn",
+            "Chào bạn,\n\n" +
+                    "Chúng tôi xin thông báo rằng tài khoản của bạn đã được tạo thành công trên Ứng dụng Quản lý kho Hệ thống nhà thuốc.\n\n" +
+                    "Dưới đây là thông tin tài khoản của bạn:\n" +
+                    "Tài khoản: " + user.getEmail() + "\n" +
+                    "Mật khẩu: " + rawPassword + "\n\n" +
+                    "Chúng tôi khuyên bạn nên thay đổi mật khẩu sau khi đăng nhập lần đầu tiên để bảo vệ tài khoản của mình.\n\n" +
+                    "Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi!\n\n" +
+                    "Trân trọng,\n" +
+                    "Đội ngũ hỗ trợ khách hàng"
     );
 
     // Return the saved User as a DTO

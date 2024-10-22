@@ -1,5 +1,6 @@
 package com.example.hrm_be.components;
 
+import com.example.hrm_be.commons.enums.UserStatusType;
 import com.example.hrm_be.models.dtos.User;
 import com.example.hrm_be.models.entities.UserEntity;
 import com.example.hrm_be.models.entities.UserRoleMapEntity;
@@ -41,6 +42,7 @@ public class UserMapper {
                               .firstName(e.getFirstName())
                               .lastName(e.getLastName())
                               .branch(e.getBranch() !=null ? branchMapper.toEntity(e.getBranch()) : null)
+                              .status(e.getStatus() != null ? UserStatusType.fromDisplayName(e.getStatus()) : null)
                               .build();
                     })
             .orElse(null);

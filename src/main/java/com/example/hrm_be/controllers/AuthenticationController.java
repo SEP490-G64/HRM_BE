@@ -63,9 +63,7 @@ public class AuthenticationController {
     User userDetails = userService.getByEmail(request.getEmail());
 
     // Check if user not has admin role and account status not activate
-    if (!userDetails.getRoles().stream()
-            .anyMatch(role -> role.getType() != null && role.getType().isAdmin())
-        && !Objects.equals(userDetails.getStatus(), UserStatusType.ACTIVATE.toString())) {
+    if (!Objects.equals(userDetails.getStatus(), UserStatusType.ACTIVATE.toString())) {
 
       // Return a Bad Request response with message about account not being activated
       return ResponseEntity.status(HttpStatus.FORBIDDEN) // Change the status to BAD_REQUEST
@@ -119,7 +117,7 @@ public class AuthenticationController {
       HttpServletRequest request, @RequestBody String email) {
     User user = userService.getByEmail(email);
     if (user == null) {
-      throw new HrmCommonException("Not found user regarding the email, please check again");
+      throw new HrmCommonException("Chưa có tài khoản nào đăng kí với email này");
     }
     String token = jwtUtil.generateToken(email);
     JavaMailSender mailSender = mailUtil.getJavaMailSender();
@@ -180,6 +178,6 @@ public class AuthenticationController {
     userService.resetPassword(user, newPassword);
 
     // Respond with success message
-    return ResponseEntity.ok("Password successfully reset");
+    return ResponseEntity.ok("Đặt lại mật khẩu thành công");
   }
 }
