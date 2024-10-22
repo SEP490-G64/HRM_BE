@@ -476,9 +476,8 @@ public class UserServiceImpl implements UserService {
     userRepository.save(userMapper.toEntity(user)); // Save the updated user
   }
 
-
   public List<String> importFile(MultipartFile file) {
-    // Mapper to convert Excel row into a User object
+    // Mapper to convert each Excel row into a User object
     Function<Row, User> rowMapper = (Row row) -> {
       User user = new User();
       try {
@@ -504,7 +503,7 @@ public class UserServiceImpl implements UserService {
             RoleType roleType = RoleType.valueOf(roleTypeStr);
             Role role = roleService.getRoleByType(roleType);
             if (role != null) {
-              user.setRoles(Collections.singletonList(role)); // Set the role as a single-element list
+              user.setRoles(Collections.singletonList(role)); // Set role as a single-element list
             }
           } catch (IllegalArgumentException e) {
             // Handle invalid RoleType value
@@ -518,55 +517,61 @@ public class UserServiceImpl implements UserService {
       return user;
     };
 
-    // Validator to check the User object for errors
-    BiConsumer<User, List<String>> validator = (User user, List<String> rowErrors) -> {
-      if (user.getUserName() == null || user.getUserName().isEmpty()) {
-        rowErrors.add("UserName is missing");
-      }
-      if (user.getEmail() == null || !user.getEmail().contains("@")) {
-        rowErrors.add("Invalid Email");
-      }
-      if (userRepository.existsByEmail(user.getEmail()) || userRepository.existsByUserName(user.getUserName())) {
-        rowErrors.add("User with email or user name already exists.");
-      }
-    };
+    // List to store any validation errors
+    List<String> errors = new ArrayList<>();
+    List<User> usersToSave = new ArrayList<>();
 
-    // Call the utility method with row mapper and validator
-    List<String> errors = ExcelUtility.importFromExcelWithErrors(file, rowMapper, validator, 0); // 0 means header row is on the first row
+    // Read and validate each row from the Excel file
+    try {
+      Workbook workbook = new XSSFWorkbook(file.getInputStream());
+      Sheet sheet = workbook.getSheetAt(0);
 
-    // Save all valid users to the database
-    if (errors.isEmpty()) {
-      List<User> usersToSave = new ArrayList<>();
-      // Read the file again to collect valid users
-      try (Workbook workbook = new XSSFWorkbook(file.getInputStream())) {
-        Sheet sheet = workbook.getSheetAt(0);
-        for (int rowIndex = 1; rowIndex <= sheet.getLastRowNum(); rowIndex++) { // Skip header row
-          Row row = sheet.getRow(rowIndex);
-          if (row != null) {
-            User user = rowMapper.apply(row);
+      for (int rowIndex = 1; rowIndex <= sheet.getLastRowNum(); rowIndex++) {
+        Row row = sheet.getRow(rowIndex);
+        if (row != null) {
+          try {
+            User user = rowMapper.apply(row); // Convert row to User object
+            // List to hold errors for the current row
             List<String> rowErrors = new ArrayList<>();
-            validator.accept(user, rowErrors);
+            // Validate the User object
+            if (user.getUserName() == null || user.getUserName().isEmpty()) {
+              rowErrors.add("UserName is missing at row " + (rowIndex + 1));
+            }
+            if (user.getEmail() == null || !user.getEmail().contains("@")) {
+              rowErrors.add("Invalid Email at row " + (rowIndex + 1));
+            }
+            if (userRepository.existsByEmail(user.getEmail()) || userRepository.existsByUserName(user.getUserName())) {
+              rowErrors.add("User with email or user name already exists at row " + (rowIndex + 1));
+            }
+
+            // If there are no errors, add to the usersToSave list
             if (rowErrors.isEmpty()) {
               usersToSave.add(user);
+            } else {
+              // Log the errors
+              errors.addAll(rowErrors);
             }
+          } catch (Exception e) {
+            // Log parsing error for the row
+            errors.add("Error parsing row " + (rowIndex + 1) + ": " + e.getMessage());
           }
         }
-      } catch (IOException e) {
-        errors.add("Failed to parse Excel file: " + e.getMessage());
       }
 
-      // Save all valid users to the database using the userMapper
-      if (!usersToSave.isEmpty()) {
-        for (User user : usersToSave) {
-        this.create(user);
-      }
+      workbook.close();
+    } catch (IOException e) {
+      errors.add("Failed to parse Excel file: " + e.getMessage());
+    }
+
+    // Save all valid users to the database
+    if (!usersToSave.isEmpty()) {
+      for (User user : usersToSave) {
+        create(user);
       }
     }
 
-    return errors;
+    return errors; // Return the list of errors
   }
-
-
 
   @Override
   public ByteArrayInputStream exportFile() throws IOException {
