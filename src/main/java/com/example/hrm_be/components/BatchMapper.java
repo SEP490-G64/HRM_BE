@@ -33,12 +33,6 @@ public class BatchMapper {
                     .produceDate(e.getProduceDate())
                     .expireDate(e.getExpireDate())
                     .inboundPrice(e.getInboundPrice())
-                    .unitConversions(
-                        e.getUnitConversions() != null
-                            ? e.getUnitConversions().stream()
-                                .map(unitConversionMapper::toEntity)
-                                .collect(Collectors.toList())
-                            : null)
                     .outboundDetails(
                         e.getOutboundDetails() != null
                             ? e.getOutboundDetails().stream()
@@ -73,12 +67,6 @@ public class BatchMapper {
                     .produceDate(e.getProduceDate())
                     .expireDate(e.getExpireDate())
                     .inboundPrice(e.getInboundPrice())
-                    .unitConversions(
-                        e.getUnitConversions() != null
-                            ? e.getUnitConversions().stream()
-                                .map(unitConversionMapper::toDTO)
-                                .collect(Collectors.toList())
-                            : null)
                     .outboundDetails(
                         e.getOutboundDetails() != null
                             ? e.getOutboundDetails().stream()

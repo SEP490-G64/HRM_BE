@@ -69,4 +69,6 @@ public final class Product implements Serializable {
   List<BranchProduct> branchProducts;
 
   List<ProductSuppliers> productSuppliers;
+
+  List<UnitConversion> unitConversions; // 1-N with UnitConversion
 }

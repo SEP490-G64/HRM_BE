@@ -35,6 +35,8 @@ public interface UserService {
 
   boolean isAdmin();
 
+  boolean isManager();
+
   List<Role> findRolesByEmail(@NonNull String email);
 
   User register(RegisterRequest registerRequest);
