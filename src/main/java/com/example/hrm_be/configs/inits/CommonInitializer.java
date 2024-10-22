@@ -1,8 +1,11 @@
 package com.example.hrm_be.configs.inits;
 
+import com.example.hrm_be.commons.enums.BranchType;
 import com.example.hrm_be.commons.enums.UserStatusType;
+import com.example.hrm_be.models.dtos.Branch;
 import com.example.hrm_be.models.dtos.Role;
 import com.example.hrm_be.models.dtos.User;
+import com.example.hrm_be.services.BranchService;
 import com.example.hrm_be.services.RoleService;
 import com.example.hrm_be.services.UserRoleMapService;
 import com.example.hrm_be.services.UserService;
@@ -20,6 +23,7 @@ public class CommonInitializer implements ApplicationRunner {
 
   @Autowired private RoleService roleService;
   @Autowired private UserService userService;
+  @Autowired private BranchService branchService;
   @Autowired private UserRoleMapService userRoleMapService;
 
   @Override
@@ -50,6 +54,15 @@ public class CommonInitializer implements ApplicationRunner {
   }
 
   private void initAdminUser() {
+    Branch branch =
+        Branch.builder()
+            .branchName("Cơ sở 1 / Văn phòng trụ sở chính")
+            .branchType(BranchType.MAIN)
+            .location("199 Đường Giải Phóng - P. Đồng Tâm - Q. Hai Bà Trưng - TP. Hà Nội")
+            .phoneNumber("02438694014")
+            .build();
+
+    branchService.create(branch);
 
     User oldAdminUser = userService.findLoggedInfoByEmail("dsdadmin@gmail.com");
 
@@ -68,6 +81,9 @@ public class CommonInitializer implements ApplicationRunner {
             .email("dsdadmin@gmail.com")
             .password("Abcd1234")
             .userName("dsdadmin")
+            .phone("0912345678")
+            .firstName("Quản trị viên")
+            .lastName("Hệ thống Nhà thuốc")
             .status(UserStatusType.ACTIVATE.toString())
             .build();
     User createdAdminUser = userService.createAdmin(newAdminUser);

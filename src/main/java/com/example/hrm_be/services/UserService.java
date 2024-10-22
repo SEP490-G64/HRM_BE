@@ -2,6 +2,7 @@ package com.example.hrm_be.services;
 
 import com.example.hrm_be.models.dtos.Role;
 import com.example.hrm_be.models.dtos.User;
+import com.example.hrm_be.models.requests.ChangePasswordRequest;
 import com.example.hrm_be.models.requests.RegisterRequest;
 import java.util.List;
 
@@ -45,5 +46,7 @@ public interface UserService {
 
   User activateUser(Long userId);
 
-  void updatePassword(User user, String newPassword);
+  void resetPassword(User user, String newPassword);
+
+  void changePassword(User user, ChangePasswordRequest request);
 }
