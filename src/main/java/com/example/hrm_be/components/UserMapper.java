@@ -30,49 +30,52 @@ public class UserMapper {
 
   public UserEntity toEntity(User dto) {
     return Optional.ofNullable(dto)
-            .map(
-                    e -> {
-                      return UserEntity.builder()
-                              .id(e.getId())
-                              .userName(e.getUserName())
-                              .email(e.getEmail())
-                              .password(
-                                      e.getPassword() != null ? passwordEncoder.encode(e.getPassword()) : null)
-                              .phone(e.getPhone())
-                              .firstName(e.getFirstName())
-                              .lastName(e.getLastName())
-                              .branch(e.getBranch() !=null ? branchMapper.toEntity(e.getBranch()) : null)
-                              .status(e.getStatus() != null ? UserStatusType.fromDisplayName(e.getStatus()) : null)
-                              .build();
-                    })
-            .orElse(null);
+        .map(
+            e -> {
+              return UserEntity.builder()
+                  .id(e.getId())
+                  .userName(e.getUserName())
+                  .email(e.getEmail())
+                  .password(
+                      e.getPassword() != null ? passwordEncoder.encode(e.getPassword()) : null)
+                  .phone(e.getPhone())
+                  .firstName(e.getFirstName())
+                  .lastName(e.getLastName())
+                  .branch(e.getBranch() != null ? branchMapper.toEntity(e.getBranch()) : null)
+                  .status(
+                      e.getStatus() != null ? UserStatusType.fromDisplayName(e.getStatus()) : null)
+                  .build();
+            })
+        .orElse(null);
   }
 
   private User convertToDto(UserEntity entity) {
     return Optional.ofNullable(entity)
-            .map(
-                    e ->
-                            User.builder()
-                                    .id(e.getId())
-                                    .userName(e.getUserName())
-                                    .email(e.getEmail())
-                                    .password(e.getPassword())
-                                    .phone(e.getPhone())
-                                    .firstName(e.getFirstName())
-                                    .lastName(e.getLastName())
-                                    .roles(
-                                            e.getUserRoleMap() != null
-                                                    ? e.getUserRoleMap().stream()
-                                                    .map(UserRoleMapEntity::getRole)
-                                                    .map(urm -> roleMapper.toDTO(urm))
-                                                    .collect(Collectors.toList())
-                                                    : null)
-                                    .branch(e.getBranch() != null
-                                            ? branchMapper.convertToDTOBasicInfo(e.getBranch())  // If branch is a single entity
-                                            : null)
-                                    .status(String.valueOf(e.getStatus()))
-                                    .build())
-            .orElse(null);
+        .map(
+            e ->
+                User.builder()
+                    .id(e.getId())
+                    .userName(e.getUserName())
+                    .email(e.getEmail())
+                    .password(e.getPassword())
+                    .phone(e.getPhone())
+                    .firstName(e.getFirstName())
+                    .lastName(e.getLastName())
+                    .roles(
+                        e.getUserRoleMap() != null
+                            ? e.getUserRoleMap().stream()
+                                .map(UserRoleMapEntity::getRole)
+                                .map(urm -> roleMapper.toDTO(urm))
+                                .collect(Collectors.toList())
+                            : null)
+                    .branch(
+                        e.getBranch() != null
+                            ? branchMapper.convertToDTOBasicInfo(
+                                e.getBranch()) // If branch is a single entity
+                            : null)
+                    .status(String.valueOf(e.getStatus()))
+                    .build())
+        .orElse(null);
   }
 
   // Convert RegisterRequest to UserEntity

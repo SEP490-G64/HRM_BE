@@ -145,9 +145,9 @@ public class UserServiceImpl implements UserService {
     }
 
     // Validate user details and check for existing users with the same email or username
-    if (user == null ||
-            userRepository.existsByEmail(user.getEmail()) ||
-            userRepository.existsByUserName(user.getUserName())) {
+    if (user == null
+        || userRepository.existsByEmail(user.getEmail())
+        || userRepository.existsByUserName(user.getUserName())) {
       throw new HrmCommonException(USER.EXIST);
     }
 
@@ -172,38 +172,44 @@ public class UserServiceImpl implements UserService {
 
     // Handle role assignment if roles exist
     if (user.getRoles() != null && !user.getRoles().isEmpty()) {
-      List<UserRoleMapEntity> userRoleMapEntities = user.getRoles().stream()
-              .map(role -> {
-                UserRoleMapEntity userRoleMapEntity = new UserRoleMapEntity();
-                userRoleMapEntity.setUser(userEntity); // Use the saved UserEntity 'e'
-                userRoleMapEntity.setRole(roleMapper.toEntity(role)); // Set the role entity
-                return userRoleMapEntity;
-              })
+      List<UserRoleMapEntity> userRoleMapEntities =
+          user.getRoles().stream()
+              .map(
+                  role -> {
+                    UserRoleMapEntity userRoleMapEntity = new UserRoleMapEntity();
+                    userRoleMapEntity.setUser(userEntity); // Use the saved UserEntity 'e'
+                    userRoleMapEntity.setRole(roleMapper.toEntity(role)); // Set the role entity
+                    return userRoleMapEntity;
+                  })
               .collect(Collectors.toList()); // Collect to a List
 
       // Save role mappings if necessary
       if (!userRoleMapEntities.isEmpty()) {
         userRoleMapRepository.saveAll(userRoleMapEntities); // Save role mappings
       }
-    }
-    else {
+    } else {
       userRoleMapService.setStaffRoleForUser(e.getId());
     }
 
     // Send email notification with the raw password
     emailService.sendEmail(
-            user.getEmail(),
-            "Tài khoản ứng dụng Quản lý kho Hệ thống nhà thuốc của bạn",
-            "Chào bạn,\n\n" +
-                    "Chúng tôi xin thông báo rằng tài khoản của bạn đã được tạo thành công trên Ứng dụng Quản lý kho Hệ thống nhà thuốc.\n\n" +
-                    "Dưới đây là thông tin tài khoản của bạn:\n" +
-                    "Tài khoản: " + user.getEmail() + "\n" +
-                    "Mật khẩu: " + rawPassword + "\n\n" +
-                    "Chúng tôi khuyên bạn nên thay đổi mật khẩu sau khi đăng nhập lần đầu tiên để bảo vệ tài khoản của mình.\n\n" +
-                    "Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi!\n\n" +
-                    "Trân trọng,\n" +
-                    "Đội ngũ hỗ trợ khách hàng"
-    );
+        user.getEmail(),
+        "Tài khoản ứng dụng Quản lý kho Hệ thống nhà thuốc của bạn",
+        "Chào bạn,\n\n"
+            + "Chúng tôi xin thông báo rằng tài khoản của bạn đã được tạo thành công trên Ứng dụng"
+            + " Quản lý kho Hệ thống nhà thuốc.\n\n"
+            + "Dưới đây là thông tin tài khoản của bạn:\n"
+            + "Tài khoản: "
+            + user.getEmail()
+            + "\n"
+            + "Mật khẩu: "
+            + rawPassword
+            + "\n\n"
+            + "Chúng tôi khuyên bạn nên thay đổi mật khẩu sau khi đăng nhập lần đầu tiên để bảo vệ"
+            + " tài khoản của mình.\n\n"
+            + "Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi!\n\n"
+            + "Trân trọng,\n"
+            + "Đội ngũ hỗ trợ khách hàng");
 
     // Return the saved User as a DTO
     return userMapper.toDTO(e); // Convert the saved entity back to a DTO
@@ -265,7 +271,6 @@ public class UserServiceImpl implements UserService {
                 builder.branch(branchMapper.toEntity(user.getBranch()));
               }
               return builder.build();
-              
             })
         .map(
             e -> {
@@ -273,13 +278,17 @@ public class UserServiceImpl implements UserService {
                 UserEntity userEntity = userMapper.toEntity(user);
                 // Handle role assignment if roles exist
                 if (user.getRoles() != null && !user.getRoles().isEmpty()) {
-                  List<UserRoleMapEntity> userRoleMapEntities = user.getRoles().stream()
-                          .map(role -> {
-                            UserRoleMapEntity userRoleMapEntity = new UserRoleMapEntity();
-                            userRoleMapEntity.setUser(userEntity); // Use the saved UserEntity 'e'
-                            userRoleMapEntity.setRole(roleMapper.toEntity(role)); // Set the role entity
-                            return userRoleMapEntity;
-                          })
+                  List<UserRoleMapEntity> userRoleMapEntities =
+                      user.getRoles().stream()
+                          .map(
+                              role -> {
+                                UserRoleMapEntity userRoleMapEntity = new UserRoleMapEntity();
+                                userRoleMapEntity.setUser(
+                                    userEntity); // Use the saved UserEntity 'e'
+                                userRoleMapEntity.setRole(
+                                    roleMapper.toEntity(role)); // Set the role entity
+                                return userRoleMapEntity;
+                              })
                           .collect(Collectors.toList()); // Collect to a List
 
                   // Save role mappings if necessary
