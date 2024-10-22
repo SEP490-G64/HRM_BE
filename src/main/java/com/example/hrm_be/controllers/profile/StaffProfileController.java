@@ -73,15 +73,15 @@ public class StaffProfileController {
   // User change password
   @PutMapping("/change-password")
   protected ResponseEntity<String> changePassword(
-          @RequestBody @NotNull(message = "error.request.body.invalid") ChangePasswordRequest request) {
+      @RequestBody @NotNull(message = "error.request.body.invalid") ChangePasswordRequest request) {
     // Get email of logged in user
     String email = userService.getAuthenticatedUserEmail();
     if (email == null) {
       BaseOutput<User> response =
-              BaseOutput.<User>builder()
-                      .status(com.example.hrm_be.commons.enums.ResponseStatus.FAILED)
-                      .errors(List.of(HrmConstant.ERROR.REQUEST.INVALID_PATH_VARIABLE))
-                      .build();
+          BaseOutput.<User>builder()
+              .status(com.example.hrm_be.commons.enums.ResponseStatus.FAILED)
+              .errors(List.of(HrmConstant.ERROR.REQUEST.INVALID_PATH_VARIABLE))
+              .build();
       return ResponseEntity.badRequest().body("Người dùng không tồn tại hoặc chưa đăng nhập");
     }
 

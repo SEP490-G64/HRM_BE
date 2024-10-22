@@ -55,12 +55,12 @@ public class CommonInitializer implements ApplicationRunner {
 
   private void initAdminUser() {
     Branch branch =
-            Branch.builder()
-                    .branchName("Cơ sở 1 / Văn phòng trụ sở chính")
-                    .branchType(BranchType.MAIN)
-                    .location("199 Đường Giải Phóng - P. Đồng Tâm - Q. Hai Bà Trưng - TP. Hà Nội")
-                    .phoneNumber("02438694014")
-                    .build();
+        Branch.builder()
+            .branchName("Cơ sở 1 / Văn phòng trụ sở chính")
+            .branchType(BranchType.MAIN)
+            .location("199 Đường Giải Phóng - P. Đồng Tâm - Q. Hai Bà Trưng - TP. Hà Nội")
+            .phoneNumber("02438694014")
+            .build();
 
     branchService.create(branch);
 
