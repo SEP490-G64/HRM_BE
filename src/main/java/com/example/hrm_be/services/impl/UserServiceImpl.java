@@ -557,9 +557,9 @@ public class UserServiceImpl implements UserService {
 
       // Save all valid users to the database using the userMapper
       if (!usersToSave.isEmpty()) {
-        userRepository.saveAll(usersToSave.stream()
-                .map(userMapper::toEntity) // Map to entity before saving
-                .collect(Collectors.toList()));
+        for (User user : usersToSave) {
+        this.create(user);
+      }
       }
     }
 
