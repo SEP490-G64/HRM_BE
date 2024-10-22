@@ -135,7 +135,7 @@ public class AuthenticationController {
             + serverName
             + ((serverPort == 80 || serverPort == 443) ? "" : ":" + serverPort)
             + contextPath
-            + "/api/v1/auth/change_password?token="
+            + "/api/v1/auth/forget-page?token="
             + token;
     mailSender.send(mailUtil.constructResetTokenEmail(fullPath, token, user.getEmail()));
     BaseOutput<String> response =
@@ -143,8 +143,8 @@ public class AuthenticationController {
     return ResponseEntity.ok(response);
   }
 
-  @GetMapping("/change_password")
-  public String changePassword(@RequestParam("token") String token, Model model) {
+  @GetMapping("/forget-page")
+  public String getForgetPage(@RequestParam("token") String token, Model model) {
     // Add the token to the model if needed
     model.addAttribute("token", token);
     return "index"; // This will render index.html from the templates folder

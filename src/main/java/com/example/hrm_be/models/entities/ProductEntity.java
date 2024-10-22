@@ -32,9 +32,6 @@ public class ProductEntity extends CommonEntity {
   @Column(name = "product_name", length = 50)
   String productName;
 
-  @Column(name = "product_code", length = 30)
-  String productCode;
-
   @Column(name = "registration_code", length = 30)
   String registrationCode;
 

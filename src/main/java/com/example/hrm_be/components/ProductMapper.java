@@ -38,7 +38,6 @@ public class ProductMapper {
                 ProductEntity.builder()
                     .id(d.getId())
                     .productName(d.getProductName())
-                    .productCode(d.getProductCode())
                     .registrationCode(d.getRegistrationCode())
                     .urlImage(d.getUrlImage())
                     //                    .unitConversions(
@@ -87,7 +86,6 @@ public class ProductMapper {
     return Product.builder()
         .id(entity.getId())
         .productName(entity.getProductName())
-        .productCode(entity.getProductCode())
         .registrationCode(entity.getRegistrationCode())
         .urlImage(entity.getUrlImage())
         .activeIngredient(entity.getActiveIngredient())
