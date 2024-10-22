@@ -17,9 +17,9 @@ import lombok.extern.jackson.Jacksonized;
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ChangePasswordRequest {
-    String oldPassword;
+  String oldPassword;
 
-    String newPassword;
+  String newPassword;
 
-    String confirmPassword;
+  String confirmPassword;
 }
