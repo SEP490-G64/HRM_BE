@@ -116,7 +116,7 @@ public class BranchServiceImpl implements BranchService {
   }
 
   @Override
-  public Branch getByLocation(String location) {
-    return  branchRepository.findByLocation(location).map(branchMapper::toDTO).orElse(null);
+  public Branch getByLocationContains(String location) {
+    return  branchRepository.findByLocationContainsIgnoreCase(location).map(branchMapper::toDTO).orElse(null);
   }
 }

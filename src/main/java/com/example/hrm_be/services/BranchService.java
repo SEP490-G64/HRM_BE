@@ -23,5 +23,5 @@ public interface BranchService {
   // Delete a branch by its ID.
   void delete(Long id);
 
-  Branch getByLocation(String location);
+  Branch getByLocationContains(String location);
 }

@@ -25,5 +25,5 @@ public interface BranchRepository extends JpaRepository<BranchEntity, Long> {
   Page<BranchEntity> findByBranchNameOrLocationAndBranchType(
       String keyword, BranchType branchType, Pageable pageable);
 
-  Optional<BranchEntity> findByLocation(String branchName);
+  Optional<BranchEntity> findByLocationContainsIgnoreCase(String branchName);
 }

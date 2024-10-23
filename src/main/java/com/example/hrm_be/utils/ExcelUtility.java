@@ -1,10 +1,9 @@
 package com.example.hrm_be.utils;
 
 import com.example.hrm_be.models.dtos.User;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import java.awt.Color;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -72,13 +71,24 @@ public class ExcelUtility {
             Function<T, List<String>> rowMapper) throws IOException {
 
         try (Workbook workbook = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            CellStyle headerStyle = workbook.createCellStyle();
+            // Ensure you're using java.awt.Color
+            XSSFColor greenColor = new XSSFColor(new Color(0,255,0), null); // Light green color
+            headerStyle.setFillForegroundColor(greenColor);
+            headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
             Sheet sheet = workbook.createSheet(SHEET);
+
+            // Create a bold font for the header
+            Font headerFont = workbook.createFont();
+            headerFont.setBold(true);  // Make the text bold
+            headerStyle.setFont(headerFont);  // Apply the font to the style
 
             // Create the header row
             Row headerRow = sheet.createRow(0);
             for (int col = 0; col < headers.length; col++) {
                 Cell cell = headerRow.createCell(col);
                 cell.setCellValue(headers[col]);
+                cell.setCellStyle(headerStyle);
             }
 
             // Populate the rows with data
