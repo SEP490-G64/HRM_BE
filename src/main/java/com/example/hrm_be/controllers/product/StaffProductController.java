@@ -2,7 +2,9 @@ package com.example.hrm_be.controllers.product;
 
 import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.commons.enums.ResponseStatus;
+import com.example.hrm_be.models.dtos.BranchProduct;
 import com.example.hrm_be.models.dtos.Product;
+import com.example.hrm_be.models.dtos.ProductBaseDTO;
 import com.example.hrm_be.models.responses.BaseOutput;
 import com.example.hrm_be.services.ProductService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -34,19 +36,19 @@ import org.springframework.web.bind.annotation.RestController;
 public class StaffProductController {
   private final ProductService productService;
 
-  @GetMapping("")
-  protected ResponseEntity<BaseOutput<List<Product>>> getByPaging(
+  @GetMapping("/search")
+  protected ResponseEntity<BaseOutput<List<ProductBaseDTO>>> getByPaging(
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size,
       @RequestParam(required = false, defaultValue = "id") String sortBy,
       @RequestParam(required = false, defaultValue = "ASC") String sortDirection,
       @RequestParam(required = false, defaultValue = "name") String searchType,
       @RequestParam(defaultValue = "") String searchValue) {
-    Page<Product> productPage =
+    Page<ProductBaseDTO> productPage =
         productService.getByPaging(page, size, sortBy, sortDirection, searchType, searchValue);
 
-    BaseOutput<List<Product>> response =
-        BaseOutput.<List<Product>>builder()
+    BaseOutput<List<ProductBaseDTO>> response =
+        BaseOutput.<List<ProductBaseDTO>>builder()
             .message(HttpStatus.OK.toString())
             .totalPages(productPage.getTotalPages())
             .currentPage(page)
@@ -58,21 +60,40 @@ public class StaffProductController {
     return ResponseEntity.ok(response);
   }
 
-  @GetMapping("/search")
-  public ResponseEntity<BaseOutput<List<Product>>> searchProducts(
-      @RequestParam Optional<String> keyword,
-      @RequestParam Optional<Long> manufacturerId,
-      @RequestParam Optional<Long> categoryId,
-      @RequestParam Optional<Long> typeId,
-      @RequestParam Optional<String> status) {
+  @GetMapping("")
+  public ResponseEntity<BaseOutput<List<BranchProduct>>> searchProducts(
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int size,
+      @RequestParam(required = false, defaultValue = "id") String sortBy,
+      @RequestParam(required = false, defaultValue = "ASC") String sortDirection,
+      @RequestParam(required = false) Optional<String> keyword,
+      @RequestParam(required = false) Optional<Long> categoryId,
+      @RequestParam(required = false) Optional<Long> typeId,
+      @RequestParam(required = false) Optional<Long> manufacturerId,
+      @RequestParam(required = false) Optional<String> status,
+      @RequestParam(required = false) Optional<Long> branchId) {
 
-    List<Product> products =
-        productService.searchProducts(keyword, manufacturerId, categoryId, typeId, status);
+    Page<BranchProduct> products =
+        productService.searchProducts(
+            page,
+            size,
+            sortBy,
+            sortDirection,
+            keyword,
+            manufacturerId,
+            categoryId,
+            typeId,
+            status,
+            branchId);
 
-    BaseOutput<List<Product>> response =
-        BaseOutput.<List<Product>>builder()
+    BaseOutput<List<BranchProduct>> response =
+        BaseOutput.<List<BranchProduct>>builder()
+            .totalPages(products.getTotalPages())
+            .currentPage(page)
+            .pageSize(size)
+            .total(products.getTotalElements())
+            .data(products.getContent())
             .message(HttpStatus.OK.toString())
-            .data(products)
             .status(ResponseStatus.SUCCESS)
             .build();
     return ResponseEntity.ok(response);

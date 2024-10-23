@@ -3,17 +3,8 @@ package com.example.hrm_be.models.entities;
 import com.example.hrm_be.commons.enums.ProductStatus;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import jakarta.persistence.Column;
-import jakarta.persistence.ConstraintMode;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.ForeignKey;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+
 import java.math.BigDecimal;
 import java.util.List;
 import lombok.AccessLevel;
@@ -40,9 +31,6 @@ public class ProductEntity extends CommonEntity {
 
   @Column(name = "product_name", length = 50)
   String productName;
-
-  @Column(name = "product_code", length = 30)
-  String productCode;
 
   @Column(name = "registration_code", length = 30)
   String registrationCode;
@@ -93,6 +81,10 @@ public class ProductEntity extends CommonEntity {
   @ToString.Exclude
   @OneToMany(mappedBy = "product")
   List<SpecialConditionEntity> specialConditions; // 1-N with SpecialCondition
+
+  @ToString.Exclude
+  @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  List<UnitConversionEntity> unitConversions; // 1-N with UnitConversion
 
   @ToString.Exclude
   @OneToMany(mappedBy = "product")

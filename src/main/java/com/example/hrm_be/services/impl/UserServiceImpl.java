@@ -14,6 +14,7 @@ import com.example.hrm_be.models.dtos.Role;
 import com.example.hrm_be.models.dtos.User;
 import com.example.hrm_be.models.entities.UserEntity;
 import com.example.hrm_be.models.entities.UserRoleMapEntity;
+import com.example.hrm_be.models.requests.ChangePasswordRequest;
 import com.example.hrm_be.models.requests.RegisterRequest;
 import com.example.hrm_be.repositories.RoleRepository;
 import com.example.hrm_be.repositories.UserRepository;
@@ -21,6 +22,11 @@ import com.example.hrm_be.repositories.UserRoleMapRepository;
 import com.example.hrm_be.services.*;
 import com.example.hrm_be.utils.ExcelUtility;
 import com.example.hrm_be.utils.PasswordGenerator;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -67,6 +73,8 @@ public class UserServiceImpl implements UserService {
 
   @Lazy @Autowired RoleRepository roleRepository;
   @Lazy @Autowired RoleMapper roleMapper;
+
+  @Lazy @Autowired BranchMapper branchMapper;
 
   @Lazy @Autowired UserRoleMapService userRoleMapService;
   @Lazy @Autowired UserRoleMapRepository userRoleMapRepository;
@@ -151,7 +159,7 @@ public class UserServiceImpl implements UserService {
     // Retrieve user by ID and map to DTO
     return Optional.ofNullable(id)
         .flatMap(e -> userRepository.findById(id))
-        .map(userMapper::convertToDtoWithBranch)
+        .map(userMapper::toDTO)
         .orElse(null); // Return null if user not found
   }
 
@@ -163,9 +171,9 @@ public class UserServiceImpl implements UserService {
     }
 
     // Validate user details and check for existing users with the same email or username
-    if (user == null ||
-            userRepository.existsByEmail(user.getEmail()) ||
-            userRepository.existsByUserName(user.getUserName())) {
+    if (user == null
+        || userRepository.existsByEmail(user.getEmail())
+        || userRepository.existsByUserName(user.getUserName())) {
       throw new HrmCommonException(USER.EXIST);
     }
 
@@ -178,7 +186,6 @@ public class UserServiceImpl implements UserService {
 
     // Set user properties
     e.setStatus(UserStatusType.ACTIVATE); // Set user status to ACTIVE
-    e.setCreatedDate(LocalDateTime.now()); // Set current date for user creation
     e.setPassword(encodedPassword); // Set encoded password for the user entity
 
     // Set branch if the user has one
@@ -190,28 +197,45 @@ public class UserServiceImpl implements UserService {
     UserEntity userEntity = userRepository.save(e);
 
     // Handle role assignment if roles exist
-    if (user.getRoles() != null && !user.getRoles().isEmpty() && userEntity != null) {
-      List<UserRoleMapEntity> userRoleMapEntities = user.getRoles().stream()
-              .map(role -> {
-                UserRoleMapEntity userRoleMapEntity = new UserRoleMapEntity();
-                userRoleMapEntity.setUser(userEntity); // Use the saved UserEntity 'e'
-                userRoleMapEntity.setRole(roleMapper.toEntity(role)); // Set the role entity
-                return userRoleMapEntity;
-              })
+    if (user.getRoles() != null && !user.getRoles().isEmpty()) {
+      List<UserRoleMapEntity> userRoleMapEntities =
+          user.getRoles().stream()
+              .map(
+                  role -> {
+                    UserRoleMapEntity userRoleMapEntity = new UserRoleMapEntity();
+                    userRoleMapEntity.setUser(userEntity); // Use the saved UserEntity 'e'
+                    userRoleMapEntity.setRole(roleMapper.toEntity(role)); // Set the role entity
+                    return userRoleMapEntity;
+                  })
               .collect(Collectors.toList()); // Collect to a List
 
       // Save role mappings if necessary
       if (!userRoleMapEntities.isEmpty()) {
         userRoleMapRepository.saveAll(userRoleMapEntities); // Save role mappings
       }
+    } else {
+      userRoleMapService.setStaffRoleForUser(e.getId());
     }
 
     // Send email notification with the raw password
     emailService.sendEmail(
-            user.getEmail(),
-            "Mật khẩu của tài khoản ứng dụng Quản lí kho của Hệ thống nhà thuốc Long Tâm của bạn",
-            "Mật khẩu: " + rawPassword
-    );
+        user.getEmail(),
+        "Tài khoản ứng dụng Quản lý kho Hệ thống nhà thuốc của bạn",
+        "Chào bạn,\n\n"
+            + "Chúng tôi xin thông báo rằng tài khoản của bạn đã được tạo thành công trên Ứng dụng"
+            + " Quản lý kho Hệ thống nhà thuốc.\n\n"
+            + "Dưới đây là thông tin tài khoản của bạn:\n"
+            + "Tài khoản: "
+            + user.getEmail()
+            + "\n"
+            + "Mật khẩu: "
+            + rawPassword
+            + "\n\n"
+            + "Chúng tôi khuyên bạn nên thay đổi mật khẩu sau khi đăng nhập lần đầu tiên để bảo vệ"
+            + " tài khoản của mình.\n\n"
+            + "Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi!\n\n"
+            + "Trân trọng,\n"
+            + "Đội ngũ hỗ trợ khách hàng");
 
     // Return the saved User as a DTO
     return userMapper.toDTO(e); // Convert the saved entity back to a DTO
@@ -263,25 +287,43 @@ public class UserServiceImpl implements UserService {
                       .userName(user.getUserName())
                       .email(user.getEmail());
 
-              // Only set new status if status is not null
-              if (user.getStatus() != null) {
+              // Only set new status if status is not null or not update user profile
+              if (user.getStatus() != null && !profile) {
                 builder.status(UserStatusType.valueOf(user.getStatus()));
+              }
+
+              // Only set new branch if branch is not null or not update user profile
+              if (user.getBranch() != null && !profile) {
+                builder.branch(branchMapper.toEntity(user.getBranch()));
               }
               return builder.build();
             })
         .map(
             e -> {
-              // Check role to assign role for user
-              if (user.getRoles() != null) {
-                if (user.getRoles().contains(roleMapper.toDTO(roleRepository.getById(1L)))) {
+              if (!profile) {
+                UserEntity userEntity = userMapper.toEntity(user);
+                // Handle role assignment if roles exist
+                if (user.getRoles() != null && !user.getRoles().isEmpty()) {
+                  List<UserRoleMapEntity> userRoleMapEntities =
+                      user.getRoles().stream()
+                          .map(
+                              role -> {
+                                UserRoleMapEntity userRoleMapEntity = new UserRoleMapEntity();
+                                userRoleMapEntity.setUser(
+                                    userEntity); // Use the saved UserEntity 'e'
+                                userRoleMapEntity.setRole(
+                                    roleMapper.toEntity(role)); // Set the role entity
+                                return userRoleMapEntity;
+                              })
+                          .collect(Collectors.toList()); // Collect to a List
+
+                  // Save role mappings if necessary
+                  if (!userRoleMapEntities.isEmpty()) {
+                    userRoleMapRepository.saveAll(userRoleMapEntities); // Save role mappings
+                  }
+                } else {
                   userRoleMapService.setStaffRoleForUser(e.getId());
-                } else if (user.getRoles().contains(roleMapper.toDTO(roleRepository.getById(2L)))) {
-                  userRoleMapService.setManagerRoleForUser(e.getId());
-                } else if (user.getRoles().contains(roleMapper.toDTO(roleRepository.getById(3L)))) {
-                  userRoleMapService.setAdminRoleForUser(e.getId());
                 }
-              } else {
-                userRoleMapService.setStaffRoleForUser(e.getId());
               }
               return e;
             })
@@ -375,6 +417,13 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
+  public boolean isManager() {
+    // Get the email of the authenticated user and check if they have admin role
+    String userEmail = this.getAuthenticatedUserEmail();
+    return userRoleMapRepository.existsByEmailAndRole(userEmail, RoleType.MANAGER);
+  }
+
+  @Override
   public List<Role> findRolesByEmail(@NonNull String email) {
     // Retrieve roles associated with the given email
     return userRepository.findRolesByEmail(email).stream().map(r -> roleMapper.toDTO(r)).toList();
@@ -403,18 +452,7 @@ public class UserServiceImpl implements UserService {
             })
         .map(
             e -> {
-              // Check role to assign role for user
-              if (registerRequest.getRole() != null) {
-                if (registerRequest.getRole() == 1) {
-                  userRoleMapService.setStaffRoleForUser(e.getId());
-                } else if (registerRequest.getRole() == 2) {
-                  userRoleMapService.setManagerRoleForUser(e.getId());
-                } else if (registerRequest.getRole() == 3) {
-                  userRoleMapService.setAdminRoleForUser(e.getId());
-                }
-              } else {
-                userRoleMapService.setStaffRoleForUser(e.getId());
-              }
+              userRoleMapService.setStaffRoleForUser(e.getId());
               return e;
             })
         .map(userMapper::toDTO)
@@ -470,11 +508,29 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public void updatePassword(User user, String newPassword) {
+  public void resetPassword(User user, String newPassword) {
     // Hash the new password before saving it
     user.setPassword(newPassword);
     userRepository.save(userMapper.toEntity(user)); // Save the updated user
   }
+
+  @Override
+  public void changePassword(User user, ChangePasswordRequest request) {
+
+    // Check if entered old password equals to current user password
+    if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
+      throw new HrmCommonException(USER.WRONG_OLD_PASSWORD);
+    }
+
+    // Check if confirm password equals to entered new password
+    if (!request.getNewPassword().equals(request.getConfirmPassword())) {
+      throw new HrmCommonException(USER.NOT_MATCH_CONFIRM_PASSWORD);
+    }
+
+    // Hash the new password before saving it
+    this.resetPassword(user, request.getNewPassword());
+  }
+}
 
   public List<String> importFile(MultipartFile file) {
     // Mapper to convert each Excel row into a User object

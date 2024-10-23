@@ -48,18 +48,18 @@ public class UnitOfMeasurementMapper {
     return UnitOfMeasurement.builder()
         .id(entity.getId())
         .unitName(entity.getUnitName())
-        .largerUnitConversions(
-            entity.getLargerUnitConversions() != null
-                ? entity.getLargerUnitConversions().stream()
-                    .map(unitConversionMapper::toDTO)
-                    .collect(Collectors.toList())
-                : null)
-        .smallerUnitConversions(
-            entity.getSmallerUnitConversions() != null
-                ? entity.getSmallerUnitConversions().stream()
-                    .map(unitConversionMapper::toDTO)
-                    .collect(Collectors.toList())
-                : null)
+        //            .largerUnitConversions(
+        //                    entity.getLargerUnitConversions() != null
+        //                            ? entity.getLargerUnitConversions().stream()
+        //                            .map(unitConversionMapper::toDTO)
+        //                            .collect(Collectors.toList())
+        //                            : null)
+        //            .smallerUnitConversions(
+        //                    entity.getSmallerUnitConversions() != null
+        //                            ? entity.getSmallerUnitConversions().stream()
+        //                            .map(unitConversionMapper::toDTO)
+        //                            .collect(Collectors.toList())
+        //                            : null)
         .build();
   }
 }

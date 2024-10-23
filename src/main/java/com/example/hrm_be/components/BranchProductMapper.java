@@ -19,6 +19,20 @@ public class BranchProductMapper {
     return Optional.ofNullable(entity).map(this::convertToDTO).orElse(null);
   }
 
+  public BranchProduct toDTOWithProduct(BranchProductEntity entity) {
+    return Optional.ofNullable(entity)
+        .map(this::convertToDTO)
+        .map(
+            dg ->
+                dg.toBuilder()
+                    .productBaseDTO(
+                        entity.getProduct() != null
+                            ? productMapper.convertToProductBaseDTO(entity.getProduct())
+                            : null)
+                    .build())
+        .orElse(null);
+  }
+
   // Convert BranchProductDTO to BranchProductEntity
   public BranchProductEntity toEntity(BranchProduct dto) {
     return Optional.ofNullable(dto)
@@ -46,6 +60,14 @@ public class BranchProductMapper {
         .minQuantity(entity.getMinQuantity())
         .maxQuantity(entity.getMaxQuantity())
         .quantity(entity.getQuantity())
+        .storageLocation(
+            entity.getStorageLocation() != null
+                ? storageLocationMapper.toDTO(entity.getStorageLocation())
+                : null)
+        .branch(
+            entity.getBranch() != null
+                ? branchMapper.convertToDTOBasicInfo(entity.getBranch())
+                : null)
         .build();
   }
 }

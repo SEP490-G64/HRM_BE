@@ -1,11 +1,7 @@
 package com.example.hrm_be.models.requests;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
@@ -20,18 +16,10 @@ import lombok.extern.jackson.Jacksonized;
 @EqualsAndHashCode
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class RegisterRequest {
-  String userName;
+public class ChangePasswordRequest {
+  String oldPassword;
 
-  String email;
-
-  String phone;
-
-  String firstName;
-
-  String lastName;
-
-  String password;
+  String newPassword;
 
   String confirmPassword;
 }

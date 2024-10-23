@@ -3,7 +3,6 @@ package com.example.hrm_be.models.dtos;
 import com.example.hrm_be.commons.enums.ProductStatus;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.math.BigDecimal;
-import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -23,45 +22,25 @@ import lombok.extern.jackson.Jacksonized;
 @EqualsAndHashCode
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Product {
-  Long id;
-  String productName;
+public class ProductBaseDTO {
+  private Long id;
+  private String productName;
+  private String productCode;
+  private String registrationCode;
+  private String urlImage;
+  private String activeIngredient;
+  private String excipient;
+  private String formulation;
+  private BigDecimal inboundPrice;
+  private BigDecimal sellPrice;
+  private ProductStatus status;
 
-  String productCode;
+  // New fields for category, type, and manufacturer names
+  private String baseUnit;
+  private String categoryName;
+  private String typeName;
+  private String manufacturerName;
+  private Integer quantity;
 
-  String registrationCode;
-
-  String urlImage;
-
-  Manufacturer manufacturer;
-
-  ProductCategory category;
-
-  ProductType type;
-
-  String activeIngredient;
-
-  String excipient;
-
-  String formulation;
-
-  BigDecimal inboundPrice;
-
-  BigDecimal sellPrice;
-
-  ProductStatus status;
-
-  UnitOfMeasurement baseUnit;
-
-  List<InboundDetails> inboundDetails;
-
-  List<SpecialCondition> specialConditions;
-
-  List<Batch> batches;
-
-  List<BranchProduct> branchProducts;
-
-  List<ProductSuppliers> productSuppliers;
-
-  List<UnitConversion> unitConversions; // 1-N with UnitConversion
+  private BranchProduct branchProduct;
 }

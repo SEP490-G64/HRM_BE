@@ -2,6 +2,7 @@ package com.example.hrm_be.services;
 
 import com.example.hrm_be.models.dtos.Role;
 import com.example.hrm_be.models.dtos.User;
+import com.example.hrm_be.models.requests.ChangePasswordRequest;
 import com.example.hrm_be.models.requests.RegisterRequest;
 
 import java.io.ByteArrayInputStream;
@@ -39,6 +40,8 @@ public interface UserService {
 
   boolean isAdmin();
 
+  boolean isManager();
+
   List<Role> findRolesByEmail(@NonNull String email);
 
   User register(RegisterRequest registerRequest);
@@ -51,4 +54,7 @@ public interface UserService {
 
   List<String> importFile(MultipartFile file);
   ByteArrayInputStream exportFile() throws IOException;
+  void resetPassword(User user, String newPassword);
+
+  void changePassword(User user, ChangePasswordRequest request);
 }

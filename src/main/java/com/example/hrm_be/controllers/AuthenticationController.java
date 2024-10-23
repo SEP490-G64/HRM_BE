@@ -63,15 +63,13 @@ public class AuthenticationController {
     User userDetails = userService.getByEmail(request.getEmail());
 
     // Check if user not has admin role and account status not activate
-    if (!userDetails.getRoles().stream()
-            .anyMatch(role -> role.getType() != null && role.getType().isAdmin())
-        && !Objects.equals(userDetails.getStatus(), UserStatusType.ACTIVATE.toString())) {
+    if (!Objects.equals(userDetails.getStatus(), UserStatusType.ACTIVATE.toString())) {
 
       // Return a Bad Request response with message about account not being activated
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST) // Change the status to BAD_REQUEST
+      return ResponseEntity.status(HttpStatus.FORBIDDEN) // Change the status to BAD_REQUEST
           .body(
               BaseOutput.<AccessToken>builder()
-                  .message("Account not activated, unable to login.") // Descriptive message
+                  .message("Tài khoản chưa được kích hoạt") // Descriptive message
                   .data(null) // Do not return AccessToken
                   .build());
     }
@@ -119,7 +117,7 @@ public class AuthenticationController {
       HttpServletRequest request, @RequestBody String email) {
     User user = userService.getByEmail(email);
     if (user == null) {
-      throw new HrmCommonException("Not found user regarding the email, please check again");
+      throw new HrmCommonException("Chưa có tài khoản nào đăng kí với email này");
     }
     String token = jwtUtil.generateToken(email);
     JavaMailSender mailSender = mailUtil.getJavaMailSender();
@@ -135,7 +133,7 @@ public class AuthenticationController {
             + serverName
             + ((serverPort == 80 || serverPort == 443) ? "" : ":" + serverPort)
             + contextPath
-            + "/api/v1/auth/change_password?token="
+            + "/api/v1/auth/forget-page?token="
             + token;
     mailSender.send(mailUtil.constructResetTokenEmail(fullPath, token, user.getEmail()));
     BaseOutput<String> response =
@@ -143,8 +141,8 @@ public class AuthenticationController {
     return ResponseEntity.ok(response);
   }
 
-  @GetMapping("/change_password")
-  public String changePassword(@RequestParam("token") String token, Model model) {
+  @GetMapping("/forget-page")
+  public String getForgetPage(@RequestParam("token") String token, Model model) {
     // Add the token to the model if needed
     model.addAttribute("token", token);
     return "index"; // This will render index.html from the templates folder
@@ -177,9 +175,9 @@ public class AuthenticationController {
     }
 
     // Hash and update the user's password
-    userService.updatePassword(user, newPassword);
+    userService.resetPassword(user, newPassword);
 
     // Respond with success message
-    return ResponseEntity.ok("Password successfully reset");
+    return ResponseEntity.ok("Đặt lại mật khẩu thành công");
   }
 }

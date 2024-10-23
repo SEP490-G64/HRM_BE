@@ -42,6 +42,6 @@ public class UnitConversionEntity extends CommonEntity {
   Double factorConversion;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "batch_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-  BatchEntity batch;
+  @JoinColumn(name = "product_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+  ProductEntity product;
 }

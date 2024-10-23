@@ -65,6 +65,7 @@ public class HrmConstant {
       public static final String UPDATE = "error.product.update";
       public static final String DELETE = "error.product.delete";
       public static final String EXIST = "error.product.exist";
+      public static final String REGISTRATION_EXIST = "error.product.registration_exist";
       public static final String NOT_CHILD = "error.product.not_child";
       public static final String NOT_EXIST = "error.product.not_exist";
     }
@@ -99,7 +100,10 @@ public class HrmConstant {
     public static class USER {
       public static final String NOT_EXIST = "error.user.not_exist";
       public static final String EXIST = "error.user.exist";
+      public static final String DEACTIVATE_USER = "error.user.deactivate";
       public static final String NOT_ASSIGNED_ROLE = "error.user.not_assigned_role";
+      public static final String NOT_ASSIGNED_BRANCH = "error.user.not_assigned_branch";
+      public static final String WRONG_OLD_PASSWORD = "error.user.wrong_old_password";
       public static final String NOT_MATCH_CONFIRM_PASSWORD =
           "error.user.not_match_confirm_password";
     }

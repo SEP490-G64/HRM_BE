@@ -1,5 +1,6 @@
 package com.example.hrm_be.components;
 
+import com.example.hrm_be.commons.enums.UserStatusType;
 import com.example.hrm_be.models.dtos.User;
 import com.example.hrm_be.models.entities.UserEntity;
 import com.example.hrm_be.models.entities.UserRoleMapEntity;
@@ -40,8 +41,9 @@ public class UserMapper {
                   .phone(e.getPhone())
                   .firstName(e.getFirstName())
                   .lastName(e.getLastName())
-                      .branch(e.getBranch() !=null ? branchMapper.toEntity(e.getBranch()) : null)
-                  .createdDate(e.getCreatedDate())
+                  .branch(e.getBranch() != null ? branchMapper.toEntity(e.getBranch()) : null)
+                  .status(
+                      e.getStatus() != null ? UserStatusType.fromDisplayName(e.getStatus()) : null)
                   .build();
             })
         .orElse(null);
@@ -66,26 +68,12 @@ public class UserMapper {
                                 .map(urm -> roleMapper.toDTO(urm))
                                 .collect(Collectors.toList())
                             : null)
-                        .branch(e.getBranch() != null
-                                ? branchMapper.convertToDTOBasicInfo(e.getBranch())  // If branch is a single entity
-                                : null)
-
-                        .status(String.valueOf(e.getStatus()))
-                    .createdDate(e.getCreatedDate())
-                    .build())
-        .orElse(null);
-  }
-
-  public User convertToDtoWithBranch(UserEntity entity) {
-    return Optional.ofNullable(entity)
-        .map(this::convertToDto)
-        .map(
-            e ->
-                e.toBuilder()
                     .branch(
-                        entity.getBranch() != null
-                            ? branchMapper.convertToDTOBasicInfo(entity.getBranch())
+                        e.getBranch() != null
+                            ? branchMapper.convertToDTOBasicInfo(
+                                e.getBranch()) // If branch is a single entity
                             : null)
+                    .status(String.valueOf(e.getStatus()))
                     .build())
         .orElse(null);
   }
@@ -102,7 +90,6 @@ public class UserMapper {
                   .phone(request.getPhone())
                   .firstName(request.getFirstName())
                   .lastName(request.getLastName())
-                  .branch(dto.getBranch() != null ? branchMapper.toEntity(dto.getBranch()) : null)
                   .password(passwordEncoder.encode(request.getPassword()))
                   .build();
             })
