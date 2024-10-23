@@ -322,7 +322,7 @@ public class AdminUserController {
                   BaseOutput.<String>builder()
                       .message(
                           "File upload failed with validation errors") // Error message indicating
-                                                                       // validation issues
+                      // validation issues
                       .errors(errors) // List of validation errors
                       .build());
         }
