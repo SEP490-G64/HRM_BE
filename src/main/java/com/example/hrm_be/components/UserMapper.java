@@ -42,8 +42,7 @@ public class UserMapper {
                   .firstName(e.getFirstName())
                   .lastName(e.getLastName())
                   .branch(e.getBranch() != null ? branchMapper.toEntity(e.getBranch()) : null)
-                  .status(
-                      e.getStatus() != null ? UserStatusType.fromDisplayName(e.getStatus()) : null)
+                  .status(e.getStatus())
                   .build();
             })
         .orElse(null);
@@ -73,7 +72,7 @@ public class UserMapper {
                             ? branchMapper.convertToDTOBasicInfo(
                                 e.getBranch()) // If branch is a single entity
                             : null)
-                    .status(String.valueOf(e.getStatus()))
+                    .status(e.getStatus())
                     .build())
         .orElse(null);
   }

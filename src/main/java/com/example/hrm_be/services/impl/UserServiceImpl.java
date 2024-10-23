@@ -263,7 +263,7 @@ public class UserServiceImpl implements UserService {
 
               // Only set new status if status is not null or not update user profile
               if (user.getStatus() != null && !profile) {
-                builder.status(UserStatusType.valueOf(user.getStatus()));
+                builder.status(user.getStatus());
               }
 
               // Only set new branch if branch is not null or not update user profile
@@ -472,7 +472,7 @@ public class UserServiceImpl implements UserService {
     // Set status based on account current status and save
     return Optional.ofNullable(verifyUser)
         .map(
-            Objects.equals(verifyUser.getStatus().toString(), UserStatusType.ACTIVATE.toString())
+            Objects.equals(verifyUser.getStatus(), UserStatusType.ACTIVATE)
                 ? e -> e.setStatus(UserStatusType.DEACTIVATE)
                 : e -> e.setStatus(UserStatusType.ACTIVATE))
         .map(userRepository::save)
