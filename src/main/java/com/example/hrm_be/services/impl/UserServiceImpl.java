@@ -7,7 +7,9 @@ import com.example.hrm_be.commons.enums.UserStatusType;
 import com.example.hrm_be.components.BranchMapper;
 import com.example.hrm_be.components.RoleMapper;
 import com.example.hrm_be.components.UserMapper;
+import com.example.hrm_be.components.UserRoleMapMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
+import com.example.hrm_be.models.dtos.Branch;
 import com.example.hrm_be.models.dtos.Role;
 import com.example.hrm_be.models.dtos.User;
 import com.example.hrm_be.models.entities.UserEntity;
@@ -17,18 +19,24 @@ import com.example.hrm_be.models.requests.RegisterRequest;
 import com.example.hrm_be.repositories.RoleRepository;
 import com.example.hrm_be.repositories.UserRepository;
 import com.example.hrm_be.repositories.UserRoleMapRepository;
-import com.example.hrm_be.services.EmailService;
-import com.example.hrm_be.services.UserRoleMapService;
-import com.example.hrm_be.services.UserService;
+import com.example.hrm_be.services.*;
+import com.example.hrm_be.utils.ExcelUtility;
 import com.example.hrm_be.utils.PasswordGenerator;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.hibernate.validator.internal.constraintvalidators.bv.time.futureorpresent.FutureOrPresentValidatorForReadableInstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
@@ -43,6 +51,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -50,19 +59,23 @@ import org.springframework.util.StringUtils;
 @Transactional
 public class UserServiceImpl implements UserService {
 
-  @Lazy @Autowired UserRepository userRepository;
-  @Lazy @Autowired UserMapper userMapper;
+  @Lazy @Autowired private UserRepository userRepository;
+  @Lazy @Autowired private UserMapper userMapper;
 
-  @Lazy @Autowired RoleRepository roleRepository;
-  @Lazy @Autowired RoleMapper roleMapper;
+  @Lazy @Autowired private RoleRepository roleRepository;
+  @Lazy @Autowired private RoleMapper roleMapper;
 
-  @Lazy @Autowired BranchMapper branchMapper;
+  @Lazy @Autowired private BranchMapper branchMapper;
 
-  @Lazy @Autowired UserRoleMapService userRoleMapService;
-  @Lazy @Autowired UserRoleMapRepository userRoleMapRepository;
+  @Lazy @Autowired private UserRoleMapService userRoleMapService;
+  @Lazy @Autowired private UserRoleMapRepository userRoleMapRepository;
+  @Lazy @Autowired private UserRoleMapMapper userRoleMapMapper;
 
   @Lazy @Autowired private PasswordEncoder passwordEncoder;
   @Autowired private EmailService emailService;
+  @Lazy @Autowired private BranchService branchService;
+  @Lazy @Autowired private RoleService roleService;
+  private FutureOrPresentValidatorForReadableInstant futureOrPresentValidatorForReadableInstant;
 
   @Override
   public String getAuthenticatedUserEmail() throws UsernameNotFoundException {
@@ -485,6 +498,163 @@ public class UserServiceImpl implements UserService {
     // Hash the new password before saving it
     user.setPassword(newPassword);
     userRepository.save(userMapper.toEntity(user)); // Save the updated user
+  }
+
+  public List<String> importFile(MultipartFile file) {
+    // Mapper to convert each Excel row into a User object
+    Function<Row, User> rowMapper =
+        (Row row) -> {
+          User user = new User();
+          try {
+            // Mapping fields from the Excel row to the User object
+            user.setUserName(row.getCell(0) != null ? row.getCell(0).getStringCellValue() : null);
+            user.setEmail(row.getCell(1) != null ? row.getCell(1).getStringCellValue() : null);
+            user.setPhone(
+                row.getCell(2) != null
+                    ? String.valueOf((long) row.getCell(2).getNumericCellValue())
+                    : null);
+            user.setFirstName(row.getCell(3) != null ? row.getCell(3).getStringCellValue() : null);
+            user.setLastName(row.getCell(4) != null ? row.getCell(4).getStringCellValue() : null);
+
+            // Map branch if available
+            if (row.getCell(5) != null) {
+              Branch branch =
+                  branchService.getByLocationContains(row.getCell(5).getStringCellValue());
+              if (branch != null) {
+                user.setBranch(branch);
+              }
+            }
+
+            // Map roles if available
+            if (row.getCell(6) != null) {
+              String roleTypeStr = row.getCell(6).getStringCellValue().toUpperCase();
+              try {
+                RoleType roleType = RoleType.valueOf(roleTypeStr);
+                Role role = roleService.getRoleByType(roleType);
+                if (role != null) {
+                  user.setRoles(
+                      Collections.singletonList(role)); // Set role as a single-element list
+                }
+              } catch (IllegalArgumentException e) {
+                // Handle invalid RoleType value
+                throw new IllegalArgumentException("Invalid role type: " + roleTypeStr);
+              }
+            }
+          } catch (Exception e) {
+            // Handle any unexpected parsing errors
+            throw new RuntimeException("Error parsing row: " + e.getMessage(), e);
+          }
+          return user;
+        };
+
+    // List to store any validation errors
+    List<String> errors = new ArrayList<>();
+    List<User> usersToSave = new ArrayList<>();
+
+    // Read and validate each row from the Excel file
+    try {
+      Workbook workbook = new XSSFWorkbook(file.getInputStream());
+      Sheet sheet = workbook.getSheetAt(0);
+
+      for (int rowIndex = 1; rowIndex <= sheet.getLastRowNum(); rowIndex++) {
+        Row row = sheet.getRow(rowIndex);
+        if (row != null) {
+          try {
+            User user = rowMapper.apply(row); // Convert row to User object
+            // List to hold errors for the current row
+            List<String> rowErrors = new ArrayList<>();
+            // Validate the User object
+            if (user.getUserName() == null || user.getUserName().isEmpty()) {
+              rowErrors.add("UserName is missing at row " + (rowIndex + 1));
+            }
+            if (user.getEmail() == null || !user.getEmail().contains("@")) {
+              rowErrors.add("Invalid Email at row " + (rowIndex + 1));
+            }
+            if (userRepository.existsByEmail(user.getEmail())
+                || userRepository.existsByUserName(user.getUserName())) {
+              rowErrors.add("User with email or user name already exists at row " + (rowIndex + 1));
+            }
+
+            // If there are no errors, add to the usersToSave list
+            if (rowErrors.isEmpty()) {
+              usersToSave.add(user);
+            } else {
+              // Log the errors
+              errors.addAll(rowErrors);
+            }
+          } catch (Exception e) {
+            // Log parsing error for the row
+            errors.add("Error parsing row " + (rowIndex + 1) + ": " + e.getMessage());
+          }
+        }
+      }
+
+      workbook.close();
+    } catch (IOException e) {
+      errors.add("Failed to parse Excel file: " + e.getMessage());
+    }
+
+    // Save all valid users to the database
+    if (!usersToSave.isEmpty()) {
+      for (User user : usersToSave) {
+        create(user);
+      }
+    }
+
+    return errors; // Return the list of errors
+  }
+
+  @Override
+  public ByteArrayInputStream exportFile() throws IOException {
+    // Define the headers for the User export
+    String[] headers = {
+      "Tên tài khoản", "Email", "Số điện thoại", "Họ", "Tên", "Chi nhánh làm việc", "Vai trò"
+    };
+
+    // Row mapper to convert a User object to a list of cell values
+    Function<User, List<String>> rowMapper =
+        (User user) -> {
+          List<String> cellValues = new ArrayList<>();
+          cellValues.add(user.getUserName() != null ? user.getUserName() : "");
+          cellValues.add(user.getEmail() != null ? user.getEmail() : "");
+          cellValues.add(user.getPhone() != null ? user.getPhone() : "");
+          cellValues.add(user.getFirstName() != null ? user.getFirstName() : "");
+          cellValues.add(user.getLastName() != null ? user.getLastName() : "");
+
+          // Check for branch information
+          if (user.getBranch() != null) {
+            cellValues.add(user.getBranch().getLocation());
+          } else {
+            cellValues.add("");
+          }
+
+          // Map roles to a comma-separated string
+          if (user.getRoles() != null && !user.getRoles().isEmpty()) {
+            String roles =
+                user.getRoles().stream()
+                    .map(
+                        role ->
+                            role.getType()
+                                .name()) // Converts RoleType to its name (ADMIN, STAFF, etc.)
+                    .collect(Collectors.joining(", "));
+            cellValues.add(roles);
+          } else {
+            cellValues.add("No roles assigned");
+          }
+
+          return cellValues;
+        };
+
+    // Fetch user data (this would typically come from your database/repository)
+    List<User> users =
+        userRepository.findAll().stream().map(userMapper::toDTO).collect(Collectors.toList());
+
+    // Call the utility to export data
+    try {
+      return ExcelUtility.exportToExcelWithErrors(users, headers, rowMapper);
+    } catch (IOException e) {
+      throw new RuntimeException("Error exporting user data to Excel", e);
+    }
   }
 
   @Override

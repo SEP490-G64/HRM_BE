@@ -4,10 +4,14 @@ import com.example.hrm_be.models.dtos.Role;
 import com.example.hrm_be.models.dtos.User;
 import com.example.hrm_be.models.requests.ChangePasswordRequest;
 import com.example.hrm_be.models.requests.RegisterRequest;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.List;
 
 import lombok.NonNull;
 import org.springframework.data.domain.Page;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface UserService {
 
@@ -45,6 +49,10 @@ public interface UserService {
   User verifyUser(Long userId, boolean accept);
 
   User activateUser(Long userId);
+
+  List<String> importFile(MultipartFile file);
+
+  ByteArrayInputStream exportFile() throws IOException;
 
   void resetPassword(User user, String newPassword);
 
