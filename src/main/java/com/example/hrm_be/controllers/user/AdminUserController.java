@@ -318,31 +318,38 @@ public class AdminUserController {
         if (errors != null && !errors.isEmpty()) {
           // Return a bad request response with validation errors
           return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                  .body(BaseOutput.<String>builder()
-                          .message("File upload failed with validation errors") // Error message indicating validation issues
-                          .errors(errors) // List of validation errors
-                          .build());
+              .body(
+                  BaseOutput.<String>builder()
+                      .message(
+                          "File upload failed with validation errors") // Error message indicating
+                                                                       // validation issues
+                      .errors(errors) // List of validation errors
+                      .build());
         }
         // Return a success response if there are no errors
         return ResponseEntity.ok(
-                BaseOutput.<String>builder()
-                        .message("The Excel file is uploaded successfully: " + file.getOriginalFilename()) // Success message with the original file name
-                        .build());
+            BaseOutput.<String>builder()
+                .message(
+                    "The Excel file is uploaded successfully: "
+                        + file.getOriginalFilename()) // Success message with the original file name
+                .build());
       } catch (Exception exp) {
         // Handle any exceptions that occur during import
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(BaseOutput.<String>builder()
-                        .message("File upload failed: " + exp.getMessage()) // Specific error message
-                        .build());
+            .body(
+                BaseOutput.<String>builder()
+                    .message("File upload failed: " + exp.getMessage()) // Specific error message
+                    .build());
       }
     }
 
     // Return an error response if the file is not a valid Excel format
     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-            .body(BaseOutput.<String>builder()
-                    .message("Invalid file format") // Error message for invalid file format
-                    .errors(List.of("Please upload a valid Excel file")) // User guidance
-                    .build());
+        .body(
+            BaseOutput.<String>builder()
+                .message("Invalid file format") // Error message for invalid file format
+                .errors(List.of("Please upload a valid Excel file")) // User guidance
+                .build());
   }
 
   // Method to download an Excel file containing user data
@@ -355,9 +362,10 @@ public class AdminUserController {
 
     // Return a response with the file attached
     return ResponseEntity.ok()
-            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=user.xlsx") // Set the filename for download
-            .contentType(MediaType.MULTIPART_FORM_DATA) // Content type of the response
-            .body(resource); // Return the input stream resource
+        .header(
+            HttpHeaders.CONTENT_DISPOSITION,
+            "attachment; filename=user.xlsx") // Set the filename for download
+        .contentType(MediaType.MULTIPART_FORM_DATA) // Content type of the response
+        .body(resource); // Return the input stream resource
   }
-
 }

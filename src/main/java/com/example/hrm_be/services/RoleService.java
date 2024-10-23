@@ -28,5 +28,6 @@ public interface RoleService {
   Role createAdminRole();
 
   Role getAdminRole();
+
   Role getRoleByType(RoleType roleType);
 }

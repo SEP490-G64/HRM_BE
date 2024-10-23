@@ -25,7 +25,6 @@ import com.example.hrm_be.utils.PasswordGenerator;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -72,13 +71,11 @@ public class UserServiceImpl implements UserService {
   @Lazy @Autowired private UserRoleMapRepository userRoleMapRepository;
   @Lazy @Autowired private UserRoleMapMapper userRoleMapMapper;
 
-
   @Lazy @Autowired private PasswordEncoder passwordEncoder;
   @Autowired private EmailService emailService;
   @Lazy @Autowired private BranchService branchService;
   @Lazy @Autowired private RoleService roleService;
   private FutureOrPresentValidatorForReadableInstant futureOrPresentValidatorForReadableInstant;
-
 
   @Override
   public String getAuthenticatedUserEmail() throws UsernameNotFoundException {
@@ -106,7 +103,7 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public Page<User> getByPaging(
-          int pageNo, int pageSize, String sortBy, String sortDirection, String keyword) {
+      int pageNo, int pageSize, String sortBy, String sortDirection, String keyword) {
     /** TODO Only allow admin user to call this function */
     // Check if the logged user is an admin
     if (!isAdmin()) {
@@ -115,12 +112,12 @@ public class UserServiceImpl implements UserService {
 
     // Create a pageable request based on provided parameters
     Pageable pageable =
-            PageRequest.of(pageNo, pageSize, Sort.by(Sort.Direction.fromString(sortDirection), sortBy));
+        PageRequest.of(pageNo, pageSize, Sort.by(Sort.Direction.fromString(sortDirection), sortBy));
 
     // Fetch users by keyword and map to DTO
     return userRepository
-            .searchUsers(keyword, UserStatusType.PENDING, pageable)
-            .map(userMapper::toDTO);
+        .searchUsers(keyword, UserStatusType.PENDING, pageable)
+        .map(userMapper::toDTO);
   }
 
   @Override
@@ -148,9 +145,9 @@ public class UserServiceImpl implements UserService {
 
     // Retrieve user by ID and map to DTO
     return Optional.ofNullable(id)
-            .flatMap(e -> userRepository.findById(id))
-            .map(userMapper::toDTO)
-            .orElse(null); // Return null if user not found
+        .flatMap(e -> userRepository.findById(id))
+        .map(userMapper::toDTO)
+        .orElse(null); // Return null if user not found
   }
 
   @Override
@@ -161,9 +158,9 @@ public class UserServiceImpl implements UserService {
     }
 
     // Validate user details and check for existing users with the same email or username
-    if (user == null ||
-            userRepository.existsByEmail(user.getEmail()) ||
-            userRepository.existsByUserName(user.getUserName())) {
+    if (user == null
+        || userRepository.existsByEmail(user.getEmail())
+        || userRepository.existsByUserName(user.getUserName())) {
       throw new HrmCommonException(USER.EXIST);
     }
 
@@ -189,15 +186,15 @@ public class UserServiceImpl implements UserService {
     // Handle role assignment if roles exist
     if (user.getRoles() != null && !user.getRoles().isEmpty()) {
       List<UserRoleMapEntity> userRoleMapEntities =
-              user.getRoles().stream()
-                      .map(
-                              role -> {
-                                UserRoleMapEntity userRoleMapEntity = new UserRoleMapEntity();
-                                userRoleMapEntity.setUser(userEntity); // Use the saved UserEntity 'e'
-                                userRoleMapEntity.setRole(roleMapper.toEntity(role)); // Set the role entity
-                                return userRoleMapEntity;
-                              })
-                      .collect(Collectors.toList()); // Collect to a List
+          user.getRoles().stream()
+              .map(
+                  role -> {
+                    UserRoleMapEntity userRoleMapEntity = new UserRoleMapEntity();
+                    userRoleMapEntity.setUser(userEntity); // Use the saved UserEntity 'e'
+                    userRoleMapEntity.setRole(roleMapper.toEntity(role)); // Set the role entity
+                    return userRoleMapEntity;
+                  })
+              .collect(Collectors.toList()); // Collect to a List
 
       // Save role mappings if necessary
       if (!userRoleMapEntities.isEmpty()) {
@@ -209,23 +206,23 @@ public class UserServiceImpl implements UserService {
 
     // Send email notification with the raw password
     emailService.sendEmail(
-            user.getEmail(),
-            "Tài khoản ứng dụng Quản lý kho Hệ thống nhà thuốc của bạn",
-            "Chào bạn,\n\n"
-                    + "Chúng tôi xin thông báo rằng tài khoản của bạn đã được tạo thành công trên Ứng dụng"
-                    + " Quản lý kho Hệ thống nhà thuốc.\n\n"
-                    + "Dưới đây là thông tin tài khoản của bạn:\n"
-                    + "Tài khoản: "
-                    + user.getEmail()
-                    + "\n"
-                    + "Mật khẩu: "
-                    + rawPassword
-                    + "\n\n"
-                    + "Chúng tôi khuyên bạn nên thay đổi mật khẩu sau khi đăng nhập lần đầu tiên để bảo vệ"
-                    + " tài khoản của mình.\n\n"
-                    + "Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi!\n\n"
-                    + "Trân trọng,\n"
-                    + "Đội ngũ hỗ trợ khách hàng");
+        user.getEmail(),
+        "Tài khoản ứng dụng Quản lý kho Hệ thống nhà thuốc của bạn",
+        "Chào bạn,\n\n"
+            + "Chúng tôi xin thông báo rằng tài khoản của bạn đã được tạo thành công trên Ứng dụng"
+            + " Quản lý kho Hệ thống nhà thuốc.\n\n"
+            + "Dưới đây là thông tin tài khoản của bạn:\n"
+            + "Tài khoản: "
+            + user.getEmail()
+            + "\n"
+            + "Mật khẩu: "
+            + rawPassword
+            + "\n\n"
+            + "Chúng tôi khuyên bạn nên thay đổi mật khẩu sau khi đăng nhập lần đầu tiên để bảo vệ"
+            + " tài khoản của mình.\n\n"
+            + "Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi!\n\n"
+            + "Trân trọng,\n"
+            + "Đội ngũ hỗ trợ khách hàng");
 
     // Return the saved User as a DTO
     return userMapper.toDTO(e); // Convert the saved entity back to a DTO
@@ -258,68 +255,68 @@ public class UserServiceImpl implements UserService {
     // Validate user details and check for existing users with the same email or username different
     // from current user
     if (user == null
-            || (userRepository.existsByEmail(user.getEmail())
+        || (userRepository.existsByEmail(user.getEmail())
             && !Objects.equals(oldUserEntity.getEmail(), user.getEmail()))
-            || (userRepository.existsByUserName(user.getUserName())
+        || (userRepository.existsByUserName(user.getUserName())
             && !Objects.equals(oldUserEntity.getUserName(), user.getUserName()))) {
       throw new HrmCommonException(USER.EXIST);
     }
 
     // Update user details and save
     return Optional.of(oldUserEntity)
-            .map(
-                    ue -> {
-                      UserEntity.UserEntityBuilder builder =
-                              ue.toBuilder()
-                                      .firstName(user.getFirstName())
-                                      .lastName(user.getLastName())
-                                      .phone(user.getPhone())
-                                      .userName(user.getUserName())
-                                      .email(user.getEmail());
+        .map(
+            ue -> {
+              UserEntity.UserEntityBuilder builder =
+                  ue.toBuilder()
+                      .firstName(user.getFirstName())
+                      .lastName(user.getLastName())
+                      .phone(user.getPhone())
+                      .userName(user.getUserName())
+                      .email(user.getEmail());
 
-                      // Only set new status if status is not null or not update user profile
-                      if (user.getStatus() != null && !profile) {
-                        builder.status(UserStatusType.valueOf(user.getStatus()));
-                      }
+              // Only set new status if status is not null or not update user profile
+              if (user.getStatus() != null && !profile) {
+                builder.status(UserStatusType.valueOf(user.getStatus()));
+              }
 
-                      // Only set new branch if branch is not null or not update user profile
-                      if (user.getBranch() != null && !profile) {
-                        builder.branch(branchMapper.toEntity(user.getBranch()));
-                      }
-                      return builder.build();
-                    })
-            .map(
-                    e -> {
-                      if (!profile) {
-                        UserEntity userEntity = userMapper.toEntity(user);
-                        // Handle role assignment if roles exist
-                        if (user.getRoles() != null && !user.getRoles().isEmpty()) {
-                          List<UserRoleMapEntity> userRoleMapEntities =
-                                  user.getRoles().stream()
-                                          .map(
-                                                  role -> {
-                                                    UserRoleMapEntity userRoleMapEntity = new UserRoleMapEntity();
-                                                    userRoleMapEntity.setUser(
-                                                            userEntity); // Use the saved UserEntity 'e'
-                                                    userRoleMapEntity.setRole(
-                                                            roleMapper.toEntity(role)); // Set the role entity
-                                                    return userRoleMapEntity;
-                                                  })
-                                          .collect(Collectors.toList()); // Collect to a List
+              // Only set new branch if branch is not null or not update user profile
+              if (user.getBranch() != null && !profile) {
+                builder.branch(branchMapper.toEntity(user.getBranch()));
+              }
+              return builder.build();
+            })
+        .map(
+            e -> {
+              if (!profile) {
+                UserEntity userEntity = userMapper.toEntity(user);
+                // Handle role assignment if roles exist
+                if (user.getRoles() != null && !user.getRoles().isEmpty()) {
+                  List<UserRoleMapEntity> userRoleMapEntities =
+                      user.getRoles().stream()
+                          .map(
+                              role -> {
+                                UserRoleMapEntity userRoleMapEntity = new UserRoleMapEntity();
+                                userRoleMapEntity.setUser(
+                                    userEntity); // Use the saved UserEntity 'e'
+                                userRoleMapEntity.setRole(
+                                    roleMapper.toEntity(role)); // Set the role entity
+                                return userRoleMapEntity;
+                              })
+                          .collect(Collectors.toList()); // Collect to a List
 
-                          // Save role mappings if necessary
-                          if (!userRoleMapEntities.isEmpty()) {
-                            userRoleMapRepository.saveAll(userRoleMapEntities); // Save role mappings
-                          }
-                        } else {
-                          userRoleMapService.setStaffRoleForUser(e.getId());
-                        }
-                      }
-                      return e;
-                    })
-            .map(userRepository::save)
-            .map(userMapper::toDTO)
-            .orElse(null); // Return null if update fails
+                  // Save role mappings if necessary
+                  if (!userRoleMapEntities.isEmpty()) {
+                    userRoleMapRepository.saveAll(userRoleMapEntities); // Save role mappings
+                  }
+                } else {
+                  userRoleMapService.setStaffRoleForUser(e.getId());
+                }
+              }
+              return e;
+            })
+        .map(userRepository::save)
+        .map(userMapper::toDTO)
+        .orElse(null); // Return null if update fails
   }
 
   @Override
@@ -367,15 +364,15 @@ public class UserServiceImpl implements UserService {
   public User createAdmin(User user) {
     // Create and save a new admin user, then assign admin role
     return Optional.ofNullable(user)
-            .map(userMapper::toEntity)
-            .map(userRepository::save)
-            .map(
-                    e -> {
-                      userRoleMapService.setAdminRoleForUser(e.getId()); // Assign admin role
-                      return e;
-                    })
-            .map(userMapper::toDTO)
-            .orElse(null); // Return null if admin creation fails
+        .map(userMapper::toEntity)
+        .map(userRepository::save)
+        .map(
+            e -> {
+              userRoleMapService.setAdminRoleForUser(e.getId()); // Assign admin role
+              return e;
+            })
+        .map(userMapper::toDTO)
+        .orElse(null); // Return null if admin creation fails
   }
 
   @Override
@@ -423,7 +420,7 @@ public class UserServiceImpl implements UserService {
   public User register(RegisterRequest registerRequest) {
     // Check if a user with the provided email or username already exists
     if (userRepository.existsByUserName(registerRequest.getUserName())
-            || userRepository.existsByEmail(registerRequest.getEmail())) {
+        || userRepository.existsByEmail(registerRequest.getEmail())) {
       throw new HrmCommonException(USER.EXIST); // Throw exception if user exists
     }
 
@@ -433,19 +430,19 @@ public class UserServiceImpl implements UserService {
     }
 
     return Optional.of(registerRequest)
-            .map(u -> userMapper.toEntity(u))
-            .map(
-                    e -> {
-                      e.setStatus(UserStatusType.PENDING);
-                      return userRepository.save(e);
-                    })
-            .map(
-                    e -> {
-                      userRoleMapService.setStaffRoleForUser(e.getId());
-                      return e;
-                    })
-            .map(userMapper::toDTO)
-            .orElse(null); // Return null if registration fails
+        .map(u -> userMapper.toEntity(u))
+        .map(
+            e -> {
+              e.setStatus(UserStatusType.PENDING);
+              return userRepository.save(e);
+            })
+        .map(
+            e -> {
+              userRoleMapService.setStaffRoleForUser(e.getId());
+              return e;
+            })
+        .map(userMapper::toDTO)
+        .orElse(null); // Return null if registration fails
   }
 
   @Override
@@ -463,13 +460,13 @@ public class UserServiceImpl implements UserService {
 
     // Set status based on acceptance and save
     return Optional.ofNullable(verifyUser)
-            .map(
-                    accept
-                            ? e -> e.setStatus(UserStatusType.ACTIVATE)
-                            : e -> e.setStatus(UserStatusType.REJECTED))
-            .map(userRepository::save)
-            .map(userMapper::toDTO)
-            .orElse(null); // Return null if verification fails
+        .map(
+            accept
+                ? e -> e.setStatus(UserStatusType.ACTIVATE)
+                : e -> e.setStatus(UserStatusType.REJECTED))
+        .map(userRepository::save)
+        .map(userMapper::toDTO)
+        .orElse(null); // Return null if verification fails
   }
 
   @Override
@@ -487,13 +484,13 @@ public class UserServiceImpl implements UserService {
 
     // Set status based on account current status and save
     return Optional.ofNullable(verifyUser)
-            .map(
-                    Objects.equals(verifyUser.getStatus().toString(), UserStatusType.ACTIVATE.toString())
-                            ? e -> e.setStatus(UserStatusType.DEACTIVATE)
-                            : e -> e.setStatus(UserStatusType.ACTIVATE))
-            .map(userRepository::save)
-            .map(userMapper::toDTO)
-            .orElse(null); // Return null if verification fails
+        .map(
+            Objects.equals(verifyUser.getStatus().toString(), UserStatusType.ACTIVATE.toString())
+                ? e -> e.setStatus(UserStatusType.DEACTIVATE)
+                : e -> e.setStatus(UserStatusType.ACTIVATE))
+        .map(userRepository::save)
+        .map(userMapper::toDTO)
+        .orElse(null); // Return null if verification fails
   }
 
   @Override
@@ -505,44 +502,50 @@ public class UserServiceImpl implements UserService {
 
   public List<String> importFile(MultipartFile file) {
     // Mapper to convert each Excel row into a User object
-    Function<Row, User> rowMapper = (Row row) -> {
-      User user = new User();
-      try {
-        // Mapping fields from the Excel row to the User object
-        user.setUserName(row.getCell(0) != null ? row.getCell(0).getStringCellValue() : null);
-        user.setEmail(row.getCell(1) != null ? row.getCell(1).getStringCellValue() : null);
-        user.setPhone(row.getCell(2) != null ? String.valueOf((long) row.getCell(2).getNumericCellValue()) : null);
-        user.setFirstName(row.getCell(3) != null ? row.getCell(3).getStringCellValue() : null);
-        user.setLastName(row.getCell(4) != null ? row.getCell(4).getStringCellValue() : null);
-
-        // Map branch if available
-        if (row.getCell(5) != null) {
-          Branch branch = branchService.getByLocationContains(row.getCell(5).getStringCellValue());
-          if (branch != null) {
-            user.setBranch(branch);
-          }
-        }
-
-        // Map roles if available
-        if (row.getCell(6) != null) {
-          String roleTypeStr = row.getCell(6).getStringCellValue().toUpperCase();
+    Function<Row, User> rowMapper =
+        (Row row) -> {
+          User user = new User();
           try {
-            RoleType roleType = RoleType.valueOf(roleTypeStr);
-            Role role = roleService.getRoleByType(roleType);
-            if (role != null) {
-              user.setRoles(Collections.singletonList(role)); // Set role as a single-element list
+            // Mapping fields from the Excel row to the User object
+            user.setUserName(row.getCell(0) != null ? row.getCell(0).getStringCellValue() : null);
+            user.setEmail(row.getCell(1) != null ? row.getCell(1).getStringCellValue() : null);
+            user.setPhone(
+                row.getCell(2) != null
+                    ? String.valueOf((long) row.getCell(2).getNumericCellValue())
+                    : null);
+            user.setFirstName(row.getCell(3) != null ? row.getCell(3).getStringCellValue() : null);
+            user.setLastName(row.getCell(4) != null ? row.getCell(4).getStringCellValue() : null);
+
+            // Map branch if available
+            if (row.getCell(5) != null) {
+              Branch branch =
+                  branchService.getByLocationContains(row.getCell(5).getStringCellValue());
+              if (branch != null) {
+                user.setBranch(branch);
+              }
             }
-          } catch (IllegalArgumentException e) {
-            // Handle invalid RoleType value
-            throw new IllegalArgumentException("Invalid role type: " + roleTypeStr);
+
+            // Map roles if available
+            if (row.getCell(6) != null) {
+              String roleTypeStr = row.getCell(6).getStringCellValue().toUpperCase();
+              try {
+                RoleType roleType = RoleType.valueOf(roleTypeStr);
+                Role role = roleService.getRoleByType(roleType);
+                if (role != null) {
+                  user.setRoles(
+                      Collections.singletonList(role)); // Set role as a single-element list
+                }
+              } catch (IllegalArgumentException e) {
+                // Handle invalid RoleType value
+                throw new IllegalArgumentException("Invalid role type: " + roleTypeStr);
+              }
+            }
+          } catch (Exception e) {
+            // Handle any unexpected parsing errors
+            throw new RuntimeException("Error parsing row: " + e.getMessage(), e);
           }
-        }
-      } catch (Exception e) {
-        // Handle any unexpected parsing errors
-        throw new RuntimeException("Error parsing row: " + e.getMessage(), e);
-      }
-      return user;
-    };
+          return user;
+        };
 
     // List to store any validation errors
     List<String> errors = new ArrayList<>();
@@ -567,7 +570,8 @@ public class UserServiceImpl implements UserService {
             if (user.getEmail() == null || !user.getEmail().contains("@")) {
               rowErrors.add("Invalid Email at row " + (rowIndex + 1));
             }
-            if (userRepository.existsByEmail(user.getEmail()) || userRepository.existsByUserName(user.getUserName())) {
+            if (userRepository.existsByEmail(user.getEmail())
+                || userRepository.existsByUserName(user.getUserName())) {
               rowErrors.add("User with email or user name already exists at row " + (rowIndex + 1));
             }
 
@@ -603,39 +607,47 @@ public class UserServiceImpl implements UserService {
   @Override
   public ByteArrayInputStream exportFile() throws IOException {
     // Define the headers for the User export
-    String[] headers = { "Tên tài khoản", "Email", "Số điện thoại", "Họ", "Tên", "Chi nhánh làm việc", "Vai trò" };
-
-    // Row mapper to convert a User object to a list of cell values
-    Function<User, List<String>> rowMapper = (User user) -> {
-      List<String> cellValues = new ArrayList<>();
-      cellValues.add(user.getUserName() != null ? user.getUserName() : "");
-      cellValues.add(user.getEmail() != null ? user.getEmail() : "");
-      cellValues.add(user.getPhone() != null ? user.getPhone() : "");
-      cellValues.add(user.getFirstName() != null ? user.getFirstName() : "");
-      cellValues.add(user.getLastName() != null ? user.getLastName() : "");
-
-      // Check for branch information
-      if (user.getBranch() != null) {
-        cellValues.add(user.getBranch().getLocation());
-      } else {
-        cellValues.add("");
-      }
-
-      // Map roles to a comma-separated string
-      if (user.getRoles() != null && !user.getRoles().isEmpty()) {
-        String roles = user.getRoles().stream()
-                .map(role -> role.getType().name()) // Converts RoleType to its name (ADMIN, STAFF, etc.)
-                .collect(Collectors.joining(", "));
-        cellValues.add(roles);
-      } else {
-        cellValues.add("No roles assigned");
-      }
-
-      return cellValues;
+    String[] headers = {
+      "Tên tài khoản", "Email", "Số điện thoại", "Họ", "Tên", "Chi nhánh làm việc", "Vai trò"
     };
 
+    // Row mapper to convert a User object to a list of cell values
+    Function<User, List<String>> rowMapper =
+        (User user) -> {
+          List<String> cellValues = new ArrayList<>();
+          cellValues.add(user.getUserName() != null ? user.getUserName() : "");
+          cellValues.add(user.getEmail() != null ? user.getEmail() : "");
+          cellValues.add(user.getPhone() != null ? user.getPhone() : "");
+          cellValues.add(user.getFirstName() != null ? user.getFirstName() : "");
+          cellValues.add(user.getLastName() != null ? user.getLastName() : "");
+
+          // Check for branch information
+          if (user.getBranch() != null) {
+            cellValues.add(user.getBranch().getLocation());
+          } else {
+            cellValues.add("");
+          }
+
+          // Map roles to a comma-separated string
+          if (user.getRoles() != null && !user.getRoles().isEmpty()) {
+            String roles =
+                user.getRoles().stream()
+                    .map(
+                        role ->
+                            role.getType()
+                                .name()) // Converts RoleType to its name (ADMIN, STAFF, etc.)
+                    .collect(Collectors.joining(", "));
+            cellValues.add(roles);
+          } else {
+            cellValues.add("No roles assigned");
+          }
+
+          return cellValues;
+        };
+
     // Fetch user data (this would typically come from your database/repository)
-    List<User> users = userRepository.findAll().stream().map(userMapper::toDTO).collect(Collectors.toList());
+    List<User> users =
+        userRepository.findAll().stream().map(userMapper::toDTO).collect(Collectors.toList());
 
     // Call the utility to export data
     try {
@@ -643,7 +655,6 @@ public class UserServiceImpl implements UserService {
     } catch (IOException e) {
       throw new RuntimeException("Error exporting user data to Excel", e);
     }
-
   }
 
   @Override

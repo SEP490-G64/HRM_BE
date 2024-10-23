@@ -51,7 +51,9 @@ public interface UserService {
   User activateUser(Long userId);
 
   List<String> importFile(MultipartFile file);
+
   ByteArrayInputStream exportFile() throws IOException;
+
   void resetPassword(User user, String newPassword);
 
   void changePassword(User user, ChangePasswordRequest request);
