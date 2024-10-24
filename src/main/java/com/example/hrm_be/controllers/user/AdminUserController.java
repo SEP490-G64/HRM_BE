@@ -94,8 +94,7 @@ public class AdminUserController {
       BaseOutput<User> response =
           BaseOutput.<User>builder()
               .status(
-                  com.example.hrm_be.commons.enums.ResponseStatus.FAILED
-                      .FAILED) // Set response status to FAILED
+                  com.example.hrm_be.commons.enums.ResponseStatus.FAILED) // Set response status to FAILED
               .errors(List.of(REQUEST.INVALID_PATH_VARIABLE)) // Add error message for invalid ID
               .build();
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -246,9 +245,9 @@ public class AdminUserController {
         BaseOutput.<String>builder().message(HttpStatus.OK.toString()).build());
   }
 
-  // POST: /api/v1/admin/user/activate/{id}
-  // Admin approves a user registration request
-  @PostMapping("/activate/{id}")
+  // PUT: /api/v1/admin/user/activate/{id}
+  // Admin activate / deactivate an user
+  @PutMapping("/activate/{id}")
   public ResponseEntity<BaseOutput<User>> activateUser(@PathVariable("id") Long id) {
 
     // Check if the provided user ID is null
@@ -271,9 +270,9 @@ public class AdminUserController {
     return ResponseEntity.ok(response);
   }
 
-  // POST: /api/v1/auth/verify-user/{id}
+  // PUT: /api/v1/auth/verify-user/{id}
   // Admin approve user registration request
-  @PostMapping("/verify-user/{id}")
+  @PutMapping("/verify-user/{id}")
   public ResponseEntity<BaseOutput<User>> verifyUser(
       @PathVariable("id") Long id, @RequestParam boolean accept) {
 
