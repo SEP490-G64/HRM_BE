@@ -114,4 +114,12 @@ public class BranchServiceImpl implements BranchService {
     // Delete the branch by ID
     branchRepository.deleteById(id);
   }
+
+  @Override
+  public Branch getByLocationContains(String location) {
+    return branchRepository
+        .findByLocationContainsIgnoreCase(location)
+        .map(branchMapper::toDTO)
+        .orElse(null);
+  }
 }

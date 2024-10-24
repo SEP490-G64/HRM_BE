@@ -1,5 +1,6 @@
 package com.example.hrm_be.services;
 
+import com.example.hrm_be.commons.enums.RoleType;
 import com.example.hrm_be.models.dtos.Role;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -27,4 +28,6 @@ public interface RoleService {
   Role createAdminRole();
 
   Role getAdminRole();
+
+  Role getRoleByType(RoleType roleType);
 }

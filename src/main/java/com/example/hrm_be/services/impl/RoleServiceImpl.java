@@ -113,4 +113,9 @@ public class RoleServiceImpl implements RoleService {
         .map(re -> roleMapper.toDTO(re))
         .orElse(null);
   }
+
+  @Override
+  public Role getRoleByType(RoleType roleType) {
+    return roleRepository.findByType(roleType).map(roleMapper::toDTO).orElse(null);
+  }
 }
