@@ -54,18 +54,18 @@ public class SupplierEntity extends CommonEntity {
 
   // One-to-Many relationships
   @ToString.Exclude
-  @OneToMany(mappedBy = "supplier", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "supplier")
   List<PurchaseEntity> purchases; // 1-N with PurchaseEntity
 
   @ToString.Exclude
-  @OneToMany(mappedBy = "supplier", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "supplier")
   List<InboundEntity> inbounds; // 1-N with InboundEntity
 
   @ToString.Exclude
-  @OneToMany(mappedBy = "supplier", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "supplier")
   List<OutboundEntity> outbounds; // 1-N with OutboundEntity
 
   @ToString.Exclude
-  @OneToMany(mappedBy = "supplier", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "supplier")
   List<ProductSuppliersEntity> productSuppliers;
 }

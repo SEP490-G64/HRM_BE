@@ -1,10 +1,13 @@
 package com.example.hrm_be.controllers.inbound;
 
 import com.example.hrm_be.commons.constants.HrmConstant;
+import com.example.hrm_be.commons.enums.InboundType;
 import com.example.hrm_be.commons.enums.ResponseStatus;
 import com.example.hrm_be.models.dtos.Inbound;
 import com.example.hrm_be.models.dtos.ProductInbound;
+import com.example.hrm_be.models.requests.CreateInboundRequest;
 import com.example.hrm_be.models.responses.BaseOutput;
+import com.example.hrm_be.models.responses.InboundDetail;
 import com.example.hrm_be.models.responses.InnitInbound;
 import com.example.hrm_be.services.FileService;
 import com.example.hrm_be.services.InboundService;
@@ -19,7 +22,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
@@ -79,11 +81,11 @@ public class StaffInboundController {
   // GET: /api/v1/staff/inbound/{id}
   // Retrieves a Inbound by its ID
   @GetMapping("/{id}")
-  protected ResponseEntity<BaseOutput<Inbound>> getById(@PathVariable("id") Long id) {
+  protected ResponseEntity<BaseOutput<InboundDetail>> getById(@PathVariable("id") Long id) {
     // Validate the path variable ID
     if (id <= 0 || id == null) {
-      BaseOutput<Inbound> response =
-          BaseOutput.<Inbound>builder()
+      BaseOutput<InboundDetail> response =
+          BaseOutput.<InboundDetail>builder()
               .status(ResponseStatus.FAILED)
               .errors(List.of(HrmConstant.ERROR.REQUEST.INVALID_PATH_VARIABLE))
               .build();
@@ -91,11 +93,11 @@ public class StaffInboundController {
     }
 
     // Fetch Inbound by ID
-    Inbound Inbound = inboundService.getById(id);
+    InboundDetail Inbound = inboundService.getById(id);
 
     // Build the response with the found Inbound data
-    BaseOutput<Inbound> response =
-        BaseOutput.<Inbound>builder()
+    BaseOutput<InboundDetail> response =
+        BaseOutput.<InboundDetail>builder()
             .message(HttpStatus.OK.toString())
             .data(Inbound)
             .status(ResponseStatus.SUCCESS)
@@ -216,6 +218,31 @@ public class StaffInboundController {
             .build());
   }
 
+  @PostMapping("/create-init-inbound")
+  public ResponseEntity<BaseOutput<Inbound>> createInnitInbound(@RequestParam String type) {
+    // Check if the type is valid using the exists method
+    if (!InboundType.exists(type)) {
+      // Return a bad request if the type is invalid
+      return ResponseEntity.badRequest()
+          .body(
+              BaseOutput.<Inbound>builder()
+                  .status(ResponseStatus.FAILED)
+                  .message("Invalid Inbound Type")
+                  .build());
+    }
+    Inbound inbound = inboundService.createInnitInbound(InboundType.parse(type));
+    return ResponseEntity.ok(
+        BaseOutput.<Inbound>builder().data(inbound).status(ResponseStatus.SUCCESS).build());
+  }
+
+  @PostMapping("/submit-draft")
+  public ResponseEntity<BaseOutput<Inbound>> submitDraft(
+      @RequestBody CreateInboundRequest request) {
+    Inbound inbound = inboundService.submitDraftInbound(request);
+    return ResponseEntity.ok(
+        BaseOutput.<Inbound>builder().data(inbound).status(ResponseStatus.SUCCESS).build());
+  }
+
   @PostMapping("/add-product")
   public ResponseEntity<BaseOutput<String>> addProductToOrder(
       HttpSession session, @RequestBody ProductInbound product) {
@@ -234,23 +261,21 @@ public class StaffInboundController {
             .build());
   }
 
-
-  @GetMapping("/getProducts")
+  @GetMapping("/get-products")
   public List<ProductInbound> getProductsFromOrder(HttpSession session) {
     String sessionName = userService.getAuthenticatedUserEmail();
-    ;
     List<ProductInbound> products = (List<ProductInbound>) session.getAttribute(sessionName);
     return products != null ? products : new ArrayList<>();
   }
 
-  @GetMapping("/getInboundCode")
+  @GetMapping("/get-inbound-code")
   protected ResponseEntity<BaseOutput<InnitInbound>> getInnitInbound(HttpSession session) {
     String sessionId = userService.getAuthenticatedUserEmail();
     InnitInbound innitInbound = (InnitInbound) session.getAttribute(sessionId + "innitInbound");
 
     if (innitInbound == null) {
       // Create new InnitInbound object if not present in the session
-      LocalDateTime currentDateTime =  LocalDateTime.now();
+      LocalDateTime currentDateTime = LocalDateTime.now();
       innitInbound = new InnitInbound();
       innitInbound.setDate(currentDateTime);
       innitInbound.setInboundCode(wplUtil.generateInboundCode(currentDateTime));
@@ -326,12 +351,11 @@ public class StaffInboundController {
       return ResponseEntity.status(500).body(null);
     }
   }
-//
-//  @PostMapping("submit-inbound")
-//  public  ResponseEntity<List<ProductInbound>> submit( )
-//  {
-//
-//  }
-
+  //
+  //  @PostMapping("submit-inbound")
+  //  public  ResponseEntity<List<ProductInbound>> submit( )
+  //  {
+  //
+  //  }
 
 }

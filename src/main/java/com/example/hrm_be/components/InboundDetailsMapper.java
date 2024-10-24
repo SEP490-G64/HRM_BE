@@ -38,7 +38,10 @@ public class InboundDetailsMapper {
   private InboundDetails convertToDTO(InboundDetailsEntity entity) {
     return InboundDetails.builder()
         .id(entity.getId())
-        .product(entity.getProduct() != null ? productMapper.toDTO(entity.getProduct()) : null)
+        .product(
+            entity.getProduct() != null
+                ? productMapper.convertToDTOWithBatch(entity.getProduct())
+                : null)
         .requestQuantity(entity.getRequestQuantity())
         .receiveQuantity(entity.getReceiveQuantity())
         .build();

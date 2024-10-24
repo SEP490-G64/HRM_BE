@@ -78,6 +78,23 @@ public class UserMapper {
         .orElse(null);
   }
 
+  public User convertToDtoBasicInfo(UserEntity entity) {
+    return Optional.ofNullable(entity)
+        .map(
+            e ->
+                User.builder()
+                    .id(e.getId())
+                    .userName(e.getUserName())
+                    .email(e.getEmail())
+                    .password(e.getPassword())
+                    .phone(e.getPhone())
+                    .firstName(e.getFirstName())
+                    .lastName(e.getLastName())
+                    .status(String.valueOf(e.getStatus()))
+                    .build())
+        .orElse(null);
+  }
+
   // Convert RegisterRequest to UserEntity
   public UserEntity toEntity(RegisterRequest dto) {
     return Optional.ofNullable(dto)

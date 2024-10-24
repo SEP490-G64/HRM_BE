@@ -2,6 +2,7 @@ package com.example.hrm_be.repositories;
 
 import com.example.hrm_be.models.entities.ProductEntity;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -31,6 +32,7 @@ public interface ProductRepository
       "SELECT p FROM ProductEntity p JOIN FETCH p.branchProducs bp WHERE bp.branch.id = :branchId ")
   List<ProductEntity> findProductByBranchId(@Param("branchId") Long branchId);
 
-  // Method to find a ProductInbound by registrationCode
-  boolean existsByRegistrationCode(String registrationCode);
+  List<ProductEntity> findByRegistrationCodeIn(List<String> productName);
+
+  Optional<ProductEntity> findByRegistrationCode(String registrationCode);
 }

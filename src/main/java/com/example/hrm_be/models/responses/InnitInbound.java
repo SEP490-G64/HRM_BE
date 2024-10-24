@@ -1,6 +1,8 @@
 package com.example.hrm_be.models.responses;
 
+import com.example.hrm_be.models.dtos.Branch;
 import com.example.hrm_be.models.dtos.ProductInbound;
+import com.example.hrm_be.models.dtos.Supplier;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.time.LocalDateTime;
@@ -25,5 +27,4 @@ import org.springframework.cglib.core.Local;
 public class InnitInbound {
   String inboundCode;
   LocalDateTime date;
-  List<ProductInbound> productInbounds;
 }

@@ -1,9 +1,13 @@
-package com.example.hrm_be.models.dtos;
+package com.example.hrm_be.models.requests;
 
 import com.example.hrm_be.commons.enums.InboundStatus;
 import com.example.hrm_be.commons.enums.InboundType;
+import com.example.hrm_be.models.dtos.Branch;
+import com.example.hrm_be.models.dtos.Product;
+import com.example.hrm_be.models.dtos.ProductInbound;
+import com.example.hrm_be.models.dtos.Supplier;
+import com.example.hrm_be.models.dtos.User;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AccessLevel;
@@ -25,34 +29,15 @@ import lombok.extern.jackson.Jacksonized;
 @EqualsAndHashCode
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Inbound {
-  Long id;
-  InboundType inboundType; // Custom enum representing: Nhà cung cấp, Chuyển kho nội bộ
+public class CreateInboundRequest {
+  Long inboundId;
   String inboundCode;
-  Branch fromBranch;
-
-  Branch toBranch;
-
-  Supplier supplier;
-
-  User createdBy;
-
-  User approvedBy;
-
-  LocalDateTime inboundDate;
-
   LocalDateTime createdDate;
-
-  BigDecimal totalPrice;
-
-  Boolean isApproved;
-
-  InboundStatus status; // Custom enum: Chờ duyệt, Chờ hàng, Kiểm hàng, Đang thanh toán, Hoàn thành
-
-  Boolean taxable;
-
+  User createdBy;
   String note;
-
-  List<InboundDetails> inboundDetails;
-  List<InboundBatchDetail> inboundBatchDetails;
+  InboundType inboundType;
+  Branch toBranch;
+  Branch fromBranch;
+  Supplier supplier;
+  List<ProductInbound> productInbounds ;
 }

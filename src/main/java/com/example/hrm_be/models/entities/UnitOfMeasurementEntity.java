@@ -35,14 +35,14 @@ public class UnitOfMeasurementEntity extends CommonEntity {
   String unitName;
 
   @ToString.Exclude
-  @OneToMany(mappedBy = "baseUnit", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "baseUnit")
   List<ProductEntity> products;
 
   @ToString.Exclude
-  @OneToMany(mappedBy = "largerUnit", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "largerUnit")
   List<UnitConversionEntity> largerUnitConversions; // 1-N with UnitConversion as larger unit
 
   @ToString.Exclude
-  @OneToMany(mappedBy = "smallerUnit", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "smallerUnit")
   List<UnitConversionEntity> smallerUnitConversions;
 }

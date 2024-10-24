@@ -49,6 +49,6 @@ public class BranchBatchEntity extends CommonEntity {
   Integer quantity;
 
   @ToString.Exclude
-  @OneToMany(mappedBy = "branchBatch", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "branchBatch")
   List<NotificationEntity> notifications;
 }

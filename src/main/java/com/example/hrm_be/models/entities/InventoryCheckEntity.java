@@ -73,6 +73,6 @@ public class InventoryCheckEntity extends CommonEntity {
   String note;
 
   @ToString.Exclude
-  @OneToMany(mappedBy = "inventoryCheck", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "inventoryCheck")
   List<InventoryCheckDetailsEntity> inventoryCheckDetails;
 }

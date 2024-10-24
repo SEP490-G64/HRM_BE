@@ -34,6 +34,6 @@ public class ProductTypeEntity extends CommonEntity {
   String typeDescription;
 
   @ToString.Exclude
-  @OneToMany(mappedBy = "type", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "type")
   List<ProductEntity> products;
 }

@@ -12,13 +12,16 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors(chain = true)
@@ -30,7 +33,7 @@ import lombok.experimental.SuperBuilder;
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class InboundEntity extends CommonEntity {
   @Enumerated(EnumType.STRING)
-  @Column(name = "inbound_type", nullable = false)
+  @Column(name = "inbound_type")
   InboundType inboundType; // Custom enum representing: Nhà cung cấp, Chuyển kho nội bộ
 
   @ManyToOne(fetch = FetchType.LAZY)
@@ -83,6 +86,10 @@ public class InboundEntity extends CommonEntity {
   UserEntity approvedBy;
 
   @ToString.Exclude
-  @OneToMany(mappedBy = "inbound", fetch = FetchType.LAZY)
+  @OneToMany(mappedBy = "inbound")
   List<InboundDetailsEntity> inboundDetails;
+
+  @ToString.Exclude
+  @OneToMany(mappedBy = "inbound")
+  List<InboundBatchDetailEntity> inboundBatchDetails;
 }

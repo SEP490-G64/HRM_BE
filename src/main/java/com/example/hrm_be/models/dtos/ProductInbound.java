@@ -3,7 +3,7 @@ package com.example.hrm_be.models.dtos;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.io.Serial;
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -28,10 +28,9 @@ public class ProductInbound implements Serializable {
   @Serial private static final long serialVersionUID = 8012723276726758269L;
   String registrationCode;
   String productName;
-  String batchCode;
-  LocalDateTime expiredDate;
-  Integer quantity;
+  List<Batch> batchList;
+  Integer requestQuantity;
+  Integer receiveQuantity;
   UnitOfMeasurement baseUnit;
   Double price;
-  Double totalPrice;
 }

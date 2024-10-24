@@ -35,6 +35,6 @@ public class StorageLocationEntity extends CommonEntity {
   String shelfName;
 
   @ToString.Exclude
-  @OneToMany(mappedBy = "storageLocation", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "storageLocation")
   List<BranchProductEntity> branchProducts;
 }

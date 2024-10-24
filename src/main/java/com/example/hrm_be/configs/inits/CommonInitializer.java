@@ -5,6 +5,7 @@ import com.example.hrm_be.commons.enums.UserStatusType;
 import com.example.hrm_be.models.dtos.Branch;
 import com.example.hrm_be.models.dtos.Role;
 import com.example.hrm_be.models.dtos.User;
+import com.example.hrm_be.repositories.BranchRepository;
 import com.example.hrm_be.services.BranchService;
 import com.example.hrm_be.services.RoleService;
 import com.example.hrm_be.services.UserRoleMapService;
@@ -24,6 +25,7 @@ public class CommonInitializer implements ApplicationRunner {
   @Autowired private RoleService roleService;
   @Autowired private UserService userService;
   @Autowired private BranchService branchService;
+  @Autowired private BranchRepository branchRepository;
   @Autowired private UserRoleMapService userRoleMapService;
 
   @Override
@@ -54,6 +56,7 @@ public class CommonInitializer implements ApplicationRunner {
   }
 
   private void initAdminUser() {
+
     Branch branch =
         Branch.builder()
             .branchName("Cơ sở 1 / Văn phòng trụ sở chính")
@@ -61,9 +64,10 @@ public class CommonInitializer implements ApplicationRunner {
             .location("199 Đường Giải Phóng - P. Đồng Tâm - Q. Hai Bà Trưng - TP. Hà Nội")
             .phoneNumber("02438694014")
             .build();
-
-    branchService.create(branch);
-
+    if(!branchRepository.existsByLocation(branch.getLocation()))
+    {
+      branchService.create(branch);
+    }
     User oldAdminUser = userService.findLoggedInfoByEmail("dsdadmin@gmail.com");
 
     if (oldAdminUser != null

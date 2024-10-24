@@ -8,6 +8,9 @@ import com.example.hrm_be.models.entities.BatchEntity;
 import com.example.hrm_be.repositories.BatchRepository;
 import com.example.hrm_be.services.BatchService;
 import io.micrometer.common.util.StringUtils;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -15,8 +18,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -94,5 +95,12 @@ public class BatchServiceImpl implements BatchService {
 
     // Delete the batch by ID
     batchRepository.deleteById(id);
+  }
+
+  @Override
+  public List<Batch> getBatchesByProductThroughInbound(Long productId) {
+    return batchRepository.findAllByProductIdThroughInbound(productId).stream().map(
+        batchMapper::toDTO
+    ).collect(Collectors.toList());
   }
 }

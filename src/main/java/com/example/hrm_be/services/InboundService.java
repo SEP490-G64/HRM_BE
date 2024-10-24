@@ -1,14 +1,16 @@
 package com.example.hrm_be.services;
 
+import com.example.hrm_be.commons.enums.InboundStatus;
+import com.example.hrm_be.commons.enums.InboundType;
 import com.example.hrm_be.models.dtos.Inbound;
-import com.example.hrm_be.models.dtos.ProductInbound;
-import com.example.hrm_be.models.responses.InnitInbound;
+import com.example.hrm_be.models.requests.CreateInboundRequest;
+import com.example.hrm_be.models.responses.InboundDetail;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 @Service
 public interface InboundService {
-  Inbound getById(Long id);
+  InboundDetail getById(Long id);
 
   Page<Inbound> getByPaging(int pageNo, int pageSize, String sortBy);
 
@@ -20,5 +22,7 @@ public interface InboundService {
 
   void delete(Long id);
 
-  Inbound submitInbound(InnitInbound innitInbound);
+  Inbound submitDraftInbound(CreateInboundRequest innitInbound);
+
+  Inbound createInnitInbound(InboundType type);
 }

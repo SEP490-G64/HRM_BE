@@ -1,6 +1,8 @@
 package com.example.hrm_be.commons.enums;
 
 public enum InboundStatus {
+  CHUA_LUU("Chưa lưu"),
+  BAN_NHAP("Bản nháp"),
   CHO_DUYET("Chờ duyệt"),
   CHO_HANG("Chờ hàng"),
   KIEM_HANG("Kiểm hàng"),
