@@ -13,11 +13,14 @@ import com.example.hrm_be.components.UnitOfMeasurementMapper;
 import com.example.hrm_be.components.UserMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.Batch;
+import com.example.hrm_be.models.dtos.BranchBatch;
 import com.example.hrm_be.models.dtos.Inbound;
 import com.example.hrm_be.models.dtos.InboundProductDetailDTO;
 import com.example.hrm_be.models.dtos.ProductInbound;
 import com.example.hrm_be.models.entities.BatchEntity;
+import com.example.hrm_be.models.entities.BranchBatchEntity;
 import com.example.hrm_be.models.entities.BranchEntity;
+import com.example.hrm_be.models.entities.BranchProductEntity;
 import com.example.hrm_be.models.entities.InboundBatchDetailEntity;
 import com.example.hrm_be.models.entities.InboundDetailsEntity;
 import com.example.hrm_be.models.entities.InboundEntity;
@@ -27,6 +30,7 @@ import com.example.hrm_be.models.requests.CreateInboundRequest;
 import com.example.hrm_be.models.responses.InboundDetail;
 import com.example.hrm_be.repositories.BatchRepository;
 import com.example.hrm_be.repositories.BranchBatchRepository;
+import com.example.hrm_be.repositories.BranchProductRepository;
 import com.example.hrm_be.repositories.BranchRepository;
 import com.example.hrm_be.repositories.InboundBatchDetailRepository;
 import com.example.hrm_be.repositories.InboundDetailsRepository;
@@ -56,9 +60,10 @@ public class InboundServiceImpl implements InboundService {
   @Autowired private InboundRepository inboundRepository;
   @Autowired private BranchRepository branchRepository;
   @Autowired private InboundDetailsRepository inboundDetailsRepository;
+  @Autowired private BranchProductRepository branchProductRepository;
+  @Autowired private BranchBatchRepository branchBatchRepository;
   @Autowired private InboundBatchDetailRepository inboundBatchDetailRepository;
   @Autowired private WplUtil wplUtil;
-  @Autowired private BranchBatchRepository branchBatchRepository;
   @Autowired private BatchRepository batchRepository;
   @Autowired private InboundMapper inboundMapper;
   @Autowired private BranchMapper branchMapper;
@@ -76,8 +81,6 @@ public class InboundServiceImpl implements InboundService {
     if (optionalInbound == null) {
       throw new HrmCommonException("Inbound not found with id: " + inboundId);
     }
-
-
     // Map InboundEntity to InboundDTO
     InboundDetail inboundDTO = new InboundDetail();
     inboundDTO.setId(optionalInbound.getId());
@@ -236,7 +239,7 @@ public class InboundServiceImpl implements InboundService {
 
   @Override
   @Transactional
-  public Inbound submitDraftInbound(CreateInboundRequest request) {
+  public Inbound saveInbound(CreateInboundRequest request) {
     Optional<InboundEntity> unsavedProduct = inboundRepository.findById(request.getInboundId());
     if (unsavedProduct.isEmpty()) {
       throw new HrmCommonException(INBOUND.NOT_EXIST);
@@ -357,6 +360,64 @@ public class InboundServiceImpl implements InboundService {
   }
 
   @Override
+  public Inbound submitInboundToSystem(Long inboundId) {
+    // Fetch the InboundEntity from the repository
+    InboundEntity inboundEntity = inboundRepository.findById(inboundId).orElseThrow(() -> new RuntimeException("Inbound not found"));
+
+    // Get the branch details
+    BranchEntity fromBranch = inboundEntity.getFromBranch();
+
+    // Iterate through InboundDetails to create or update BranchProductEntity
+    inboundEntity.getInboundDetails().forEach(inboundDetail -> {
+      ProductEntity product = inboundDetail.getProduct();
+      Integer quantity = inboundDetail.getReceiveQuantity();  // Assume this represents the quantity to be stored
+
+      // Check if BranchProductEntity already exists
+      BranchProductEntity branchProduct = branchProductRepository.findByBranchAndProduct(fromBranch, product)
+          .orElse(new BranchProductEntity());
+
+      // If it exists, update the quantity, otherwise create a new one
+      if (branchProduct.getId() != null) {
+        branchProduct.setQuantity(branchProduct.getQuantity() + quantity);  // Update existing quantity
+      } else {
+        branchProduct.setProduct(product);
+        branchProduct.setBranch(fromBranch);
+        branchProduct.setQuantity(quantity);
+        branchProduct.setMinQuantity(0);  // Set default min quantity, or use business logic
+        branchProduct.setMaxQuantity(0);  // Set default max quantity, or use business logic
+      }
+
+      // Save the BranchProductEntity
+      branchProductRepository.save(branchProduct);
+    });
+
+    // Iterate through InboundBatchDetails to create or update BranchBatchEntity
+    inboundEntity.getInboundBatchDetails().forEach(inboundBatchDetail -> {
+      BatchEntity batch = inboundBatchDetail.getBatch();
+      Integer quantity = inboundBatchDetail.getQuantity();  // Assume this represents the batch quantity
+
+      // Check if BranchBatchEntity already exists
+      BranchBatchEntity branchBatch = branchBatchRepository.findByBranchAndBatch(fromBranch, batch)
+          .orElse(new BranchBatchEntity());
+
+      // If it exists, update the quantity, otherwise create a new one
+      if (branchBatch.getId() != null) {
+        branchBatch.setQuantity(branchBatch.getQuantity() + quantity);  // Update existing quantity
+      } else {
+        branchBatch.setBatch(batch);
+        branchBatch.setBranch(fromBranch);
+        branchBatch.setQuantity(quantity);
+      }
+
+      // Save the BranchBatchEntity
+      branchBatchRepository.save(branchBatch);
+    });
+
+    // Return the updated inbound entity (or any other response you need)
+    return inboundMapper.convertToBasicInfo(inboundEntity);  // You can return a DTO or any other object
+  }
+
+  @Override
   public Inbound createInnitInbound(InboundType type) {
     LocalDateTime currentDateTime = LocalDateTime.now();
     String inboundCode = wplUtil.generateInboundCode(currentDateTime);
@@ -382,5 +443,16 @@ public class InboundServiceImpl implements InboundService {
         .map(inboundRepository::save)
         .map(inboundMapper::toDTO)
         .orElse(null);
+  }
+
+  @Override
+  public Inbound updateInboundStatus(InboundStatus status, Long id) {
+    Optional<InboundEntity> inbound =inboundRepository.findById(id);
+    if(inbound.isEmpty())
+    {
+      throw new HrmCommonException(INBOUND.NOT_EXIST);
+    }
+        inboundRepository.updateInboundStatus(status,id);
+    return null;
   }
 }

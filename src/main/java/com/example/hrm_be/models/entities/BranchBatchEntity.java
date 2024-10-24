@@ -34,18 +34,16 @@ public class BranchBatchEntity extends CommonEntity {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(
       name = "batch_id",
-      nullable = false,
       foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   BatchEntity batch;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(
       name = "branch_id",
-        nullable = false,
       foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   BranchEntity branch;
 
-  @Column(name = "quantity", nullable = false)
+  @Column(name = "quantity")
   Integer quantity;
 
   @ToString.Exclude

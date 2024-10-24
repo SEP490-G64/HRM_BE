@@ -1,6 +1,7 @@
 package com.example.hrm_be.controllers.inbound;
 
 import com.example.hrm_be.commons.constants.HrmConstant;
+import com.example.hrm_be.commons.enums.InboundStatus;
 import com.example.hrm_be.commons.enums.InboundType;
 import com.example.hrm_be.commons.enums.ResponseStatus;
 import com.example.hrm_be.models.dtos.Inbound;
@@ -238,7 +239,7 @@ public class StaffInboundController {
   @PostMapping("/submit-draft")
   public ResponseEntity<BaseOutput<Inbound>> submitDraft(
       @RequestBody CreateInboundRequest request) {
-    Inbound inbound = inboundService.submitDraftInbound(request);
+    Inbound inbound = inboundService.saveInbound(request);
     return ResponseEntity.ok(
         BaseOutput.<Inbound>builder().data(inbound).status(ResponseStatus.SUCCESS).build());
   }
@@ -333,7 +334,25 @@ public class StaffInboundController {
         .body(new InputStreamResource(byteArrayInputStream));
   }
 
-  // POST request to upload Base64 file, decode it, and return the original JSON as List<User>
+  @PutMapping("/{id}/update-status")
+  public ResponseEntity<BaseOutput<String>> updateStatus(
+      @RequestParam String type, @PathVariable(name = "id") Long id) {
+    inboundService.updateInboundStatus(InboundStatus.valueOf(type), id);
+    return ResponseEntity.ok(BaseOutput.<String>builder().status(ResponseStatus.SUCCESS).build());
+  }
+
+  @PutMapping("/{id}/submit")
+  public ResponseEntity<BaseOutput<Inbound>> submitToSystem(@PathVariable(name = "id") Long id) {
+    Inbound inbound = inboundService.submitInboundToSystem(id);
+    BaseOutput<Inbound> response =
+        BaseOutput.<Inbound>builder()
+            .message(HttpStatus.OK.toString())
+            .data(inbound)
+            .status(ResponseStatus.SUCCESS)
+            .build();
+    return ResponseEntity.ok(response);
+  }
+
   @PostMapping("/decode-file")
   public ResponseEntity<List<ProductInbound>> decodeFile(
       @RequestParam(value = "file") MultipartFile file) {

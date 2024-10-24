@@ -22,7 +22,11 @@ public interface InboundService {
 
   void delete(Long id);
 
-  Inbound submitDraftInbound(CreateInboundRequest innitInbound);
+  Inbound saveInbound(CreateInboundRequest innitInbound);
+
+  Inbound submitInboundToSystem(Long inboundId);
 
   Inbound createInnitInbound(InboundType type);
+
+  Inbound updateInboundStatus(InboundStatus status, Long id);
 }

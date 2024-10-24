@@ -73,12 +73,6 @@ public class BatchMapper {
                                 .map(outboundDetailMapper::toDTO)
                                 .collect(Collectors.toList())
                             : null)
-                    .branchBatches(
-                        e.getBranchBatches() != null
-                            ? e.getBranchBatches().stream()
-                                .map(branchBatchMapper::toDTO)
-                                .collect(Collectors.toList())
-                            : null)
                     .inboundBatchDetails(
                         e.getInboundBatchDetail() != null
                             ? e.getInboundBatchDetail().stream()

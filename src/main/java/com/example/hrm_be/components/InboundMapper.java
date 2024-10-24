@@ -93,4 +93,26 @@ public class InboundMapper {
                 : null)
         .build();
   }
+
+  // Helper method to convert InboundEntity to InboundDTO
+  public Inbound convertToBasicInfo(InboundEntity entity) {
+    return Inbound.builder()
+        .id(entity.getId())
+        .inboundType(entity.getInboundType())
+        .fromBranch(
+            entity.getFromBranch() != null ? branchMapper.convertToDTOBasicInfo(entity.getFromBranch()) : null)
+        .toBranch(entity.getToBranch() != null ? branchMapper.convertToDTOBasicInfo(entity.getToBranch()) : null)
+        .supplier(entity.getSupplier() != null ? supplierMapper.toDTO(entity.getSupplier()) : null)
+        .createdBy(entity.getCreatedBy() != null ? userMapper.convertToDtoBasicInfo(entity.getCreatedBy()) : null)
+        .approvedBy(entity.getApprovedBy() != null ? userMapper.convertToDtoBasicInfo(entity.getCreatedBy()) : null)
+        .createdDate(entity.getCreatedDate())
+        .inboundDate(entity.getInboundDate())
+        .totalPrice(entity.getTotalPrice())
+        .isApproved(entity.getIsApproved())
+        .status(entity.getStatus())
+        .taxable(entity.getTaxable())
+        .note(entity.getNote())
+        .inboundDate(entity.getInboundDate())
+        .build();
+  }
 }
