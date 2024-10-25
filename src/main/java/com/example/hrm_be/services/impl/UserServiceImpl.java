@@ -263,6 +263,7 @@ public class UserServiceImpl implements UserService {
     }
 
     // Update user details and save
+    UserEntity finalOldUserEntity = oldUserEntity;
     return Optional.of(oldUserEntity)
         .map(
             ue -> {
@@ -276,7 +277,7 @@ public class UserServiceImpl implements UserService {
 
               // Only set new status if status is not null or not update user profile
               if (user.getStatus() != null && !profile) {
-                builder.status(UserStatusType.valueOf(user.getStatus()));
+                builder.status(user.getStatus());
               }
 
               // Only set new branch if branch is not null or not update user profile
@@ -291,22 +292,15 @@ public class UserServiceImpl implements UserService {
                 UserEntity userEntity = userMapper.toEntity(user);
                 // Handle role assignment if roles exist
                 if (user.getRoles() != null && !user.getRoles().isEmpty()) {
-                  List<UserRoleMapEntity> userRoleMapEntities =
-                      user.getRoles().stream()
-                          .map(
-                              role -> {
-                                UserRoleMapEntity userRoleMapEntity = new UserRoleMapEntity();
-                                userRoleMapEntity.setUser(
-                                    userEntity); // Use the saved UserEntity 'e'
-                                userRoleMapEntity.setRole(
-                                    roleMapper.toEntity(role)); // Set the role entity
-                                return userRoleMapEntity;
-                              })
-                          .collect(Collectors.toList()); // Collect to a List
+                  if (!Objects.equals(user.getRoles().get(0).getId(), finalOldUserEntity.getUserRoleMap().get(0).getId())) {
+                    List<UserRoleMapEntity> userRoleMapEntities = userRoleMapRepository.findByUser(finalOldUserEntity);
+                    userRoleMapEntities.get(0).setUser(userEntity);
+                    userRoleMapEntities.get(0).setRole(roleMapper.toEntity(user.getRoles().get(0)));
 
-                  // Save role mappings if necessary
-                  if (!userRoleMapEntities.isEmpty()) {
-                    userRoleMapRepository.saveAll(userRoleMapEntities); // Save role mappings
+                    // Save role mappings if necessary
+                    if (!userRoleMapEntities.isEmpty()) {
+                      userRoleMapRepository.saveAll(userRoleMapEntities); // Save role mappings
+                    }
                   }
                 } else {
                   userRoleMapService.setStaffRoleForUser(e.getId());
@@ -485,7 +479,7 @@ public class UserServiceImpl implements UserService {
     // Set status based on account current status and save
     return Optional.ofNullable(verifyUser)
         .map(
-            Objects.equals(verifyUser.getStatus().toString(), UserStatusType.ACTIVATE.toString())
+            Objects.equals(verifyUser.getStatus(), UserStatusType.ACTIVATE)
                 ? e -> e.setStatus(UserStatusType.DEACTIVATE)
                 : e -> e.setStatus(UserStatusType.ACTIVATE))
         .map(userRepository::save)
