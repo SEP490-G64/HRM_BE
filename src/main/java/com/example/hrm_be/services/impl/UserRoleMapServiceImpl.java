@@ -45,7 +45,7 @@ public class UserRoleMapServiceImpl implements UserRoleMapService {
 
   @Override
   public void setManagerRoleForUser(Long userId) {
-    setRoleForUserByRoleList(userId, List.of(RoleType.MANAGER, RoleType.STAFF));
+    setRoleForUserByRoleList(userId, List.of(RoleType.MANAGER));
   }
 
   @Override

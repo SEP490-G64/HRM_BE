@@ -22,13 +22,11 @@ import com.example.hrm_be.repositories.UserRoleMapRepository;
 import com.example.hrm_be.services.*;
 import com.example.hrm_be.utils.ExcelUtility;
 import com.example.hrm_be.utils.PasswordGenerator;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -357,7 +355,11 @@ public class UserServiceImpl implements UserService {
   @Override
   public User createAdmin(User user) {
     // Create and save a new admin user, then assign admin role
+    Branch branch =
+        branchService.getByLocationContains(
+            "199 Đường Giải Phóng - P. Đồng Tâm - Q. Hai Bà Trưng - TP. Hà Nội");
     return Optional.ofNullable(user)
+        .map(u -> u.setBranch(branch))
         .map(userMapper::toEntity)
         .map(userRepository::save)
         .map(

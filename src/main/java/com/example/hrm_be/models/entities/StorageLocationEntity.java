@@ -2,10 +2,8 @@ package com.example.hrm_be.models.entities;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.util.List;
@@ -35,6 +33,6 @@ public class StorageLocationEntity extends CommonEntity {
   String shelfName;
 
   @ToString.Exclude
-  @OneToMany(mappedBy = "storageLocation", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "storageLocation")
   List<BranchProductEntity> branchProducts;
 }

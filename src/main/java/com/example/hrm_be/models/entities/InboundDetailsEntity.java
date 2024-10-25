@@ -28,20 +28,14 @@ import lombok.experimental.SuperBuilder;
 @Table(name = "inbound_details")
 public class InboundDetailsEntity extends CommonEntity {
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(
-      name = "inbound_id",
-      nullable = false,
-      foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+  @JoinColumn(name = "inbound_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   InboundEntity inbound;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(
-      name = "product_id",
-      nullable = false,
-      foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+  @JoinColumn(name = "product_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   ProductEntity product;
 
-  @Column(name = "request_quantity", nullable = false)
+  @Column(name = "request_quantity")
   Integer requestQuantity;
 
   @Column(name = "receive_quantity")

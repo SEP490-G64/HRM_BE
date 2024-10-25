@@ -119,6 +119,27 @@ public class ProductMapper {
         .build();
   }
 
+  public Product convertToDTOWithBatch(ProductEntity entity) {
+    return Product.builder()
+        .id(entity.getId())
+        .productName(entity.getProductName())
+        .registrationCode(entity.getRegistrationCode())
+        .urlImage(entity.getUrlImage())
+        .activeIngredient(entity.getActiveIngredient())
+        .excipient(entity.getExcipient())
+        .formulation(entity.getFormulation())
+        .status(entity.getStatus())
+        .baseUnit(
+            entity.getBaseUnit() != null
+                ? unitOfMeasurementMapper.toDTO(entity.getBaseUnit())
+                : null)
+        .batches(
+            entity.getBatches() != null
+                ? entity.getBatches().stream().map(batchMapper::toDTO).collect(Collectors.toList())
+                : null)
+        .build();
+  }
+
   public ProductBaseDTO convertToProductBaseDTO(ProductEntity entity) {
     return ProductBaseDTO.builder()
         .id(entity.getId())

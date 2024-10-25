@@ -1,10 +1,8 @@
 package com.example.hrm_be.models.dtos;
 
-import com.example.hrm_be.models.entities.CommonEntity;
 import com.fasterxml.jackson.annotation.JsonInclude;
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -25,25 +23,14 @@ import lombok.extern.jackson.Jacksonized;
 @EqualsAndHashCode
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Batch extends CommonEntity {
-  Long id;
-  String batchCode;
+public class ProductInbound implements Serializable {
 
-  LocalDateTime produceDate;
-
-  LocalDateTime expireDate;
-
-  BigDecimal inboundPrice;
-
-  List<OutboundDetail> outboundDetails; // 1-N with OutboundDetails
-
-  List<BranchBatch> branchBatches; // 1-N with BranchBatch
-
-  List<InboundBatchDetail> inboundBatchDetails;
-
-  List<InventoryCheckDetails> inventoryCheckDetails;
-
-  Product product;
-
-  Integer inboundBatchQuantity;
+  @Serial private static final long serialVersionUID = 8012723276726758269L;
+  String registrationCode;
+  String productName;
+  List<Batch> batchList;
+  Integer requestQuantity;
+  Integer receiveQuantity;
+  UnitOfMeasurement baseUnit;
+  Double price;
 }
