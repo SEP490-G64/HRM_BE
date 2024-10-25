@@ -1,5 +1,6 @@
 package com.example.hrm_be.models.dtos;
 
+import com.example.hrm_be.commons.enums.UserStatusType;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serial;
@@ -37,7 +38,7 @@ public class User implements Serializable {
 
   String lastName;
 
-  String status;
+  UserStatusType status;
 
   transient List<Role> roles;
 

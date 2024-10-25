@@ -63,7 +63,7 @@ public class AuthenticationController {
     User userDetails = userService.getByEmail(request.getEmail());
 
     // Check if user not has admin role and account status not activate
-    if (!Objects.equals(userDetails.getStatus(), UserStatusType.ACTIVATE.toString())) {
+    if (!Objects.equals(userDetails.getStatus(), UserStatusType.ACTIVATE)) {
 
       // Return a Bad Request response with message about account not being activated
       return ResponseEntity.status(HttpStatus.FORBIDDEN) // Change the status to BAD_REQUEST

@@ -87,7 +87,7 @@ public class CommonInitializer implements ApplicationRunner {
             .phone("0912345678")
             .firstName("Quản trị viên")
             .lastName("Hệ thống Nhà thuốc")
-            .status(UserStatusType.ACTIVATE.toString())
+            .status(UserStatusType.ACTIVATE)
             .build();
     User createdAdminUser = userService.createAdmin(newAdminUser);
     log.info(
