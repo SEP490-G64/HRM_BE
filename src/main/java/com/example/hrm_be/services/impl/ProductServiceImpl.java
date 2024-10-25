@@ -38,7 +38,6 @@ import com.example.hrm_be.repositories.UserRepository;
 import com.example.hrm_be.models.dtos.*;
 import com.example.hrm_be.models.entities.*;
 import com.example.hrm_be.repositories.*;
-import com.example.hrm_be.services.AllowedProductService;
 import com.example.hrm_be.services.ProductService;
 
 import java.io.ByteArrayInputStream;
@@ -91,7 +90,6 @@ public class ProductServiceImpl implements ProductService {
   @Autowired private ManufacturerRepository manufacturerRepository;
   @Autowired private ManufacturerMapper manufacturerMapper;
 
-
   @Autowired private ProductMapper productMapper;
   @Autowired private SpecialConditionMapper specialConditionMapper;
   @Autowired private BranchMapper branchMapper;
@@ -104,7 +102,6 @@ public class ProductServiceImpl implements ProductService {
   @Autowired private UnitConversionRepository unitConversionRepository;
   @Autowired private UnitConversionMapper unitConversionMapper;
   @Autowired private UnitOfMeasurementMapper unitOfMeasurementMapper;
-
 
   @Override
   public Product getById(Long id) {
@@ -152,17 +149,20 @@ public class ProductServiceImpl implements ProductService {
     }
 
     // Check if the category exists
-    if (product.getCategory() != null && !productCategoryRepository.existsById(product.getCategory().getId())) {
+    if (product.getCategory() != null
+        && !productCategoryRepository.existsById(product.getCategory().getId())) {
       throw new HrmCommonException(CATEGORY.NOT_EXIST);
     }
 
     // Check if the base unit exists
-    if (product.getBaseUnit() != null && !unitOfMeasurementRepository.existsById(product.getBaseUnit().getId())) {
+    if (product.getBaseUnit() != null
+        && !unitOfMeasurementRepository.existsById(product.getBaseUnit().getId())) {
       throw new HrmCommonException(UNIT_OF_MEASUREMENT.NOT_EXIST);
     }
 
     // Check if the manufacturer exists
-    if (product.getManufacturer() != null && !manufacturerRepository.existsById(product.getManufacturer().getId())) {
+    if (product.getManufacturer() != null
+        && !manufacturerRepository.existsById(product.getManufacturer().getId())) {
       throw new HrmCommonException(MANUFACTURER.NOT_EXIST);
     }
 
@@ -172,7 +172,8 @@ public class ProductServiceImpl implements ProductService {
     if (product.getSpecialConditions() != null && !product.getSpecialConditions().isEmpty()) {
       List<SpecialConditionEntity> specialConditions = new ArrayList<>();
       for (SpecialCondition specialConditionDTO : product.getSpecialConditions()) {
-        SpecialConditionEntity specialConditionEntity = specialConditionMapper.toEntity(specialConditionDTO);
+        SpecialConditionEntity specialConditionEntity =
+            specialConditionMapper.toEntity(specialConditionDTO);
         specialConditionEntity.setProduct(savedProduct);
         specialConditions.add(specialConditionEntity);
       }
@@ -208,7 +209,8 @@ public class ProductServiceImpl implements ProductService {
     // Handle storage location if it exists in BranchProduct
     if (branchProduct.getStorageLocation() != null) {
       StorageLocationEntity savedStorageLocation =
-              storageLocationRepository.save(storageLocationMapper.toEntity(branchProduct.getStorageLocation()));
+          storageLocationRepository.save(
+              storageLocationMapper.toEntity(branchProduct.getStorageLocation()));
       branchProductEntity.setStorageLocation(savedStorageLocation);
     }
 
@@ -612,77 +614,80 @@ public class ProductServiceImpl implements ProductService {
   @Override
   public List<String> importFile(MultipartFile file) {
     // Mapper to convert each Excel row into a Product object
-    Function<Row, Product> rowMapper = (Row row) -> {
-      Product product = new Product();
-      try {
-        // Mapping fields from the Excel row to the Product object
-        product.setProductCode(row.getCell(0) != null ? row.getCell(0).getStringCellValue() : null);
+    Function<Row, Product> rowMapper =
+        (Row row) -> {
+          Product product = new Product();
+          try {
+            // Mapping fields from the Excel row to the Product object
+            product.setProductCode(
+                row.getCell(0) != null ? row.getCell(0).getStringCellValue() : null);
 
-        // If the product code exists, populate product information from AllowedProductEntity
-        if (product.getProductCode() != null) {
-          AllowedProductEntity allowedProduct = allowedProductRepository.findByRegistrationCode(product.getProductCode());
-          if (allowedProduct != null) {
-            product.setProductName(allowedProduct.getProductName());
-            product.setRegistrationCode(allowedProduct.getRegistrationCode());
-            product.setActiveIngredient(allowedProduct.getActiveIngredient());
-            product.setExcipient(allowedProduct.getExcipient());
-            product.setFormulation(allowedProduct.getFormulation());
+            // If the product code exists, populate product information from AllowedProductEntity
+            if (product.getProductCode() != null) {
+              AllowedProductEntity allowedProduct =
+                  allowedProductRepository.findByRegistrationCode(product.getProductCode());
+              if (allowedProduct != null) {
+                product.setProductName(allowedProduct.getProductName());
+                product.setRegistrationCode(allowedProduct.getRegistrationCode());
+                product.setActiveIngredient(allowedProduct.getActiveIngredient());
+                product.setExcipient(allowedProduct.getExcipient());
+                product.setFormulation(allowedProduct.getFormulation());
+              }
+            }
+
+            // Set category if found
+            if (row.getCell(2) != null) {
+              String categoryName = row.getCell(2).getStringCellValue();
+              if (categoryName != null) {
+                product.setCategory(
+                    productCategoryRepository
+                        .findByCategoryName(categoryName)
+                        .map(productCategoryMapper::toDTO)
+                        .orElse(null));
+              }
+            }
+
+            // Set type if found
+            if (row.getCell(3) != null) {
+              String typeName = row.getCell(3).getStringCellValue();
+              if (typeName != null) {
+                product.setType(
+                    productTypeRepository
+                        .findByTypeName(typeName)
+                        .map(productTypeMapper::toDTO)
+                        .orElse(null));
+              }
+            }
+
+            // Set base unit if found
+            if (row.getCell(4) != null) {
+              String measurementName = row.getCell(4).getStringCellValue();
+              if (measurementName != null) {
+                product.setBaseUnit(
+                    unitOfMeasurementRepository
+                        .findByUnitName(measurementName)
+                        .map(unitOfMeasurementMapper::toDTO)
+                        .orElse(null));
+              }
+            }
+
+            // Set manufacturer if found
+            if (row.getCell(5) != null) {
+              String manufacturerName = row.getCell(5).getStringCellValue();
+              if (manufacturerName != null) {
+                product.setManufacturer(
+                    manufacturerRepository
+                        .findByManufacturerName(manufacturerName)
+                        .map(manufacturerMapper::toDTO)
+                        .orElse(null));
+              }
+            }
+
+          } catch (Exception e) {
+            throw new RuntimeException("Error parsing row: " + e.getMessage(), e);
           }
-        }
-
-        // Set category if found
-        if (row.getCell(2) != null) {
-          String categoryName = row.getCell(2).getStringCellValue();
-          if (categoryName != null) {
-            product.setCategory(
-                    productCategoryRepository.findByCategoryName(categoryName)
-                            .map(productCategoryMapper::toDTO)
-                            .orElse(null)
-            );
-          }
-        }
-
-        // Set type if found
-        if (row.getCell(3) != null) {
-          String typeName = row.getCell(3).getStringCellValue();
-          if (typeName != null) {
-            product.setType(
-                    productTypeRepository.findByTypeName(typeName)
-                            .map(productTypeMapper::toDTO)
-                            .orElse(null)
-            );
-          }
-        }
-
-        // Set base unit if found
-        if (row.getCell(4) != null) {
-          String measurementName = row.getCell(4).getStringCellValue();
-          if (measurementName != null) {
-            product.setBaseUnit(
-                    unitOfMeasurementRepository.findByUnitName(measurementName)
-                            .map(unitOfMeasurementMapper::toDTO)
-                            .orElse(null)
-            );
-          }
-        }
-
-        // Set manufacturer if found
-        if (row.getCell(5) != null) {
-          String manufacturerName = row.getCell(5).getStringCellValue();
-          if (manufacturerName != null) {
-            product.setManufacturer(
-                    manufacturerRepository.findByManufacturerName(manufacturerName)
-                            .map(manufacturerMapper::toDTO)
-                            .orElse(null)
-            );
-          }
-        }
-
-      } catch (Exception e) {
-        throw new RuntimeException("Error parsing row: " + e.getMessage(), e);
-      }
-      return product;
-    };
+          return product;
+        };
 
     List<String> errors = new ArrayList<>();
     List<Product> productsToSave = new ArrayList<>();
@@ -722,41 +727,52 @@ public class ProductServiceImpl implements ProductService {
     // Save all valid products to the database
     if (!productsToSave.isEmpty()) {
       for (Product product : productsToSave) {
-        create(product);  // Assuming `create` method persists the Product entity
+        create(product); // Assuming `create` method persists the Product entity
       }
     }
 
     return errors; // Return the list of errors
   }
 
-
   @Override
   public ByteArrayInputStream exportFile() throws IOException {
     String[] headers = {
-            "Regation Code", "Product Name", "Active Ingredient",
-            "Excipient", "Formulation", "Category", "Type", "Base Unit", "Manufacturer", "Sell Price"
+      "Regation Code",
+      "Product Name",
+      "Active Ingredient",
+      "Excipient",
+      "Formulation",
+      "Category",
+      "Type",
+      "Base Unit",
+      "Manufacturer",
+      "Sell Price"
     };
 
     // Row mapper to convert a Product object to a list of cell values
     Function<ProductBaseDTO, List<String>> rowMapper =
-            (ProductBaseDTO product) -> {
-              List<String> cellValues = new ArrayList<>();
-              cellValues.add(product.getRegistrationCode() != null ? product.getRegistrationCode() : "");
-              cellValues.add(product.getProductName() != null ? product.getProductName() : "");
-              cellValues.add(product.getActiveIngredient() != null ? product.getActiveIngredient() : "");
-              cellValues.add(product.getExcipient() != null ? product.getExcipient() : "");
-              cellValues.add(product.getFormulation() != null ? product.getFormulation() : "");
-              cellValues.add(product.getCategoryName() != null ? product.getCategoryName() : "");
-              cellValues.add(product.getTypeName() != null ? product.getTypeName() : "");
-              cellValues.add(product.getBaseUnit() != null ? product.getBaseUnit() : "");
-              cellValues.add(product.getManufacturerName() != null ? product.getManufacturerName() : "");
-              cellValues.add(product.getSellPrice() != null ? product.getSellPrice().toString() : "");
+        (ProductBaseDTO product) -> {
+          List<String> cellValues = new ArrayList<>();
+          cellValues.add(
+              product.getRegistrationCode() != null ? product.getRegistrationCode() : "");
+          cellValues.add(product.getProductName() != null ? product.getProductName() : "");
+          cellValues.add(
+              product.getActiveIngredient() != null ? product.getActiveIngredient() : "");
+          cellValues.add(product.getExcipient() != null ? product.getExcipient() : "");
+          cellValues.add(product.getFormulation() != null ? product.getFormulation() : "");
+          cellValues.add(product.getCategoryName() != null ? product.getCategoryName() : "");
+          cellValues.add(product.getTypeName() != null ? product.getTypeName() : "");
+          cellValues.add(product.getBaseUnit() != null ? product.getBaseUnit() : "");
+          cellValues.add(
+              product.getManufacturerName() != null ? product.getManufacturerName() : "");
+          cellValues.add(product.getSellPrice() != null ? product.getSellPrice().toString() : "");
 
-              return cellValues;
-            };
+          return cellValues;
+        };
 
     // Fetch product data
-    List<ProductBaseDTO> products = productRepository.findAll().stream()
+    List<ProductBaseDTO> products =
+        productRepository.findAll().stream()
             .map(productMapper::convertToProductBaseDTO)
             .collect(Collectors.toList());
 

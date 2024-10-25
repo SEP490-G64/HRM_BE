@@ -232,9 +232,11 @@ public class StaffProductController {
             .status(ResponseStatus.SUCCESS)
             .build());
   }
+
   // Method to upload an Excel file for importing products
   @PostMapping("/excel/import")
-  public ResponseEntity<BaseOutput<String>> uploadProductFile(@RequestParam("file") MultipartFile file) {
+  public ResponseEntity<BaseOutput<String>> uploadProductFile(
+      @RequestParam("file") MultipartFile file) {
     // Check if the uploaded file is in Excel format
     if (ExcelUtility.hasExcelFormat(file)) {
       try {
@@ -245,32 +247,38 @@ public class StaffProductController {
         if (errors != null && !errors.isEmpty()) {
           // Return a bad request response with validation errors
           return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                  .body(
-                          BaseOutput.<String>builder()
-                                  .message("File upload failed with validation errors") // Error message indicating validation issues
-                                  .errors(errors) // List of validation errors
-                                  .build());
+              .body(
+                  BaseOutput.<String>builder()
+                      .message(
+                          "File upload failed with validation errors") // Error message indicating
+                                                                       // validation issues
+                      .errors(errors) // List of validation errors
+                      .build());
         }
         // Return a success response if there are no errors
         return ResponseEntity.ok(
-                BaseOutput.<String>builder()
-                        .message("The Excel file is uploaded successfully: " + file.getOriginalFilename()) // Success message with the original file name
-                        .build());
+            BaseOutput.<String>builder()
+                .message(
+                    "The Excel file is uploaded successfully: "
+                        + file.getOriginalFilename()) // Success message with the original file name
+                .build());
       } catch (Exception exp) {
         // Handle any exceptions that occur during import
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(
-                        BaseOutput.<String>builder()
-                                .message("File upload failed: " + exp.getMessage()) // Specific error message
-                                .build());
+            .body(
+                BaseOutput.<String>builder()
+                    .message("File upload failed: " + exp.getMessage()) // Specific error message
+                    .build());
       }
     } else {
       // Return response if the file format is invalid
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-              .body(
-                      BaseOutput.<String>builder()
-                              .message("Invalid file format. Please upload an Excel file.") // Message indicating invalid file format
-                              .build());
+          .body(
+              BaseOutput.<String>builder()
+                  .message(
+                      "Invalid file format. Please upload an Excel file.") // Message indicating
+                                                                           // invalid file format
+                  .build());
     }
   }
 
@@ -283,11 +291,10 @@ public class StaffProductController {
 
     // Return a response with the file attached
     return ResponseEntity.ok()
-            .header(
-                    HttpHeaders.CONTENT_DISPOSITION,
-                    "attachment; filename=product.xlsx") // Set the filename for download
-            .contentType(MediaType.MULTIPART_FORM_DATA) // Content type of the response
-            .body(resource); // Return the input stream resource
+        .header(
+            HttpHeaders.CONTENT_DISPOSITION,
+            "attachment; filename=product.xlsx") // Set the filename for download
+        .contentType(MediaType.MULTIPART_FORM_DATA) // Content type of the response
+        .body(resource); // Return the input stream resource
   }
-
 }

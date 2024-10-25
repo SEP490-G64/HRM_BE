@@ -47,8 +47,8 @@ public interface ProductService {
       Optional<Long> typeId,
       Optional<String> status,
       Optional<Long> branchId);
+
   List<String> importFile(MultipartFile file);
 
   ByteArrayInputStream exportFile() throws IOException;
 }
-

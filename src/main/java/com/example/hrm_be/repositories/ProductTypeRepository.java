@@ -16,5 +16,6 @@ public interface ProductTypeRepository extends JpaRepository<ProductTypeEntity, 
   // Finds a paginated list of ProductType entities whose names contain the specified keyword
   // (case-insensitive)
   Page<ProductTypeEntity> findByTypeNameContainingIgnoreCase(String typeName, Pageable pageable);
+
   Optional<ProductTypeEntity> findByTypeName(String typeName);
 }

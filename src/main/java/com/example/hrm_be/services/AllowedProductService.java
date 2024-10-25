@@ -8,6 +8,7 @@ import java.util.Map;
 
 @Service
 public interface AllowedProductService {
-    List<AllowedProductEntity> getAllAllowedProducts();
-    List<AllowedProductEntity> addProductFromJson(List<Map<String, Object>> productJsonList);
+  List<AllowedProductEntity> getAllAllowedProducts();
+
+  List<AllowedProductEntity> addProductFromJson(List<Map<String, Object>> productJsonList);
 }
