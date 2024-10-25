@@ -64,9 +64,8 @@ public class CommonInitializer implements ApplicationRunner {
             .location("199 Đường Giải Phóng - P. Đồng Tâm - Q. Hai Bà Trưng - TP. Hà Nội")
             .phoneNumber("02438694014")
             .build();
-    Branch createdBranch = new Branch();
     if (!branchRepository.existsByLocation(branch.getLocation())) {
-      createdBranch = branchService.create(branch);
+       branchService.create(branch);
     }
     User oldAdminUser = userService.findLoggedInfoByEmail("dsdadmin@gmail.com");
 
@@ -84,7 +83,6 @@ public class CommonInitializer implements ApplicationRunner {
         User.builder()
             .email("dsdadmin@gmail.com")
             .password("Abcd1234")
-            .branch(createdBranch.getId() != null ? createdBranch : Branch.builder().id(1l).build())
             .userName("dsdadmin")
             .phone("0912345678")
             .firstName("Quản trị viên")

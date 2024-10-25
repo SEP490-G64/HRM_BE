@@ -13,7 +13,6 @@ import com.example.hrm_be.components.UnitOfMeasurementMapper;
 import com.example.hrm_be.components.UserMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.Batch;
-import com.example.hrm_be.models.dtos.BranchBatch;
 import com.example.hrm_be.models.dtos.Inbound;
 import com.example.hrm_be.models.dtos.InboundProductDetailDTO;
 import com.example.hrm_be.models.dtos.ProductInbound;
@@ -96,52 +95,81 @@ public class InboundServiceImpl implements InboundService {
     // Map inboundDetails to include product and batches
     List<InboundProductDetailDTO> productDetails =
         optionalInbound.getInboundDetails().stream()
-            .filter(Objects::nonNull)  // Filter out null inboundDetail objects
-            .map(inboundDetail -> {
-              InboundProductDetailDTO productDetailDTO = new InboundProductDetailDTO();
-              productDetailDTO.setId(inboundDetail.getId());
-              productDetailDTO.setRequestQuantity(inboundDetail.getRequestQuantity());
-              productDetailDTO.setReceiveQuantity(inboundDetail.getReceiveQuantity());
+            .filter(Objects::nonNull) // Filter out null inboundDetail objects
+            .map(
+                inboundDetail -> {
+                  InboundProductDetailDTO productDetailDTO = new InboundProductDetailDTO();
+                  productDetailDTO.setId(inboundDetail.getId());
+                  productDetailDTO.setRequestQuantity(inboundDetail.getRequestQuantity());
+                  productDetailDTO.setReceiveQuantity(inboundDetail.getReceiveQuantity());
 
-              // Check if product is null
-              if (inboundDetail.getProduct() != null) {
-                productDetailDTO.setProductId(inboundDetail.getProduct().getId());
-                productDetailDTO.setProductName(inboundDetail.getProduct().getProductName());
+                  // Check if product is null
+                  if (inboundDetail.getProduct() != null) {
+                    productDetailDTO.setProductId(inboundDetail.getProduct().getId());
+                    productDetailDTO.setProductName(inboundDetail.getProduct().getProductName());
 
-                // Map batches associated with this product in the context of this inbound
-                List<Batch> batches = inboundDetail.getProduct().getBatches().stream()
-                    .filter(Objects::nonNull)  // Filter out null batch objects
-                    .filter(batch -> batch.getInboundBatchDetail() != null && batch.getInboundBatchDetail().stream()
-                        .anyMatch(inboundBatchDetail -> inboundBatchDetail.getInbound().getId().equals(optionalInbound.getId()))) // Only batches belonging to this inbound
-                    .map(batch -> {
-                      Batch batchDTO = new Batch();
-                      batchDTO.setId(batch.getId());
-                      batchDTO.setBatchCode(batch.getBatchCode());
+                    // Map batches associated with this product in the context of this inbound
+                    List<Batch> batches =
+                        inboundDetail.getProduct().getBatches().stream()
+                            .filter(Objects::nonNull) // Filter out null batch objects
+                            .filter(
+                                batch ->
+                                    batch.getInboundBatchDetail() != null
+                                        && batch.getInboundBatchDetail().stream()
+                                            .anyMatch(
+                                                inboundBatchDetail ->
+                                                    inboundBatchDetail
+                                                        .getInbound()
+                                                        .getId()
+                                                        .equals(
+                                                            optionalInbound
+                                                                .getId()))) // Only batches
+                                                                            // belonging to this
+                                                                            // inbound
+                            .map(
+                                batch -> {
+                                  Batch batchDTO = new Batch();
+                                  batchDTO.setId(batch.getId());
+                                  batchDTO.setBatchCode(batch.getBatchCode());
 
-                      // Find the quantity for this product-batch from the inboundBatchDetails
-                      Integer quantity = batch.getInboundBatchDetail().stream()
-                          .filter(Objects::nonNull)  // Ensure inboundBatchDetail is not null
-                          .filter(inboundBatchDetail -> inboundBatchDetail.getInbound().getId().equals(optionalInbound.getId()))
-                          .map(inboundBatchDetail -> inboundBatchDetail.getQuantity()!=null ?
-                              inboundBatchDetail.getQuantity() :0)
-                          .findFirst().orElse(0); // Default quantity if not found
+                                  // Find the quantity for this product-batch from the
+                                  // inboundBatchDetails
+                                  Integer quantity =
+                                      batch.getInboundBatchDetail().stream()
+                                          .filter(
+                                              Objects
+                                                  ::nonNull) // Ensure inboundBatchDetail is not
+                                                             // null
+                                          .filter(
+                                              inboundBatchDetail ->
+                                                  inboundBatchDetail
+                                                      .getInbound()
+                                                      .getId()
+                                                      .equals(optionalInbound.getId()))
+                                          .map(
+                                              inboundBatchDetail ->
+                                                  inboundBatchDetail.getQuantity() != null
+                                                      ? inboundBatchDetail.getQuantity()
+                                                      : 0)
+                                          .findFirst()
+                                          .orElse(0); // Default quantity if not found
 
-                      batchDTO.setInboundBatchQuantity(quantity);
-                      return batchDTO;
-                    }).collect(Collectors.toList());
+                                  batchDTO.setInboundBatchQuantity(quantity);
+                                  return batchDTO;
+                                })
+                            .collect(Collectors.toList());
 
-                productDetailDTO.setBatches(batches);
-              }
+                    productDetailDTO.setBatches(batches);
+                  }
 
-              return productDetailDTO;
-            })
+                  return productDetailDTO;
+                })
             .collect(Collectors.toList());
 
     inboundDTO.setProductBatchDetails(productDetails);
 
     return inboundDTO;
   }
-
 
   @Override
   public Page<Inbound> getByPaging(int pageNo, int pageSize, String sortBy) {
@@ -294,7 +322,7 @@ public class InboundServiceImpl implements InboundService {
           // Create or find the batch entity
           BatchEntity batchEntity =
               batchRepository
-                  .findByBatchCodeAndProduct(batch.getBatchCode(),product)
+                  .findByBatchCodeAndProduct(batch.getBatchCode(), product)
                   .orElseGet(
                       () -> {
                         BatchEntity newBatch = new BatchEntity();
@@ -360,61 +388,92 @@ public class InboundServiceImpl implements InboundService {
   }
 
   @Override
+  @Transactional
   public Inbound submitInboundToSystem(Long inboundId) {
     // Fetch the InboundEntity from the repository
-    InboundEntity inboundEntity = inboundRepository.findById(inboundId).orElseThrow(() -> new RuntimeException("Inbound not found"));
+    InboundEntity inboundEntity =
+        inboundRepository
+            .findById(inboundId)
+            .orElseThrow(() -> new HrmCommonException(INBOUND.NOT_EXIST));
 
     // Get the branch details
     BranchEntity fromBranch = inboundEntity.getFromBranch();
 
     // Iterate through InboundDetails to create or update BranchProductEntity
-    inboundEntity.getInboundDetails().forEach(inboundDetail -> {
-      ProductEntity product = inboundDetail.getProduct();
-      Integer quantity = inboundDetail.getReceiveQuantity();  // Assume this represents the quantity to be stored
+    inboundEntity
+        .getInboundDetails()
+        .forEach(
+            inboundDetail -> {
+              ProductEntity product = inboundDetail.getProduct();
+              Integer quantity =
+                  inboundDetail.getReceiveQuantity() != null
+                      ? inboundDetail.getReceiveQuantity()
+                      : 0; // Assume this represents the
+              // quantity to be stored
 
-      // Check if BranchProductEntity already exists
-      BranchProductEntity branchProduct = branchProductRepository.findByBranchAndProduct(fromBranch, product)
-          .orElse(new BranchProductEntity());
+              // Check if BranchProductEntity already exists
+              BranchProductEntity branchProduct =
+                  branchProductRepository
+                      .findByBranchAndProduct(fromBranch, product)
+                      .orElse(new BranchProductEntity());
 
-      // If it exists, update the quantity, otherwise create a new one
-      if (branchProduct.getId() != null) {
-        branchProduct.setQuantity(branchProduct.getQuantity() + quantity);  // Update existing quantity
-      } else {
-        branchProduct.setProduct(product);
-        branchProduct.setBranch(fromBranch);
-        branchProduct.setQuantity(quantity);
-        branchProduct.setMinQuantity(0);  // Set default min quantity, or use business logic
-        branchProduct.setMaxQuantity(0);  // Set default max quantity, or use business logic
-      }
+              // If it exists, update the quantity, otherwise create a new one
+              if (branchProduct.getId() != null) {
+                branchProduct.setQuantity(
+                    branchProduct.getQuantity() != null
+                        ? branchProduct.getQuantity() + quantity
+                        : quantity); // Update existing quantity
+              } else {
+                branchProduct.setProduct(product);
+                branchProduct.setBranch(fromBranch);
+                branchProduct.setQuantity(quantity);
+                branchProduct.setMinQuantity(null); // Set default min quantity, or use business
+                // logic
+                branchProduct.setMaxQuantity(null); // Set default max quantity, or use business
+                // logic
+              }
 
-      // Save the BranchProductEntity
-      branchProductRepository.save(branchProduct);
-    });
+              // Save the BranchProductEntity
+              branchProductRepository.save(branchProduct);
+            });
 
     // Iterate through InboundBatchDetails to create or update BranchBatchEntity
-    inboundEntity.getInboundBatchDetails().forEach(inboundBatchDetail -> {
-      BatchEntity batch = inboundBatchDetail.getBatch();
-      Integer quantity = inboundBatchDetail.getQuantity();  // Assume this represents the batch quantity
+    inboundEntity
+        .getInboundBatchDetails()
+        .forEach(
+            inboundBatchDetail -> {
+              BatchEntity batch = inboundBatchDetail.getBatch();
+              Integer quantity =
+                  inboundBatchDetail.getQuantity()!=null? inboundBatchDetail.getQuantity() :0 ; //
+              // Assume this represents the batch
+              // quantity
 
-      // Check if BranchBatchEntity already exists
-      BranchBatchEntity branchBatch = branchBatchRepository.findByBranchAndBatch(fromBranch, batch)
-          .orElse(new BranchBatchEntity());
+              // Check if BranchBatchEntity already exists
+              BranchBatchEntity branchBatch =
+                  branchBatchRepository
+                      .findByBranchAndBatch(fromBranch, batch)
+                      .orElse(new BranchBatchEntity());
 
-      // If it exists, update the quantity, otherwise create a new one
-      if (branchBatch.getId() != null) {
-        branchBatch.setQuantity(branchBatch.getQuantity() + quantity);  // Update existing quantity
-      } else {
-        branchBatch.setBatch(batch);
-        branchBatch.setBranch(fromBranch);
-        branchBatch.setQuantity(quantity);
-      }
+              // If it exists, update the quantity, otherwise create a new one
+              if (branchBatch.getId() != null) {
+                branchBatch.setQuantity(
+                    branchBatch.getQuantity() != null
+                        ? branchBatch.getQuantity() + quantity
+                        : quantity); // Update existing
+                // quantity
+              } else {
+                branchBatch.setBatch(batch);
+                branchBatch.setBranch(fromBranch);
+                branchBatch.setQuantity(quantity);
+              }
 
-      // Save the BranchBatchEntity
-      branchBatchRepository.save(branchBatch);
-    });
+              // Save the BranchBatchEntity
+              branchBatchRepository.save(branchBatch);
+            });
 
     // Return the updated inbound entity (or any other response you need)
-    return inboundMapper.convertToBasicInfo(inboundEntity);  // You can return a DTO or any other object
+    return inboundMapper.convertToBasicInfo(
+        inboundEntity); // You can return a DTO or any other object
   }
 
   @Override
@@ -447,12 +506,11 @@ public class InboundServiceImpl implements InboundService {
 
   @Override
   public Inbound updateInboundStatus(InboundStatus status, Long id) {
-    Optional<InboundEntity> inbound =inboundRepository.findById(id);
-    if(inbound.isEmpty())
-    {
+    Optional<InboundEntity> inbound = inboundRepository.findById(id);
+    if (inbound.isEmpty()) {
       throw new HrmCommonException(INBOUND.NOT_EXIST);
     }
-        inboundRepository.updateInboundStatus(status,id);
+    inboundRepository.updateInboundStatus(status, id);
     return null;
   }
 }
