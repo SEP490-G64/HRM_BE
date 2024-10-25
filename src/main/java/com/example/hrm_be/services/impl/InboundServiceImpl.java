@@ -24,6 +24,7 @@ import com.example.hrm_be.models.entities.InboundBatchDetailEntity;
 import com.example.hrm_be.models.entities.InboundDetailsEntity;
 import com.example.hrm_be.models.entities.InboundEntity;
 import com.example.hrm_be.models.entities.ProductEntity;
+import com.example.hrm_be.models.entities.SupplierEntity;
 import com.example.hrm_be.models.entities.UserEntity;
 import com.example.hrm_be.models.requests.CreateInboundRequest;
 import com.example.hrm_be.models.responses.InboundDetail;
@@ -396,7 +397,8 @@ public class InboundServiceImpl implements InboundService {
             .orElseThrow(() -> new HrmCommonException(INBOUND.NOT_EXIST));
 
     // Get the branch details
-    BranchEntity fromBranch = inboundEntity.getFromBranch();
+    BranchEntity toBranch = inboundEntity.getToBranch();
+    SupplierEntity fromSupplier = inboundEntity.getSupplier();
 
     // Iterate through InboundDetails to create or update BranchProductEntity
     inboundEntity
@@ -413,7 +415,7 @@ public class InboundServiceImpl implements InboundService {
               // Check if BranchProductEntity already exists
               BranchProductEntity branchProduct =
                   branchProductRepository
-                      .findByBranchAndProduct(fromBranch, product)
+                      .findByBranchAndProduct(toBranch, product)
                       .orElse(new BranchProductEntity());
 
               // If it exists, update the quantity, otherwise create a new one
@@ -424,7 +426,7 @@ public class InboundServiceImpl implements InboundService {
                         : quantity); // Update existing quantity
               } else {
                 branchProduct.setProduct(product);
-                branchProduct.setBranch(fromBranch);
+                branchProduct.setBranch(toBranch);
                 branchProduct.setQuantity(quantity);
                 branchProduct.setMinQuantity(null); // Set default min quantity, or use business
                 // logic
@@ -452,7 +454,7 @@ public class InboundServiceImpl implements InboundService {
               // Check if BranchBatchEntity already exists
               BranchBatchEntity branchBatch =
                   branchBatchRepository
-                      .findByBranchAndBatch(fromBranch, batch)
+                      .findByBranchAndBatch(toBranch, batch)
                       .orElse(new BranchBatchEntity());
 
               // If it exists, update the quantity, otherwise create a new one
@@ -464,7 +466,7 @@ public class InboundServiceImpl implements InboundService {
                 // quantity
               } else {
                 branchBatch.setBatch(batch);
-                branchBatch.setBranch(fromBranch);
+                branchBatch.setBranch(toBranch);
                 branchBatch.setQuantity(quantity);
               }
 
