@@ -7,15 +7,22 @@ import com.example.hrm_be.models.dtos.Product;
 import com.example.hrm_be.models.dtos.ProductBaseDTO;
 import com.example.hrm_be.models.responses.BaseOutput;
 import com.example.hrm_be.services.ProductService;
+import com.example.hrm_be.utils.ExcelUtility;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotNull;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,6 +33,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -224,4 +232,62 @@ public class StaffProductController {
             .status(ResponseStatus.SUCCESS)
             .build());
   }
+  // Method to upload an Excel file for importing products
+  @PostMapping("/excel/import")
+  public ResponseEntity<BaseOutput<String>> uploadProductFile(@RequestParam("file") MultipartFile file) {
+    // Check if the uploaded file is in Excel format
+    if (ExcelUtility.hasExcelFormat(file)) {
+      try {
+        // Call the product service to handle the import logic and get any validation errors
+        List<String> errors = productService.importFile(file);
+
+        // Check if there were any errors during file processing
+        if (errors != null && !errors.isEmpty()) {
+          // Return a bad request response with validation errors
+          return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                  .body(
+                          BaseOutput.<String>builder()
+                                  .message("File upload failed with validation errors") // Error message indicating validation issues
+                                  .errors(errors) // List of validation errors
+                                  .build());
+        }
+        // Return a success response if there are no errors
+        return ResponseEntity.ok(
+                BaseOutput.<String>builder()
+                        .message("The Excel file is uploaded successfully: " + file.getOriginalFilename()) // Success message with the original file name
+                        .build());
+      } catch (Exception exp) {
+        // Handle any exceptions that occur during import
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(
+                        BaseOutput.<String>builder()
+                                .message("File upload failed: " + exp.getMessage()) // Specific error message
+                                .build());
+      }
+    } else {
+      // Return response if the file format is invalid
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+              .body(
+                      BaseOutput.<String>builder()
+                              .message("Invalid file format. Please upload an Excel file.") // Message indicating invalid file format
+                              .build());
+    }
+  }
+
+  @GetMapping("/excel/export")
+  public ResponseEntity<InputStreamResource> download() throws IOException {
+    // Call the service to export the file and get the input stream
+    ByteArrayInputStream inputStream = productService.exportFile();
+
+    InputStreamResource resource = new InputStreamResource(inputStream);
+
+    // Return a response with the file attached
+    return ResponseEntity.ok()
+            .header(
+                    HttpHeaders.CONTENT_DISPOSITION,
+                    "attachment; filename=product.xlsx") // Set the filename for download
+            .contentType(MediaType.MULTIPART_FORM_DATA) // Content type of the response
+            .body(resource); // Return the input stream resource
+  }
+
 }

@@ -38,17 +38,28 @@ import com.example.hrm_be.repositories.UserRepository;
 import com.example.hrm_be.models.dtos.*;
 import com.example.hrm_be.models.entities.*;
 import com.example.hrm_be.repositories.*;
+import com.example.hrm_be.services.AllowedProductService;
 import com.example.hrm_be.services.ProductService;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.*;
 import com.example.hrm_be.services.UserService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.example.hrm_be.services.UserService;
+import com.example.hrm_be.utils.ExcelUtility;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -57,20 +68,30 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+@Slf4j
+@RequiredArgsConstructor
 @Service
+@Transactional
 public class ProductServiceImpl implements ProductService {
   @Autowired private ProductRepository productRepository;
   @Autowired private AllowedProductRepository allowedProductRepository;
   @Autowired private StorageLocationRepository storageLocationRepository;
+
   @Autowired private ProductTypeRepository productTypeRepository;
+  @Autowired private ProductTypeMapper productTypeMapper;
 
   @Autowired private ProductCategoryRepository productCategoryRepository;
+  @Autowired private ProductCategoryMapper productCategoryMapper;
 
   @Autowired private UnitOfMeasurementRepository unitOfMeasurementRepository;
   @Autowired private UserService userService;
 
   @Autowired private ManufacturerRepository manufacturerRepository;
+  @Autowired private ManufacturerMapper manufacturerMapper;
+
+
   @Autowired private ProductMapper productMapper;
   @Autowired private SpecialConditionMapper specialConditionMapper;
   @Autowired private BranchMapper branchMapper;
@@ -83,6 +104,7 @@ public class ProductServiceImpl implements ProductService {
   @Autowired private UnitConversionRepository unitConversionRepository;
   @Autowired private UnitConversionMapper unitConversionMapper;
   @Autowired private UnitOfMeasurementMapper unitOfMeasurementMapper;
+
 
   @Override
   public Product getById(Long id) {
@@ -114,11 +136,9 @@ public class ProductServiceImpl implements ProductService {
       throw new HrmCommonException(REQUEST.INVALID_BODY);
     }
 
-    // Check only manager allow to sell price
-    if (userService.isManager()) {
-      if (product.getSellPrice() != null) {
-        throw new HrmCommonException(HrmConstant.ERROR.ROLE.NOT_ALLOWED);
-      }
+    // Only allow managers to set the sell price
+    if (!userService.isManager() && product.getSellPrice() != null) {
+      throw new HrmCommonException(HrmConstant.ERROR.ROLE.NOT_ALLOWED);
     }
 
     // Check if product registration code exists
@@ -132,89 +152,67 @@ public class ProductServiceImpl implements ProductService {
     }
 
     // Check if the category exists
-    if (product.getCategory() != null
-        && !productCategoryRepository.existsById(product.getCategory().getId())) {
+    if (product.getCategory() != null && !productCategoryRepository.existsById(product.getCategory().getId())) {
       throw new HrmCommonException(CATEGORY.NOT_EXIST);
     }
 
     // Check if the base unit exists
-    if (product.getBaseUnit() != null
-        && !unitOfMeasurementRepository.existsById(product.getBaseUnit().getId())) {
+    if (product.getBaseUnit() != null && !unitOfMeasurementRepository.existsById(product.getBaseUnit().getId())) {
       throw new HrmCommonException(UNIT_OF_MEASUREMENT.NOT_EXIST);
     }
 
     // Check if the manufacturer exists
-    if (product.getManufacturer() != null
-        && !manufacturerRepository.existsById(product.getManufacturer().getId())) {
+    if (product.getManufacturer() != null && !manufacturerRepository.existsById(product.getManufacturer().getId())) {
       throw new HrmCommonException(MANUFACTURER.NOT_EXIST);
     }
 
     ProductEntity savedProduct = productRepository.save(productMapper.toEntity(product));
 
-    // Add SpecialCondition
+    // Add special conditions if available
     if (product.getSpecialConditions() != null && !product.getSpecialConditions().isEmpty()) {
       List<SpecialConditionEntity> specialConditions = new ArrayList<>();
-
       for (SpecialCondition specialConditionDTO : product.getSpecialConditions()) {
-        SpecialConditionEntity specialConditionEntity =
-            specialConditionMapper.toEntity(specialConditionDTO);
-
-        // Set the product to this special condition
+        SpecialConditionEntity specialConditionEntity = specialConditionMapper.toEntity(specialConditionDTO);
         specialConditionEntity.setProduct(savedProduct);
-
-        // Add to the list for any future use or associations
         specialConditions.add(specialConditionEntity);
       }
-      List<SpecialConditionEntity> savedSpecialCondition =
-          specialConditionRepository.saveAll(specialConditions);
-      specialConditionRepository.assignToProductByProductIdAndIds(
-          savedProduct.getId(),
-          savedSpecialCondition.stream()
-              .map(SpecialConditionEntity::getId)
-              .collect(Collectors.toList()));
+      specialConditionRepository.saveAll(specialConditions);
     }
 
-    // Add Unit Conversion
+    // Add unit conversions if available
     if (product.getUnitConversions() != null && !product.getUnitConversions().isEmpty()) {
       List<UnitConversionEntity> unitConversions = new ArrayList<>();
-
       for (UnitConversion unitConversionDto : product.getUnitConversions()) {
         unitConversionDto.setLargerUnit(product.getBaseUnit());
-
-        // Set the product to this unit conversion
         unitConversionDto.setProduct(productMapper.toDTO(savedProduct));
-        // Add to the list for any future use or associations
         unitConversions.add(unitConversionMapper.toEntity(unitConversionDto));
       }
-      List<UnitConversionEntity> savedUnitConversions =
-          unitConversionRepository.saveAll(unitConversions);
-      unitConversionRepository.assignToProductByProductIdAndIds(
-          savedProduct.getId(),
-          savedUnitConversions.stream()
-              .map(UnitConversionEntity::getId)
-              .collect(Collectors.toList()));
+      unitConversionRepository.saveAll(unitConversions);
     }
 
-    // Add BranchProduct for Product
-    BranchProductEntity branchProductEntity = new BranchProductEntity();
-
-    BranchProduct branchProduct = product.getBranchProducts().get(0);
-    if (branchProduct == null) {
-      throw new HrmCommonException(BRANCHPRODUCT.NOT_EXIST);
+    // Initialize branchProducts if null and add a new BranchProduct
+    if (product.getBranchProducts() == null) {
+      product.setBranchProducts(new ArrayList<>());
     }
+
+    BranchProduct branchProduct = new BranchProduct();
 
     // Get branch of current registered user
     String email = userService.getAuthenticatedUserEmail();
     Branch branch = userService.findLoggedInfoByEmail(email).getBranch();
 
+    // Create a BranchProductEntity to save
+    BranchProductEntity branchProductEntity = new BranchProductEntity();
     branchProductEntity.setBranch(branchMapper.toEntity(branch));
+
+    // Handle storage location if it exists in BranchProduct
     if (branchProduct.getStorageLocation() != null) {
       StorageLocationEntity savedStorageLocation =
-          storageLocationRepository.save(
-              storageLocationMapper.toEntity(branchProduct.getStorageLocation()));
+              storageLocationRepository.save(storageLocationMapper.toEntity(branchProduct.getStorageLocation()));
       branchProductEntity.setStorageLocation(savedStorageLocation);
     }
 
+    // Set quantity details
     branchProductEntity.setMinQuantity(branchProduct.getMinQuantity());
     branchProductEntity.setMaxQuantity(branchProduct.getMaxQuantity());
     branchProductEntity.setQuantity(branchProduct.getQuantity());
@@ -222,7 +220,7 @@ public class ProductServiceImpl implements ProductService {
 
     branchProductRepository.save(branchProductEntity);
 
-    return Optional.ofNullable(savedProduct).map(e -> productMapper.toDTO(e)).orElse(null);
+    return Optional.of(savedProduct).map(e -> productMapper.toDTO(e)).orElse(null);
   }
 
   @Override
@@ -609,6 +607,165 @@ public class ProductServiceImpl implements ProductService {
     return branchProductRepository
         .findAll(specification, pageable)
         .map(branchProductMapper::toDTOWithProduct);
+  }
+
+  @Override
+  public List<String> importFile(MultipartFile file) {
+    // Mapper to convert each Excel row into a Product object
+    Function<Row, Product> rowMapper = (Row row) -> {
+      Product product = new Product();
+      try {
+        // Mapping fields from the Excel row to the Product object
+        product.setProductCode(row.getCell(0) != null ? row.getCell(0).getStringCellValue() : null);
+
+        // If the product code exists, populate product information from AllowedProductEntity
+        if (product.getProductCode() != null) {
+          AllowedProductEntity allowedProduct = allowedProductRepository.findByRegistrationCode(product.getProductCode());
+          if (allowedProduct != null) {
+            product.setProductName(allowedProduct.getProductName());
+            product.setRegistrationCode(allowedProduct.getRegistrationCode());
+            product.setActiveIngredient(allowedProduct.getActiveIngredient());
+            product.setExcipient(allowedProduct.getExcipient());
+            product.setFormulation(allowedProduct.getFormulation());
+          }
+        }
+
+        // Set category if found
+        if (row.getCell(2) != null) {
+          String categoryName = row.getCell(2).getStringCellValue();
+          if (categoryName != null) {
+            product.setCategory(
+                    productCategoryRepository.findByCategoryName(categoryName)
+                            .map(productCategoryMapper::toDTO)
+                            .orElse(null)
+            );
+          }
+        }
+
+        // Set type if found
+        if (row.getCell(3) != null) {
+          String typeName = row.getCell(3).getStringCellValue();
+          if (typeName != null) {
+            product.setType(
+                    productTypeRepository.findByTypeName(typeName)
+                            .map(productTypeMapper::toDTO)
+                            .orElse(null)
+            );
+          }
+        }
+
+        // Set base unit if found
+        if (row.getCell(4) != null) {
+          String measurementName = row.getCell(4).getStringCellValue();
+          if (measurementName != null) {
+            product.setBaseUnit(
+                    unitOfMeasurementRepository.findByUnitName(measurementName)
+                            .map(unitOfMeasurementMapper::toDTO)
+                            .orElse(null)
+            );
+          }
+        }
+
+        // Set manufacturer if found
+        if (row.getCell(5) != null) {
+          String manufacturerName = row.getCell(5).getStringCellValue();
+          if (manufacturerName != null) {
+            product.setManufacturer(
+                    manufacturerRepository.findByManufacturerName(manufacturerName)
+                            .map(manufacturerMapper::toDTO)
+                            .orElse(null)
+            );
+          }
+        }
+
+      } catch (Exception e) {
+        throw new RuntimeException("Error parsing row: " + e.getMessage(), e);
+      }
+      return product;
+    };
+
+    List<String> errors = new ArrayList<>();
+    List<Product> productsToSave = new ArrayList<>();
+
+    // Read and validate each row from the Excel file
+    try (Workbook workbook = new XSSFWorkbook(file.getInputStream())) {
+      Sheet sheet = workbook.getSheetAt(0);
+
+      for (int rowIndex = 1; rowIndex <= sheet.getLastRowNum(); rowIndex++) {
+        Row row = sheet.getRow(rowIndex);
+        if (row != null) {
+          try {
+            Product product = rowMapper.apply(row); // Convert row to Product object
+
+            List<String> rowErrors = new ArrayList<>();
+
+            // Validate the Product object
+            if (product.getProductName() == null || product.getProductName().isEmpty()) {
+              rowErrors.add("Product name is missing at row " + (rowIndex + 1));
+            }
+            // You can add more validations as needed, like checking mandatory fields, etc.
+
+            if (rowErrors.isEmpty()) {
+              productsToSave.add(product);
+            } else {
+              errors.addAll(rowErrors);
+            }
+          } catch (Exception e) {
+            errors.add("Error parsing row " + (rowIndex + 1) + ": " + e.getMessage());
+          }
+        }
+      }
+    } catch (IOException e) {
+      errors.add("Failed to parse Excel file: " + e.getMessage());
+    }
+
+    // Save all valid products to the database
+    if (!productsToSave.isEmpty()) {
+      for (Product product : productsToSave) {
+        create(product);  // Assuming `create` method persists the Product entity
+      }
+    }
+
+    return errors; // Return the list of errors
+  }
+
+
+  @Override
+  public ByteArrayInputStream exportFile() throws IOException {
+    String[] headers = {
+            "Regation Code", "Product Name", "Active Ingredient",
+            "Excipient", "Formulation", "Category", "Type", "Base Unit", "Manufacturer", "Sell Price"
+    };
+
+    // Row mapper to convert a Product object to a list of cell values
+    Function<ProductBaseDTO, List<String>> rowMapper =
+            (ProductBaseDTO product) -> {
+              List<String> cellValues = new ArrayList<>();
+              cellValues.add(product.getRegistrationCode() != null ? product.getRegistrationCode() : "");
+              cellValues.add(product.getProductName() != null ? product.getProductName() : "");
+              cellValues.add(product.getActiveIngredient() != null ? product.getActiveIngredient() : "");
+              cellValues.add(product.getExcipient() != null ? product.getExcipient() : "");
+              cellValues.add(product.getFormulation() != null ? product.getFormulation() : "");
+              cellValues.add(product.getCategoryName() != null ? product.getCategoryName() : "");
+              cellValues.add(product.getTypeName() != null ? product.getTypeName() : "");
+              cellValues.add(product.getBaseUnit() != null ? product.getBaseUnit() : "");
+              cellValues.add(product.getManufacturerName() != null ? product.getManufacturerName() : "");
+              cellValues.add(product.getSellPrice() != null ? product.getSellPrice().toString() : "");
+
+              return cellValues;
+            };
+
+    // Fetch product data
+    List<ProductBaseDTO> products = productRepository.findAll().stream()
+            .map(productMapper::convertToProductBaseDTO)
+            .collect(Collectors.toList());
+
+    // Export data using utility
+    try {
+      return ExcelUtility.exportToExcelWithErrors(products, headers, rowMapper);
+    } catch (IOException e) {
+      throw new RuntimeException("Error exporting product data to Excel", e);
+    }
   }
 
   @Transactional(readOnly = true)

@@ -6,6 +6,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface ManufacturerRepository extends JpaRepository<ManufacturerEntity, Long> {
   boolean existsByManufacturerNameAndAddress(String name, String address);
@@ -14,4 +16,6 @@ public interface ManufacturerRepository extends JpaRepository<ManufacturerEntity
 
   Page<ManufacturerEntity> findByManufacturerNameContainsIgnoreCaseOrAddressContainsIgnoreCase(
       String searchSupplier, String searchName, Pageable pageable);
+
+  Optional<ManufacturerEntity> findByManufacturerName(String manufacturerName);
 }
