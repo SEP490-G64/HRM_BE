@@ -65,7 +65,7 @@ public class CommonInitializer implements ApplicationRunner {
             .phoneNumber("02438694014")
             .build();
     if (!branchRepository.existsByLocation(branch.getLocation())) {
-       branchService.create(branch);
+      branchService.create(branch);
     }
     User oldAdminUser = userService.findLoggedInfoByEmail("dsdadmin@gmail.com");
 
