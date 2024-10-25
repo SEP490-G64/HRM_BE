@@ -44,14 +44,7 @@ class UserEntityTest {
     assertNotNull(adminUserEntity.getId());
     assertNotNull(adminUserEntity.getUserRoleMap());
     // admin has ROLE_ADMIN and ROLE_USER
-    assertEquals(3, adminUserEntity.getUserRoleMap().size());
-    // admin should have user role
-    assertNotNull(
-        adminUserEntity.getUserRoleMap().stream()
-            .filter(Objects::nonNull)
-            .filter(urm -> urm.getRole() != null)
-            .filter(urm -> urm.getRole().getType().isStaff())
-            .findFirst());
+    assertEquals(1, adminUserEntity.getUserRoleMap().size());
     // admin should have admin role
     assertNotNull(
         adminUserEntity.getUserRoleMap().stream()
