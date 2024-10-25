@@ -89,7 +89,7 @@ public class UserMapper {
                     .phone(e.getPhone())
                     .firstName(e.getFirstName())
                     .lastName(e.getLastName())
-                    .status(String.valueOf(e.getStatus()))
+                    .status(e.getStatus())
                     .build())
         .orElse(null);
   }
