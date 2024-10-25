@@ -24,19 +24,13 @@ import lombok.experimental.SuperBuilder;
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class InboundBatchDetailEntity extends CommonEntity {
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(
-      name = "inbound_id",
-      nullable = false,
-      foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+  @JoinColumn(name = "inbound_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   InboundEntity inbound;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(
-      name = "batch_id",
-      nullable = false,
-      foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+  @JoinColumn(name = "batch_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   BatchEntity batch;
 
-  @Column(name = "quantity", nullable = false)
+  @Column(name = "quantity")
   Integer quantity;
 }

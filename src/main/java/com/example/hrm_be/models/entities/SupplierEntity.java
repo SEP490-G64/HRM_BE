@@ -2,10 +2,8 @@ package com.example.hrm_be.models.entities;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.util.List;
@@ -54,18 +52,18 @@ public class SupplierEntity extends CommonEntity {
 
   // One-to-Many relationships
   @ToString.Exclude
-  @OneToMany(mappedBy = "supplier", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "supplier")
   List<PurchaseEntity> purchases; // 1-N with PurchaseEntity
 
   @ToString.Exclude
-  @OneToMany(mappedBy = "supplier", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "supplier")
   List<InboundEntity> inbounds; // 1-N with InboundEntity
 
   @ToString.Exclude
-  @OneToMany(mappedBy = "supplier", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "supplier")
   List<OutboundEntity> outbounds; // 1-N with OutboundEntity
 
   @ToString.Exclude
-  @OneToMany(mappedBy = "supplier", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "supplier")
   List<ProductSuppliersEntity> productSuppliers;
 }

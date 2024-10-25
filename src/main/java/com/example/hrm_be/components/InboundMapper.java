@@ -15,6 +15,7 @@ public class InboundMapper {
   @Autowired @Lazy private SupplierMapper supplierMapper;
   @Autowired @Lazy private UserMapper userMapper;
   @Autowired @Lazy private InboundDetailsMapper inboundDetailsMapper;
+  @Autowired @Lazy private InboundBatchDetailMapper inboundBatchDetailMapper;
 
   // Convert InboundEntity to InboundDTO
   public Inbound toDTO(InboundEntity entity) {
@@ -28,6 +29,7 @@ public class InboundMapper {
             d ->
                 InboundEntity.builder()
                     .id(d.getId())
+                    .inboundCode(d.getInboundCode())
                     .inboundType(d.getInboundType())
                     .fromBranch(
                         d.getFromBranch() != null ? branchMapper.toEntity(d.getFromBranch()) : null)
@@ -63,11 +65,22 @@ public class InboundMapper {
         .id(entity.getId())
         .inboundType(entity.getInboundType())
         .fromBranch(
-            entity.getFromBranch() != null ? branchMapper.toDTO(entity.getFromBranch()) : null)
-        .toBranch(entity.getToBranch() != null ? branchMapper.toDTO(entity.getToBranch()) : null)
+            entity.getFromBranch() != null
+                ? branchMapper.convertToDTOBasicInfo(entity.getFromBranch())
+                : null)
+        .toBranch(
+            entity.getToBranch() != null
+                ? branchMapper.convertToDTOBasicInfo(entity.getToBranch())
+                : null)
         .supplier(entity.getSupplier() != null ? supplierMapper.toDTO(entity.getSupplier()) : null)
-        .createdBy(entity.getCreatedBy() != null ? userMapper.toDTO(entity.getCreatedBy()) : null)
-        .approvedBy(entity.getApprovedBy() != null ? userMapper.toDTO(entity.getCreatedBy()) : null)
+        .createdBy(
+            entity.getCreatedBy() != null
+                ? userMapper.convertToDtoBasicInfo(entity.getCreatedBy())
+                : null)
+        .approvedBy(
+            entity.getApprovedBy() != null
+                ? userMapper.convertToDtoBasicInfo(entity.getCreatedBy())
+                : null)
         .createdDate(entity.getCreatedDate())
         .inboundDate(entity.getInboundDate())
         .totalPrice(entity.getTotalPrice())
@@ -82,6 +95,45 @@ public class InboundMapper {
                     .map(inboundDetailsMapper::toDTO)
                     .collect(Collectors.toList())
                 : null)
+        .inboundBatchDetails(
+            entity.getInboundBatchDetails() != null
+                ? entity.getInboundBatchDetails().stream()
+                    .map(inboundBatchDetailMapper::toDTO)
+                    .collect(Collectors.toList())
+                : null)
+        .build();
+  }
+
+  // Helper method to convert InboundEntity to InboundDTO
+  public Inbound convertToBasicInfo(InboundEntity entity) {
+    return Inbound.builder()
+        .id(entity.getId())
+        .inboundType(entity.getInboundType())
+        .fromBranch(
+            entity.getFromBranch() != null
+                ? branchMapper.convertToDTOBasicInfo(entity.getFromBranch())
+                : null)
+        .toBranch(
+            entity.getToBranch() != null
+                ? branchMapper.convertToDTOBasicInfo(entity.getToBranch())
+                : null)
+        .supplier(entity.getSupplier() != null ? supplierMapper.toDTO(entity.getSupplier()) : null)
+        .createdBy(
+            entity.getCreatedBy() != null
+                ? userMapper.convertToDtoBasicInfo(entity.getCreatedBy())
+                : null)
+        .approvedBy(
+            entity.getApprovedBy() != null
+                ? userMapper.convertToDtoBasicInfo(entity.getCreatedBy())
+                : null)
+        .createdDate(entity.getCreatedDate())
+        .inboundDate(entity.getInboundDate())
+        .totalPrice(entity.getTotalPrice())
+        .isApproved(entity.getIsApproved())
+        .status(entity.getStatus())
+        .taxable(entity.getTaxable())
+        .note(entity.getNote())
+        .inboundDate(entity.getInboundDate())
         .build();
   }
 }

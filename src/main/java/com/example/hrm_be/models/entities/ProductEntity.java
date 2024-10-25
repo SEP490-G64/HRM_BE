@@ -83,7 +83,7 @@ public class ProductEntity extends CommonEntity {
   List<SpecialConditionEntity> specialConditions; // 1-N with SpecialCondition
 
   @ToString.Exclude
-  @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "product")
   List<UnitConversionEntity> unitConversions; // 1-N with UnitConversion
 
   @ToString.Exclude

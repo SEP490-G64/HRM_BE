@@ -5,13 +5,17 @@ import com.amazonaws.services.s3.model.*;
 import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.components.FileMapper;
 import com.example.hrm_be.models.dtos.File;
+import com.example.hrm_be.models.dtos.ProductInbound;
 import com.example.hrm_be.models.entities.FileEntity;
 import com.example.hrm_be.repositories.FileRepository;
 import com.example.hrm_be.services.FileService;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -29,6 +33,8 @@ public class FileServiceImpl implements FileService {
   @Autowired AmazonS3 s3Client;
 
   @Autowired FileMapper fileMapper;
+
+  @Autowired ObjectMapper objectMapper;
 
   @Value("${hrm-config.s3.bucket:default}")
   private String doSpaceBucket;
@@ -123,5 +129,24 @@ public class FileServiceImpl implements FileService {
       case "xlsx", "docx", "pdf" -> "documents";
       default -> "defaults/";
     };
+  }
+
+  @Override
+  public String encodeJsonToFile(List<Object> object) throws IOException {
+    String jsonString = objectMapper.writeValueAsString(object);
+
+    // Encode the JSON string using Base64
+    return Base64.getEncoder().encodeToString(jsonString.getBytes());
+  }
+
+  @Override
+  // Method to decode Base64 encoded string back to List<User>
+  public List<ProductInbound> decodeJsonList(String encodedJson) throws IOException {
+    // Decode the Base64 encoded string
+    byte[] decodedBytes = Base64.getDecoder().decode(encodedJson);
+
+    // Convert the decoded JSON string back to List<User> object
+    String decodedJsonString = new String(decodedBytes);
+    return objectMapper.readValue(decodedJsonString, new TypeReference<List<ProductInbound>>() {});
   }
 }

@@ -3,7 +3,6 @@ package com.example.hrm_be.models.entities;
 import com.example.hrm_be.commons.enums.InventoryCheckStatus;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
@@ -73,6 +72,6 @@ public class InventoryCheckEntity extends CommonEntity {
   String note;
 
   @ToString.Exclude
-  @OneToMany(mappedBy = "inventoryCheck", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "inventoryCheck")
   List<InventoryCheckDetailsEntity> inventoryCheckDetails;
 }

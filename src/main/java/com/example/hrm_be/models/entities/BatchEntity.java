@@ -36,16 +36,16 @@ import lombok.experimental.SuperBuilder;
 @Table(name = "batch")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class BatchEntity extends CommonEntity {
-  @Column(name = "batch_code", length = 30, nullable = false)
+  @Column(name = "batch_code")
   String batchCode;
 
-  @Column(name = "produce_date", nullable = false)
+  @Column(name = "produce_date")
   LocalDateTime produceDate;
 
-  @Column(name = "expire_date", nullable = false)
+  @Column(name = "expire_date")
   LocalDateTime expireDate;
 
-  @Column(name = "inbound_price", nullable = false)
+  @Column(name = "inbound_price")
   BigDecimal inboundPrice;
 
   @ToString.Exclude

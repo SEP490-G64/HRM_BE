@@ -1,9 +1,7 @@
 package com.example.hrm_be.models.entities;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.util.List;
@@ -34,6 +32,6 @@ public class ProductTypeEntity extends CommonEntity {
   String typeDescription;
 
   @ToString.Exclude
-  @OneToMany(mappedBy = "type", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "type")
   List<ProductEntity> products;
 }

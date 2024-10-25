@@ -1,9 +1,14 @@
 package com.example.hrm_be.repositories;
 
 import com.example.hrm_be.models.entities.BatchEntity;
+import com.example.hrm_be.models.entities.ProductEntity;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -13,4 +18,13 @@ public interface BatchRepository extends JpaRepository<BatchEntity, Long> {
 
   // User query to find batch based on a keyword for branch name
   Page<BatchEntity> findByBatchCodeContainingIgnoreCase(String batchCode, Pageable page);
+
+  Optional<BatchEntity> findByBatchCode(String batchCode);
+
+  Optional<BatchEntity> findByBatchCodeAndProduct(String batchCode, ProductEntity product);
+
+  @Query(
+      "SELECT b FROM BatchEntity b LEFT JOIN FETCH b.inboundBatchDetail bi JOIN bi.inbound i "
+          + "WHERE bi.inbound.id=:productId")
+  List<BatchEntity> findAllByProductIdThroughInbound(@Param("productId") Long productId);
 }
