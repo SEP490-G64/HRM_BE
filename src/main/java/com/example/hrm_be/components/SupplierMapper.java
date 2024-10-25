@@ -80,18 +80,6 @@ public class SupplierMapper {
                     .map(purchaseMapper::toDTO)
                     .collect(Collectors.toList())
                 : null)
-        .inbounds(
-            entity.getInbounds() != null
-                ? entity.getInbounds().stream()
-                    .map(inboundMapper::toDTO)
-                    .collect(Collectors.toList())
-                : null)
-        .outbounds(
-            entity.getOutbounds() != null
-                ? entity.getOutbounds().stream()
-                    .map(outboundMapper::toDTO)
-                    .collect(Collectors.toList())
-                : null)
         .productSuppliers(
             entity.getProductSuppliers() != null
                 ? entity.getProductSuppliers().stream()
