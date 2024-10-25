@@ -11,7 +11,6 @@ public enum InboundType {
   CHUYEN_KHO_NOI_BO("Chuyển kho nội bộ"),
   UNDEFINED("Undefined");
 
-
   private final String value;
 
   // Static method to check if the string exists as a valid InboundType
@@ -23,6 +22,7 @@ public enum InboundType {
     }
     return false;
   }
+
   public boolean isFromSupplier() {
     return this == NHAP_TU_NHA_CUNG_CAP;
   }

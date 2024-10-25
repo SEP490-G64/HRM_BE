@@ -1,7 +1,6 @@
 package com.example.hrm_be.models.dtos;
 
 import com.example.hrm_be.commons.enums.ProductStatus;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.io.Serial;
 import java.io.Serializable;
@@ -26,11 +25,9 @@ import lombok.extern.jackson.Jacksonized;
 @EqualsAndHashCode
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
-
 public final class Product implements Serializable {
 
-  @Serial
-  private static final long serialVersionUID = -1092354895838817939L;
+  @Serial private static final long serialVersionUID = -1092354895838817939L;
   Long id;
   String productName;
 

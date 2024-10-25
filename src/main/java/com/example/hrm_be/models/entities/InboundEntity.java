@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -37,15 +36,11 @@ public class InboundEntity extends CommonEntity {
   InboundType inboundType; // Custom enum representing: Nhà cung cấp, Chuyển kho nội bộ
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(
-      name = "from_branch_id",
-      foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+  @JoinColumn(name = "from_branch_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   BranchEntity fromBranch;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(
-      name = "to_branch_id",
-      foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+  @JoinColumn(name = "to_branch_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   BranchEntity toBranch;
 
   @ManyToOne(fetch = FetchType.LAZY)
@@ -65,7 +60,7 @@ public class InboundEntity extends CommonEntity {
   @Column(name = "inbound_date")
   LocalDateTime inboundDate;
 
-  @Column(name = "total_price" )
+  @Column(name = "total_price")
   BigDecimal totalPrice;
 
   @Column(name = "is_approved")

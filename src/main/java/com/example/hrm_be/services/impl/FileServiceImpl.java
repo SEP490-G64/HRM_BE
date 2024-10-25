@@ -130,6 +130,7 @@ public class FileServiceImpl implements FileService {
       default -> "defaults/";
     };
   }
+
   @Override
   public String encodeJsonToFile(List<Object> object) throws IOException {
     String jsonString = objectMapper.writeValueAsString(object);
@@ -137,6 +138,7 @@ public class FileServiceImpl implements FileService {
     // Encode the JSON string using Base64
     return Base64.getEncoder().encodeToString(jsonString.getBytes());
   }
+
   @Override
   // Method to decode Base64 encoded string back to List<User>
   public List<ProductInbound> decodeJsonList(String encodedJson) throws IOException {

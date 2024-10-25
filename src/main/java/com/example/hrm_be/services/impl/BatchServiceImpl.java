@@ -99,8 +99,8 @@ public class BatchServiceImpl implements BatchService {
 
   @Override
   public List<Batch> getBatchesByProductThroughInbound(Long productId) {
-    return batchRepository.findAllByProductIdThroughInbound(productId).stream().map(
-        batchMapper::toDTO
-    ).collect(Collectors.toList());
+    return batchRepository.findAllByProductIdThroughInbound(productId).stream()
+        .map(batchMapper::toDTO)
+        .collect(Collectors.toList());
   }
 }
