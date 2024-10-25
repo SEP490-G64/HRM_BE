@@ -290,8 +290,11 @@ public class UserServiceImpl implements UserService {
                 UserEntity userEntity = userMapper.toEntity(user);
                 // Handle role assignment if roles exist
                 if (user.getRoles() != null && !user.getRoles().isEmpty()) {
-                  if (!Objects.equals(user.getRoles().get(0).getId(), finalOldUserEntity.getUserRoleMap().get(0).getId())) {
-                    List<UserRoleMapEntity> userRoleMapEntities = userRoleMapRepository.findByUser(finalOldUserEntity);
+                  if (!Objects.equals(
+                      user.getRoles().get(0).getId(),
+                      finalOldUserEntity.getUserRoleMap().get(0).getId())) {
+                    List<UserRoleMapEntity> userRoleMapEntities =
+                        userRoleMapRepository.findByUser(finalOldUserEntity);
                     userRoleMapEntities.get(0).setUser(userEntity);
                     userRoleMapEntities.get(0).setRole(roleMapper.toEntity(user.getRoles().get(0)));
 

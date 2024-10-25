@@ -102,7 +102,8 @@ public class AdminUserController {
       BaseOutput<User> response =
           BaseOutput.<User>builder()
               .status(
-                      com.example.hrm_be.commons.enums.ResponseStatus.FAILED) // Set response status to FAILED
+                  com.example.hrm_be.commons.enums.ResponseStatus
+                      .FAILED) // Set response status to FAILED
               .errors(List.of(REQUEST.INVALID_PATH_VARIABLE)) // Add error message for invalid ID
               .build();
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)
