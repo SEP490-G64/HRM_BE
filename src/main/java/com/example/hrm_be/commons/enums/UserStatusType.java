@@ -20,18 +20,4 @@ public enum UserStatusType {
   public String toString() {
     return displayName;
   }
-
-  // Method to find enum by displayName
-  public static UserStatusType fromDisplayName(String displayName) {
-    if (displayName == null) {
-      throw new IllegalArgumentException("Display name cannot be null");
-    }
-
-    for (UserStatusType status : UserStatusType.values()) {
-      if (status.getDisplayName().equalsIgnoreCase(displayName)) {
-        return status;
-      }
-    }
-    throw new IllegalArgumentException("No enum constant with display name: " + displayName);
-  }
 }
