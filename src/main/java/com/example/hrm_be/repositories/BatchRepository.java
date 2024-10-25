@@ -23,7 +23,8 @@ public interface BatchRepository extends JpaRepository<BatchEntity, Long> {
 
   Optional<BatchEntity> findByBatchCodeAndProduct(String batchCode, ProductEntity product);
 
-  @Query("SELECT b FROM BatchEntity b LEFT JOIN FETCH b.inboundBatchDetail bi JOIN bi.inbound i "
-      + "WHERE bi.inbound.id=:productId")
+  @Query(
+      "SELECT b FROM BatchEntity b LEFT JOIN FETCH b.inboundBatchDetail bi JOIN bi.inbound i "
+          + "WHERE bi.inbound.id=:productId")
   List<BatchEntity> findAllByProductIdThroughInbound(@Param("productId") Long productId);
 }

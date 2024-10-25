@@ -24,12 +24,10 @@ import org.springframework.session.data.redis.config.annotation.web.http.EnableR
 public class RedisConfig implements BeanClassLoaderAware {
   private ClassLoader loader;
 
-
   @Bean
   public RedisSerializer<Object> springSessionDefaultRedisSerializer() {
     return new GenericJackson2JsonRedisSerializer(objectMapper());
   }
-
 
   private ObjectMapper objectMapper() {
     ObjectMapper mapper = new ObjectMapper();
@@ -46,14 +44,16 @@ public class RedisConfig implements BeanClassLoaderAware {
   @Bean
   public RedisConnectionFactory redisConnectionFactory() {
     RedisStandaloneConfiguration config = new RedisStandaloneConfiguration("localhost", 6379);
-    return new LettuceConnectionFactory(config);  // Properly initialize LettuceConnectionFactory
+    return new LettuceConnectionFactory(config); // Properly initialize LettuceConnectionFactory
   }
 
   // RedisOperations bean (used for session management)
   @Bean
-  public RedisOperations<String, Object> sessionRedisOperations(RedisConnectionFactory redisConnectionFactory) {
+  public RedisOperations<String, Object> sessionRedisOperations(
+      RedisConnectionFactory redisConnectionFactory) {
     RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
-    redisTemplate.setConnectionFactory(redisConnectionFactory);  // Ensure RedisConnectionFactory is injected here
+    redisTemplate.setConnectionFactory(
+        redisConnectionFactory); // Ensure RedisConnectionFactory is injected here
     redisTemplate.setKeySerializer(new StringRedisSerializer());
     redisTemplate.setHashKeySerializer(new StringRedisSerializer());
     return redisTemplate;
@@ -61,8 +61,10 @@ public class RedisConfig implements BeanClassLoaderAware {
 
   // Session repository bean (FindByIndexNameSessionRepository)
   @Bean
-  public FindByIndexNameSessionRepository redisSessionRepository(RedisOperations<String, Object> sessionRedisOperations) {
-    return new RedisIndexedSessionRepository(sessionRedisOperations);  // Inject RedisOperations correctly
+  public FindByIndexNameSessionRepository redisSessionRepository(
+      RedisOperations<String, Object> sessionRedisOperations) {
+    return new RedisIndexedSessionRepository(
+        sessionRedisOperations); // Inject RedisOperations correctly
   }
 
   // Session ID generator bean
@@ -78,6 +80,7 @@ public class RedisConfig implements BeanClassLoaderAware {
       return UUID.randomUUID().toString();
     }
   }
+
   @Bean
   public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
     RedisTemplate<String, Object> template = new RedisTemplate<>();

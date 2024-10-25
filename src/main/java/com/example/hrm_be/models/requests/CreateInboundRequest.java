@@ -1,9 +1,7 @@
 package com.example.hrm_be.models.requests;
 
-import com.example.hrm_be.commons.enums.InboundStatus;
 import com.example.hrm_be.commons.enums.InboundType;
 import com.example.hrm_be.models.dtos.Branch;
-import com.example.hrm_be.models.dtos.Product;
 import com.example.hrm_be.models.dtos.ProductInbound;
 import com.example.hrm_be.models.dtos.Supplier;
 import com.example.hrm_be.models.dtos.User;
@@ -39,5 +37,5 @@ public class CreateInboundRequest {
   Branch toBranch;
   Branch fromBranch;
   Supplier supplier;
-  List<ProductInbound> productInbounds ;
+  List<ProductInbound> productInbounds;
 }

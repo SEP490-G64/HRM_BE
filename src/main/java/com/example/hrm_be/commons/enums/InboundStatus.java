@@ -28,6 +28,7 @@ public enum InboundStatus {
         .findFirst()
         .orElse(InboundStatus.UNDEFINED);
   }
+
   @Override
   public String toString() {
     return displayName;

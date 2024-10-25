@@ -1,7 +1,6 @@
 package com.example.hrm_be.components;
 
 import com.example.hrm_be.models.dtos.Inbound;
-import com.example.hrm_be.models.dtos.InboundBatchDetail;
 import com.example.hrm_be.models.entities.InboundEntity;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -66,11 +65,22 @@ public class InboundMapper {
         .id(entity.getId())
         .inboundType(entity.getInboundType())
         .fromBranch(
-            entity.getFromBranch() != null ? branchMapper.convertToDTOBasicInfo(entity.getFromBranch()) : null)
-        .toBranch(entity.getToBranch() != null ? branchMapper.convertToDTOBasicInfo(entity.getToBranch()) : null)
+            entity.getFromBranch() != null
+                ? branchMapper.convertToDTOBasicInfo(entity.getFromBranch())
+                : null)
+        .toBranch(
+            entity.getToBranch() != null
+                ? branchMapper.convertToDTOBasicInfo(entity.getToBranch())
+                : null)
         .supplier(entity.getSupplier() != null ? supplierMapper.toDTO(entity.getSupplier()) : null)
-        .createdBy(entity.getCreatedBy() != null ? userMapper.convertToDtoBasicInfo(entity.getCreatedBy()) : null)
-        .approvedBy(entity.getApprovedBy() != null ? userMapper.convertToDtoBasicInfo(entity.getCreatedBy()) : null)
+        .createdBy(
+            entity.getCreatedBy() != null
+                ? userMapper.convertToDtoBasicInfo(entity.getCreatedBy())
+                : null)
+        .approvedBy(
+            entity.getApprovedBy() != null
+                ? userMapper.convertToDtoBasicInfo(entity.getCreatedBy())
+                : null)
         .createdDate(entity.getCreatedDate())
         .inboundDate(entity.getInboundDate())
         .totalPrice(entity.getTotalPrice())
@@ -100,11 +110,22 @@ public class InboundMapper {
         .id(entity.getId())
         .inboundType(entity.getInboundType())
         .fromBranch(
-            entity.getFromBranch() != null ? branchMapper.convertToDTOBasicInfo(entity.getFromBranch()) : null)
-        .toBranch(entity.getToBranch() != null ? branchMapper.convertToDTOBasicInfo(entity.getToBranch()) : null)
+            entity.getFromBranch() != null
+                ? branchMapper.convertToDTOBasicInfo(entity.getFromBranch())
+                : null)
+        .toBranch(
+            entity.getToBranch() != null
+                ? branchMapper.convertToDTOBasicInfo(entity.getToBranch())
+                : null)
         .supplier(entity.getSupplier() != null ? supplierMapper.toDTO(entity.getSupplier()) : null)
-        .createdBy(entity.getCreatedBy() != null ? userMapper.convertToDtoBasicInfo(entity.getCreatedBy()) : null)
-        .approvedBy(entity.getApprovedBy() != null ? userMapper.convertToDtoBasicInfo(entity.getCreatedBy()) : null)
+        .createdBy(
+            entity.getCreatedBy() != null
+                ? userMapper.convertToDtoBasicInfo(entity.getCreatedBy())
+                : null)
+        .approvedBy(
+            entity.getApprovedBy() != null
+                ? userMapper.convertToDtoBasicInfo(entity.getCreatedBy())
+                : null)
         .createdDate(entity.getCreatedDate())
         .inboundDate(entity.getInboundDate())
         .totalPrice(entity.getTotalPrice())

@@ -11,5 +11,4 @@ import org.springframework.stereotype.Repository;
 public interface BranchBatchRepository extends JpaRepository<BranchBatchEntity, Long> {
 
   Optional<BranchBatchEntity> findByBranchAndBatch(BranchEntity branch, BatchEntity batch);
-
 }

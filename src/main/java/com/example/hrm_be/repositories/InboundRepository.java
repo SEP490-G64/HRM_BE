@@ -1,10 +1,7 @@
 package com.example.hrm_be.repositories;
 
 import com.example.hrm_be.commons.enums.InboundStatus;
-import com.example.hrm_be.models.entities.InboundDetailsEntity;
 import com.example.hrm_be.models.entities.InboundEntity;
-import com.example.hrm_be.models.entities.UserEntity;
-import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;

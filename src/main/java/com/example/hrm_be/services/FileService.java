@@ -17,7 +17,7 @@ public interface FileService {
 
   String getFileById(Long id);
 
-   String encodeJsonToFile(List<Object> object) throws IOException;
+  String encodeJsonToFile(List<Object> object) throws IOException;
 
-  List<ProductInbound> decodeJsonList(String encodedJson) throws IOException ;
+  List<ProductInbound> decodeJsonList(String encodedJson) throws IOException;
 }

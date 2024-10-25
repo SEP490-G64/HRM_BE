@@ -1,9 +1,7 @@
 package com.example.hrm_be.utils;
 
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -20,7 +18,7 @@ public class WplUtil {
     String datePart = dateFormat.format(theDate);
 
     // Format the time to HHMMSS
-    DateTimeFormatter timeFormat =  DateTimeFormatter.ofPattern("HHmmss");
+    DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HHmmss");
     String timePart = timeFormat.format(theDate);
 
     // Generate the sequential part (3 digits, padded with zeros)
@@ -33,6 +31,4 @@ public class WplUtil {
 
     return code;
   }
-
-
 }
