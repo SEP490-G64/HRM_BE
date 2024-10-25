@@ -124,8 +124,8 @@ public class InboundServiceImpl implements InboundService {
                                                         .equals(
                                                             optionalInbound
                                                                 .getId()))) // Only batches
-                                                                            // belonging to this
-                                                                            // inbound
+                            // belonging to this
+                            // inbound
                             .map(
                                 batch -> {
                                   Batch batchDTO = new Batch();
@@ -137,9 +137,8 @@ public class InboundServiceImpl implements InboundService {
                                   Integer quantity =
                                       batch.getInboundBatchDetail().stream()
                                           .filter(
-                                              Objects
-                                                  ::nonNull) // Ensure inboundBatchDetail is not
-                                                             // null
+                                              Objects::nonNull) // Ensure inboundBatchDetail is not
+                                          // null
                                           .filter(
                                               inboundBatchDetail ->
                                                   inboundBatchDetail
@@ -444,7 +443,9 @@ public class InboundServiceImpl implements InboundService {
             inboundBatchDetail -> {
               BatchEntity batch = inboundBatchDetail.getBatch();
               Integer quantity =
-                  inboundBatchDetail.getQuantity()!=null? inboundBatchDetail.getQuantity() :0 ; //
+                  inboundBatchDetail.getQuantity() != null
+                      ? inboundBatchDetail.getQuantity()
+                      : 0; //
               // Assume this represents the batch
               // quantity
 
