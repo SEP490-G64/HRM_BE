@@ -135,6 +135,7 @@ public class InboundServiceImpl implements InboundService {
                                 batch -> {
                                   Batch batchDTO = new Batch();
                                   batchDTO.setId(batch.getId());
+                                  batchDTO.setInboundPrice(batch.getInboundPrice());
                                   batchDTO.setBatchCode(batch.getBatchCode());
 
                                   // Find the quantity for this product-batch from the
@@ -333,6 +334,7 @@ public class InboundServiceImpl implements InboundService {
                         newBatch.setBatchCode(batch.getBatchCode());
                         newBatch.setInboundPrice(batch.getInboundPrice());
                         newBatch.setProduct(product);
+                        newBatch.setInboundPrice(batch.getInboundPrice());
                         newBatch.setExpireDate(batch.getExpireDate());
                         return batchRepository.save(newBatch);
                       });
@@ -407,11 +409,17 @@ public class InboundServiceImpl implements InboundService {
   @Override
   @Transactional
   public Inbound submitInboundToSystem(Long inboundId) {
+
     // Fetch the InboundEntity from the repository
     InboundEntity inboundEntity =
         inboundRepository
             .findById(inboundId)
             .orElseThrow(() -> new HrmCommonException(INBOUND.NOT_EXIST));
+
+    // check status
+    if (!inboundEntity.getStatus().isCheck()) {
+      throw new HrmCommonException("Trạng thái của phiếu không hợp lệ");
+    }
 
     // Get the branch details
     BranchEntity toBranch = inboundEntity.getToBranch();
@@ -498,14 +506,18 @@ public class InboundServiceImpl implements InboundService {
 
   @Override
   public Inbound createInnitInbound(InboundType type) {
+    String email = userService.getAuthenticatedUserEmail(); // Retrieve the logged-in user's email
+    UserEntity userEntity = userMapper.toEntity(userService.findLoggedInfoByEmail(email));
+    BranchEntity branchEntity = userEntity.getBranch();
+    if (!branchEntity.getBranchType().isMain() && type.isFromSupplier()) {
+      throw new HrmCommonException("Chỉ có Kho chính mới đước phép nhập hàng từ nhà cung cấp");
+    }
     LocalDateTime currentDateTime = LocalDateTime.now();
     String inboundCode = wplUtil.generateInboundCode(currentDateTime);
     if (inboundRepository.existsByInboundCode(inboundCode)) {
       throw new HrmCommonException(INBOUND.EXIST);
     }
-    String email = userService.getAuthenticatedUserEmail(); // Retrieve the logged-in user's email
-    UserEntity userEntity = userMapper.toEntity(userService.findLoggedInfoByEmail(email));
-    BranchEntity branchEntity = userEntity.getBranch();
+
     if (branchEntity == null) {
       throw new HrmCommonException(BRANCH.NOT_EXIST);
     }
