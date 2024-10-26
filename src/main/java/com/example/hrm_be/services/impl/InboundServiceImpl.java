@@ -330,6 +330,7 @@ public class InboundServiceImpl implements InboundService {
                       () -> {
                         BatchEntity newBatch = new BatchEntity();
                         newBatch.setBatchCode(batch.getBatchCode());
+                        newBatch.setInboundPrice(batch.getInboundPrice());
                         newBatch.setProduct(product);
                         newBatch.setExpireDate(batch.getExpireDate());
                         return batchRepository.save(newBatch);
