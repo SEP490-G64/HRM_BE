@@ -499,7 +499,7 @@ public class InboundServiceImpl implements InboundService {
   @Override
   public Inbound createInnitInbound(InboundType type) {
     LocalDateTime currentDateTime = LocalDateTime.now();
-    String inboundCode = wplUtil.generateInboundCode(currentDateTime);
+    String inboundCode = WplUtil.generateNoteCode(currentDateTime,"IB");
     if (inboundRepository.existsByInboundCode(inboundCode)) {
       throw new HrmCommonException(INBOUND.EXIST);
     }

@@ -1,5 +1,6 @@
 package com.example.hrm_be.services;
 
+import com.example.hrm_be.commons.enums.OutboundType;
 import com.example.hrm_be.models.dtos.Outbound;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,8 @@ public interface OutboundService {
   Outbound update(Outbound outbound);
 
   Outbound approve(Long id, boolean accept);
+
+  Outbound createInnitOutbound(OutboundType type);
 
   void delete(Long id);
 }

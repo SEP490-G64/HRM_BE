@@ -1,16 +1,23 @@
 package com.example.hrm_be.services.impl;
 
 import com.example.hrm_be.commons.constants.HrmConstant;
+import com.example.hrm_be.commons.constants.HrmConstant.ERROR.BRANCH;
+import com.example.hrm_be.commons.constants.HrmConstant.ERROR.INBOUND;
+import com.example.hrm_be.commons.enums.InboundStatus;
 import com.example.hrm_be.commons.enums.OutboundStatus;
+import com.example.hrm_be.commons.enums.OutboundType;
 import com.example.hrm_be.components.OutboundMapper;
 import com.example.hrm_be.components.UserMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.Outbound;
+import com.example.hrm_be.models.entities.BranchEntity;
+import com.example.hrm_be.models.entities.InboundEntity;
 import com.example.hrm_be.models.entities.OutboundEntity;
 import com.example.hrm_be.models.entities.UserEntity;
 import com.example.hrm_be.repositories.OutboundRepository;
 import com.example.hrm_be.services.OutboundService;
 import com.example.hrm_be.services.UserService;
+import com.example.hrm_be.utils.WplUtil;
 import io.micrometer.common.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -29,6 +36,7 @@ public class OutboundServiceImpl implements OutboundService {
 
   @Autowired private OutboundRepository outboundRepository;
   @Autowired private OutboundMapper outboundMapper;
+  @Autowired private WplUtil wplUtil;
   @Autowired private UserService userService;
   @Autowired private UserMapper userMapper;
 
@@ -109,6 +117,34 @@ public class OutboundServiceImpl implements OutboundService {
 
     return Optional.ofNullable(oldoutboundEntity)
         .map(op -> op.toBuilder().isApproved(accept).approvedBy(userEntity).build())
+        .map(outboundRepository::save)
+        .map(outboundMapper::toDTO)
+        .orElse(null);
+  }
+
+  @Override
+  public Outbound createInnitOutbound(OutboundType type) {
+    LocalDateTime currentDateTime = LocalDateTime.now();
+    String outboundCode = WplUtil.generateNoteCode(currentDateTime, "OP");
+    if (outboundRepository.existsByOutBoundCode(outboundCode)) {
+      throw new HrmCommonException(INBOUND.EXIST);
+    }
+    String email = userService.getAuthenticatedUserEmail(); // Retrieve the logged-in user's email
+    UserEntity userEntity = userMapper.toEntity(userService.findLoggedInfoByEmail(email));
+    BranchEntity branchEntity = userEntity.getBranch();
+    if (branchEntity == null) {
+      throw new HrmCommonException(BRANCH.NOT_EXIST);
+    }
+    OutboundEntity outbound =
+        OutboundEntity.builder()
+            .createdDate(currentDateTime)
+            .outboundType(type)
+            .status(OutboundStatus.CHO_DUYET)
+            .outBoundCode(outboundCode)
+            .createdBy(userEntity)
+            .toBranch(branchEntity)
+            .build();
+    return Optional.ofNullable(outbound)
         .map(outboundRepository::save)
         .map(outboundMapper::toDTO)
         .orElse(null);
