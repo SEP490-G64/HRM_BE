@@ -32,5 +32,6 @@ public class ProductInbound implements Serializable {
   Integer requestQuantity;
   Integer receiveQuantity;
   UnitOfMeasurement baseUnit;
+  Double discount;
   Double price;
 }
