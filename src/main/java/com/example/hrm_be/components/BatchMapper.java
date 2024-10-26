@@ -83,4 +83,21 @@ public class BatchMapper {
                     .build())
         .orElse(null);
   }
+
+
+  // Helper method to map BatchEntity to BatchDTO
+  public Batch convertToDtoBasicInfo(BatchEntity entity) {
+    return Optional.ofNullable(entity)
+        .map(
+            e ->
+                Batch.builder()
+                    .id(e.getId())
+                    .batchCode(e.getBatchCode())
+                    .produceDate(e.getProduceDate())
+                    .expireDate(e.getExpireDate())
+                    .inboundPrice(e.getInboundPrice())
+                    .product(e.getProduct() != null ? productMapper.convertToBaseInfo(e.getProduct()) : null)
+                    .build())
+        .orElse(null);
+  }
 }

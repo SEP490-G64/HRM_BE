@@ -9,7 +9,6 @@ import com.example.hrm_be.models.dtos.ProductInbound;
 import com.example.hrm_be.models.requests.CreateInboundRequest;
 import com.example.hrm_be.models.responses.BaseOutput;
 import com.example.hrm_be.models.responses.InboundDetail;
-import com.example.hrm_be.models.responses.InnitInbound;
 import com.example.hrm_be.services.FileService;
 import com.example.hrm_be.services.InboundService;
 import com.example.hrm_be.services.UserService;
@@ -269,29 +268,6 @@ public class StaffInboundController {
     return products != null ? products : new ArrayList<>();
   }
 
-  @GetMapping("/get-inbound-code")
-  protected ResponseEntity<BaseOutput<InnitInbound>> getInnitInbound(HttpSession session) {
-    String sessionId = userService.getAuthenticatedUserEmail();
-    InnitInbound innitInbound = (InnitInbound) session.getAttribute(sessionId + "innitInbound");
-
-    if (innitInbound == null) {
-      // Create new InnitInbound object if not present in the session
-      LocalDateTime currentDateTime = LocalDateTime.now();
-      innitInbound = new InnitInbound();
-      innitInbound.setDate(currentDateTime);
-      innitInbound.setInboundCode(wplUtil.generateInboundCode(currentDateTime));
-
-      // Save the InnitInbound object in the session
-      session.setAttribute(sessionId + "innitInbound", innitInbound);
-    }
-
-    // Return the InnitInbound object (either new or from session)
-    return ResponseEntity.ok(
-        BaseOutput.<InnitInbound>builder()
-            .data(innitInbound)
-            .status(ResponseStatus.SUCCESS)
-            .build());
-  }
 
   @GetMapping("/getSessionId")
   protected ResponseEntity<BaseOutput<String>> getSessionId(HttpSession session) {

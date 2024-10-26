@@ -4,6 +4,7 @@ import com.example.hrm_be.commons.enums.InboundType;
 import com.example.hrm_be.commons.enums.OutboundType;
 import com.example.hrm_be.models.dtos.Branch;
 import com.example.hrm_be.models.dtos.ProductInbound;
+import com.example.hrm_be.models.dtos.ProductOutbound;
 import com.example.hrm_be.models.dtos.Supplier;
 import com.example.hrm_be.models.dtos.User;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -31,12 +32,12 @@ import lombok.extern.jackson.Jacksonized;
 public class CreateOutboundRequest {
   Long outboundId;
   String outboundCode;
+  String note;
   LocalDateTime createdDate;
   User createdBy;
-  String note;
   OutboundType outboundType;
   Branch toBranch;
   Branch fromBranch;
   Supplier supplier;
-  List<ProductInbound> productInbounds;
+  List<ProductOutbound> productOutbounds;
 }

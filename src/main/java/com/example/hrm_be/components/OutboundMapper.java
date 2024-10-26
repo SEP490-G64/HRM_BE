@@ -64,24 +64,24 @@ public class OutboundMapper {
         .id(entity.getId())
         .outboundType(entity.getOutboundType())
         .fromBranch(
-            entity.getFromBranch() != null ? branchMapper.toDTO(entity.getFromBranch()) : null)
+            entity.getFromBranch() != null ? branchMapper.convertToDTOBasicInfo(entity.getFromBranch()) : null)
         .supplier(entity.getSupplier() != null ? supplierMapper.toDTO(entity.getSupplier()) : null)
-        .toBranch(entity.getToBranch() != null ? branchMapper.toDTO(entity.getToBranch()) : null)
+        .toBranch(entity.getToBranch() != null ? branchMapper.convertToDTOBasicInfo(entity.getToBranch()) : null)
         .createdDate(entity.getCreatedDate())
         .outboundDate(entity.getOutboundDate())
         .totalPrice(entity.getTotalPrice())
         .isApproved(entity.getIsApproved())
         .approvedBy(
-            entity.getApprovedBy() != null ? userMapper.toDTO(entity.getApprovedBy()) : null)
+            entity.getApprovedBy() != null ? userMapper.convertToDtoBasicInfo(entity.getApprovedBy()) : null)
         .status(entity.getStatus())
         .taxable(entity.getTaxable())
         .note(entity.getNote())
-        .createdBy(entity.getCreatedBy() != null ? userMapper.toDTO(entity.getCreatedBy()) : null)
+        .createdBy(entity.getCreatedBy() != null ? userMapper.convertToDtoBasicInfo(entity.getCreatedBy()) : null)
         .outboundDate(entity.getOutboundDate())
         .outboundDetails(
             entity.getOutboundDetails() != null
                 ? entity.getOutboundDetails().stream()
-                    .map(outboundDetailMapper::toDTO)
+                    .map(outboundDetailMapper::toDTOWithBatch)
                     .collect(Collectors.toList())
                 : null)
         .build();

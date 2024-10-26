@@ -37,7 +37,6 @@ public class OutboundDetailMapper {
   private OutboundDetail convertToDTO(OutboundDetailEntity entity) {
     return OutboundDetail.builder()
         .id(entity.getId())
-        .batch(entity.getBatch() != null ? batchMapper.toDTO(entity.getBatch()) : null)
         .quantity(entity.getQuantity())
         .build();
   }
@@ -52,6 +51,20 @@ public class OutboundDetailMapper {
                     .outbound(
                         entity.getOutbound() != null
                             ? outboundMapper.toDTO(entity.getOutbound())
+                            : null)
+                    .build())
+        .orElse(null);
+  }
+
+  public OutboundDetail toDTOWithBatch(OutboundDetailEntity entity) {
+    return Optional.ofNullable(entity)
+        .map(this::convertToDTO)
+        .map(
+            e ->
+                e.toBuilder()
+                    .batch(
+                        entity.getBatch() != null
+                            ? batchMapper.convertToDtoBasicInfo(entity.getBatch())
                             : null)
                     .build())
         .orElse(null);

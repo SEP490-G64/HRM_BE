@@ -57,4 +57,5 @@ public class Outbound {
   User createdBy;
 
   List<OutboundDetail> outboundDetails;
+
 }

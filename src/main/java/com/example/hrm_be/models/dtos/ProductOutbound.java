@@ -26,9 +26,6 @@ import lombok.extern.jackson.Jacksonized;
 public class ProductOutbound implements Serializable {
   @Serial
   private static final long serialVersionUID = 8012723276726758269L;
-  String registrationCode;
-  String productName;
-  List<Batch> batchList;
-  UnitOfMeasurement baseUnit;
-  Double price;
+  Batch batch;
+  Integer outboundQuantity;
 }
