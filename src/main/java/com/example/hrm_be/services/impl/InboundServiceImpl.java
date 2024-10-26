@@ -135,6 +135,7 @@ public class InboundServiceImpl implements InboundService {
                                 batch -> {
                                   Batch batchDTO = new Batch();
                                   batchDTO.setId(batch.getId());
+                                  batchDTO.setInboundPrice(batch.getInboundPrice());
                                   batchDTO.setBatchCode(batch.getBatchCode());
 
                                   // Find the quantity for this product-batch from the
@@ -333,6 +334,7 @@ public class InboundServiceImpl implements InboundService {
                         newBatch.setBatchCode(batch.getBatchCode());
                         newBatch.setInboundPrice(batch.getInboundPrice());
                         newBatch.setProduct(product);
+                        newBatch.setInboundPrice(batch.getInboundPrice());
                         newBatch.setExpireDate(batch.getExpireDate());
                         return batchRepository.save(newBatch);
                       });
@@ -407,6 +409,8 @@ public class InboundServiceImpl implements InboundService {
   @Override
   @Transactional
   public Inbound submitInboundToSystem(Long inboundId) {
+    //check status
+
     // Fetch the InboundEntity from the repository
     InboundEntity inboundEntity =
         inboundRepository
