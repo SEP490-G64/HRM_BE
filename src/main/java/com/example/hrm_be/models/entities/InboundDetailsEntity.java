@@ -40,4 +40,7 @@ public class InboundDetailsEntity extends CommonEntity {
 
   @Column(name = "receive_quantity")
   Integer receiveQuantity;
+
+  @Column(name = "discount")
+  Double discount;
 }

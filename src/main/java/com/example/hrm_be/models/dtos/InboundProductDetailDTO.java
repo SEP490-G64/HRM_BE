@@ -24,7 +24,10 @@ import lombok.extern.jackson.Jacksonized;
 public class InboundProductDetailDTO {
   private Long id;
   private Long productId;
+  private Double discount;
   private String productName;
+  private String productCode;
+  private UnitOfMeasurement baseUnit;
   private Integer requestQuantity;
   private Integer receiveQuantity;
   private List<Batch> batches; // Associated batches for this product

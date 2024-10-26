@@ -101,6 +101,9 @@ public class InboundServiceImpl implements InboundService {
                 inboundDetail -> {
                   InboundProductDetailDTO productDetailDTO = new InboundProductDetailDTO();
                   productDetailDTO.setId(inboundDetail.getId());
+                  productDetailDTO.setProductCode(inboundDetail.getProduct().getRegistrationCode());
+                  productDetailDTO.setBaseUnit(unitOfMeasurementMapper.toDTO(inboundDetail.getProduct().getBaseUnit()));
+                  productDetailDTO.setDiscount(inboundDetail.getDiscount());
                   productDetailDTO.setRequestQuantity(inboundDetail.getRequestQuantity());
                   productDetailDTO.setReceiveQuantity(inboundDetail.getReceiveQuantity());
 
@@ -366,8 +369,13 @@ public class InboundServiceImpl implements InboundService {
       if (optionalInboundDetails.isPresent()) {
         // If the entity exists, update it
         inboundDetails = optionalInboundDetails.get();
-        inboundDetails.setRequestQuantity(productInbound.getRequestQuantity());
-        inboundDetails.setReceiveQuantity(productInbound.getReceiveQuantity());
+
+        inboundDetails.setRequestQuantity(productInbound.getRequestQuantity()!=null?
+            productInbound.getRequestQuantity() : 0);
+        inboundDetails.setDiscount(productInbound.getDiscount()!=null?
+            productInbound.getDiscount() : 0);
+        inboundDetails.setReceiveQuantity(productInbound.getReceiveQuantity()!=null?
+            productInbound.getReceiveQuantity() : 0);
 
         // You can update other fields if necessary
       } else {
@@ -375,9 +383,12 @@ public class InboundServiceImpl implements InboundService {
         inboundDetails =
             InboundDetailsEntity.builder()
                 .inbound(updatedInboundEntity)
-                .requestQuantity(productInbound.getRequestQuantity())
+                .requestQuantity(productInbound.getRequestQuantity()!=null?
+                    productInbound.getRequestQuantity() : 0)
                 .product(product)
-                .receiveQuantity(productInbound.getReceiveQuantity())
+                .discount(productInbound.getDiscount()!=null? productInbound.getDiscount() : 0)
+                .receiveQuantity(productInbound.getReceiveQuantity() != null ?
+                    productInbound.getReceiveQuantity() : 0)
                 .build();
       }
       inboundDetailsList.add(inboundDetails);
