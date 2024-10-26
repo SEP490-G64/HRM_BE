@@ -17,6 +17,7 @@ public enum InboundStatus {
   public boolean isCheck() {
     return this == KIEM_HANG;
   }
+
   InboundStatus(String displayName) {
     this.displayName = displayName;
   }
