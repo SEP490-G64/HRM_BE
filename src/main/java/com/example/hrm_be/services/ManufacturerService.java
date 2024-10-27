@@ -11,7 +11,7 @@ public interface ManufacturerService {
 
   Manufacturer getById(Long id);
 
-  Page<Manufacturer> getByPaging(int pageNo, int pageSize, String sortBy, String name);
+  Page<Manufacturer> getByPaging(int pageNo, int pageSize, String sortBy, String name, boolean status);
 
   Manufacturer create(Manufacturer supplier);
 

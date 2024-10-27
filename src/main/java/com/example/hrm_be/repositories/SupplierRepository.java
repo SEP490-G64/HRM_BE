@@ -12,6 +12,6 @@ public interface SupplierRepository extends JpaRepository<SupplierEntity, Long> 
 
   boolean existsByTaxCode(String code);
 
-  Page<SupplierEntity> findBySupplierNameContainsIgnoreCaseOrAddressContainsIgnoreCase(
-      String searchSupplier, String searchName, Pageable pageable);
+  Page<SupplierEntity> findBySupplierNameContainsIgnoreCaseOrAddressContainsIgnoreCaseAndStatus(
+      String searchSupplier, String searchName, boolean status, Pageable pageable);
 }

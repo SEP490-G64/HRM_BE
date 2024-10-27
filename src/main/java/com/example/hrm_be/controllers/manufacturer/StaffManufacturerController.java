@@ -54,10 +54,11 @@ public class StaffManufacturerController {
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size,
       @RequestParam(required = false, defaultValue = "id") String sortBy,
-      @RequestParam(defaultValue = "") String name) {
+      @RequestParam(defaultValue = "") String keyword,
+      @RequestParam(defaultValue = "") boolean status) {
 
     // Retrieve paginated list of Manufacturers from the service
-    Page<Manufacturer> ManufacturerPage = manufacturerService.getByPaging(page, size, sortBy, name);
+    Page<Manufacturer> ManufacturerPage = manufacturerService.getByPaging(page, size, sortBy, keyword, status);
 
     // Construct response object with Manufacturer data and pagination details
     BaseOutput<List<Manufacturer>> response =

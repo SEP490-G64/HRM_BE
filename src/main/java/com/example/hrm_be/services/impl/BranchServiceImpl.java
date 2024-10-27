@@ -41,10 +41,10 @@ public class BranchServiceImpl implements BranchService {
   // location and type
   @Override
   public Page<Branch> getByPaging(
-      int pageNo, int pageSize, String sortBy, String keyword, BranchType branchType) {
+      int pageNo, int pageSize, String sortBy, String keyword, BranchType branchType, boolean status) {
     Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(sortBy).ascending());
     return branchRepository
-        .findByBranchNameOrLocationAndBranchType(keyword, branchType, pageable)
+        .findByBranchNameOrLocationAndBranchType(keyword, branchType, status, pageable)
         .map(dao -> branchMapper.toDTO(dao));
   }
 

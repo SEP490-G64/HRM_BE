@@ -5,6 +5,8 @@ import com.example.hrm_be.models.entities.RoleEntity;
 import com.example.hrm_be.models.entities.UserEntity;
 import java.util.List;
 import java.util.Optional;
+
+import io.micrometer.common.lang.Nullable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -28,8 +30,8 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
           + "OR LOWER(u.email) LIKE LOWER(CONCAT('%', :searchKeyword, '%')) "
           + "OR LOWER(u.firstName) LIKE LOWER(CONCAT('%', :searchKeyword, '%')) "
           + "OR LOWER(u.lastName) LIKE LOWER(CONCAT('%', :searchKeyword, '%'))) "
-          + "AND (u.status <> :status)")
-  Page<UserEntity> searchUsers(String searchKeyword, UserStatusType status, Pageable pageable);
+          + "AND (u.status <> :pending) AND (:status IS NULL OR u.status = :status)")
+  Page<UserEntity> searchUsers(String searchKeyword, UserStatusType pending, @Nullable UserStatusType status, Pageable pageable);
 
   Page<UserEntity> findByStatus(UserStatusType status, Pageable pageable);
 
