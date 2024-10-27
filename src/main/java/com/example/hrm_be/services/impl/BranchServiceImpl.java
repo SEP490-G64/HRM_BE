@@ -9,6 +9,8 @@ import com.example.hrm_be.models.entities.BranchEntity;
 import com.example.hrm_be.repositories.BranchRepository;
 import com.example.hrm_be.services.BranchService;
 import io.micrometer.common.util.StringUtils;
+import java.util.Objects;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,9 +18,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Objects;
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -51,8 +50,13 @@ public class BranchServiceImpl implements BranchService {
   // Creates a new Branch
   @Override
   public Branch create(Branch branch) {
-    // Validation: Ensure the branch is not null and does not already exist at the same location
-    if (branch == null || branchRepository.existsByLocation(branch.getLocation())) {
+    // Validation: Ensure the branch is not null and does not have any invalid field
+    if (branch == null || !commonValidate(branch)) {
+      throw new HrmCommonException(HrmConstant.ERROR.BRANCH.INVALID);
+    }
+
+    // Validation: Ensure the branch does not already exist at the same location
+    if (branchRepository.existsByLocation(branch.getLocation())) {
       throw new HrmCommonException(HrmConstant.ERROR.BRANCH.EXIST);
     }
 
@@ -67,6 +71,9 @@ public class BranchServiceImpl implements BranchService {
   // Updates an existing Branch
   @Override
   public Branch update(Branch branch) {
+    if (branch == null || !commonValidate(branch)) {
+      throw new HrmCommonException(HrmConstant.ERROR.BRANCH.INVALID);
+    }
     // Retrieve the existing branch entity by ID
     BranchEntity oldBranchEntity = branchRepository.findById(branch.getId()).orElse(null);
     if (oldBranchEntity == null) {
@@ -121,5 +128,32 @@ public class BranchServiceImpl implements BranchService {
         .findByLocationContainsIgnoreCase(location)
         .map(branchMapper::toDTO)
         .orElse(null);
+  }
+
+  // This method will validate branch name, simple location, contact person, phone number, capacity
+  private boolean commonValidate(Branch branch) {
+    if (branch.getBranchName() == null
+        || branch.getBranchName().isEmpty()
+        || branchRepository.existsByBranchName(branch.getBranchName())) {
+      return false;
+    }
+    if (branch.getLocation() == null || branch.getLocation().isEmpty()) {
+      return false;
+    }
+    if (branch.getContactPerson().length() > 256) {
+      return false;
+    }
+    if (branch.getPhoneNumber() == null
+        || branch.getPhoneNumber().isEmpty()
+        || branch.getPhoneNumber().length() > 11
+        || !branch.getPhoneNumber().matches(HrmConstant.REGEX.PHONE_NUMBER)) {
+      return false;
+    }
+    if (branch.getCapacity() < 0
+        || branch.getCapacity()
+            > 100000) { // Use 100000 instead of 100.000 for decimal format correction
+      return false;
+    }
+    return branch.getBranchType() != null;
   }
 }
