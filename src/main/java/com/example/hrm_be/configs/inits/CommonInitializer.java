@@ -62,7 +62,8 @@ public class CommonInitializer implements ApplicationRunner {
             .branchName("Cơ sở 1 / Văn phòng trụ sở chính")
             .branchType(BranchType.MAIN)
             .location("199 Đường Giải Phóng - P. Đồng Tâm - Q. Hai Bà Trưng - TP. Hà Nội")
-            .phoneNumber("02438694014")
+            .phoneNumber("0912345678")
+            .capacity(1)
             .build();
     if (!branchRepository.existsByLocation(branch.getLocation())) {
       branchService.create(branch);
