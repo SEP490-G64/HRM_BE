@@ -24,14 +24,20 @@ import lombok.extern.jackson.Jacksonized;
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ProductInbound implements Serializable {
-
   @Serial private static final long serialVersionUID = 8012723276726758269L;
   String registrationCode;
+
   String productName;
+
   List<Batch> batchList;
+
   Integer requestQuantity;
+
   Integer receiveQuantity;
+
   UnitOfMeasurement baseUnit;
+
   Double discount;
+
   Double price;
 }

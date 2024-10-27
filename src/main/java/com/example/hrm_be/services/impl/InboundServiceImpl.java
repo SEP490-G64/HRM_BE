@@ -12,10 +12,7 @@ import com.example.hrm_be.components.SupplierMapper;
 import com.example.hrm_be.components.UnitOfMeasurementMapper;
 import com.example.hrm_be.components.UserMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
-import com.example.hrm_be.models.dtos.Batch;
-import com.example.hrm_be.models.dtos.Inbound;
-import com.example.hrm_be.models.dtos.InboundProductDetailDTO;
-import com.example.hrm_be.models.dtos.ProductInbound;
+import com.example.hrm_be.models.dtos.*;
 import com.example.hrm_be.models.entities.BatchEntity;
 import com.example.hrm_be.models.entities.BranchBatchEntity;
 import com.example.hrm_be.models.entities.BranchEntity;
@@ -39,6 +36,9 @@ import com.example.hrm_be.repositories.ProductRepository;
 import com.example.hrm_be.services.InboundService;
 import com.example.hrm_be.services.UserService;
 import com.example.hrm_be.utils.WplUtil;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,6 +46,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.hpsf.Decimal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -425,44 +426,6 @@ public class InboundServiceImpl implements InboundService {
     BranchEntity toBranch = inboundEntity.getToBranch();
     SupplierEntity fromSupplier = inboundEntity.getSupplier();
 
-    // Iterate through InboundDetails to create or update BranchProductEntity
-    inboundEntity
-        .getInboundDetails()
-        .forEach(
-            inboundDetail -> {
-              ProductEntity product = inboundDetail.getProduct();
-              Integer quantity =
-                  inboundDetail.getReceiveQuantity() != null
-                      ? inboundDetail.getReceiveQuantity()
-                      : 0; // Assume this represents the
-              // quantity to be stored
-
-              // Check if BranchProductEntity already exists
-              BranchProductEntity branchProduct =
-                  branchProductRepository
-                      .findByBranchAndProduct(toBranch, product)
-                      .orElse(new BranchProductEntity());
-
-              // If it exists, update the quantity, otherwise create a new one
-              if (branchProduct.getId() != null) {
-                branchProduct.setQuantity(
-                    branchProduct.getQuantity() != null
-                        ? branchProduct.getQuantity() + quantity
-                        : quantity); // Update existing quantity
-              } else {
-                branchProduct.setProduct(product);
-                branchProduct.setBranch(toBranch);
-                branchProduct.setQuantity(quantity);
-                branchProduct.setMinQuantity(null); // Set default min quantity, or use business
-                // logic
-                branchProduct.setMaxQuantity(null); // Set default max quantity, or use business
-                // logic
-              }
-
-              // Save the BranchProductEntity
-              branchProductRepository.save(branchProduct);
-            });
-
     // Iterate through InboundBatchDetails to create or update BranchBatchEntity
     inboundEntity
         .getInboundBatchDetails()
@@ -498,6 +461,74 @@ public class InboundServiceImpl implements InboundService {
               // Save the BranchBatchEntity
               branchBatchRepository.save(branchBatch);
             });
+
+    // Iterate through InboundDetails to create or update BranchProductEntity
+    inboundEntity
+              .getInboundDetails()
+              .forEach(
+                      inboundDetail -> {
+                          ProductEntity product = inboundDetail.getProduct();
+                          Integer quantity =
+                                  inboundDetail.getReceiveQuantity() != null
+                                          ? inboundDetail.getReceiveQuantity()
+                                          : 0; // Assume this represents the
+                          // quantity to be stored
+
+                          // Check if BranchProductEntity already exists
+                          BranchProductEntity branchProduct =
+                                  branchProductRepository
+                                          .findByBranchAndProduct(toBranch, product)
+                                          .orElse(new BranchProductEntity());
+
+                          // If it exists, update the quantity, otherwise create a new one
+                          if (branchProduct.getId() != null) {
+                              branchProduct.setQuantity(
+                                      branchProduct.getQuantity() != null
+                                              ? branchProduct.getQuantity() + quantity
+                                              : quantity); // Update existing quantity
+                          } else {
+                              branchProduct.setProduct(product);
+                              branchProduct.setBranch(toBranch);
+                              branchProduct.setQuantity(quantity);
+                              branchProduct.setMinQuantity(null); // Set default min quantity, or use business
+                              // logic
+                              branchProduct.setMaxQuantity(null); // Set default max quantity, or use business
+                              // logic
+                          }
+
+                          // Save the BranchProductEntity
+                          branchProductRepository.save(branchProduct);
+
+                          //Update product average inbound price
+                          BigDecimal totalPrice = BigDecimal.ZERO;
+                          int totalQuantity = 0;
+
+                          List<BatchEntity> batches = batchRepository.findAllByProductId(product.getId());
+                          // Loop through each Batch
+                          for (BatchEntity batch : batches) {
+                              BigDecimal totalBatchPrice = BigDecimal.ZERO;
+
+                              // Find all BranchBatch with Batch information
+                              List<BranchBatchEntity> branchBatches = branchBatchRepository.findByBatchId(batch.getId());
+
+                              for (BranchBatchEntity branchBatch : branchBatches) {
+                                  // Add to total inbound price of each batch
+                                  totalBatchPrice = totalBatchPrice.add(batch.getInboundPrice().multiply(BigDecimal.valueOf(branchBatch.getQuantity())));
+
+                                  // Product total quantity
+                                  totalQuantity += branchBatch.getQuantity();
+                              }
+
+                              totalPrice = totalPrice.add(totalBatchPrice);
+                          }
+
+                          BigDecimal averagePrice = BigDecimal.ZERO; // Default value if totalQuantity = 0
+                          if (totalQuantity > 0) {
+                              averagePrice = totalPrice.divide(BigDecimal.valueOf(totalQuantity), 2, RoundingMode.HALF_UP);
+                          }
+                          product.setInboundPrice(averagePrice);
+                          productRepository.save(product);
+                      });
 
     // Return the updated inbound entity (or any other response you need)
     return inboundMapper.convertToBasicInfo(
@@ -538,11 +569,14 @@ public class InboundServiceImpl implements InboundService {
 
   @Override
   public Inbound updateInboundStatus(InboundStatus status, Long id) {
-    Optional<InboundEntity> inbound = inboundRepository.findById(id);
-    if (inbound.isEmpty()) {
+    InboundEntity inbound = inboundRepository.findById(id).orElse(null);
+    if (inbound == null) {
       throw new HrmCommonException(INBOUND.NOT_EXIST);
     }
     inboundRepository.updateInboundStatus(status, id);
-    return null;
+    return Optional.of(inbound)
+              .map(inboundRepository::save)
+              .map(inboundMapper::toDTO)
+              .orElse(null);
   }
 }
