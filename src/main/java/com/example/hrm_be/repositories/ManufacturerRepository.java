@@ -15,11 +15,10 @@ public interface ManufacturerRepository extends JpaRepository<ManufacturerEntity
   boolean existsByTaxCode(String code);
 
   @Query(
-          "SELECT u FROM ManufacturerEntity u "
-                  + "WHERE (LOWER(u.manufacturerName) LIKE LOWER(CONCAT('%', :searchKeyword, '%')) "
-                  + "OR LOWER(u.address) LIKE LOWER(CONCAT('%', :searchKeyword, '%'))) "
-                  + "AND (:status IS NULL OR u.status = :status)"
-  )
-  Page<ManufacturerEntity> searchManufacturers(String searchKeyword, @Nullable Boolean status, Pageable pageable);
-
+      "SELECT u FROM ManufacturerEntity u "
+          + "WHERE (LOWER(u.manufacturerName) LIKE LOWER(CONCAT('%', :searchKeyword, '%')) "
+          + "OR LOWER(u.address) LIKE LOWER(CONCAT('%', :searchKeyword, '%'))) "
+          + "AND (:status IS NULL OR u.status = :status)")
+  Page<ManufacturerEntity> searchManufacturers(
+      String searchKeyword, @Nullable Boolean status, Pageable pageable);
 }

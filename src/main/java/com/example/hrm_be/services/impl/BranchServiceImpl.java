@@ -41,7 +41,12 @@ public class BranchServiceImpl implements BranchService {
   // location and type
   @Override
   public Page<Branch> getByPaging(
-      int pageNo, int pageSize, String sortBy, String keyword, BranchType branchType, Boolean status) {
+      int pageNo,
+      int pageSize,
+      String sortBy,
+      String keyword,
+      BranchType branchType,
+      Boolean status) {
     if (pageNo < 0 || pageSize < 1) {
       throw new HrmCommonException(HrmConstant.ERROR.PAGE.INVALID);
     }

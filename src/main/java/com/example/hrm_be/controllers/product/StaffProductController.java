@@ -63,16 +63,16 @@ public class StaffProductController {
 
   @GetMapping("/allow-products")
   protected ResponseEntity<BaseOutput<List<AllowedProductEntity>>> getAllowProducts(
-          @RequestParam(defaultValue = "") String keyword) {
+      @RequestParam(defaultValue = "") String keyword) {
     List<AllowedProductEntity> products = productService.getAllowProducts(keyword);
 
     BaseOutput<List<AllowedProductEntity>> response =
-            BaseOutput.<List<AllowedProductEntity>>builder()
-                    .message(HttpStatus.OK.toString())
-                    .total((long) products.size())
-                    .data(products)
-                    .status(ResponseStatus.SUCCESS)
-                    .build();
+        BaseOutput.<List<AllowedProductEntity>>builder()
+            .message(HttpStatus.OK.toString())
+            .total((long) products.size())
+            .data(products)
+            .status(ResponseStatus.SUCCESS)
+            .build();
     return ResponseEntity.ok(response);
   }
 

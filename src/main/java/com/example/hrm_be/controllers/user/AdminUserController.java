@@ -40,16 +40,16 @@ public class AdminUserController {
   // Retrieve a list of users with paging, sorting, and searching by name
   @GetMapping("")
   public ResponseEntity<BaseOutput<List<User>>> getAllByPaging(
-          @RequestParam(defaultValue = "0") int page, // Page number for pagination
-          @RequestParam(defaultValue = "10") int size, // Size of each page
-          @RequestParam(required = false, defaultValue = "id") String sortBy, // Sort by specified field
-          @RequestParam(required = false, defaultValue = "ASC")
+      @RequestParam(defaultValue = "0") int page, // Page number for pagination
+      @RequestParam(defaultValue = "10") int size, // Size of each page
+      @RequestParam(required = false, defaultValue = "id") String sortBy, // Sort by specified field
+      @RequestParam(required = false, defaultValue = "ASC")
           String sortDirection, // Sort direction (ASC or DESC)
-          @RequestParam(required = false, defaultValue = "")
-          String keyword,
-          @RequestParam(required = false) UserStatusType status) { // Search keyword for filtering
+      @RequestParam(required = false, defaultValue = "") String keyword,
+      @RequestParam(required = false) UserStatusType status) { // Search keyword for filtering
     // Call the user service to get paginated user data
-    Page<User> userPage = userService.getByPaging(page, size, sortBy, sortDirection, keyword, status);
+    Page<User> userPage =
+        userService.getByPaging(page, size, sortBy, sortDirection, keyword, status);
 
     // Create a response object containing the user data and metadata
     BaseOutput<List<User>> response =

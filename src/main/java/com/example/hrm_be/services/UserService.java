@@ -20,7 +20,12 @@ public interface UserService {
   String getAuthenticatedUserEmail();
 
   Page<User> getByPaging(
-      int pageNo, int pageSize, String sortBy, String sortDirection, String keyword, @Nullable UserStatusType status);
+      int pageNo,
+      int pageSize,
+      String sortBy,
+      String sortDirection,
+      String keyword,
+      @Nullable UserStatusType status);
 
   Page<User> getRegistrationRequests();
 

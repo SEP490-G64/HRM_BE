@@ -23,8 +23,8 @@ public interface BranchRepository extends JpaRepository<BranchEntity, Long> {
       "SELECT b FROM BranchEntity b "
           + "WHERE (LOWER(b.branchName) LIKE LOWER(CONCAT('%', :keyword, '%')) "
           + "OR LOWER(b.location) LIKE LOWER(CONCAT('%', :keyword, '%'))) "
-          + "AND (:branchType IS NULL OR b.branchType = :branchType) " +
-              "AND (:status IS NULL OR b.activeStatus = :status)")
+          + "AND (:branchType IS NULL OR b.branchType = :branchType) "
+          + "AND (:status IS NULL OR b.activeStatus = :status)")
   Page<BranchEntity> findByBranchNameOrLocationAndBranchType(
       String keyword, BranchType branchType, Boolean status, Pageable pageable);
 

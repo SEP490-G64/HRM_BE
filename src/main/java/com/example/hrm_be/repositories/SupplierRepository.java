@@ -15,11 +15,10 @@ public interface SupplierRepository extends JpaRepository<SupplierEntity, Long> 
   boolean existsByTaxCode(String code);
 
   @Query(
-          "SELECT u FROM SupplierEntity u "
-                  + "WHERE (LOWER(u.supplierName) LIKE LOWER(CONCAT('%', :searchKeyword, '%')) "
-                  + "OR LOWER(u.address) LIKE LOWER(CONCAT('%', :searchKeyword, '%'))) "
-                  + "AND (:status IS NULL OR u.status = :status)"
-  )
-  Page<SupplierEntity> searchSuppliers(String searchKeyword, @Nullable Boolean status, Pageable pageable);
-
+      "SELECT u FROM SupplierEntity u "
+          + "WHERE (LOWER(u.supplierName) LIKE LOWER(CONCAT('%', :searchKeyword, '%')) "
+          + "OR LOWER(u.address) LIKE LOWER(CONCAT('%', :searchKeyword, '%'))) "
+          + "AND (:status IS NULL OR u.status = :status)")
+  Page<SupplierEntity> searchSuppliers(
+      String searchKeyword, @Nullable Boolean status, Pageable pageable);
 }
