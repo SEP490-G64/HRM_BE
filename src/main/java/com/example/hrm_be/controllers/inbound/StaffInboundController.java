@@ -377,13 +377,13 @@ public class StaffInboundController {
       return ResponseEntity.status(500).body(null);
     }
   }
+
   //
   //  @PostMapping("submit-inbound")
   //  public  ResponseEntity<List<ProductInbound>> submit( )
   //  {
   //
   //  }
-
 
   @GetMapping("/generate-receipt/{id}")
   public void generateReceipt(@PathVariable("id") Long id, HttpServletResponse response) {
@@ -411,5 +411,4 @@ public class StaffInboundController {
       }
     }
   }
-
 }

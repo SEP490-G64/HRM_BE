@@ -43,7 +43,6 @@ import com.example.hrm_be.repositories.ProductRepository;
 import com.example.hrm_be.services.InboundService;
 import com.example.hrm_be.services.UserService;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -56,10 +55,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import com.example.hrm_be.utils.PDFUtil;
-import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.Font;
-import jakarta.persistence.EntityNotFoundException;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,14 +84,10 @@ public class InboundServiceImpl implements InboundService {
   @Autowired private UserService userService;
   @Autowired private UserMapper userMapper;
   @Autowired private ProductRepository productRepository;
-  @Autowired
-  private ProductRepository productRepository;
-  @Autowired
-  private ProductMapper productMapper;
-  @Autowired
-  private BranchRepository branchRepository;
-  @Autowired
-  private BranchMapper branchMapper;
+  @Autowired private ProductRepository productRepository;
+  @Autowired private ProductMapper productMapper;
+  @Autowired private BranchRepository branchRepository;
+  @Autowired private BranchMapper branchMapper;
 
   @Override
   public InboundDetail getById(Long inboundId) {
@@ -571,20 +563,22 @@ public class InboundServiceImpl implements InboundService {
   }
 
   @Override
-  public ByteArrayOutputStream generateInboundPdf(Long inboundId) throws DocumentException, IOException {
+  public ByteArrayOutputStream generateInboundPdf(Long inboundId)
+      throws DocumentException, IOException {
     // Fetch Inbound and associated details
-//    Inbound inbound = inboundRepository.findById(inboundId).map(inboundMapper::toDTO).orElse(null);
-//    if (inbound == null) {
-//      throw new EntityNotFoundException("Inbound record not found with ID: " + inboundId);
-//    }
-//    ByteArrayOutputStream out = PDFUtil.createReceiptPdf(inbound);
+    //    Inbound inbound =
+    // inboundRepository.findById(inboundId).map(inboundMapper::toDTO).orElse(null);
+    //    if (inbound == null) {
+    //      throw new EntityNotFoundException("Inbound record not found with ID: " + inboundId);
+    //    }
+    //    ByteArrayOutputStream out = PDFUtil.createReceiptPdf(inbound);
 
-    //Dữ liệu để demo--------------------------------
+    // Dữ liệu để demo--------------------------------
     Inbound demo = new Inbound();
     demo.setInboundDate(LocalDateTime.now());
     Branch branch = branchRepository.findById(1l).map(branchMapper::toDTO).orElse(null);
     demo.setToBranch(branch);
-    //demo.setTotalPrice(BigDecimal.valueOf(190000));
+    // demo.setTotalPrice(BigDecimal.valueOf(190000));
     Supplier supplier = new Supplier();
     supplier.setSupplierName("Tên nhà cung cấp");
     demo.setSupplier(supplier);
@@ -606,10 +600,8 @@ public class InboundServiceImpl implements InboundService {
     detail.setReceiveQuantity(9);
     demo.getInboundDetails().add(detail);
     ByteArrayOutputStream out = PDFUtil.createReceiptPdf(demo);
-    //---------------------------------------
+    // ---------------------------------------
 
     return out;
   }
-
-
 }

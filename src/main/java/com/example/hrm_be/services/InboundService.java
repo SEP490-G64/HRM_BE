@@ -9,7 +9,6 @@ import com.itextpdf.text.DocumentException;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
@@ -34,5 +33,6 @@ public interface InboundService {
   Inbound createInnitInbound(InboundType type);
 
   Inbound updateInboundStatus(InboundStatus status, Long id);
+
   ByteArrayOutputStream generateInboundPdf(Long inboundId) throws DocumentException, IOException;
 }
