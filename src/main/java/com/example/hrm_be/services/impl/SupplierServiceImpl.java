@@ -36,13 +36,14 @@ public class SupplierServiceImpl implements SupplierService {
   }
 
   @Override
-  public Page<Supplier> getByPaging(int pageNo, int pageSize, String sortBy, String name) {
+  public Page<Supplier> getByPaging(
+      int pageNo, int pageSize, String sortBy, String name, Boolean status) {
     // Create pageable object to handle pagination and sorting
     Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(sortBy).descending());
 
     // Search for suppliers by name or address (case-insensitive)
     return supplierRepository
-        .findBySupplierNameContainsIgnoreCaseOrAddressContainsIgnoreCase(name, name, pageable)
+        .searchSuppliers(name, status, pageable)
         .map(dao -> supplierMapper.toDTO(dao)); // Map found entities to DTOs
   }
 

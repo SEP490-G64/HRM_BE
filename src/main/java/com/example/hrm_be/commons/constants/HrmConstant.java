@@ -135,6 +135,7 @@ public class HrmConstant {
       public static final String EXIST = "error.branch.exist";
       public static final String NOT_CHILD = "error.branch.not_child";
       public static final String NOT_EXIST = "error.branch.not_exist";
+      public static final String INVALID = "error.branch.invalid";
     }
 
     public static class BATCH {
@@ -273,7 +274,19 @@ public class HrmConstant {
       public static final String NOT_EXIST = "error.supplier.not_exist";
       public static final String TAXCODE_NOT_EXIST = "error.supplier.taxcode_not_exist";
     }
+
+    public static class PAGE {
+      public static final String INVALID = "error.page.invalid";
+    }
   }
 
   public static String S3LINK = "https://hrm-be-bucket.sgp1.digitaloceanspaces.com";
+
+  public static class REGEX {
+    public static String PHONE_NUMBER =
+        "^(0(1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9]|6[0-9]|7[0-9]|8[0-9]|9[0-9])\\d{7}|(0[2-9]\\d{7,8}))$";
+    public static String TAX_CODE = "^(0[0-9]{9}|[1-9][0-9]{9}|[1-9][0-9]{13})$";
+    public static String FAX_NUMBER =
+        "^(0[1-9]{1}[0-9]{0,2}-[0-9]{7,8}|\\+84-[1-9]{1}[0-9]{0,2}-[0-9]{7,8})$";
+  }
 }
