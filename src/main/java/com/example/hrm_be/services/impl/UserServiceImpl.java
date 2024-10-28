@@ -103,7 +103,12 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public Page<User> getByPaging(
-      int pageNo, int pageSize, String sortBy, String sortDirection, String keyword, @Nullable UserStatusType status) {
+      int pageNo,
+      int pageSize,
+      String sortBy,
+      String sortDirection,
+      String keyword,
+      @Nullable UserStatusType status) {
     /** TODO Only allow admin user to call this function */
     // Check if the logged user is an admin
     if (!isAdmin()) {

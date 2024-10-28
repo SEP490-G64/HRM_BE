@@ -36,7 +36,8 @@ public class SupplierServiceImpl implements SupplierService {
   }
 
   @Override
-  public Page<Supplier> getByPaging(int pageNo, int pageSize, String sortBy, String name, Boolean status) {
+  public Page<Supplier> getByPaging(
+      int pageNo, int pageSize, String sortBy, String name, Boolean status) {
     // Create pageable object to handle pagination and sorting
     Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(sortBy).descending());
 
