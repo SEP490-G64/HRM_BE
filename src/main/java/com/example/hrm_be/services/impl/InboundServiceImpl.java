@@ -88,14 +88,7 @@ public class InboundServiceImpl implements InboundService {
   @Autowired private UserService userService;
   @Autowired private UserMapper userMapper;
   @Autowired private ProductRepository productRepository;
-  @Autowired
-  private ProductRepository productRepository;
-  @Autowired
-  private ProductMapper productMapper;
-  @Autowired
-  private BranchRepository branchRepository;
-  @Autowired
-  private BranchMapper branchMapper;
+  @Autowired private ProductMapper productMapper;
 
   @Override
   public InboundDetail getById(Long inboundId) {
@@ -573,40 +566,11 @@ public class InboundServiceImpl implements InboundService {
   @Override
   public ByteArrayOutputStream generateInboundPdf(Long inboundId) throws DocumentException, IOException {
     // Fetch Inbound and associated details
-//    Inbound inbound = inboundRepository.findById(inboundId).map(inboundMapper::toDTO).orElse(null);
-//    if (inbound == null) {
-//      throw new EntityNotFoundException("Inbound record not found with ID: " + inboundId);
-//    }
-//    ByteArrayOutputStream out = PDFUtil.createReceiptPdf(inbound);
-
-    //Dữ liệu để demo--------------------------------
-    Inbound demo = new Inbound();
-    demo.setInboundDate(LocalDateTime.now());
-    Branch branch = branchRepository.findById(1l).map(branchMapper::toDTO).orElse(null);
-    demo.setToBranch(branch);
-    //demo.setTotalPrice(BigDecimal.valueOf(190000));
-    Supplier supplier = new Supplier();
-    supplier.setSupplierName("Tên nhà cung cấp");
-    demo.setSupplier(supplier);
-    demo.setToBranch(branch); // Gán chi nhánh cho inbound
-    demo.setInboundDetails(new ArrayList<>());
-    // Ví dụ thêm một chi tiết nhập kho
-    InboundDetails detail = new InboundDetails();
-    Optional<Product> product = productRepository.findById(1l).map(productMapper::toDTO);
-    product.get().setInboundPrice(BigDecimal.valueOf(19));
-    detail.setProduct(product.get());
-    detail.setRequestQuantity(10);
-    detail.setReceiveQuantity(9);
-    demo.getInboundDetails().add(detail);
-
-    Optional<Product> product1 = productRepository.findById(2l).map(productMapper::toDTO);
-    product1.get().setInboundPrice(BigDecimal.valueOf(19));
-    detail.setProduct(product1.get());
-    detail.setRequestQuantity(10);
-    detail.setReceiveQuantity(9);
-    demo.getInboundDetails().add(detail);
-    ByteArrayOutputStream out = PDFUtil.createReceiptPdf(demo);
-    //---------------------------------------
+    Inbound inbound = inboundRepository.findById(inboundId).map(inboundMapper::toDTO).orElse(null);
+    if (inbound == null) {
+      throw new EntityNotFoundException("Inbound record not found with ID: " + inboundId);
+    }
+    ByteArrayOutputStream out = PDFUtil.createReceiptPdf(inbound);
 
     return out;
   }
