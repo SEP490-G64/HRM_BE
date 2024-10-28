@@ -5,9 +5,16 @@ import com.example.hrm_be.commons.enums.ResponseStatus;
 import com.example.hrm_be.models.dtos.Inbound;
 import com.example.hrm_be.models.responses.BaseOutput;
 import com.example.hrm_be.services.InboundService;
+import com.itextpdf.text.DocumentException;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotNull;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -189,4 +196,32 @@ public class StaffInboundController {
             .status(ResponseStatus.SUCCESS)
             .build());
   }
+
+  @GetMapping("/generate-receipt/{id}")
+  public void generateReceipt(@PathVariable("id") Long id, HttpServletResponse response) {
+    try {
+      // Tạo PDF từ service
+      ByteArrayOutputStream pdfStream = inboundService.generateInboundPdf(id);
+
+      // Thiết lập phản hồi dưới dạng file PDF
+      response.setContentType("application/pdf");
+      response.setHeader("Content-Disposition", "attachment; filename=receipt.pdf");
+
+      // Ghi nội dung của pdfStream vào OutputStream của response
+      try (ServletOutputStream outputStream = response.getOutputStream()) {
+        pdfStream.writeTo(outputStream);
+        outputStream.flush();
+      }
+    } catch (IOException | DocumentException e) {
+      // Xử lý ngoại lệ nếu có lỗi xảy ra trong quá trình tạo PDF
+      response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+      response.setContentType("text/plain");
+      try {
+        response.getWriter().write("Error generating PDF receipt: " + e.getMessage());
+      } catch (IOException ioException) {
+        ioException.printStackTrace();
+      }
+    }
+  }
+
 }
