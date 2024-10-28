@@ -24,7 +24,7 @@ public interface BranchRepository extends JpaRepository<BranchEntity, Long> {
           + "AND (:branchType IS NULL OR b.branchType = :branchType) " +
               "AND (:status IS NULL OR b.activeStatus = :status)")
   Page<BranchEntity> findByBranchNameOrLocationAndBranchType(
-      String keyword, BranchType branchType, boolean status, Pageable pageable);
+      String keyword, BranchType branchType, Boolean status, Pageable pageable);
 
   Optional<BranchEntity> findByLocationContainsIgnoreCase(String branchName);
 }

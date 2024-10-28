@@ -36,7 +36,7 @@ public class AdminBranchController {
       @RequestParam(required = false, defaultValue = "id") String sortBy,
       @RequestParam(required = false, defaultValue = "") String keyword,
       @RequestParam(required = false, defaultValue = "") BranchType branchType,
-      @RequestParam(required = false) boolean activeStatus) {
+      @RequestParam(required = false) Boolean activeStatus) {
     Page<Branch> branchPage = branchService.getByPaging(page, size, sortBy, keyword, branchType, activeStatus);
 
     // Build the response with pagination details

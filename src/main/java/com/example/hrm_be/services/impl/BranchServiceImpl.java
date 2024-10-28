@@ -41,7 +41,7 @@ public class BranchServiceImpl implements BranchService {
   // location and type
   @Override
   public Page<Branch> getByPaging(
-      int pageNo, int pageSize, String sortBy, String keyword, BranchType branchType, boolean status) {
+      int pageNo, int pageSize, String sortBy, String keyword, BranchType branchType, Boolean status) {
     Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(sortBy).ascending());
     return branchRepository
         .findByBranchNameOrLocationAndBranchType(keyword, branchType, status, pageable)

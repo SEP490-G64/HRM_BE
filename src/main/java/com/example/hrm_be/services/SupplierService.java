@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 public interface SupplierService {
   Supplier getById(Long id);
 
-  Page<Supplier> getByPaging(int pageNo, int pageSize, String sortBy, String name, boolean status);
+  Page<Supplier> getByPaging(int pageNo, int pageSize, String sortBy, String name, Boolean status);
 
   Supplier create(Supplier supplier);
 

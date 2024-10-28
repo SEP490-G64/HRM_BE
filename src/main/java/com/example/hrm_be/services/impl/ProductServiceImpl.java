@@ -522,6 +522,11 @@ public class ProductServiceImpl implements ProductService {
   }
 
   @Override
+  public List<AllowedProductEntity> getAllowProducts(String searchStr) {
+    return allowedProductRepository.findAllByProductNameContainsIgnoreCase(searchStr);
+  }
+
+  @Override
   public Page<BranchProduct> searchProducts(
       int pageNo,
       int pageSize,

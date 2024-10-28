@@ -12,7 +12,7 @@ public interface BranchService {
 
   // Get a paginated list of branches based on provided filters.
   Page<Branch> getByPaging(
-      int pageNo, int pageSize, String sortBy, String keyword, BranchType branchType, boolean status);
+      int pageNo, int pageSize, String sortBy, String keyword, BranchType branchType, Boolean status);
 
   // Create a new branch.
   Branch create(Branch branch);

@@ -34,7 +34,7 @@ public class StaffSupplierController {
       @RequestParam(defaultValue = "10") int size,
       @RequestParam(required = false, defaultValue = "id") String sortBy,
       @RequestParam(defaultValue = "") String keyword,
-      @RequestParam(defaultValue = "") boolean status) {
+      @RequestParam(defaultValue = "") Boolean status) {
 
     // Retrieve paginated list of suppliers from the service
     Page<Supplier> supplierPage = supplierService.getByPaging(page, size, sortBy, keyword, status);
