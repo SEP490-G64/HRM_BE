@@ -20,6 +20,7 @@ public interface ManufacturerRepository extends JpaRepository<ManufacturerEntity
       String searchSupplier, String searchName, Pageable pageable);
 
   Optional<ManufacturerEntity> findByManufacturerName(String manufacturerName);
+
   @Query(
       "SELECT u FROM ManufacturerEntity u "
           + "WHERE (LOWER(u.manufacturerName) LIKE LOWER(CONCAT('%', :searchKeyword, '%')) "

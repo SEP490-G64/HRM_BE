@@ -51,5 +51,6 @@ public interface ProductService {
   List<String> importFile(MultipartFile file);
 
   ByteArrayInputStream exportFile() throws IOException;
+
   List<AllowedProductEntity> getAllowProducts(String searchStr);
 }
