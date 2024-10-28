@@ -57,7 +57,8 @@ public class BranchServiceImplTest {
     Branch savedBranch = branchService.create(branch);
 
     assertThat(savedBranch).isNotNull();
-    Page<Branch> result = branchService.getByPaging(0, 1, "branchName", "Valid Branch Name", null, null);
+    Page<Branch> result =
+        branchService.getByPaging(0, 1, "branchName", "Valid Branch Name", null, null);
 
     // Assert
     assertNotNull(result);
