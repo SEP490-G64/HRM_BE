@@ -1,6 +1,5 @@
 package com.example.hrm_be.components;
 
-import com.example.hrm_be.commons.enums.UserStatusType;
 import com.example.hrm_be.models.dtos.User;
 import com.example.hrm_be.models.entities.UserEntity;
 import com.example.hrm_be.models.entities.UserRoleMapEntity;
@@ -42,8 +41,7 @@ public class UserMapper {
                   .firstName(e.getFirstName())
                   .lastName(e.getLastName())
                   .branch(e.getBranch() != null ? branchMapper.toEntity(e.getBranch()) : null)
-                  .status(
-                      e.getStatus() != null ? UserStatusType.fromDisplayName(e.getStatus()) : null)
+                  .status(e.getStatus())
                   .build();
             })
         .orElse(null);
@@ -73,7 +71,24 @@ public class UserMapper {
                             ? branchMapper.convertToDTOBasicInfo(
                                 e.getBranch()) // If branch is a single entity
                             : null)
-                    .status(String.valueOf(e.getStatus()))
+                    .status(e.getStatus())
+                    .build())
+        .orElse(null);
+  }
+
+  public User convertToDtoBasicInfo(UserEntity entity) {
+    return Optional.ofNullable(entity)
+        .map(
+            e ->
+                User.builder()
+                    .id(e.getId())
+                    .userName(e.getUserName())
+                    .email(e.getEmail())
+                    .password(e.getPassword())
+                    .phone(e.getPhone())
+                    .firstName(e.getFirstName())
+                    .lastName(e.getLastName())
+                    .status(e.getStatus())
                     .build())
         .orElse(null);
   }

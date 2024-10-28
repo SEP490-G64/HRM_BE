@@ -29,4 +29,6 @@ public class InboundDetails {
   Integer requestQuantity;
 
   Integer receiveQuantity;
+
+  Double discount;
 }

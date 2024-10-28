@@ -10,15 +10,17 @@ import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors(chain = true)
@@ -30,21 +32,15 @@ import lombok.experimental.SuperBuilder;
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class InboundEntity extends CommonEntity {
   @Enumerated(EnumType.STRING)
-  @Column(name = "inbound_type", nullable = false)
+  @Column(name = "inbound_type")
   InboundType inboundType; // Custom enum representing: Nhà cung cấp, Chuyển kho nội bộ
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(
-      name = "from_branch_id",
-      nullable = false,
-      foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+  @JoinColumn(name = "from_branch_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   BranchEntity fromBranch;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(
-      name = "to_branch_id",
-      nullable = false,
-      foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+  @JoinColumn(name = "to_branch_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   BranchEntity toBranch;
 
   @ManyToOne(fetch = FetchType.LAZY)
@@ -55,23 +51,26 @@ public class InboundEntity extends CommonEntity {
   @JoinColumn(name = "created_by", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   UserEntity createdBy;
 
-  @Column(name = "created_date", nullable = false)
+  @Column(name = "created_date")
   LocalDateTime createdDate;
 
-  @Column(name = "inbound_date", nullable = false)
+  @Column(name = "inbound_code")
+  String inboundCode;
+
+  @Column(name = "inbound_date")
   LocalDateTime inboundDate;
 
-  @Column(name = "total_price", nullable = false)
+  @Column(name = "total_price")
   BigDecimal totalPrice;
 
-  @Column(name = "is_approved", nullable = false)
+  @Column(name = "is_approved")
   Boolean isApproved;
 
   @Enumerated(EnumType.STRING)
-  @Column(name = "status", nullable = false)
+  @Column(name = "status")
   InboundStatus status; // Custom enum: Chờ duyệt, Chờ hàng, Kiểm hàng, Đang thanh toán, Hoàn thành
 
-  @Column(name = "taxable", nullable = false)
+  @Column(name = "taxable")
   Boolean taxable;
 
   @Column(name = "note")
@@ -82,6 +81,10 @@ public class InboundEntity extends CommonEntity {
   UserEntity approvedBy;
 
   @ToString.Exclude
-  @OneToMany(mappedBy = "inbound", fetch = FetchType.LAZY)
+  @OneToMany(mappedBy = "inbound")
   List<InboundDetailsEntity> inboundDetails;
+
+  @ToString.Exclude
+  @OneToMany(mappedBy = "inbound")
+  List<InboundBatchDetailEntity> inboundBatchDetails;
 }
