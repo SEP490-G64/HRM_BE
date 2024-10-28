@@ -11,7 +11,6 @@ import com.example.hrm_be.components.BranchMapper;
 import com.example.hrm_be.components.InboundMapper;
 import com.example.hrm_be.components.SupplierMapper;
 import com.example.hrm_be.components.UnitOfMeasurementMapper;
-import com.example.hrm_be.components.ProductMapper;
 import com.example.hrm_be.components.UserMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.Batch;
@@ -45,7 +44,6 @@ import com.example.hrm_be.services.UserService;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.math.BigDecimal;
 import com.example.hrm_be.utils.WplUtil;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
