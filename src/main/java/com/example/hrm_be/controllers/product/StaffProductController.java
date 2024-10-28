@@ -251,7 +251,7 @@ public class StaffProductController {
                   BaseOutput.<String>builder()
                       .message(
                           "File upload failed with validation errors") // Error message indicating
-                                                                       // validation issues
+                      // validation issues
                       .errors(errors) // List of validation errors
                       .build());
         }
@@ -277,7 +277,7 @@ public class StaffProductController {
               BaseOutput.<String>builder()
                   .message(
                       "Invalid file format. Please upload an Excel file.") // Message indicating
-                                                                           // invalid file format
+                  // invalid file format
                   .build());
     }
   }

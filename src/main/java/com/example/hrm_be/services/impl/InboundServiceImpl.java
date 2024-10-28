@@ -43,7 +43,6 @@ import com.example.hrm_be.repositories.ProductRepository;
 import com.example.hrm_be.services.InboundService;
 import com.example.hrm_be.services.UserService;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -56,10 +55,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import com.example.hrm_be.utils.PDFUtil;
-import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.Font;
-import jakarta.persistence.EntityNotFoundException;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,7 +84,6 @@ public class InboundServiceImpl implements InboundService {
   @Autowired private UserService userService;
   @Autowired private UserMapper userMapper;
   @Autowired private ProductRepository productRepository;
-  @Autowired private ProductMapper productMapper;
 
   @Override
   public InboundDetail getById(Long inboundId) {
@@ -564,7 +559,8 @@ public class InboundServiceImpl implements InboundService {
   }
 
   @Override
-  public ByteArrayOutputStream generateInboundPdf(Long inboundId) throws DocumentException, IOException {
+  public ByteArrayOutputStream generateInboundPdf(Long inboundId)
+      throws DocumentException, IOException {
     // Fetch Inbound and associated details
     Inbound inbound = inboundRepository.findById(inboundId).map(inboundMapper::toDTO).orElse(null);
     if (inbound == null) {
@@ -574,6 +570,4 @@ public class InboundServiceImpl implements InboundService {
 
     return out;
   }
-
-
 }
