@@ -57,7 +57,8 @@ public class BranchServiceImplTest {
     Branch savedBranch = branchService.create(branch);
 
     assertThat(savedBranch).isNotNull();
-    Page<Branch> result = branchService.getByPaging(0, 1, "branchName", "Valid Branch Name", null);
+    Page<Branch> result =
+        branchService.getByPaging(0, 1, "branchName", "Valid Branch Name", null, null);
 
     // Assert
     assertNotNull(result);
@@ -76,7 +77,7 @@ public class BranchServiceImplTest {
         assertThrows(
             HrmCommonException.class,
             () -> {
-              branchService.getByPaging(-1, 1, "branchName", "Valid Branch Name", null);
+              branchService.getByPaging(-1, 1, "branchName", "Valid Branch Name", null, null);
             });
 
     assertEquals(HrmConstant.ERROR.PAGE.INVALID, exception.getMessage());
@@ -93,7 +94,7 @@ public class BranchServiceImplTest {
         assertThrows(
             HrmCommonException.class,
             () -> {
-              branchService.getByPaging(0, 0, "branchName", "Valid Branch Name", null);
+              branchService.getByPaging(0, 0, "branchName", "Valid Branch Name", null, null);
             });
 
     assertEquals(HrmConstant.ERROR.PAGE.INVALID, exception.getMessage());

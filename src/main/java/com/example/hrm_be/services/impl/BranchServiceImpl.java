@@ -9,8 +9,6 @@ import com.example.hrm_be.models.entities.BranchEntity;
 import com.example.hrm_be.repositories.BranchRepository;
 import com.example.hrm_be.services.BranchService;
 import io.micrometer.common.util.StringUtils;
-import java.util.Objects;
-import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,6 +16,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -40,7 +41,12 @@ public class BranchServiceImpl implements BranchService {
   // location and type
   @Override
   public Page<Branch> getByPaging(
-      int pageNo, int pageSize, String sortBy, String keyword, BranchType branchType) {
+      int pageNo,
+      int pageSize,
+      String sortBy,
+      String keyword,
+      BranchType branchType,
+      Boolean status) {
     if (pageNo < 0 || pageSize < 1) {
       throw new HrmCommonException(HrmConstant.ERROR.PAGE.INVALID);
     }
@@ -49,9 +55,10 @@ public class BranchServiceImpl implements BranchService {
         && !Objects.equals(sortBy, "branchType")) {
       sortBy = "branchName";
     }
+
     Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(sortBy).ascending());
     return branchRepository
-        .findByBranchNameOrLocationAndBranchType(keyword, branchType, pageable)
+        .findByBranchNameOrLocationAndBranchType(keyword, branchType, status, pageable)
         .map(dao -> branchMapper.toDTO(dao));
   }
 

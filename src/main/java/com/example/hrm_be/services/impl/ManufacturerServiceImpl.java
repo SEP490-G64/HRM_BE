@@ -46,13 +46,14 @@ public class ManufacturerServiceImpl implements ManufacturerService {
   }
 
   @Override
-  public Page<Manufacturer> getByPaging(int pageNo, int pageSize, String sortBy, String name) {
+  public Page<Manufacturer> getByPaging(
+      int pageNo, int pageSize, String sortBy, String name, Boolean status) {
     // Create pageable object to handle pagination and sorting
     Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(sortBy).descending());
 
     // Search for Manufacturers by name or address (case-insensitive)
     return manufacturerRepository
-        .findByManufacturerNameContainsIgnoreCaseOrAddressContainsIgnoreCase(name, name, pageable)
+        .searchManufacturers(name, status, pageable)
         .map(dao -> manufacturerMapper.toDTO(dao)); // Map found entities to DTOs
   }
 
