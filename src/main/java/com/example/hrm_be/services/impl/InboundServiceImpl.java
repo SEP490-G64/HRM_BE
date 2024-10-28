@@ -57,6 +57,8 @@ import java.util.Optional;
 import com.example.hrm_be.utils.PDFUtil;
 import com.itextpdf.text.DocumentException;
 import java.util.stream.Collectors;
+
+import jakarta.persistence.EntityNotFoundException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
