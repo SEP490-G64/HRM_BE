@@ -8,7 +8,6 @@ import com.example.hrm_be.models.dtos.Branch;
 import com.example.hrm_be.models.entities.BranchEntity;
 import com.example.hrm_be.repositories.BranchRepository;
 import com.example.hrm_be.services.BranchService;
-import io.micrometer.common.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -82,9 +81,14 @@ public class BranchServiceImpl implements BranchService {
       throw new HrmCommonException(HrmConstant.ERROR.PAGE.INVALID);
     }
 
-    if (sortBy != null && !Objects.equals(sortBy, "branchName") && !Objects.equals(sortBy, "location")
-        && !Objects.equals(sortBy, "branchType") && !Objects.equals(sortBy, "contactPerson") && !Objects.equals(sortBy, "phoneNumber")
-        && !Objects.equals(sortBy, "capacity") && !Objects.equals(sortBy, "activeStatus")) {
+    if (sortBy != null
+        && !Objects.equals(sortBy, "branchName")
+        && !Objects.equals(sortBy, "location")
+        && !Objects.equals(sortBy, "branchType")
+        && !Objects.equals(sortBy, "contactPerson")
+        && !Objects.equals(sortBy, "phoneNumber")
+        && !Objects.equals(sortBy, "capacity")
+        && !Objects.equals(sortBy, "activeStatus")) {
       throw new HrmCommonException(HrmConstant.ERROR.PAGE.INVALID);
     }
 
@@ -96,7 +100,8 @@ public class BranchServiceImpl implements BranchService {
     }
 
     Boolean status = null;
-    if (statusStr == null || (!statusStr.equalsIgnoreCase("true") && !statusStr.equalsIgnoreCase("false"))) {
+    if (statusStr == null
+        || (!statusStr.equalsIgnoreCase("true") && !statusStr.equalsIgnoreCase("false"))) {
       throw new HrmCommonException(HrmConstant.ERROR.PAGE.INVALID);
     } else {
       status = Boolean.parseBoolean(statusStr);
@@ -232,7 +237,10 @@ public class BranchServiceImpl implements BranchService {
         || !branch.getPhoneNumber().matches(HrmConstant.REGEX.PHONE_NUMBER)) {
       return false;
     }
-    if (branch.getCapacity() != null && (branch.getCapacity() < 1 || branch.getCapacity() > 100000)) { // Use 100000 instead of 100.000 for decimal format correction
+    if (branch.getCapacity() != null
+        && (branch.getCapacity() < 1
+            || branch.getCapacity()
+                > 100000)) { // Use 100000 instead of 100.000 for decimal format correction
       return false;
     }
     return branch.getBranchType() != null;
