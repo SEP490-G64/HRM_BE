@@ -1,12 +1,15 @@
 package com.example.hrm_be.utils;
 
-import com.example.hrm_be.models.dtos.Inbound;
-import com.example.hrm_be.models.dtos.InboundDetails;
+import com.example.hrm_be.components.BatchMapper;
+import com.example.hrm_be.components.InboundMapper;
+import com.example.hrm_be.models.dtos.*;
+import com.example.hrm_be.models.responses.InboundDetail;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -16,7 +19,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 public class PDFUtil {
-  public static ByteArrayOutputStream createReceiptPdf(Inbound inbound)
+
+  public static ByteArrayOutputStream createReceiptPdf(InboundDetail inbound)
       throws DocumentException, IOException {
     // Create a new PDF document
     com.itextpdf.text.Document document = new com.itextpdf.text.Document();
@@ -104,7 +108,7 @@ public class PDFUtil {
       document.add(
           new Paragraph(
               "- Theo hóa đơn số "
-                  + inbound.getId()
+                  + inbound.getInboundCode()
                   + " "
                   + formatInboundDate(inbound.getInboundDate())
                   + " của "
@@ -137,17 +141,8 @@ public class PDFUtil {
       document.add(Chunk.NEWLINE);
 
       // Calculate total for the final row
-      BigDecimal grandTotal =
-          inbound.getInboundDetails().stream()
-              .map(
-                  detail ->
-                      detail
-                          .getProduct()
-                          .getInboundPrice()
-                          .multiply(new BigDecimal(detail.getReceiveQuantity())))
-              .reduce(BigDecimal.ZERO, BigDecimal::add);
-      // Total in words
-      String amountInWords = NumberToWordsConverter.convert(grandTotal);
+        String amountInWords = NumberToWordsConverter.convert(inbound.getTotalPrice());
+
       Paragraph totalAmountParagraph = new Paragraph();
       totalAmountParagraph.add(new Phrase("- Tổng số tiền (Viết bằng chữ): ", fontFooter));
       totalAmountParagraph.add(new Phrase(amountInWords, fontTableHeader));
@@ -168,7 +163,7 @@ public class PDFUtil {
 
   // Create a company information table
   private static PdfPTable createCompanyInfoTable(
-      Inbound inbound, Font fontSubTitle, Font fontHeader) throws DocumentException {
+      InboundDetail inbound, Font fontSubTitle, Font fontHeader) throws DocumentException {
     // Create a new table with 2 columns
     PdfPTable infoTable = new PdfPTable(2);
     infoTable.setWidthPercentage(100);
@@ -209,7 +204,7 @@ public class PDFUtil {
 
   // Create a product detail table
   private static PdfPTable createProductTable(
-      Inbound inbound, Font fontTableHeader, Font fontSubTitle) throws DocumentException {
+      InboundDetail inbound, Font fontTableHeader, Font fontSubTitle) throws DocumentException {
     // Create a table with 8 columns to fit the structure shown
     PdfPTable table = new PdfPTable(8);
     table.setWidthPercentage(100);
@@ -277,20 +272,20 @@ public class PDFUtil {
     table.addCell(new PdfPCell(new Phrase(String.valueOf(4), fontTableHeader))); // Total amount
     // Product data rows from InboundDetails
     int index = 1;
-    for (InboundDetails detail : inbound.getInboundDetails()) {
+    for (InboundProductDetailDTO detail : inbound.getProductBatchDetails()) {
       table.addCell(
           new PdfPCell(new Phrase(String.valueOf(index++), fontSubTitle))); // STT (serial number)
       table.addCell(
           new PdfPCell(
-              new Phrase(detail.getProduct().getProductName(), fontSubTitle))); // Product name
+              new Phrase(detail.getProductName(), fontSubTitle))); // Product name
       table.addCell(
           new PdfPCell(
               new Phrase(
-                  detail.getProduct().getRegistrationCode(), fontSubTitle))); // Registration code
+                  detail.getProductCode(), fontSubTitle))); // Registration code
       table.addCell(
           new PdfPCell(
               new Phrase(
-                  detail.getProduct().getBaseUnit().getUnitName(),
+                  detail.getBaseUnit().getUnitName(),
                   fontSubTitle))); // Unit of measurement
       table.addCell(
           new PdfPCell(
@@ -302,17 +297,28 @@ public class PDFUtil {
               new Phrase(
                   String.valueOf(detail.getReceiveQuantity()),
                   fontSubTitle))); // Actual quantity received
+
+      BigDecimal totalDetailAmount = BigDecimal.ZERO;
+      BigDecimal unitPrice = BigDecimal.ZERO;
+
+      // Tính toán tổng giá trị của từng batch dựa trên inboundPrice và inboundBatchQuantity
+      for (Batch batch : detail.getBatches()) {
+        // Giá trị của lô hàng hiện tại
+        BigDecimal batchTotalPrice = batch.getInboundPrice().multiply(new BigDecimal(batch.getInboundBatchQuantity()));
+        // Cộng dồn vào tổng giá trị của sản phẩm
+        totalDetailAmount = totalDetailAmount.add(batchTotalPrice);
+
+        // Giả sử đơn giá là inboundPrice của lô đầu tiên
+        if (unitPrice.equals(BigDecimal.ZERO)) {
+          unitPrice = batch.getInboundPrice();
+        }
+      }
       table.addCell(
-          new PdfPCell(
-              new Phrase(
-                  String.valueOf(detail.getProduct().getInboundPrice()),
-                  fontSubTitle))); // Unit price
-      BigDecimal totalAmount =
-          detail
-              .getProduct()
-              .getInboundPrice()
-              .multiply(new BigDecimal(detail.getReceiveQuantity()));
-      table.addCell(new PdfPCell(new Phrase(totalAmount.toString(), fontSubTitle))); // Total amount
+              new PdfPCell(
+                      new Phrase(
+                              String.valueOf(unitPrice),
+                              fontSubTitle))); // Unit price
+      table.addCell(new PdfPCell(new Phrase(totalDetailAmount.toString(), fontSubTitle))); // Total amount
     }
 
     // "Total" row at the bottom of the table
@@ -321,27 +327,16 @@ public class PDFUtil {
     cell.setHorizontalAlignment(Element.ALIGN_CENTER);
     table.addCell(cell);
 
-    // Calculate total for the final row
-    BigDecimal grandTotal =
-        inbound.getInboundDetails().stream()
-            .map(
-                detail ->
-                    detail
-                        .getProduct()
-                        .getInboundPrice()
-                        .multiply(new BigDecimal(detail.getReceiveQuantity())))
-            .reduce(BigDecimal.ZERO, BigDecimal::add);
-
     table.addCell(new PdfPCell(new Phrase("", fontSubTitle))); // Empty cell for "Theo chứng từ"
     table.addCell(new PdfPCell(new Phrase("", fontSubTitle))); // Empty cell for "Thực nhập"
     table.addCell(new PdfPCell(new Phrase("", fontSubTitle))); // Empty cell for "Đơn giá"
-    table.addCell(new PdfPCell(new Phrase(grandTotal.toString(), fontSubTitle))); // Total amount
+    table.addCell(new PdfPCell(new Phrase(String.valueOf(inbound.getTotalPrice()), fontSubTitle))); // Total amount
 
     return table; // Return the completed table
   }
 
   // Create the footer table
-  private static PdfPTable createFooterTable(Inbound inbound, Font fontFooter, Font fontTableHeader)
+  private static PdfPTable createFooterTable(InboundDetail inbound, Font fontFooter, Font fontTableHeader)
       throws DocumentException {
     PdfPTable footerTable = new PdfPTable(4);
     footerTable.setWidthPercentage(100);

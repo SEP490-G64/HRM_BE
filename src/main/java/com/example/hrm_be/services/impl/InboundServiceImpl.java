@@ -562,7 +562,7 @@ public class InboundServiceImpl implements InboundService {
   public ByteArrayOutputStream generateInboundPdf(Long inboundId)
       throws DocumentException, IOException {
     // Fetch Inbound and associated details
-    Inbound inbound = inboundRepository.findById(inboundId).map(inboundMapper::toDTO).orElse(null);
+    InboundDetail inbound = getById(inboundId);
     if (inbound == null) {
       throw new EntityNotFoundException("Inbound record not found with ID: " + inboundId);
     }
