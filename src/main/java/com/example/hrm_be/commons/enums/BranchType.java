@@ -31,11 +31,13 @@ public enum BranchType {
     return this == SUB;
   }
 
-  public static BranchType parse(final String type) {
-    return Stream.of(BranchType.values())
-        .filter(e -> e.name().equalsIgnoreCase(type) || e.getDisplayName().equalsIgnoreCase(type))
-        .findFirst()
-        .orElse(BranchType.UNDEFINED);
+  public static BranchType parse(String branchTypeStr) {
+    for (BranchType type : BranchType.values()) {
+      if (type.name().equalsIgnoreCase(branchTypeStr)) {
+        return type;
+      }
+    }
+    throw new IllegalArgumentException("Invalid BranchType: " + branchTypeStr);
   }
 
   public String getDisplayName() {

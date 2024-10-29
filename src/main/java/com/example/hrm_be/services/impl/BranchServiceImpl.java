@@ -31,7 +31,19 @@ public class BranchServiceImpl implements BranchService {
 
   // Retrieves a Branch by its ID
   @Override
-  public Branch getById(Long id) {
+  public Branch getById(String idStr) {
+    // Validation: Check if the ID is blank, this never happen
+    if (idStr == null) {
+      throw new HrmCommonException(HrmConstant.ERROR.BRANCH.INVALID);
+    }
+
+    Long id = null;
+    try {
+      id = Long.parseLong(idStr);
+    } catch (NumberFormatException e) {
+      throw new HrmCommonException(HrmConstant.ERROR.BRANCH.INVALID);
+    }
+
     return Optional.ofNullable(id)
         .flatMap(e -> branchRepository.findById(e).map(b -> branchMapper.toDTO(b)))
         .orElse(null);
@@ -41,19 +53,53 @@ public class BranchServiceImpl implements BranchService {
   // location and type
   @Override
   public Page<Branch> getByPaging(
-      int pageNo,
-      int pageSize,
+      String pageNoStr,
+      String pageSizeStr,
       String sortBy,
       String keyword,
-      BranchType branchType,
-      Boolean status) {
-    if (pageNo < 0 || pageSize < 1) {
+      String branchTypeStr,
+      String statusStr) {
+
+    int pageNo, pageSize;
+
+    try {
+      pageNo = Integer.parseInt(pageNoStr);
+    } catch (NumberFormatException e) {
       throw new HrmCommonException(HrmConstant.ERROR.PAGE.INVALID);
     }
-    if (!Objects.equals(sortBy, "branchName")
-        && !Objects.equals(sortBy, "location")
-        && !Objects.equals(sortBy, "branchType")) {
-      sortBy = "branchName";
+
+    try {
+      pageSize = Integer.parseInt(pageSizeStr);
+    } catch (NumberFormatException e) {
+      throw new HrmCommonException(HrmConstant.ERROR.PAGE.INVALID);
+    }
+
+    if (pageNo < 0) {
+      throw new HrmCommonException(HrmConstant.ERROR.PAGE.INVALID);
+    }
+
+    if (pageSize < 1) {
+      throw new HrmCommonException(HrmConstant.ERROR.PAGE.INVALID);
+    }
+
+    if (sortBy != null && !Objects.equals(sortBy, "branchName") && !Objects.equals(sortBy, "location")
+        && !Objects.equals(sortBy, "branchType") && !Objects.equals(sortBy, "contactPerson") && !Objects.equals(sortBy, "phoneNumber")
+        && !Objects.equals(sortBy, "capacity") && !Objects.equals(sortBy, "activeStatus")) {
+      throw new HrmCommonException(HrmConstant.ERROR.PAGE.INVALID);
+    }
+
+    BranchType branchType = null;
+    try {
+      branchType = BranchType.parse(branchTypeStr);
+    } catch (IllegalArgumentException e) {
+      throw new HrmCommonException(HrmConstant.ERROR.PAGE.INVALID);
+    }
+
+    Boolean status = null;
+    if (statusStr == null || (!statusStr.equalsIgnoreCase("true") && !statusStr.equalsIgnoreCase("false"))) {
+      throw new HrmCommonException(HrmConstant.ERROR.PAGE.INVALID);
+    } else {
+      status = Boolean.parseBoolean(statusStr);
     }
 
     Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(sortBy).ascending());
@@ -90,6 +136,11 @@ public class BranchServiceImpl implements BranchService {
     if (branch == null || !commonValidate(branch)) {
       throw new HrmCommonException(HrmConstant.ERROR.BRANCH.INVALID);
     }
+
+    if (branch.getId() == null) {
+      throw new HrmCommonException(HrmConstant.ERROR.BRANCH.INVALID);
+    }
+
     // Retrieve the existing branch entity by ID
     BranchEntity oldBranchEntity = branchRepository.findById(branch.getId()).orElse(null);
     if (oldBranchEntity == null) {
@@ -128,10 +179,17 @@ public class BranchServiceImpl implements BranchService {
 
   // Deletes a Branch by ID
   @Override
-  public void delete(Long id) {
+  public void delete(String idStr) {
     // Validation: Check if the ID is blank, this never happen
-    if (StringUtils.isBlank(id.toString())) {
-      throw new HrmCommonException(HrmConstant.ERROR.BRANCH.NOT_EXIST);
+    if (idStr == null) {
+      throw new HrmCommonException(HrmConstant.ERROR.BRANCH.INVALID);
+    }
+
+    Long id = null;
+    try {
+      id = Long.parseLong(idStr);
+    } catch (NumberFormatException e) {
+      throw new HrmCommonException(HrmConstant.ERROR.BRANCH.INVALID);
     }
 
     // Retrieve the existing branch entity by ID
@@ -171,14 +229,10 @@ public class BranchServiceImpl implements BranchService {
     }
     if (branch.getPhoneNumber() == null
         || branch.getPhoneNumber().isEmpty()
-        || branch.getPhoneNumber().length() > 11
         || !branch.getPhoneNumber().matches(HrmConstant.REGEX.PHONE_NUMBER)) {
       return false;
     }
-    if (branch.getCapacity() == null
-        || branch.getCapacity() < 0
-        || branch.getCapacity()
-            > 100000) { // Use 100000 instead of 100.000 for decimal format correction
+    if (branch.getCapacity() != null && (branch.getCapacity() < 1 || branch.getCapacity() > 100000)) { // Use 100000 instead of 100.000 for decimal format correction
       return false;
     }
     return branch.getBranchType() != null;

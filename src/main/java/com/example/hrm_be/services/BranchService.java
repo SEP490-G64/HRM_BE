@@ -9,16 +9,16 @@ import org.springframework.stereotype.Service;
 @Service
 public interface BranchService {
   // Retrieve a branch by its ID.
-  Branch getById(Long id);
+  Branch getById(String id);
 
   // Get a paginated list of branches based on provided filters.
   Page<Branch> getByPaging(
-      int pageNo,
-      int pageSize,
+      String pageNo,
+      String pageSize,
       String sortBy,
       String keyword,
-      BranchType branchType,
-      @Nullable Boolean status);
+      String branchType,
+      @Nullable String status);
 
   // Create a new branch.
   Branch create(Branch branch);
@@ -27,7 +27,7 @@ public interface BranchService {
   Branch update(Branch branch);
 
   // Delete a branch by its ID.
-  void delete(Long id);
+  void delete(String id);
 
   Branch getByLocationContains(String location);
 }
