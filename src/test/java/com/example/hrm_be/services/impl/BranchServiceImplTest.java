@@ -1,6 +1,5 @@
 package com.example.hrm_be.services.impl;
 
-import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -8,22 +7,15 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import com.example.hrm_be.HrmBeApplication;
 import com.example.hrm_be.common.TestcontainersConfiguration;
 import com.example.hrm_be.commons.constants.HrmConstant;
-import com.example.hrm_be.commons.enums.BranchType;
-import com.example.hrm_be.components.BranchMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.Branch;
-import com.example.hrm_be.repositories.BranchRepository;
 import com.example.hrm_be.services.BranchService;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,9 +23,6 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.function.Function;
 
 @Testcontainers
 @ExtendWith(SpringExtension.class)
@@ -107,63 +96,84 @@ public class BranchServiceImplTest {
   // UTCID02 - getByPaging: pageNo not number
   @Test
   void testUTCID02_GetByPaging_pageNoNotNumber() {
-    Exception exception = assertThrows(HrmCommonException.class, () -> {
-      branchService.getByPaging("A", "1", "branchName", "a", "MAIN", "true");
-    });
+    Exception exception =
+        assertThrows(
+            HrmCommonException.class,
+            () -> {
+              branchService.getByPaging("A", "1", "branchName", "a", "MAIN", "true");
+            });
     assertEquals(HrmConstant.ERROR.PAGE.INVALID, exception.getMessage());
   }
 
   // UTCID03 - getByPaging: pageNo invalid
   @Test
   void testUTCID03_GetByPaging_pageNoInvalid() {
-    Exception exception = assertThrows(HrmCommonException.class, () -> {
-      branchService.getByPaging("-1", "1", "branchName", "a", "MAIN", "true");
-    });
+    Exception exception =
+        assertThrows(
+            HrmCommonException.class,
+            () -> {
+              branchService.getByPaging("-1", "1", "branchName", "a", "MAIN", "true");
+            });
     assertEquals(HrmConstant.ERROR.PAGE.INVALID, exception.getMessage());
   }
 
   // UTCID04 - getByPaging: pageSize not number
   @Test
   void testUTCID04_GetByPaging_pageSizeNotNumber() {
-    Exception exception = assertThrows(HrmCommonException.class, () -> {
-      branchService.getByPaging("0", "A", "branchName", "a", "MAIN", "true");
-    });
+    Exception exception =
+        assertThrows(
+            HrmCommonException.class,
+            () -> {
+              branchService.getByPaging("0", "A", "branchName", "a", "MAIN", "true");
+            });
     assertEquals(HrmConstant.ERROR.PAGE.INVALID, exception.getMessage());
   }
 
   // UTCID05 - getByPaging: pageSize invalid
   @Test
   void testUTCID05_GetByPaging_pageSizeInvalid() {
-    Exception exception = assertThrows(HrmCommonException.class, () -> {
-      branchService.getByPaging("0", "0", "branchName", "a", "MAIN", "true");
-    });
+    Exception exception =
+        assertThrows(
+            HrmCommonException.class,
+            () -> {
+              branchService.getByPaging("0", "0", "branchName", "a", "MAIN", "true");
+            });
     assertEquals(HrmConstant.ERROR.PAGE.INVALID, exception.getMessage());
   }
 
   // UTCID06 - getByPaging: sortBy invalid
   @Test
   void testUTCID06_GetByPaging_sortByInvalid() {
-    Exception exception = assertThrows(HrmCommonException.class, () -> {
-      branchService.getByPaging("0", "1", "a", "a", "MAIN", "true");
-    });
+    Exception exception =
+        assertThrows(
+            HrmCommonException.class,
+            () -> {
+              branchService.getByPaging("0", "1", "a", "a", "MAIN", "true");
+            });
     assertEquals(HrmConstant.ERROR.PAGE.INVALID, exception.getMessage());
   }
 
   // UTCID07 - getByPaging: branchType invalid
   @Test
   void testUTCID07_GetByPaging_branchTypeInvalid() {
-    Exception exception = assertThrows(HrmCommonException.class, () -> {
-      branchService.getByPaging("0", "1", "branchName", "a", "MAINS", "true");
-    });
+    Exception exception =
+        assertThrows(
+            HrmCommonException.class,
+            () -> {
+              branchService.getByPaging("0", "1", "branchName", "a", "MAINS", "true");
+            });
     assertEquals(HrmConstant.ERROR.PAGE.INVALID, exception.getMessage());
   }
 
   // UTCID08 - getByPaging: status invalid
   @Test
   void testUTCID08_GetByPaging_statusInvalid() {
-    Exception exception = assertThrows(HrmCommonException.class, () -> {
-      branchService.getByPaging("0", "1", "branchName", "a", "MAINS", "A");
-    });
+    Exception exception =
+        assertThrows(
+            HrmCommonException.class,
+            () -> {
+              branchService.getByPaging("0", "1", "branchName", "a", "MAINS", "A");
+            });
     assertEquals(HrmConstant.ERROR.PAGE.INVALID, exception.getMessage());
   }
 
@@ -402,14 +412,14 @@ public class BranchServiceImplTest {
     Branch branch = createValidBranch();
     branchService.create(branch);
     Branch secondBranch =
-            new Branch()
-                    .setBranchName("Valid Branch Name 123123")
-                    .setBranchType("SUB")
-                    .setLocation("Valid Location 123123")
-                    .setContactPerson("Valid Contact Person")
-                    .setPhoneNumber("0912345678")
-                    .setCapacity("500")
-                    .setActiveStatus("true");
+        new Branch()
+            .setBranchName("Valid Branch Name 123123")
+            .setBranchType("SUB")
+            .setLocation("Valid Location 123123")
+            .setContactPerson("Valid Contact Person")
+            .setPhoneNumber("0912345678")
+            .setCapacity("500")
+            .setActiveStatus("true");
     Branch returnValue = branchService.create(secondBranch);
     returnValue.setBranchName("Valid Branch Name");
     assertThrows(HrmCommonException.class, () -> branchService.update(returnValue));
@@ -448,14 +458,14 @@ public class BranchServiceImplTest {
     Branch branch = createValidBranch();
     branchService.create(branch);
     Branch secondBranch =
-            new Branch()
-                    .setBranchName("Valid Branch Name 123123")
-                    .setBranchType("SUB")
-                    .setLocation("Valid Location 123123")
-                    .setContactPerson("Valid Contact Person")
-                    .setPhoneNumber("0912345678")
-                    .setCapacity("500")
-                    .setActiveStatus("true");
+        new Branch()
+            .setBranchName("Valid Branch Name 123123")
+            .setBranchType("SUB")
+            .setLocation("Valid Location 123123")
+            .setContactPerson("Valid Contact Person")
+            .setPhoneNumber("0912345678")
+            .setCapacity("500")
+            .setActiveStatus("true");
     Branch returnValue = branchService.create(secondBranch);
     returnValue.setLocation("Valid Location");
     assertThrows(HrmCommonException.class, () -> branchService.update(returnValue));
