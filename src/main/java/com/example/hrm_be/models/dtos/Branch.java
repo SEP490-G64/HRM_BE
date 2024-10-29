@@ -3,7 +3,6 @@ package com.example.hrm_be.models.dtos;
 import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.commons.enums.BranchType;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
-import com.example.hrm_be.models.entities.CommonEntity;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.util.List;
 import lombok.AccessLevel;
