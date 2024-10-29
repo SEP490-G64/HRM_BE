@@ -1,7 +1,6 @@
 package com.example.hrm_be.controllers.branch;
 
 import com.example.hrm_be.commons.constants.HrmConstant;
-import com.example.hrm_be.commons.enums.BranchType;
 import com.example.hrm_be.commons.enums.ResponseStatus;
 import com.example.hrm_be.models.dtos.Branch;
 import com.example.hrm_be.models.responses.BaseOutput;
@@ -31,12 +30,12 @@ public class AdminBranchController {
   // with optional sorting and searching by name or location and filter type
   @GetMapping("")
   protected ResponseEntity<BaseOutput<List<Branch>>> getByPaging(
-      @RequestParam(defaultValue = "0") int page,
-      @RequestParam(defaultValue = "20") int size,
+      @RequestParam(defaultValue = "0") String page,
+      @RequestParam(defaultValue = "20") String size,
       @RequestParam(required = false, defaultValue = "id") String sortBy,
       @RequestParam(required = false, defaultValue = "") String keyword,
-      @RequestParam(required = false, defaultValue = "") BranchType branchType,
-      @RequestParam(required = false) Boolean activeStatus) {
+      @RequestParam(required = false, defaultValue = "") String branchType,
+      @RequestParam(required = false, defaultValue = "") String activeStatus) {
     Page<Branch> branchPage =
         branchService.getByPaging(page, size, sortBy, keyword, branchType, activeStatus);
 
@@ -45,8 +44,8 @@ public class AdminBranchController {
         BaseOutput.<List<Branch>>builder()
             .message(HttpStatus.OK.toString())
             .totalPages(branchPage.getTotalPages())
-            .currentPage(page)
-            .pageSize(size)
+            .currentPage(Integer.parseInt(page))
+            .pageSize(Integer.parseInt(size))
             .total(branchPage.getTotalElements())
             .data(branchPage.getContent())
             .status(com.example.hrm_be.commons.enums.ResponseStatus.SUCCESS)
@@ -56,16 +55,7 @@ public class AdminBranchController {
 
   // Retrieves a Branch by its ID
   @GetMapping("/{id}")
-  protected ResponseEntity<BaseOutput<Branch>> getById(@PathVariable("id") Long id) {
-    // Validate the path variable ID
-    if (id <= 0 || id == null) {
-      BaseOutput<Branch> response =
-          BaseOutput.<Branch>builder()
-              .status(com.example.hrm_be.commons.enums.ResponseStatus.FAILED)
-              .errors(List.of(HrmConstant.ERROR.REQUEST.INVALID_PATH_VARIABLE))
-              .build();
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-    }
+  protected ResponseEntity<BaseOutput<Branch>> getById(@PathVariable("id") String id) {
 
     // Fetch branch by ID
     Branch branch = branchService.getById(id);
@@ -123,7 +113,7 @@ public class AdminBranchController {
     }
 
     // Set the ID for the branch to update
-    branch.setId(id);
+    branch.setId(id.toString());
 
     // Update the branch
     Branch updateBranch = branchService.update(branch);
@@ -140,17 +130,7 @@ public class AdminBranchController {
 
   // Deletes a Branch by ID
   @DeleteMapping("/{id}")
-  protected ResponseEntity<BaseOutput<String>> delete(@PathVariable("id") Long id) {
-    // Validate the path variable ID
-    if (id <= 0 || id == null) {
-      BaseOutput<String> response =
-          BaseOutput.<String>builder()
-              .status(com.example.hrm_be.commons.enums.ResponseStatus.FAILED)
-              .errors(List.of(HrmConstant.ERROR.REQUEST.INVALID_PATH_VARIABLE))
-              .build();
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-    }
-
+  protected ResponseEntity<BaseOutput<String>> delete(@PathVariable("id") String id) {
     // Delete the branch by ID
     branchService.delete(id);
 
