@@ -11,12 +11,12 @@ import java.text.DecimalFormat;
 
 public class NumberToWordsConverter {
   private static final String[] tensNames = {
-          "", "mười", "hai mươi", "ba mươi", "bốn mươi",
-          "năm mươi", "sáu mươi", "bảy mươi", "tám mươi", "chín mươi"
+    "", "mười", "hai mươi", "ba mươi", "bốn mươi",
+    "năm mươi", "sáu mươi", "bảy mươi", "tám mươi", "chín mươi"
   };
 
   private static final String[] numNames = {
-          "", "một", "hai", "ba", "bốn", "năm", "sáu", "bảy", "tám", "chín"
+    "", "một", "hai", "ba", "bốn", "năm", "sáu", "bảy", "tám", "chín"
   };
 
   public static String convert(BigDecimal number) {
@@ -66,8 +66,11 @@ public class NumberToWordsConverter {
 
     String tradMillions = (millions == 0) ? "" : convertLessThanOneThousand(millions) + " triệu ";
     String tradHundredThousands =
-            (hundredThousands == 0) ? "" :
-                    (hundredThousands == 1 ? "một nghìn " : convertLessThanOneThousand(hundredThousands) + " nghìn ");
+        (hundredThousands == 0)
+            ? ""
+            : (hundredThousands == 1
+                ? "một nghìn "
+                : convertLessThanOneThousand(hundredThousands) + " nghìn ");
     String tradThousand = convertLessThanOneThousand(thousands);
 
     return (tradMillions + tradHundredThousands + tradThousand).replaceAll("\\s+", " ").trim();
@@ -79,7 +82,8 @@ public class NumberToWordsConverter {
     }
 
     StringBuilder fractionalWords = new StringBuilder(" phẩy");
-    String fractionalString = fractionalPart.toPlainString().split("\\.")[1]; // Get the decimal part
+    String fractionalString =
+        fractionalPart.toPlainString().split("\\.")[1]; // Get the decimal part
 
     for (char digit : fractionalString.toCharArray()) {
       int numericValue = Character.getNumericValue(digit);
@@ -117,4 +121,3 @@ public class NumberToWordsConverter {
     return current.trim(); // Trả về kết quả
   }
 }
-

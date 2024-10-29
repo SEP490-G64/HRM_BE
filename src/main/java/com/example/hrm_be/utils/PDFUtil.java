@@ -1,7 +1,5 @@
 package com.example.hrm_be.utils;
 
-import com.example.hrm_be.components.BatchMapper;
-import com.example.hrm_be.components.InboundMapper;
 import com.example.hrm_be.models.dtos.*;
 import com.example.hrm_be.models.responses.InboundDetail;
 import com.itextpdf.text.*;
@@ -9,7 +7,6 @@ import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -141,7 +138,7 @@ public class PDFUtil {
       document.add(Chunk.NEWLINE);
 
       // Calculate total for the final row
-        String amountInWords = NumberToWordsConverter.convert(inbound.getTotalPrice());
+      String amountInWords = NumberToWordsConverter.convert(inbound.getTotalPrice());
 
       Paragraph totalAmountParagraph = new Paragraph();
       totalAmountParagraph.add(new Phrase("- Tổng số tiền (Viết bằng chữ): ", fontFooter));
@@ -276,17 +273,12 @@ public class PDFUtil {
       table.addCell(
           new PdfPCell(new Phrase(String.valueOf(index++), fontSubTitle))); // STT (serial number)
       table.addCell(
-          new PdfPCell(
-              new Phrase(detail.getProductName(), fontSubTitle))); // Product name
+          new PdfPCell(new Phrase(detail.getProductName(), fontSubTitle))); // Product name
+      table.addCell(
+          new PdfPCell(new Phrase(detail.getProductCode(), fontSubTitle))); // Registration code
       table.addCell(
           new PdfPCell(
-              new Phrase(
-                  detail.getProductCode(), fontSubTitle))); // Registration code
-      table.addCell(
-          new PdfPCell(
-              new Phrase(
-                  detail.getBaseUnit().getUnitName(),
-                  fontSubTitle))); // Unit of measurement
+              new Phrase(detail.getBaseUnit().getUnitName(), fontSubTitle))); // Unit of measurement
       table.addCell(
           new PdfPCell(
               new Phrase(
@@ -304,7 +296,8 @@ public class PDFUtil {
       // Tính toán tổng giá trị của từng batch dựa trên inboundPrice và inboundBatchQuantity
       for (Batch batch : detail.getBatches()) {
         // Giá trị của lô hàng hiện tại
-        BigDecimal batchTotalPrice = batch.getInboundPrice().multiply(new BigDecimal(batch.getInboundBatchQuantity()));
+        BigDecimal batchTotalPrice =
+            batch.getInboundPrice().multiply(new BigDecimal(batch.getInboundBatchQuantity()));
         // Cộng dồn vào tổng giá trị của sản phẩm
         totalDetailAmount = totalDetailAmount.add(batchTotalPrice);
 
@@ -314,11 +307,9 @@ public class PDFUtil {
         }
       }
       table.addCell(
-              new PdfPCell(
-                      new Phrase(
-                              String.valueOf(unitPrice),
-                              fontSubTitle))); // Unit price
-      table.addCell(new PdfPCell(new Phrase(totalDetailAmount.toString(), fontSubTitle))); // Total amount
+          new PdfPCell(new Phrase(String.valueOf(unitPrice), fontSubTitle))); // Unit price
+      table.addCell(
+          new PdfPCell(new Phrase(totalDetailAmount.toString(), fontSubTitle))); // Total amount
     }
 
     // "Total" row at the bottom of the table
@@ -330,14 +321,16 @@ public class PDFUtil {
     table.addCell(new PdfPCell(new Phrase("", fontSubTitle))); // Empty cell for "Theo chứng từ"
     table.addCell(new PdfPCell(new Phrase("", fontSubTitle))); // Empty cell for "Thực nhập"
     table.addCell(new PdfPCell(new Phrase("", fontSubTitle))); // Empty cell for "Đơn giá"
-    table.addCell(new PdfPCell(new Phrase(String.valueOf(inbound.getTotalPrice()), fontSubTitle))); // Total amount
+    table.addCell(
+        new PdfPCell(
+            new Phrase(String.valueOf(inbound.getTotalPrice()), fontSubTitle))); // Total amount
 
     return table; // Return the completed table
   }
 
   // Create the footer table
-  private static PdfPTable createFooterTable(InboundDetail inbound, Font fontFooter, Font fontTableHeader)
-      throws DocumentException {
+  private static PdfPTable createFooterTable(
+      InboundDetail inbound, Font fontFooter, Font fontTableHeader) throws DocumentException {
     PdfPTable footerTable = new PdfPTable(4);
     footerTable.setWidthPercentage(100);
     footerTable.setWidths(new float[] {1, 1, 1, 1.6f}); // Column 4 is wider than the others
