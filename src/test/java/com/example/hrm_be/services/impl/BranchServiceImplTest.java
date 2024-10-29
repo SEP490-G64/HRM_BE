@@ -560,10 +560,17 @@ public class BranchServiceImplTest {
 
   // UTCID022 - Update: id not exist
   @Test
-  void testUTCID021_Update_idNotExist() {
+  void testUTCID022_Update_idNotExist() {
     Branch branch = createValidBranch();
-    branch.setId(2L);
+    branch.setId("9999");
     assertThrows(HrmCommonException.class, () -> branchService.update(branch));
+  }
+
+  // UTCID023 - Update: id not number
+  @Test
+  void testUTCID023_Update_idNotNumber() {
+    Branch branch = createValidBranch();
+    assertThrows(HrmCommonException.class, () -> branch.setId("a"));
   }
 
   // DELETE

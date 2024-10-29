@@ -27,7 +27,7 @@ import static org.apache.commons.lang3.StringUtils.isNumeric;
 @EqualsAndHashCode
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Branch extends CommonEntity {
+public class Branch {
   Long id;
   String branchName;
 
@@ -54,6 +54,22 @@ public class Branch extends CommonEntity {
   List<InventoryCheck> inventoryChecks; // 1-N with InventoryCheck
 
   List<User> users;
+
+  // Setter cho id với kiểm tra
+  public Branch setId(String idStr) {
+    if (idStr == null) {
+      this.id = null; // Gán giá trị null nếu chuỗi truyền vào là null
+      return this; // Kết thúc phương thức
+    }
+
+    if (!isNumeric(idStr)) {
+      throw new HrmCommonException(HrmConstant.ERROR.BRANCH.INVALID);
+    }
+
+    // Chuyển đổi và kiểm tra giá trị id
+    this.id = Long.parseLong(idStr); // Gán giá trị đã được kiểm tra
+    return this;
+  }
 
   // Setter cho capacity với kiểm tra
   public Branch setCapacity(String capacityStr) {

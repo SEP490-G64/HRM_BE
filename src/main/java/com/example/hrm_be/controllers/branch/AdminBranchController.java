@@ -114,7 +114,7 @@ public class AdminBranchController {
     }
 
     // Set the ID for the branch to update
-    branch.setId(id);
+    branch.setId(id.toString());
 
     // Update the branch
     Branch updateBranch = branchService.update(branch);
