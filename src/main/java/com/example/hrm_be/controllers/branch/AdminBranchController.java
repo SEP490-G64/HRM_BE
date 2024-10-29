@@ -35,7 +35,7 @@ public class AdminBranchController {
       @RequestParam(required = false, defaultValue = "id") String sortBy,
       @RequestParam(required = false, defaultValue = "") String keyword,
       @RequestParam(required = false, defaultValue = "") String branchType,
-      @RequestParam(required = false) String activeStatus) {
+      @RequestParam(required = false, defaultValue = "") String activeStatus) {
     Page<Branch> branchPage =
         branchService.getByPaging(page, size, sortBy, keyword, branchType, activeStatus);
 

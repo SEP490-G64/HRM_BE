@@ -9,6 +9,7 @@ import com.example.hrm_be.common.TestcontainersConfiguration;
 import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.Branch;
+import com.example.hrm_be.repositories.BranchRepository;
 import com.example.hrm_be.services.BranchService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,6 +38,7 @@ public class BranchServiceImplTest {
       TestcontainersConfiguration.getInstance();
 
   @Autowired private BranchService branchService;
+  @Autowired private BranchRepository branchRepository;
 
   // Helper to create a valid branch entity
   private Branch createValidBranch() {
@@ -76,7 +78,8 @@ public class BranchServiceImplTest {
   // UTCID04 - Get: id not exist
   @Test
   void testUTCID04_Get_idNotExist() {
-    String nonExistingId = "2";
+    branchRepository.deleteAll();
+    String nonExistingId = "1";
     assertEquals(null, branchService.getById(nonExistingId));
   }
 
@@ -85,6 +88,7 @@ public class BranchServiceImplTest {
   @Test
   void testUTCID01_GetByPaging_AllValid() {
     Branch branch = createValidBranch();
+    branchRepository.deleteAll();
     Branch savedBranch = branchService.create(branch);
     assertThat(savedBranch).isNotNull();
 
@@ -571,8 +575,9 @@ public class BranchServiceImplTest {
   // UTCID022 - Update: id not exist
   @Test
   void testUTCID022_Update_idNotExist() {
+    branchRepository.deleteAll();
     Branch branch = createValidBranch();
-    branch.setId("9999");
+    branch.setId("1");
     assertThrows(HrmCommonException.class, () -> branchService.update(branch));
   }
 
@@ -609,6 +614,7 @@ public class BranchServiceImplTest {
   // UTCID04 - Delete: id not exist
   @Test
   void testUTCID04_Delete_idNotExist() {
+    branchRepository.deleteAll();
     String nonExistingId = "2";
     assertThrows(HrmCommonException.class, () -> branchService.delete(nonExistingId));
   }

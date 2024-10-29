@@ -59,18 +59,21 @@ public class BranchServiceImpl implements BranchService {
       String branchTypeStr,
       String statusStr) {
 
-    int pageNo, pageSize;
-
-    try {
-      pageNo = Integer.parseInt(pageNoStr);
-    } catch (NumberFormatException e) {
-      throw new HrmCommonException(HrmConstant.ERROR.PAGE.INVALID);
+    int pageNo = 0, pageSize = 20;
+    if (pageNoStr != null) {
+      try {
+        pageNo = Integer.parseInt(pageNoStr);
+      } catch (NumberFormatException e) {
+        throw new HrmCommonException(HrmConstant.ERROR.PAGE.INVALID);
+      }
     }
 
-    try {
-      pageSize = Integer.parseInt(pageSizeStr);
-    } catch (NumberFormatException e) {
-      throw new HrmCommonException(HrmConstant.ERROR.PAGE.INVALID);
+    if (pageSizeStr != null) {
+      try {
+        pageSize = Integer.parseInt(pageSizeStr);
+      } catch (NumberFormatException e) {
+        throw new HrmCommonException(HrmConstant.ERROR.PAGE.INVALID);
+      }
     }
 
     if (pageNo < 0) {
@@ -81,7 +84,10 @@ public class BranchServiceImpl implements BranchService {
       throw new HrmCommonException(HrmConstant.ERROR.PAGE.INVALID);
     }
 
-    if (sortBy != null
+    if (sortBy == null) {
+      sortBy = "id";
+    }
+    if (!Objects.equals(sortBy, "id")
         && !Objects.equals(sortBy, "branchName")
         && !Objects.equals(sortBy, "location")
         && !Objects.equals(sortBy, "branchType")
@@ -92,19 +98,26 @@ public class BranchServiceImpl implements BranchService {
       throw new HrmCommonException(HrmConstant.ERROR.PAGE.INVALID);
     }
 
+    if (keyword == null) {
+      keyword = "";
+    }
+
     BranchType branchType = null;
-    try {
-      branchType = BranchType.parse(branchTypeStr);
-    } catch (IllegalArgumentException e) {
-      throw new HrmCommonException(HrmConstant.ERROR.PAGE.INVALID);
+    if (branchTypeStr != null && !branchTypeStr.isEmpty()) {
+      try {
+        branchType = BranchType.parse(branchTypeStr);
+      } catch (IllegalArgumentException e) {
+        throw new HrmCommonException(HrmConstant.ERROR.PAGE.INVALID);
+      }
     }
 
     Boolean status = null;
-    if (statusStr == null
-        || (!statusStr.equalsIgnoreCase("true") && !statusStr.equalsIgnoreCase("false"))) {
-      throw new HrmCommonException(HrmConstant.ERROR.PAGE.INVALID);
-    } else {
-      status = Boolean.parseBoolean(statusStr);
+    if (statusStr != null && !statusStr.isEmpty()) {
+      if (!statusStr.equalsIgnoreCase("true") && !statusStr.equalsIgnoreCase("false")) {
+        throw new HrmCommonException(HrmConstant.ERROR.PAGE.INVALID);
+      } else {
+        status = Boolean.parseBoolean(statusStr);
+      }
     }
 
     Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(sortBy).ascending());
