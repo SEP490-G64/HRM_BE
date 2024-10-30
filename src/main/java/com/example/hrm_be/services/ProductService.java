@@ -45,4 +45,6 @@ public interface ProductService {
       Optional<Long> branchId);
 
   List<AllowedProductEntity> getAllowProducts(String searchStr);
+
+  List<Product> getAllProductsBySupplier(Long id, String ProductName);
 }
