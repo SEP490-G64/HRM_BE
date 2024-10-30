@@ -11,6 +11,8 @@ import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
+import java.math.BigDecimal;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -27,4 +29,6 @@ public class InboundBatchDetail {
   Batch batch;
 
   Integer quantity;
+
+  BigDecimal inboundPrice;
 }

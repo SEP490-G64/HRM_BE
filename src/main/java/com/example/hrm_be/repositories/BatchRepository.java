@@ -1,6 +1,7 @@
 package com.example.hrm_be.repositories;
 
 import com.example.hrm_be.models.entities.BatchEntity;
+import com.example.hrm_be.models.entities.BranchProductEntity;
 import com.example.hrm_be.models.entities.ProductEntity;
 import java.util.List;
 import java.util.Optional;
@@ -27,4 +28,6 @@ public interface BatchRepository extends JpaRepository<BatchEntity, Long> {
       "SELECT b FROM BatchEntity b LEFT JOIN FETCH b.inboundBatchDetail bi JOIN bi.inbound i "
           + "WHERE bi.inbound.id=:productId")
   List<BatchEntity> findAllByProductIdThroughInbound(@Param("productId") Long productId);
+
+  List<BatchEntity> findAllByProductId(Long productId);
 }

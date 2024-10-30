@@ -8,6 +8,7 @@ import com.example.hrm_be.models.dtos.Branch;
 import com.example.hrm_be.models.entities.BranchEntity;
 import com.example.hrm_be.repositories.BranchRepository;
 import com.example.hrm_be.services.BranchService;
+import io.micrometer.common.lang.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -30,16 +31,9 @@ public class BranchServiceImpl implements BranchService {
 
   // Retrieves a Branch by its ID
   @Override
-  public Branch getById(String idStr) {
+  public Branch getById(Long id) {
     // Validation: Check if the ID is blank, this never happen
-    if (idStr == null) {
-      throw new HrmCommonException(HrmConstant.ERROR.BRANCH.INVALID);
-    }
-
-    Long id = null;
-    try {
-      id = Long.parseLong(idStr);
-    } catch (NumberFormatException e) {
+    if (id == null) {
       throw new HrmCommonException(HrmConstant.ERROR.BRANCH.INVALID);
     }
 
@@ -51,36 +45,14 @@ public class BranchServiceImpl implements BranchService {
   // Retrieves a paginated list of Branch entities, allowing sorting and searching by name or
   // location and type
   @Override
-  public Page<Branch> getByPaging(
-      String pageNoStr,
-      String pageSizeStr,
-      String sortBy,
-      String keyword,
-      String branchTypeStr,
-      String statusStr) {
+  public Page<Branch> getByPaging(int pageNo,
+                                  int pageSize,
+                                  String sortBy,
+                                  String keyword,
+                                  BranchType branchType,
+                                  @Nullable Boolean status) {
 
-    int pageNo = 0, pageSize = 20;
-    if (pageNoStr != null) {
-      try {
-        pageNo = Integer.parseInt(pageNoStr);
-      } catch (NumberFormatException e) {
-        throw new HrmCommonException(HrmConstant.ERROR.PAGE.INVALID);
-      }
-    }
-
-    if (pageSizeStr != null) {
-      try {
-        pageSize = Integer.parseInt(pageSizeStr);
-      } catch (NumberFormatException e) {
-        throw new HrmCommonException(HrmConstant.ERROR.PAGE.INVALID);
-      }
-    }
-
-    if (pageNo < 0) {
-      throw new HrmCommonException(HrmConstant.ERROR.PAGE.INVALID);
-    }
-
-    if (pageSize < 1) {
+    if (pageNo < 0 || pageSize < 1) {
       throw new HrmCommonException(HrmConstant.ERROR.PAGE.INVALID);
     }
 
@@ -100,24 +72,6 @@ public class BranchServiceImpl implements BranchService {
 
     if (keyword == null) {
       keyword = "";
-    }
-
-    BranchType branchType = null;
-    if (branchTypeStr != null && !branchTypeStr.isEmpty()) {
-      try {
-        branchType = BranchType.parse(branchTypeStr);
-      } catch (IllegalArgumentException e) {
-        throw new HrmCommonException(HrmConstant.ERROR.PAGE.INVALID);
-      }
-    }
-
-    Boolean status = null;
-    if (statusStr != null && !statusStr.isEmpty()) {
-      if (!statusStr.equalsIgnoreCase("true") && !statusStr.equalsIgnoreCase("false")) {
-        throw new HrmCommonException(HrmConstant.ERROR.PAGE.INVALID);
-      } else {
-        status = Boolean.parseBoolean(statusStr);
-      }
     }
 
     Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(sortBy).ascending());
@@ -197,16 +151,9 @@ public class BranchServiceImpl implements BranchService {
 
   // Deletes a Branch by ID
   @Override
-  public void delete(String idStr) {
+  public void delete(Long id) {
     // Validation: Check if the ID is blank, this never happen
-    if (idStr == null) {
-      throw new HrmCommonException(HrmConstant.ERROR.BRANCH.INVALID);
-    }
-
-    Long id = null;
-    try {
-      id = Long.parseLong(idStr);
-    } catch (NumberFormatException e) {
+    if (id == null) {
       throw new HrmCommonException(HrmConstant.ERROR.BRANCH.INVALID);
     }
 
@@ -256,6 +203,11 @@ public class BranchServiceImpl implements BranchService {
                 > 100000)) { // Use 100000 instead of 100.000 for decimal format correction
       return false;
     }
+
+    if (branch.getActiveStatus() == null) {
+      return false;
+    }
+
     return branch.getBranchType() != null;
   }
 }

@@ -3,6 +3,8 @@ package com.example.hrm_be.repositories;
 import com.example.hrm_be.models.entities.InboundBatchDetailEntity;
 import java.util.List;
 import java.util.Optional;
+
+import com.example.hrm_be.models.entities.ProductEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -22,4 +24,15 @@ public interface InboundBatchDetailRepository
           + ":inboundId")
   List<InboundBatchDetailEntity> findInboundBatchDetailByInboundId(
       @Param("inboundId") Long inboundId);
+
+  @Query(
+          "SELECT COALESCE(SUM(ib.quantity), 0) FROM InboundBatchDetailEntity ib "
+                  + "JOIN ib.batch b "
+                  + "JOIN b.product p "
+                  + "WHERE ib.inbound.id = :inboundId "
+                  + "AND p = :product"
+  )
+  Integer findTotalQuantityByInboundAndProduct(Long inboundId, ProductEntity product);
+
+  List<InboundBatchDetailEntity> findAllByBatchId(Long batchId);
 }
