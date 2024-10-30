@@ -243,12 +243,13 @@ public class StaffProductController {
 
   @GetMapping("/products-by-supplier/{supplierId}")
   protected ResponseEntity<BaseOutput<List<Product>>> getAllProductsWithSupplier(
-          @PathVariable("supplierId") Long supplierId,
-          @RequestParam(value = "keyword", required = false, defaultValue = "") String keyword) {
+      @PathVariable("supplierId") Long supplierId,
+      @RequestParam(value = "keyword", required = false, defaultValue = "") String keyword) {
 
     List<Product> products = productService.getAllProductsBySupplier(supplierId, keyword);
 
-    BaseOutput<List<Product>> response = BaseOutput.<List<Product>>builder()
+    BaseOutput<List<Product>> response =
+        BaseOutput.<List<Product>>builder()
             .message(HttpStatus.OK.toString())
             .total((long) products.size())
             .data(products)
@@ -257,5 +258,4 @@ public class StaffProductController {
 
     return ResponseEntity.ok(response);
   }
-
 }
