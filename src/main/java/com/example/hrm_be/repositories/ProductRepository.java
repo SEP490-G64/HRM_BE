@@ -36,7 +36,8 @@ public interface ProductRepository
 
   Optional<ProductEntity> findByRegistrationCode(String registrationCode);
 
-  @Query("SELECT p FROM ProductEntity p JOIN  p.productSuppliers ps WHERE ps.supplier.id = :supplierId")
-  List<ProductEntity> findProductBySupplier(@Param("supplierId") Long supplierId);
+  @Query("SELECT p FROM ProductEntity p JOIN p.productSuppliers ps WHERE ps.supplier.id = :supplierId AND LOWER(p.productName) LIKE LOWER(CONCAT('%', :productName, '%'))")
+  List<ProductEntity> findProductBySupplierAndName(@Param("supplierId") Long supplierId, @Param("productName") String productName);
+
 
 }

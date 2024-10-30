@@ -46,5 +46,5 @@ public interface ProductService {
 
   List<AllowedProductEntity> getAllowProducts(String searchStr);
 
-  List<Product> getAllProductsBySupplier(Long id);
+  List<Product> getAllProductsBySupplier(Long id, String ProductName);
 }
