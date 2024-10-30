@@ -35,4 +35,6 @@ public interface InboundBatchDetailRepository
   Integer findTotalQuantityByInboundAndProduct(Long inboundId, ProductEntity product);
 
   List<InboundBatchDetailEntity> findAllByBatchId(Long batchId);
+
+  List<InboundBatchDetailEntity> findByInbound_Id(Long id);
 }

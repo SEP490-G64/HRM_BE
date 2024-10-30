@@ -30,4 +30,6 @@ public interface InboundDetailsRepository extends JpaRepository<InboundDetailsEn
           "LEFT JOIN FETCH p.category pc " +
           "WHERE id.inbound.id = :inboundId")
   List<InboundDetailsEntity> findInboundDetailsWithCategoryByInboundId(Long inboundId);
+
+  List<InboundDetailsEntity> findByInbound_Id(Long id);
 }
