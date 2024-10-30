@@ -624,6 +624,8 @@ public class ProductServiceImpl implements ProductService {
 
   @Override
   public List<Product> getAllProductsBySupplier(Long supplierid) {
-    return productRepository.findProductBySupplier(supplierid).stream().map(productMapper::toDTO).collect(Collectors.toList())  ;
+    return productRepository.findProductBySupplier(supplierid).stream()
+        .map(productMapper::toDTO)
+        .collect(Collectors.toList());
   }
 }
