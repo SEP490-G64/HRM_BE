@@ -288,5 +288,7 @@ public class HrmConstant {
     public static String TAX_CODE = "^(0[0-9]{9}|[1-9][0-9]{9}|[1-9][0-9]{13})$";
     public static String FAX_NUMBER =
         "^(0[1-9]{1}[0-9]{0,2}-[0-9]{7,8}|\\+84-[1-9]{1}[0-9]{0,2}-[0-9]{7,8})$";
+    public static String EMAIL =
+        "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\\\.[A-Za-z0-9_-]+)*@[^-][A-Za-z0-9-]+(\\\\.[A-Za-z0-9-]+)*(\\\\.[A-Za-z]{2,})$";
   }
 }

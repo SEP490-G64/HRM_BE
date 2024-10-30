@@ -162,7 +162,7 @@ public class UserServiceImpl implements UserService {
     }
 
     // Validate user details and check for existing users with the same email or username
-    if (user == null
+    if (!validateUser(user)
         || userRepository.existsByEmail(user.getEmail())
         || userRepository.existsByUserName(user.getUserName())) {
       throw new HrmCommonException(USER.EXIST);
@@ -258,7 +258,7 @@ public class UserServiceImpl implements UserService {
 
     // Validate user details and check for existing users with the same email or username different
     // from current user
-    if (user == null
+    if (!validateUser(user)
         || (userRepository.existsByEmail(user.getEmail())
             && !Objects.equals(oldUserEntity.getEmail(), user.getEmail()))
         || (userRepository.existsByUserName(user.getUserName())
@@ -684,5 +684,33 @@ public class UserServiceImpl implements UserService {
 
     // Hash the new password before saving it
     this.resetPassword(user, request.getNewPassword());
+  }
+
+  private boolean validateUser(User user) {
+    if (user == null) {
+      return false;
+    }
+    if (user.getUserName() == null
+        || user.getUserName().isEmpty()
+        || user.getUserName().length() < 5
+        || user.getUserName().length() > 20) {
+      return false;
+    }
+    if (user.getEmail() == null || !user.getEmail().matches(HrmConstant.REGEX.EMAIL)) {
+      return false;
+    }
+    if (user.getPassword() == null
+        || user.getPassword().isEmpty()
+        || user.getPassword().length() < 8) {
+      return false;
+    }
+    if (user.getBranch() == null
+        || branchService.getById(user.getBranch().getId().toString()) == null) {
+      return false;
+    }
+    if (user.getRoles() == null || user.getRoles().isEmpty()) {
+      return false;
+    }
+    return user.getStatus() != null;
   }
 }
