@@ -621,4 +621,9 @@ public class ProductServiceImpl implements ProductService {
     // Fetch the product along with only the BranchProductEntity related to the given branchId
     return productRepository.findProductByBranchId(branchId);
   }
+
+  @Override
+  public List<Product> getAllProductsBySupplier(Long supplierid) {
+    return productRepository.findProductBySupplier(supplierid).stream().map(productMapper::toDTO).collect(Collectors.toList())  ;
+  }
 }

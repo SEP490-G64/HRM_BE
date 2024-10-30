@@ -240,4 +240,19 @@ public class StaffProductController {
             .status(ResponseStatus.SUCCESS)
             .build());
   }
+
+  @GetMapping("/products-by-supplier/{supplierId}")
+  protected ResponseEntity<BaseOutput<List<Product>>> getAllProductsWithSupplier(
+          @PathVariable("supplierId") Long id) {
+    List<Product> products = productService.getAllProductsBySupplier(id);
+    BaseOutput<List<Product>> response =
+            BaseOutput.<List<Product>>builder()
+                    .message(HttpStatus.OK.toString())
+                    .total((long) products.size())
+                    .data(products)
+                    .status(ResponseStatus.SUCCESS)
+                    .build();
+
+    return ResponseEntity.ok(response);
+  }
 }
