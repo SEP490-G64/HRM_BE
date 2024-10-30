@@ -22,13 +22,12 @@ import com.example.hrm_be.repositories.UserRoleMapRepository;
 import com.example.hrm_be.services.*;
 import com.example.hrm_be.utils.ExcelUtility;
 import com.example.hrm_be.utils.PasswordGenerator;
+import io.micrometer.common.lang.Nullable;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import io.micrometer.common.lang.Nullable;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -324,6 +323,9 @@ public class UserServiceImpl implements UserService {
   @Override
   public void delete(@NonNull Long id) {
     /** TODO Only allow admin user to delete other users */
+    if (id == null) {
+      throw new HrmCommonException(USER.NOT_EXIST);
+    }
 
     // Check if the logged user is an admin
     if (!isAdmin()) {
@@ -507,6 +509,10 @@ public class UserServiceImpl implements UserService {
   }
 
   public List<String> importFile(MultipartFile file) {
+    if (file == null) {
+      throw new RuntimeException("Not a valid file");
+    }
+
     // Mapper to convert each Excel row into a User object
     Function<Row, User> rowMapper =
         (Row row) -> {
