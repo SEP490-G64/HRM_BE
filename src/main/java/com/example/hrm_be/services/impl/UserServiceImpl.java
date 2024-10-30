@@ -711,6 +711,8 @@ public class UserServiceImpl implements UserService {
     if (user.getRoles() == null || user.getRoles().isEmpty()) {
       return false;
     }
-    return user.getStatus() != null;
+    return user.getStatus() != null
+        && (user.getStatus() == UserStatusType.ACTIVATE
+            && user.getStatus() == UserStatusType.DEACTIVATE);
   }
 }
