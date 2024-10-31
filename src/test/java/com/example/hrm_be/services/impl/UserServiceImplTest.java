@@ -49,7 +49,7 @@ public class UserServiceImplTest {
     roles.add(roleService.getAdminRole());
     return new User()
         .setUserName("hrmuser")
-        .setBranch(branchService.getById("1"))
+        .setBranch(branchService.getById(1L))
         .setPassword("test123123")
         .setEmail("hrmuser@gmail.com")
         .setFirstName("A")

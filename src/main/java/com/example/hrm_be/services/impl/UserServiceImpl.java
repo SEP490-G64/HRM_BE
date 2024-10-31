@@ -732,8 +732,7 @@ public class UserServiceImpl implements UserService {
         || user.getPassword().length() < 8) {
       return false;
     }
-    if (user.getBranch() == null
-        || branchService.getById(user.getBranch().getId().toString()) == null) {
+    if (user.getBranch() == null || branchService.getById(user.getBranch().getId()) == null) {
       return false;
     }
     if (user.getRoles() == null || user.getRoles().isEmpty()) {
