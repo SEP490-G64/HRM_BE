@@ -522,6 +522,11 @@ public class ProductServiceImpl implements ProductService {
   }
 
   @Override
+  public List<AllowedProductEntity> getAllowProducts(String searchStr) {
+    return allowedProductRepository.findAllByProductNameContainsIgnoreCase(searchStr);
+  }
+
+  @Override
   public Page<BranchProduct> searchProducts(
       int pageNo,
       int pageSize,
@@ -615,5 +620,12 @@ public class ProductServiceImpl implements ProductService {
   public List<ProductEntity> getProductWithBranchProducts(Long branchId) {
     // Fetch the product along with only the BranchProductEntity related to the given branchId
     return productRepository.findProductByBranchId(branchId);
+  }
+
+  @Override
+  public List<Product> getAllProductsBySupplier(Long supplierid, String productName) {
+    return productRepository.findProductBySupplierAndName(supplierid, productName).stream()
+        .map(productMapper::toDTO)
+        .collect(Collectors.toList());
   }
 }

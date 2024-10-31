@@ -27,6 +27,8 @@ import java.io.IOException;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import io.micrometer.common.lang.Nullable;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -101,7 +103,12 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public Page<User> getByPaging(
-      int pageNo, int pageSize, String sortBy, String sortDirection, String keyword) {
+      int pageNo,
+      int pageSize,
+      String sortBy,
+      String sortDirection,
+      String keyword,
+      @Nullable UserStatusType status) {
     /** TODO Only allow admin user to call this function */
     // Check if the logged user is an admin
     if (!isAdmin()) {
@@ -114,7 +121,7 @@ public class UserServiceImpl implements UserService {
 
     // Fetch users by keyword and map to DTO
     return userRepository
-        .searchUsers(keyword, UserStatusType.PENDING, pageable)
+        .searchUsers(keyword, UserStatusType.PENDING, status, pageable)
         .map(userMapper::toDTO);
   }
 

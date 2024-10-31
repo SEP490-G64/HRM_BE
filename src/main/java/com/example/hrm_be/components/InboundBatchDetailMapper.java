@@ -28,6 +28,7 @@ public class InboundBatchDetailMapper {
                     .inbound(d.getInbound() != null ? inboundMapper.toEntity(d.getInbound()) : null)
                     .batch(d.getBatch() != null ? batchMapper.toEntity(d.getBatch()) : null)
                     .quantity(d.getQuantity())
+                    .inboundPrice(d.getInboundPrice())
                     .build())
         .orElse(null);
   }

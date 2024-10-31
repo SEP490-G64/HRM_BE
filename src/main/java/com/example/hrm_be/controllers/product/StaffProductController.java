@@ -5,6 +5,7 @@ import com.example.hrm_be.commons.enums.ResponseStatus;
 import com.example.hrm_be.models.dtos.BranchProduct;
 import com.example.hrm_be.models.dtos.Product;
 import com.example.hrm_be.models.dtos.ProductBaseDTO;
+import com.example.hrm_be.models.entities.AllowedProductEntity;
 import com.example.hrm_be.models.responses.BaseOutput;
 import com.example.hrm_be.services.ProductService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -55,6 +56,21 @@ public class StaffProductController {
             .pageSize(size)
             .total(productPage.getTotalElements())
             .data(productPage.getContent())
+            .status(ResponseStatus.SUCCESS)
+            .build();
+    return ResponseEntity.ok(response);
+  }
+
+  @GetMapping("/allow-products")
+  protected ResponseEntity<BaseOutput<List<AllowedProductEntity>>> getAllowProducts(
+      @RequestParam(defaultValue = "") String keyword) {
+    List<AllowedProductEntity> products = productService.getAllowProducts(keyword);
+
+    BaseOutput<List<AllowedProductEntity>> response =
+        BaseOutput.<List<AllowedProductEntity>>builder()
+            .message(HttpStatus.OK.toString())
+            .total((long) products.size())
+            .data(products)
             .status(ResponseStatus.SUCCESS)
             .build();
     return ResponseEntity.ok(response);
@@ -223,5 +239,23 @@ public class StaffProductController {
             .data(HttpStatus.OK.toString())
             .status(ResponseStatus.SUCCESS)
             .build());
+  }
+
+  @GetMapping("/products-by-supplier/{supplierId}")
+  protected ResponseEntity<BaseOutput<List<Product>>> getAllProductsWithSupplier(
+      @PathVariable("supplierId") Long supplierId,
+      @RequestParam(value = "keyword", required = false, defaultValue = "") String keyword) {
+
+    List<Product> products = productService.getAllProductsBySupplier(supplierId, keyword);
+
+    BaseOutput<List<Product>> response =
+        BaseOutput.<List<Product>>builder()
+            .message(HttpStatus.OK.toString())
+            .total((long) products.size())
+            .data(products)
+            .status(ResponseStatus.SUCCESS)
+            .build();
+
+    return ResponseEntity.ok(response);
   }
 }

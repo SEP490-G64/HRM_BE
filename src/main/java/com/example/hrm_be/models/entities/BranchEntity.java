@@ -34,20 +34,20 @@ import lombok.experimental.SuperBuilder;
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class BranchEntity extends CommonEntity {
 
-  @Column(name = "branch_name", length = 255)
+  @Column(name = "branch_name", length = 100)
   String branchName;
 
   @Enumerated(EnumType.STRING)
   @Column(name = "branch_type")
   BranchType branchType;
 
-  @Column(name = "location", length = 255)
+  @Column(name = "location", length = 256)
   String location;
 
-  @Column(name = "contact_person", length = 255)
+  @Column(name = "contact_person", length = 100)
   String contactPerson;
 
-  @Column(name = "phone_number", length = 50)
+  @Column(name = "phone_number", length = 11)
   String phoneNumber;
 
   @Column(name = "capacity")

@@ -41,11 +41,11 @@ public class StaffUnitOfMeasurementController {
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size,
       @RequestParam(required = false, defaultValue = "id") String sortBy,
-      @RequestParam(defaultValue = "") String name) {
+      @RequestParam(defaultValue = "") String keyword) {
 
     // Retrieve paginated list of unitOfMeasurements from the service
     Page<UnitOfMeasurement> unitOfMeasurementPage =
-        unitOfMeasurementService.getByPaging(page, size, sortBy, name);
+        unitOfMeasurementService.getByPaging(page, size, sortBy, keyword);
 
     // Construct response object with unitOfMeasurement data and pagination details
     BaseOutput<List<UnitOfMeasurement>> response =
