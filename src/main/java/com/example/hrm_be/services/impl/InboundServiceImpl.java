@@ -418,7 +418,7 @@ public class InboundServiceImpl implements InboundService {
 
     // check status
     if (!inboundEntity.getStatus().isCheck()) {
-      throw  new HrmCommonException("Trạng thái của phiếu không hợp lệ");
+      throw new HrmCommonException("Trạng thái của phiếu không hợp lệ");
     }
 
     // Get the branch details

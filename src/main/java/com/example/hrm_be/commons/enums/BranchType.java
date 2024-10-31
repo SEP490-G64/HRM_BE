@@ -31,7 +31,6 @@ public enum BranchType {
     return this == SUB;
   }
 
-
   public static BranchType parse(final String type) {
     return Stream.of(BranchType.values())
         .filter(e -> e.name().equalsIgnoreCase(type) || e.getDisplayName().equalsIgnoreCase(type))
