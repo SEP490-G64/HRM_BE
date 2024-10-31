@@ -696,7 +696,6 @@ public class InboundServiceImpl implements InboundService {
     if (inbound.isEmpty()) {
       throw new HrmCommonException(INBOUND.NOT_EXIST);
     }
-
     inboundRepository.updateInboundStatus(status, id);
     return null;
   }
