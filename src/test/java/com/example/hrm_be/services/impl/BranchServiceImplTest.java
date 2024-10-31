@@ -60,7 +60,7 @@ public class BranchServiceImplTest {
     Branch branch = createValidBranch();
     Branch branch1 = branchService.create(branch);
     Branch branch2 = branchService.getById(branch1.getId());
-    assertEquals(branch1.getBranchName(), branch2.getBranchName());
+    assertEquals(branch1, branch2);
   }
 
   // UTCID02 - Get: id null

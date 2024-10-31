@@ -14,7 +14,7 @@ public interface ProductCategoryService {
 
   // Retrieves a paginated list of ProductCategory objects, allowing sorting and searching by
   // keywords
-  Page<ProductCategory> getByPaging(int pageNo, int pageSize, String sortBy, String name);
+  Page<ProductCategory> getByPaging(int pageNo, int pageSize, String sortBy, String keyword);
 
   // Creates a new ProductCategory entity and returns the created entity
   ProductCategory create(ProductCategory category);
