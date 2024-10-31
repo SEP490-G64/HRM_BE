@@ -34,7 +34,7 @@ public class TypeServiceImplTest {
 
   @Container
   public static PostgreSQLContainer<TestcontainersConfiguration> postgreSQLContainer =
-      TestcontainersConfiguration.getInstance();
+      TestcontainersConfiguration.postgreSQLContainer;
 
   @Autowired private ProductTypeService productTypeService;
   @Autowired private ProductTypeRepository productTypeRepository;

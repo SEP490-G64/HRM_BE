@@ -36,7 +36,7 @@ public class BranchServiceImplTest {
 
   @Container
   public static PostgreSQLContainer<TestcontainersConfiguration> postgreSQLContainer =
-      TestcontainersConfiguration.getInstance();
+      TestcontainersConfiguration.postgreSQLContainer;
 
   @Autowired private BranchService branchService;
   @Autowired private BranchRepository branchRepository;

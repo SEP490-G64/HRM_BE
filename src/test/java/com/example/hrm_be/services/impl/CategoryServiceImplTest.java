@@ -35,7 +35,7 @@ public class CategoryServiceImplTest {
 
   @Container
   public static PostgreSQLContainer<TestcontainersConfiguration> postgreSQLContainer =
-      TestcontainersConfiguration.getInstance();
+      TestcontainersConfiguration.postgreSQLContainer;
 
   @Autowired private ProductCategoryService productCategoryService;
   @Autowired private ProductCategoryRepository productCategoryRepository;

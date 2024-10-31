@@ -22,7 +22,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 class HrmBeApplicationTests {
   @Container
   public static PostgreSQLContainer<TestcontainersConfiguration> postgreSQLContainer =
-      TestcontainersConfiguration.getInstance();
+      TestcontainersConfiguration.postgreSQLContainer;
 
   @Test
   void contextLoads() {}

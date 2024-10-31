@@ -38,7 +38,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 public class UserServiceImplTest {
   @Container
   public static PostgreSQLContainer<TestcontainersConfiguration> postgreSQLContainer =
-      TestcontainersConfiguration.getInstance();
+      TestcontainersConfiguration.postgreSQLContainer;
 
   @Autowired private UserService userService;
   @Autowired private RoleService roleService;
