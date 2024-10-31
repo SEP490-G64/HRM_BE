@@ -1,8 +1,11 @@
 package com.example.hrm_be.repositories;
 
 import com.example.hrm_be.models.entities.InboundDetailsEntity;
+
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -17,4 +20,18 @@ public interface InboundDetailsRepository extends JpaRepository<InboundDetailsEn
 
   @Query("SELECT id FROM InboundDetailsEntity id WHERE id.inbound.id = :inboundId")
   List<InboundDetailsEntity> findInboundDetailsByInboundId(@Param("inboundId") Long inboundId);
+
+  @Query(
+      "SELECT SUM(id.receiveQuantity * id.inboundPrice) FROM InboundDetailsEntity id WHERE"
+          + " id.product.id = :productId")
+  BigDecimal findTotalPriceForProduct(Long productId);
+
+  @Query(
+      "SELECT id FROM InboundDetailsEntity id "
+          + "JOIN FETCH id.product p "
+          + "LEFT JOIN FETCH p.category pc "
+          + "WHERE id.inbound.id = :inboundId")
+  List<InboundDetailsEntity> findInboundDetailsWithCategoryByInboundId(Long inboundId);
+
+  List<InboundDetailsEntity> findByInbound_Id(Long id);
 }

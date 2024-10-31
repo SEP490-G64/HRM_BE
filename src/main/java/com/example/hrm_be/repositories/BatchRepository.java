@@ -27,4 +27,6 @@ public interface BatchRepository extends JpaRepository<BatchEntity, Long> {
       "SELECT b FROM BatchEntity b LEFT JOIN FETCH b.inboundBatchDetail bi JOIN bi.inbound i "
           + "WHERE bi.inbound.id=:productId")
   List<BatchEntity> findAllByProductIdThroughInbound(@Param("productId") Long productId);
+
+  List<BatchEntity> findAllByProductId(Long productId);
 }
