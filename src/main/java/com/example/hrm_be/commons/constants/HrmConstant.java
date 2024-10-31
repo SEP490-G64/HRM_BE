@@ -49,6 +49,7 @@ public class HrmConstant {
       public static final String EXIST = "error.category.exist";
       public static final String NOT_CHILD = "error.category.not_child";
       public static final String NOT_EXIST = "error.category.not_exist";
+      public static final String INVALID = "error.category.invalid";
     }
 
     public static class TYPE {
@@ -58,6 +59,7 @@ public class HrmConstant {
       public static final String EXIST = "error.type.exist";
       public static final String NOT_CHILD = "error.type.not_child";
       public static final String NOT_EXIST = "error.type.not_exist";
+      public static final String INVALID = "error.type.invalid";
     }
 
     public static class PRODUCT {

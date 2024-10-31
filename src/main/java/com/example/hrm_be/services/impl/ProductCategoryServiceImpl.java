@@ -7,8 +7,10 @@ import com.example.hrm_be.models.dtos.ProductCategory;
 import com.example.hrm_be.models.entities.ProductCategoryEntity;
 import com.example.hrm_be.repositories.ProductCategoryRepository;
 import com.example.hrm_be.services.ProductCategoryService;
-import io.micrometer.common.util.StringUtils;
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,9 +19,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Objects;
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -41,6 +40,11 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
   // Retrieves a ProductCategory by ID
   @Override
   public ProductCategory getById(Long id) {
+    // Validation: Check if the ID is null
+    if (id == null) {
+      throw new HrmCommonException(HrmConstant.ERROR.CATEGORY.INVALID);
+    }
+
     return Optional.ofNullable(id)
         .flatMap(e -> categoryRepository.findById(e).map(b -> categoryMapper.toDTO(b)))
         .orElse(null);
@@ -48,18 +52,41 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
 
   // Retrieves a paginated list of ProductCategory entities, allowing sorting and searching by name
   @Override
-  public Page<ProductCategory> getByPaging(int pageNo, int pageSize, String sortBy, String name) {
+  public Page<ProductCategory> getByPaging(
+      int pageNo, int pageSize, String sortBy, String keyword) {
+    if (pageNo < 0 || pageSize < 1) {
+      throw new HrmCommonException(HrmConstant.ERROR.PAGE.INVALID);
+    }
+
+    if (sortBy == null) {
+      sortBy = "id";
+    }
+    if (!Objects.equals(sortBy, "id")
+        && !Objects.equals(sortBy, "categoryName")
+        && !Objects.equals(sortBy, "categoryDescription")
+        && !Objects.equals(sortBy, "taxRate")) {
+      throw new HrmCommonException(HrmConstant.ERROR.PAGE.INVALID);
+    }
+
+    if (keyword == null) {
+      keyword = "";
+    }
+
     Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(sortBy).ascending());
     return categoryRepository
-        .findByCategoryNameContainingIgnoreCase(name, pageable)
+        .findByCategoryNameContainingIgnoreCase(keyword, pageable)
         .map(dao -> categoryMapper.toDTO(dao));
   }
 
   // Creates a new ProductCategory
   @Override
   public ProductCategory create(ProductCategory category) {
-    // Validation: Ensure the category is not null and the name does not already exist
-    if (category == null || categoryRepository.existsByCategoryName(category.getCategoryName())) {
+    if (category == null || !commonValidate(category)) {
+      throw new HrmCommonException(HrmConstant.ERROR.CATEGORY.INVALID);
+    }
+
+    // Validation: Ensure the name does not already exist
+    if (categoryRepository.existsByCategoryName(category.getCategoryName())) {
       throw new HrmCommonException(HrmConstant.ERROR.CATEGORY.EXIST);
     }
 
@@ -74,6 +101,10 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
   // Updates an existing ProductCategory
   @Override
   public ProductCategory update(ProductCategory category) {
+    if (category == null || category.getId() == null || !commonValidate(category)) {
+      throw new HrmCommonException(HrmConstant.ERROR.CATEGORY.INVALID);
+    }
+
     // Retrieve the existing category entity by ID
     ProductCategoryEntity oldCategoryEntity =
         categoryRepository.findById(category.getId()).orElse(null);
@@ -104,9 +135,9 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
   // Deletes a ProductCategory by ID
   @Override
   public void delete(Long id) {
-    // Validation: Check if the ID is blank
-    if (StringUtils.isBlank(id.toString())) {
-      return;
+    // Validation: Check if the ID is null
+    if (id == null) {
+      throw new HrmCommonException(HrmConstant.ERROR.CATEGORY.INVALID);
     }
 
     // Retrieve the existing category entity by ID
@@ -117,5 +148,24 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
 
     // Delete the category by ID
     categoryRepository.deleteById(id);
+  }
+
+  // This method will validate category field input values
+  private boolean commonValidate(ProductCategory category) {
+    if (category.getCategoryName() == null
+        || category.getCategoryName().isEmpty()
+        || category.getCategoryName().length() > 100) {
+      return false;
+    }
+    if (category.getCategoryDescription() != null
+        && category.getCategoryDescription().length() > 1000) {
+      return false;
+    }
+    if (category.getTaxRate() != null
+        && (category.getTaxRate().compareTo(BigDecimal.valueOf(100)) > 0
+            || (category.getTaxRate().compareTo(BigDecimal.ZERO) < 0))) {
+      return false;
+    }
+    return true;
   }
 }

@@ -3,12 +3,11 @@ package com.example.hrm_be.components;
 import com.example.hrm_be.models.dtos.Product;
 import com.example.hrm_be.models.dtos.ProductBaseDTO;
 import com.example.hrm_be.models.entities.ProductEntity;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
-
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Component
 public class ProductMapper {
@@ -115,6 +114,13 @@ public class ProductMapper {
                 ? entity.getBranchProducs().stream()
                     .map(branchProductMapper::toDTO)
                     .collect(Collectors.toList())
+                : null)
+        .category(
+            entity.getCategory() != null ? productCategoryMapper.toDTO(entity.getCategory()) : null)
+        .type(entity.getType() != null ? productTypeMapper.toDTO(entity.getType()) : null)
+        .manufacturer(
+            entity.getManufacturer() != null
+                ? manufacturerMapper.toDTO(entity.getManufacturer())
                 : null)
         .build();
   }

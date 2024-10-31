@@ -1,5 +1,6 @@
 package com.example.hrm_be.services.impl;
 
+import static com.example.hrm_be.commons.enums.BranchType.MAIN;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -7,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import com.example.hrm_be.HrmBeApplication;
 import com.example.hrm_be.common.TestcontainersConfiguration;
 import com.example.hrm_be.commons.constants.HrmConstant;
+import com.example.hrm_be.commons.enums.BranchType;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.Branch;
 import com.example.hrm_be.repositories.BranchRepository;
@@ -43,12 +45,12 @@ public class BranchServiceImplTest {
   private Branch createValidBranch() {
     return new Branch()
         .setBranchName("Valid Branch Name")
-        .setBranchType("MAIN")
+        .setBranchType(BranchType.MAIN)
         .setLocation("Valid Location")
         .setContactPerson("Valid Contact Person")
         .setPhoneNumber("0912345678")
-        .setCapacity("500")
-        .setActiveStatus("true");
+        .setCapacity(500)
+        .setActiveStatus(true);
   }
 
   // GET
@@ -57,9 +59,8 @@ public class BranchServiceImplTest {
   void testUTCID01_Get_AllValid() {
     Branch branch = createValidBranch();
     Branch branch1 = branchService.create(branch);
-    String id = branch1.getId().toString();
-    Branch branch2 = branchService.getById(id);
-    assertEquals(branch1.getBranchName(), branch2.getBranchName());
+    Branch branch2 = branchService.getById(branch1.getId());
+    assertEquals(branch1, branch2);
   }
 
   // UTCID02 - Get: id null
@@ -68,17 +69,11 @@ public class BranchServiceImplTest {
     assertThrows(HrmCommonException.class, () -> branchService.getById(null));
   }
 
-  // UTCID03 - Get: id not number
+  // UTCID03 - Get: id not exist
   @Test
-  void testUTCID03_Get_idNotNumber() {
-    assertThrows(HrmCommonException.class, () -> branchService.getById("a"));
-  }
-
-  // UTCID04 - Get: id not exist
-  @Test
-  void testUTCID04_Get_idNotExist() {
+  void testUTCID03_Get_idNotExist() {
     branchRepository.deleteAll();
-    String nonExistingId = "1";
+    Long nonExistingId = 1L;
     assertEquals(null, branchService.getById(nonExistingId));
   }
 
@@ -91,91 +86,43 @@ public class BranchServiceImplTest {
     Branch savedBranch = branchService.create(branch);
     assertThat(savedBranch).isNotNull();
 
-    Page<Branch> result = branchService.getByPaging("0", "1", "branchName", "a", "MAIN", "true");
+    Page<Branch> result = branchService.getByPaging(0, 1, "branchName", "a", BranchType.MAIN, true);
     assertEquals(1, result.getTotalElements());
     assertEquals(branch.getBranchName(), result.getContent().get(0).getBranchName());
   }
 
-  // UTCID02 - getByPaging: pageNo not number
+  // UTCID02 - getByPaging: pageNo invalid
   @Test
-  void testUTCID02_GetByPaging_pageNoNotNumber() {
+  void testUTCID02_GetByPaging_pageNoInvalid() {
     Exception exception =
         assertThrows(
             HrmCommonException.class,
             () -> {
-              branchService.getByPaging("A", "1", "branchName", "a", "MAIN", "true");
+              branchService.getByPaging(-1, 1, "branchName", "a", BranchType.MAIN, true);
             });
     assertEquals(HrmConstant.ERROR.PAGE.INVALID, exception.getMessage());
   }
 
-  // UTCID03 - getByPaging: pageNo invalid
+  // UTCID03 - getByPaging: pageSize invalid
   @Test
-  void testUTCID03_GetByPaging_pageNoInvalid() {
+  void testUTCID03_GetByPaging_pageSizeInvalid() {
     Exception exception =
         assertThrows(
             HrmCommonException.class,
             () -> {
-              branchService.getByPaging("-1", "1", "branchName", "a", "MAIN", "true");
+              branchService.getByPaging(0, 0, "branchName", "a", BranchType.MAIN, true);
             });
     assertEquals(HrmConstant.ERROR.PAGE.INVALID, exception.getMessage());
   }
 
-  // UTCID04 - getByPaging: pageSize not number
+  // UTCID04 - getByPaging: sortBy invalid
   @Test
-  void testUTCID04_GetByPaging_pageSizeNotNumber() {
+  void testUTCID04_GetByPaging_sortByInvalid() {
     Exception exception =
         assertThrows(
             HrmCommonException.class,
             () -> {
-              branchService.getByPaging("0", "A", "branchName", "a", "MAIN", "true");
-            });
-    assertEquals(HrmConstant.ERROR.PAGE.INVALID, exception.getMessage());
-  }
-
-  // UTCID05 - getByPaging: pageSize invalid
-  @Test
-  void testUTCID05_GetByPaging_pageSizeInvalid() {
-    Exception exception =
-        assertThrows(
-            HrmCommonException.class,
-            () -> {
-              branchService.getByPaging("0", "0", "branchName", "a", "MAIN", "true");
-            });
-    assertEquals(HrmConstant.ERROR.PAGE.INVALID, exception.getMessage());
-  }
-
-  // UTCID06 - getByPaging: sortBy invalid
-  @Test
-  void testUTCID06_GetByPaging_sortByInvalid() {
-    Exception exception =
-        assertThrows(
-            HrmCommonException.class,
-            () -> {
-              branchService.getByPaging("0", "1", "a", "a", "MAIN", "true");
-            });
-    assertEquals(HrmConstant.ERROR.PAGE.INVALID, exception.getMessage());
-  }
-
-  // UTCID07 - getByPaging: branchType invalid
-  @Test
-  void testUTCID07_GetByPaging_branchTypeInvalid() {
-    Exception exception =
-        assertThrows(
-            HrmCommonException.class,
-            () -> {
-              branchService.getByPaging("0", "1", "branchName", "a", "MAINS", "true");
-            });
-    assertEquals(HrmConstant.ERROR.PAGE.INVALID, exception.getMessage());
-  }
-
-  // UTCID08 - getByPaging: status invalid
-  @Test
-  void testUTCID08_GetByPaging_statusInvalid() {
-    Exception exception =
-        assertThrows(
-            HrmCommonException.class,
-            () -> {
-              branchService.getByPaging("0", "1", "branchName", "a", "MAINS", "A");
+              branchService.getByPaging(0, 1, "a", "a", BranchType.MAIN, true);
             });
     assertEquals(HrmConstant.ERROR.PAGE.INVALID, exception.getMessage());
   }
@@ -226,12 +173,12 @@ public class BranchServiceImplTest {
     Branch duplicateBranchName =
         new Branch()
             .setBranchName("Valid Branch Name")
-            .setBranchType("MAIN")
+            .setBranchType(MAIN)
             .setLocation("Valid Location 123123")
             .setContactPerson("Valid Contact Person")
             .setPhoneNumber("0912345678")
-            .setCapacity("500")
-            .setActiveStatus("true");
+            .setCapacity(500)
+            .setActiveStatus(true);
 
     assertThrows(HrmCommonException.class, () -> branchService.create(duplicateBranchName));
   }
@@ -271,12 +218,12 @@ public class BranchServiceImplTest {
     Branch duplicateLocationBranch =
         new Branch()
             .setBranchName("Valid Branch Name 123123")
-            .setBranchType("MAIN")
+            .setBranchType(BranchType.MAIN)
             .setLocation("Valid Location")
             .setContactPerson("Valid Contact Person")
             .setPhoneNumber("0912345678")
-            .setCapacity("500")
-            .setActiveStatus("true");
+            .setCapacity(500)
+            .setActiveStatus(true);
 
     assertThrows(HrmCommonException.class, () -> branchService.create(duplicateLocationBranch));
   }
@@ -317,63 +264,45 @@ public class BranchServiceImplTest {
     assertThrows(HrmCommonException.class, () -> branchService.create(branch));
   }
 
-  // UTCID014 - create: capacity not null && not number
+  // UTCID014 - create: capacity not null && greater than 100,000
   @Test
-  void testUTCID014_Create_capacityNotNumber() {
+  void testUTCID014_Create_capacityExcessive() {
     Branch branch = createValidBranch();
-    assertThrows(HrmCommonException.class, () -> branch.setCapacity("A"));
-  }
-
-  // UTCID015 - create: capacity not null && greater than 100,000
-  @Test
-  void testUTCID015_Create_capacityExcessive() {
-    Branch branch = createValidBranch();
-    branch.setCapacity("100001");
+    branch.setCapacity(100001);
 
     assertThrows(HrmCommonException.class, () -> branchService.create(branch));
   }
 
-  // UTCID016 - create: capacity not null && negative number
+  // UTCID015 - create: capacity not null && negative number
   @Test
-  void testUTCID016_Create_capacityNegative() {
+  void testUTCID015_Create_capacityNegative() {
     Branch branch = createValidBranch();
-    branch.setCapacity("0");
+    branch.setCapacity(0);
 
     assertThrows(HrmCommonException.class, () -> branchService.create(branch));
   }
 
-  // UTCID017 - create: branchType null
+  // UTCID016 - create: branchType null
   @Test
-  void testUTCID017_Create_branchTypeNull() {
+  void testUTCID016_Create_branchTypeNull() {
     Branch branch = createValidBranch();
-    assertThrows(HrmCommonException.class, () -> branch.setBranchType(null));
+    branch.setBranchType(null);
+    assertThrows(HrmCommonException.class, () -> branchService.create(branch));
   }
 
-  // UTCID018 - create: branchType invalid value (!= "MAIN" || != "SUB")
+  // UTCID017 - create: activeStatus null
   @Test
-  void testUTCID018_Create_branchTypeInvalid() {
+  void testUTCID017_Create_activeStatusNull() {
     Branch branch = createValidBranch();
-    assertThrows(HrmCommonException.class, () -> branch.setBranchType("MAINS"));
-  }
-
-  // UTCID019 - create: activeStatus null
-  @Test
-  void testUTCID019_Create_activeStatusNull() {
-    Branch branch = createValidBranch();
-    assertThrows(HrmCommonException.class, () -> branch.setActiveStatus(null));
-  }
-
-  // UTCID020 - create: activeStatus invalid
-  @Test
-  void testUTCID020_Create_activeStatusInvalid() {
-    Branch branch = createValidBranch();
-    assertThrows(HrmCommonException.class, () -> branch.setActiveStatus("a"));
+    branch.setActiveStatus(null);
+    assertThrows(HrmCommonException.class, () -> branchService.create(branch));
   }
 
   // UPDATE
   // UTCID01 - UPDATE: all valid
   @Test
   void testUTCID01_Update_AllValid() {
+    branchRepository.deleteAll();
     Branch branch = createValidBranch();
     Branch savedBranch = branchService.create(branch);
     Branch updateBranch = branchService.update(savedBranch);
@@ -385,7 +314,9 @@ public class BranchServiceImplTest {
   // UTCID02 - UPDATE: branchName null
   @Test
   void testUTCID02_Update_branchNameNull() {
+    branchRepository.deleteAll();
     Branch branch = createValidBranch();
+    branchService.create(branch);
     branch.setBranchName(null);
 
     assertThrows(HrmCommonException.class, () -> branchService.update(branch));
@@ -394,7 +325,9 @@ public class BranchServiceImplTest {
   // UTCID03 - Update: branchName empty
   @Test
   void testUTCID03_Update_branchNameEmpty() {
+    branchRepository.deleteAll();
     Branch branch = createValidBranch();
+    branchService.create(branch);
     branch.setBranchName("");
 
     assertThrows(HrmCommonException.class, () -> branchService.update(branch));
@@ -403,7 +336,9 @@ public class BranchServiceImplTest {
   // UTCID04 - Update: branchName greater than 100 characters
   @Test
   void testUTCID04_Update_branchNameLong() {
+    branchRepository.deleteAll();
     Branch branch = createValidBranch();
+    branchService.create(branch);
     branch.setBranchName("A".repeat(101));
 
     assertThrows(HrmCommonException.class, () -> branchService.update(branch));
@@ -412,26 +347,30 @@ public class BranchServiceImplTest {
   // UTCID05 - Update: branchName duplicate
   @Test
   void testUTCID05_Update_branchNameDuplicate() {
+    branchRepository.deleteAll();
     Branch branch = createValidBranch();
     branchService.create(branch);
     Branch secondBranch =
         new Branch()
             .setBranchName("Valid Branch Name 123123")
-            .setBranchType("SUB")
+            .setBranchType(BranchType.SUB)
             .setLocation("Valid Location 123123")
             .setContactPerson("Valid Contact Person")
             .setPhoneNumber("0912345678")
-            .setCapacity("500")
-            .setActiveStatus("true");
+            .setCapacity(500)
+            .setActiveStatus(true);
     Branch returnValue = branchService.create(secondBranch);
     returnValue.setBranchName("Valid Branch Name");
+
     assertThrows(HrmCommonException.class, () -> branchService.update(returnValue));
   }
 
   // UTCID06 - Update: location null
   @Test
   void testUTCID06_Update_locationNull() {
+    branchRepository.deleteAll();
     Branch branch = createValidBranch();
+    branchService.create(branch);
     branch.setLocation(null);
 
     assertThrows(HrmCommonException.class, () -> branchService.update(branch));
@@ -440,7 +379,9 @@ public class BranchServiceImplTest {
   // UTCID07 - Update: location empty
   @Test
   void testUTCID07_Update_locationEmpty() {
+    branchRepository.deleteAll();
     Branch branch = createValidBranch();
+    branchService.create(branch);
     branch.setLocation("");
 
     assertThrows(HrmCommonException.class, () -> branchService.update(branch));
@@ -449,7 +390,9 @@ public class BranchServiceImplTest {
   // UTCID08 - Update: location greater than 256 characters
   @Test
   void testUTCID08_Update_locationLong() {
+    branchRepository.deleteAll();
     Branch branch = createValidBranch();
+    branchService.create(branch);
     branch.setLocation("A".repeat(257));
 
     assertThrows(HrmCommonException.class, () -> branchService.update(branch));
@@ -458,26 +401,30 @@ public class BranchServiceImplTest {
   // UTCID09 - Update: location duplicate
   @Test
   void testUTCID09_Update_locationDuplicate() {
+    branchRepository.deleteAll();
     Branch branch = createValidBranch();
     branchService.create(branch);
     Branch secondBranch =
         new Branch()
             .setBranchName("Valid Branch Name 123123")
-            .setBranchType("SUB")
+            .setBranchType(BranchType.SUB)
             .setLocation("Valid Location 123123")
             .setContactPerson("Valid Contact Person")
             .setPhoneNumber("0912345678")
-            .setCapacity("500")
-            .setActiveStatus("true");
+            .setCapacity(500)
+            .setActiveStatus(true);
     Branch returnValue = branchService.create(secondBranch);
     returnValue.setLocation("Valid Location");
+
     assertThrows(HrmCommonException.class, () -> branchService.update(returnValue));
   }
 
   // UTCID010 - Update: contactPerson greater than 100 characters
   @Test
   void testUTCID010_Update_contactPersonLong() {
+    branchRepository.deleteAll();
     Branch branch = createValidBranch();
+    branchService.create(branch);
     branch.setContactPerson("A".repeat(101));
 
     assertThrows(HrmCommonException.class, () -> branchService.update(branch));
@@ -486,7 +433,9 @@ public class BranchServiceImplTest {
   // UTCID011 - Update: phoneNumber null
   @Test
   void testUTCID011_Update_phoneNumberNull() {
+    branchRepository.deleteAll();
     Branch branch = createValidBranch();
+    branchService.create(branch);
     branch.setPhoneNumber(null);
 
     assertThrows(HrmCommonException.class, () -> branchService.update(branch));
@@ -495,7 +444,9 @@ public class BranchServiceImplTest {
   // UTCID012 - Update: phoneNumber empty
   @Test
   void testUTCID012_Update_phoneNumberEmpty() {
+    branchRepository.deleteAll();
     Branch branch = createValidBranch();
+    branchService.create(branch);
     branch.setPhoneNumber("");
 
     assertThrows(HrmCommonException.class, () -> branchService.update(branch));
@@ -504,87 +455,78 @@ public class BranchServiceImplTest {
   // UTCID013 - Update: phoneNumber not match regex
   @Test
   void testUTCID013_Update_phoneNumberInvalidFormat() {
+    branchRepository.deleteAll();
     Branch branch = createValidBranch();
+    branchService.create(branch);
     branch.setPhoneNumber("INVALID_PHONE");
 
     assertThrows(HrmCommonException.class, () -> branchService.update(branch));
   }
 
-  // UTCID014 - Update: capacity not null && not number
+  // UTCID014 - Update: capacity not null && greater than 100,000
   @Test
-  void testUTCID014_Update_capacityNotNumber() {
-    Branch branch = createValidBranch();
-    assertThrows(HrmCommonException.class, () -> branch.setCapacity("A"));
-  }
-
-  // UTCID015 - Update: capacity not null && greater than 100,000
-  @Test
-  void testUTCID015_Update_capacityExcessive() {
-    Branch branch = createValidBranch();
-    branch.setCapacity("100001");
-
-    assertThrows(HrmCommonException.class, () -> branchService.update(branch));
-  }
-
-  // UTCID016 - Update: capacity not null && negative number
-  @Test
-  void testUTCID016_Update_capacityNegative() {
-    Branch branch = createValidBranch();
-    branch.setCapacity("0");
-
-    assertThrows(HrmCommonException.class, () -> branchService.update(branch));
-  }
-
-  // UTCID017 - Update: branchType null
-  @Test
-  void testUTCID017_Update_branchTypeNull() {
-    Branch branch = createValidBranch();
-    assertThrows(HrmCommonException.class, () -> branch.setBranchType(null));
-  }
-
-  // UTCID018 - Update: branchType invalid value (!= "MAIN" || != "SUB")
-  @Test
-  void testUTCID018_Update_branchTypeInvalid() {
-    Branch branch = createValidBranch();
-    assertThrows(HrmCommonException.class, () -> branch.setBranchType("MAINS"));
-  }
-
-  // UTCID019 - Update: activeStatus null
-  @Test
-  void testUTCID019_Update_activeStatusNull() {
-    Branch branch = createValidBranch();
-    assertThrows(HrmCommonException.class, () -> branch.setActiveStatus(null));
-  }
-
-  // UTCID020 - Update: activeStatus invalid
-  @Test
-  void testUTCID020_Update_activeStatusInvalid() {
-    Branch branch = createValidBranch();
-    assertThrows(HrmCommonException.class, () -> branch.setActiveStatus("a"));
-  }
-
-  // UTCID021 - Update: id null
-  @Test
-  void testUTCID021_Update_idNull() {
-    Branch branch = createValidBranch();
-    branch.setId(null);
-    assertThrows(HrmCommonException.class, () -> branchService.update(branch));
-  }
-
-  // UTCID022 - Update: id not exist
-  @Test
-  void testUTCID022_Update_idNotExist() {
+  void testUTCID014_Update_capacityExcessive() {
     branchRepository.deleteAll();
     Branch branch = createValidBranch();
-    branch.setId("1");
+    branchService.create(branch);
+    branch.setCapacity(100001);
+
     assertThrows(HrmCommonException.class, () -> branchService.update(branch));
   }
 
-  // UTCID023 - Update: id not number
+  // UTCID015 - Update: capacity not null && negative number
   @Test
-  void testUTCID023_Update_idNotNumber() {
+  void testUTCID015_Update_capacityNegative() {
+    branchRepository.deleteAll();
     Branch branch = createValidBranch();
-    assertThrows(HrmCommonException.class, () -> branch.setId("a"));
+    branchService.create(branch);
+    branch.setCapacity(0);
+
+    assertThrows(HrmCommonException.class, () -> branchService.update(branch));
+  }
+
+  // UTCID016 - Update: branchType null
+  @Test
+  void testUTCID016_Update_branchTypeNull() {
+    branchRepository.deleteAll();
+    Branch branch = createValidBranch();
+    branchService.create(branch);
+    branch.setBranchType(null);
+
+    assertThrows(HrmCommonException.class, () -> branchService.update(branch));
+  }
+
+  // UTCID017 - Update: activeStatus null
+  @Test
+  void testUTCID017_Update_activeStatusNull() {
+    branchRepository.deleteAll();
+    Branch branch = createValidBranch();
+    branchService.create(branch);
+    branch.setActiveStatus(null);
+
+    assertThrows(HrmCommonException.class, () -> branchService.update(branch));
+  }
+
+  // UTCID018 - Update: id null
+  @Test
+  void testUTCID018_Update_idNull() {
+    branchRepository.deleteAll();
+    Branch branch = createValidBranch();
+    branchService.create(branch);
+    branch.setId(null);
+
+    assertThrows(HrmCommonException.class, () -> branchService.update(branch));
+  }
+
+  // UTCID019 - Update: id not exist
+  @Test
+  void testUTCID019_Update_idNotExist() {
+    branchRepository.deleteAll();
+    Branch branch = createValidBranch();
+    branchService.create(branch);
+    branch.setId(1L);
+
+    assertThrows(HrmCommonException.class, () -> branchService.update(branch));
   }
 
   // DELETE
@@ -593,9 +535,8 @@ public class BranchServiceImplTest {
   void testUTCID01_Delete_AllValid() {
     Branch branch = createValidBranch();
     Branch branch1 = branchService.create(branch);
-    String id = branch1.getId().toString();
-    branchService.delete(id);
-    assertEquals(branchService.getById(id), null);
+    branchService.delete(branch1.getId());
+    assertEquals(branchService.getById(branch1.getId()), null);
   }
 
   // UTCID02 - Delete: id null
@@ -604,17 +545,11 @@ public class BranchServiceImplTest {
     assertThrows(HrmCommonException.class, () -> branchService.delete(null));
   }
 
-  // UTCID03 - Delete: id not number
+  // UTCID03 - Delete: id not exist
   @Test
-  void testUTCID03_Delete_idNotNumber() {
-    assertThrows(HrmCommonException.class, () -> branchService.delete("a"));
-  }
-
-  // UTCID04 - Delete: id not exist
-  @Test
-  void testUTCID04_Delete_idNotExist() {
+  void testUTCID03_Delete_idNotExist() {
     branchRepository.deleteAll();
-    String nonExistingId = "2";
+    Long nonExistingId = 2L;
     assertThrows(HrmCommonException.class, () -> branchService.delete(nonExistingId));
   }
 }
