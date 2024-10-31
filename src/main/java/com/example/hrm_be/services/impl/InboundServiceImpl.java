@@ -21,6 +21,8 @@ import com.example.hrm_be.models.entities.InboundBatchDetailEntity;
 import com.example.hrm_be.models.entities.InboundDetailsEntity;
 import com.example.hrm_be.models.entities.InboundEntity;
 import com.example.hrm_be.models.entities.ProductEntity;
+import com.example.hrm_be.models.entities.ProductSuppliersEntity;
+import com.example.hrm_be.models.entities.SupplierEntity;
 import com.example.hrm_be.models.entities.UserEntity;
 import com.example.hrm_be.models.requests.CreateInboundRequest;
 import com.example.hrm_be.models.responses.InboundDetail;
@@ -31,6 +33,7 @@ import com.example.hrm_be.repositories.InboundBatchDetailRepository;
 import com.example.hrm_be.repositories.InboundDetailsRepository;
 import com.example.hrm_be.repositories.InboundRepository;
 import com.example.hrm_be.repositories.ProductRepository;
+import com.example.hrm_be.repositories.ProductSuppliersRepository;
 import com.example.hrm_be.services.InboundService;
 import com.example.hrm_be.services.UserService;
 import com.example.hrm_be.utils.WplUtil;
@@ -54,6 +57,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class InboundServiceImpl implements InboundService {
   @Autowired private InboundRepository inboundRepository;
   @Autowired private InboundDetailsRepository inboundDetailsRepository;
+  @Autowired private ProductSuppliersRepository productSuppliersRepository;
   @Autowired private BranchProductRepository branchProductRepository;
   @Autowired private BranchBatchRepository branchBatchRepository;
   @Autowired private InboundBatchDetailRepository inboundBatchDetailRepository;
@@ -431,6 +435,28 @@ public class InboundServiceImpl implements InboundService {
     if (!inboundEntity.getStatus().isCheck()) {
       throw new HrmCommonException("Trạng thái của phiếu không hợp lệ");
     }
+    List<ProductSuppliersEntity> productSuppliersEntities = new ArrayList<>();
+
+    // Iterate through InboundDetails to manage Product-Supplier relations
+    inboundEntity.getInboundDetails().forEach(inboundDetail -> {
+      ProductEntity product = inboundDetail.getProduct();
+      SupplierEntity supplier = inboundEntity.getSupplier();
+
+      if (supplier != null) {
+        // Check if a ProductSupplierEntity exists for the product-supplier pair
+        ProductSuppliersEntity productSupplier =
+            productSuppliersRepository.findByProductAndSupplier(product, supplier)
+                .orElse(new ProductSuppliersEntity());
+
+        // If it exists, update necessary fields, otherwise create a new one
+        if (productSupplier.getId() == null) {
+          productSupplier.setProduct(product);
+          productSupplier.setSupplier(supplier);
+          productSuppliersEntities.add(productSupplier);
+        }
+      }
+      productSuppliersRepository.saveAll(productSuppliersEntities);
+    });
 
     // Get the branch details
     BranchEntity toBranch = inboundEntity.getToBranch();
