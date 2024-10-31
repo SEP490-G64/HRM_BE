@@ -97,6 +97,7 @@ public class HrmConstant {
       public static final String EXIST = "error.unit_of_measurement.exist";
       public static final String NOT_CHILD = "error.unit_of_measurement.not_child";
       public static final String NOT_EXIST = "error.unit_of_measurement.not_exist";
+      public static final String INVALID = "error.unit_of_measurement.invalid";
     }
 
     public static class USER {
@@ -156,7 +157,8 @@ public class HrmConstant {
       public static final String EXIST = "error.manufacturer.exist";
       public static final String NOT_CHILD = "error.manufacturer.not_child";
       public static final String NOT_EXIST = "error.manufacturer.not_exist";
-      public static final String TAXCODE_NOT_EXIST = "error.manufacturer.taxcode_not_exist";
+      public static final String INVALID = "error.manufacturer.invalid";
+      public static final String TAXCODE_EXIST = "error.manufacturer.taxcode_exist";
     }
 
     public static class INVENTORY_CHECK {
@@ -274,7 +276,8 @@ public class HrmConstant {
       public static final String EXIST = "error.supplier.exist";
       public static final String NOT_CHILD = "error.supplier.not_child";
       public static final String NOT_EXIST = "error.supplier.not_exist";
-      public static final String TAXCODE_NOT_EXIST = "error.supplier.taxcode_not_exist";
+      public static final String INVALID = "error.supplier.invalid";
+      public static final String TAXCODE_EXIST = "error.supplier.taxcode_exist";
     }
 
     public static class PAGE {
@@ -290,5 +293,6 @@ public class HrmConstant {
     public static String TAX_CODE = "^(0[0-9]{9}|[1-9][0-9]{9}|[1-9][0-9]{13})$";
     public static String FAX_NUMBER =
         "^(0[1-9]{1}[0-9]{0,2}-[0-9]{7,8}|\\+84-[1-9]{1}[0-9]{0,2}-[0-9]{7,8})$";
+    public static String EMAIL = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\\\.[a-zA-Z]{2,}$";
   }
 }

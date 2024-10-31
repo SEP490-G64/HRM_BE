@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 public interface UnitOfMeasurementService {
   UnitOfMeasurement getById(Long id);
 
-  Page<UnitOfMeasurement> getByPaging(int pageNo, int pageSize, String sortBy, String name);
+  Page<UnitOfMeasurement> getByPaging(int pageNo, int pageSize, String sortBy, String keyword);
 
   UnitOfMeasurement create(UnitOfMeasurement unitOfMeasurement);
 

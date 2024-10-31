@@ -10,7 +10,7 @@ public interface SupplierService {
   Supplier getById(Long id);
 
   Page<Supplier> getByPaging(
-      int pageNo, int pageSize, String sortBy, String name, @Nullable Boolean status);
+      int pageNo, int pageSize, String sortBy, String keyword, Boolean status);
 
   Supplier create(Supplier supplier);
 

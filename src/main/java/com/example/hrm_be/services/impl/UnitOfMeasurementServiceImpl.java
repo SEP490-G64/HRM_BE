@@ -5,6 +5,7 @@ import com.example.hrm_be.commons.constants.HrmConstant.ERROR.UNIT_OF_MEASUREMEN
 import com.example.hrm_be.components.ProductMapper;
 import com.example.hrm_be.components.UnitOfMeasurementMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
+import com.example.hrm_be.models.dtos.ProductType;
 import com.example.hrm_be.models.dtos.UnitOfMeasurement;
 import com.example.hrm_be.models.entities.UnitOfMeasurementEntity;
 import com.example.hrm_be.repositories.UnitOfMeasurementRepository;
@@ -30,6 +31,11 @@ public class UnitOfMeasurementServiceImpl implements UnitOfMeasurementService {
 
   @Override
   public UnitOfMeasurement getById(Long id) {
+    // Validation: Check if the ID is null
+    if (id == null) {
+      throw new HrmCommonException(HrmConstant.ERROR.UNIT_OF_MEASUREMENT.INVALID);
+    }
+
     return Optional.ofNullable(id)
         .flatMap(
             e -> unitOfMeasurementRepository.findById(e).map(b -> unitOfMeasurementMapper.toDTO(b)))
@@ -37,19 +43,35 @@ public class UnitOfMeasurementServiceImpl implements UnitOfMeasurementService {
   }
 
   @Override
-  public Page<UnitOfMeasurement> getByPaging(int pageNo, int pageSize, String sortBy, String name) {
+  public Page<UnitOfMeasurement> getByPaging(int pageNo, int pageSize, String sortBy, String keyword) {
+    if (pageNo < 0 || pageSize < 1) {
+      throw new HrmCommonException(HrmConstant.ERROR.PAGE.INVALID);
+    }
+
+    if (sortBy == null) {
+      sortBy = "id";
+    }
+    if (!Objects.equals(sortBy, "id")
+            && !Objects.equals(sortBy, "unitName")) {
+      throw new HrmCommonException(HrmConstant.ERROR.PAGE.INVALID);
+    }
+
+    if (keyword == null) {
+      keyword = "";
+    }
+
     Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(sortBy).descending());
 
     // Tìm kiếm theo tên
     return unitOfMeasurementRepository
-        .findByUnitNameContainingIgnoreCase(name, pageable)
+        .findByUnitNameContainingIgnoreCase(keyword, pageable)
         .map(dao -> unitOfMeasurementMapper.toDTO(dao));
   }
 
   @Override
   public UnitOfMeasurement create(UnitOfMeasurement unit) {
-    if (unit == null) {
-      throw new HrmCommonException(UNIT_OF_MEASUREMENT.NOT_EXIST);
+    if (unit == null || !commonValidate(unit)) {
+      throw new HrmCommonException(HrmConstant.ERROR.UNIT_OF_MEASUREMENT.INVALID);
     }
 
     // Check if unit name exist
@@ -66,6 +88,10 @@ public class UnitOfMeasurementServiceImpl implements UnitOfMeasurementService {
 
   @Override
   public UnitOfMeasurement update(UnitOfMeasurement unit) {
+    if (unit == null || unit.getId() == null || !commonValidate(unit)) {
+      throw new HrmCommonException(HrmConstant.ERROR.UNIT_OF_MEASUREMENT.INVALID);
+    }
+
     UnitOfMeasurementEntity oldUnitOfMeasurementEntity =
         unitOfMeasurementRepository.findById(unit.getId()).orElse(null);
     if (oldUnitOfMeasurementEntity == null) {
@@ -87,6 +113,10 @@ public class UnitOfMeasurementServiceImpl implements UnitOfMeasurementService {
 
   @Override
   public void delete(Long id) {
+    // Validation: Check if the ID is null
+    if (id == null) {
+      throw new HrmCommonException(HrmConstant.ERROR.UNIT_OF_MEASUREMENT.INVALID);
+    }
 
     UnitOfMeasurementEntity unitOfMeasurement =
         unitOfMeasurementRepository.findById(id).orElse(null);
@@ -94,5 +124,15 @@ public class UnitOfMeasurementServiceImpl implements UnitOfMeasurementService {
       throw new HrmCommonException(HrmConstant.ERROR.UNIT_OF_MEASUREMENT.NOT_EXIST);
     }
     unitOfMeasurementRepository.deleteById(id);
+  }
+
+  // This method will validate category field input values
+  private boolean commonValidate(UnitOfMeasurement unit) {
+    if (unit.getUnitName() == null
+            || unit.getUnitName().isEmpty()
+            || unit.getUnitName().length() > 100) {
+      return false;
+    }
+    return true;
   }
 }
