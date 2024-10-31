@@ -26,12 +26,11 @@ public interface InboundBatchDetailRepository
       @Param("inboundId") Long inboundId);
 
   @Query(
-          "SELECT COALESCE(SUM(ib.quantity), 0) FROM InboundBatchDetailEntity ib "
-                  + "JOIN ib.batch b "
-                  + "JOIN b.product p "
-                  + "WHERE ib.inbound.id = :inboundId "
-                  + "AND p = :product"
-  )
+      "SELECT COALESCE(SUM(ib.quantity), 0) FROM InboundBatchDetailEntity ib "
+          + "JOIN ib.batch b "
+          + "JOIN b.product p "
+          + "WHERE ib.inbound.id = :inboundId "
+          + "AND p = :product")
   Integer findTotalQuantityByInboundAndProduct(Long inboundId, ProductEntity product);
 
   List<InboundBatchDetailEntity> findAllByBatchId(Long batchId);

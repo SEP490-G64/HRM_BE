@@ -1,7 +1,6 @@
 package com.example.hrm_be.repositories;
 
 import com.example.hrm_be.models.entities.BatchEntity;
-import com.example.hrm_be.models.entities.BranchProductEntity;
 import com.example.hrm_be.models.entities.ProductEntity;
 import java.util.List;
 import java.util.Optional;

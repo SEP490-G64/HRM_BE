@@ -45,12 +45,13 @@ public class BranchServiceImpl implements BranchService {
   // Retrieves a paginated list of Branch entities, allowing sorting and searching by name or
   // location and type
   @Override
-  public Page<Branch> getByPaging(int pageNo,
-                                  int pageSize,
-                                  String sortBy,
-                                  String keyword,
-                                  BranchType branchType,
-                                  @Nullable Boolean status) {
+  public Page<Branch> getByPaging(
+      int pageNo,
+      int pageSize,
+      String sortBy,
+      String keyword,
+      BranchType branchType,
+      @Nullable Boolean status) {
 
     if (pageNo < 0 || pageSize < 1) {
       throw new HrmCommonException(HrmConstant.ERROR.PAGE.INVALID);
