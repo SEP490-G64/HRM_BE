@@ -22,6 +22,7 @@ import com.example.hrm_be.repositories.UserRoleMapRepository;
 import com.example.hrm_be.services.*;
 import com.example.hrm_be.utils.ExcelUtility;
 import com.example.hrm_be.utils.PasswordGenerator;
+import com.example.hrm_be.utils.ValidateUtil;
 import io.micrometer.common.lang.Nullable;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -113,10 +114,19 @@ public class UserServiceImpl implements UserService {
     if (!isAdmin()) {
       throw new HrmCommonException(HrmConstant.ERROR.ROLE.NOT_ALLOWED);
     }
+    if (ValidateUtil.validateGetByPaging(pageNo, pageSize, sortBy, User.class)) {
+      throw new HrmCommonException(HrmConstant.ERROR.PAGE.INVALID);
+    }
+
+    Sort.Direction convertDirection;
+    try {
+      convertDirection = Sort.Direction.fromString(sortDirection);
+    } catch (IllegalArgumentException e) {
+      convertDirection = Sort.Direction.ASC;
+    }
 
     // Create a pageable request based on provided parameters
-    Pageable pageable =
-        PageRequest.of(pageNo, pageSize, Sort.by(Sort.Direction.fromString(sortDirection), sortBy));
+    Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(convertDirection, sortBy));
 
     // Fetch users by keyword and map to DTO
     return userRepository
@@ -143,6 +153,10 @@ public class UserServiceImpl implements UserService {
   public User getById(Long id) {
     /** TODO Only allow admin user to call this function */
     // Check if the logged user is an admin
+    if (id == null) {
+      throw new HrmCommonException(HrmConstant.ERROR.USER.INVALID);
+    }
+
     if (!isAdmin()) {
       throw new HrmCommonException(HrmConstant.ERROR.ROLE.NOT_ALLOWED);
     }
@@ -161,11 +175,14 @@ public class UserServiceImpl implements UserService {
       throw new HrmCommonException(HrmConstant.ERROR.ROLE.NOT_ALLOWED);
     }
 
+    if (!validateUser(user)) {
+      throw new HrmCommonException(HrmConstant.ERROR.USER.INVALID);
+    }
+
     // Validate user details and check for existing users with the same email or username
-    if (!validateUser(user)
-        || userRepository.existsByEmail(user.getEmail())
+    if (userRepository.existsByEmail(user.getEmail())
         || userRepository.existsByUserName(user.getUserName())) {
-      throw new HrmCommonException(USER.EXIST);
+      throw new HrmCommonException(HrmConstant.ERROR.USER.EXIST);
     }
 
     // Generate and encode random password
@@ -237,6 +254,10 @@ public class UserServiceImpl implements UserService {
     /** TODO Only allow admin user to update other users. */
     UserEntity oldUserEntity = null;
 
+    if (!validateUser(user) || user.getId() == null) {
+      throw new HrmCommonException(HrmConstant.ERROR.USER.INVALID);
+    }
+
     // Check if the action is Admin update user or User update profile
     if (!profile) {
       // Check if the logged user is an admin
@@ -258,12 +279,11 @@ public class UserServiceImpl implements UserService {
 
     // Validate user details and check for existing users with the same email or username different
     // from current user
-    if (!validateUser(user)
-        || (userRepository.existsByEmail(user.getEmail())
+    if ((userRepository.existsByEmail(user.getEmail())
             && !Objects.equals(oldUserEntity.getEmail(), user.getEmail()))
         || (userRepository.existsByUserName(user.getUserName())
             && !Objects.equals(oldUserEntity.getUserName(), user.getUserName()))) {
-      throw new HrmCommonException(USER.EXIST);
+      throw new HrmCommonException(HrmConstant.ERROR.USER.EXIST);
     }
 
     // Update user details and save
@@ -388,6 +408,10 @@ public class UserServiceImpl implements UserService {
     // TODO check admin, if admin, can getByEmail of other user, while not, can only get current
     // user
     // Retrieve user by email and map to DTO
+    if (!isAdmin()) {
+      throw new HrmCommonException(HrmConstant.ERROR.ROLE.NOT_ALLOWED);
+    }
+
     return userRepository.findByEmail(email).map(userMapper::toDTO).orElse(null);
   }
 
@@ -398,6 +422,10 @@ public class UserServiceImpl implements UserService {
     // Check if the logged user is an admin
     if (!isAdmin()) {
       throw new HrmCommonException(HrmConstant.ERROR.ROLE.NOT_ALLOWED);
+    }
+
+    if (ids == null || ids.isEmpty()) {
+      throw new HrmCommonException(USER.INVALID);
     }
 
     // Delete users by their IDs
@@ -713,6 +741,6 @@ public class UserServiceImpl implements UserService {
     }
     return user.getStatus() != null
         && (user.getStatus() == UserStatusType.ACTIVATE
-            && user.getStatus() == UserStatusType.DEACTIVATE);
+            || user.getStatus() == UserStatusType.DEACTIVATE);
   }
 }

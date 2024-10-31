@@ -65,7 +65,7 @@ public class UserServiceImplTest {
     roles.add(roleService.getAdminRole());
     return new User()
         .setUserName("hrmuser")
-        .setBranch(createValidBranch())
+        .setBranch(branchService.getById("1"))
         .setPassword("test123123")
         .setEmail("hrmuser@gmail.com")
         .setFirstName("A")
