@@ -83,6 +83,8 @@ public class InboundServiceImpl implements InboundService {
     inboundDTO.setTotalPrice(optionalInbound.getTotalPrice());
     inboundDTO.setIsApproved(optionalInbound.getIsApproved());
     inboundDTO.setStatus(optionalInbound.getStatus());
+    inboundDTO.setApprovedBy(userMapper.convertToDtoBasicInfo(optionalInbound.getApprovedBy()));
+    inboundDTO.setCreatedBy(userMapper.convertToDtoBasicInfo(optionalInbound.getCreatedBy()));
     inboundDTO.setFromBranch(branchMapper.convertToDTOBasicInfo(optionalInbound.getFromBranch()));
     inboundDTO.setSupplier(supplierMapper.toDTO(optionalInbound.getSupplier()));
     inboundDTO.setToBranch(branchMapper.convertToDTOBasicInfo(optionalInbound.getToBranch()));
