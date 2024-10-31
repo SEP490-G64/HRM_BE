@@ -438,25 +438,29 @@ public class InboundServiceImpl implements InboundService {
     List<ProductSuppliersEntity> productSuppliersEntities = new ArrayList<>();
 
     // Iterate through InboundDetails to manage Product-Supplier relations
-    inboundEntity.getInboundDetails().forEach(inboundDetail -> {
-      ProductEntity product = inboundDetail.getProduct();
-      SupplierEntity supplier = inboundEntity.getSupplier();
+    inboundEntity
+        .getInboundDetails()
+        .forEach(
+            inboundDetail -> {
+              ProductEntity product = inboundDetail.getProduct();
+              SupplierEntity supplier = inboundEntity.getSupplier();
 
-      if (supplier != null) {
-        // Check if a ProductSupplierEntity exists for the product-supplier pair
-        ProductSuppliersEntity productSupplier =
-            productSuppliersRepository.findByProductAndSupplier(product, supplier)
-                .orElse(new ProductSuppliersEntity());
+              if (supplier != null) {
+                // Check if a ProductSupplierEntity exists for the product-supplier pair
+                ProductSuppliersEntity productSupplier =
+                    productSuppliersRepository
+                        .findByProductAndSupplier(product, supplier)
+                        .orElse(new ProductSuppliersEntity());
 
-        // If it exists, update necessary fields, otherwise create a new one
-        if (productSupplier.getId() == null) {
-          productSupplier.setProduct(product);
-          productSupplier.setSupplier(supplier);
-          productSuppliersEntities.add(productSupplier);
-        }
-      }
-      productSuppliersRepository.saveAll(productSuppliersEntities);
-    });
+                // If it exists, update necessary fields, otherwise create a new one
+                if (productSupplier.getId() == null) {
+                  productSupplier.setProduct(product);
+                  productSupplier.setSupplier(supplier);
+                  productSuppliersEntities.add(productSupplier);
+                }
+              }
+              productSuppliersRepository.saveAll(productSuppliersEntities);
+            });
 
     // Get the branch details
     BranchEntity toBranch = inboundEntity.getToBranch();
