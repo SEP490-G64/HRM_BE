@@ -8,6 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ProductSuppliersRepository extends JpaRepository<ProductSuppliersEntity, Long> {
 
-  Optional<ProductSuppliersEntity> findByProductAndSupplier(ProductEntity product,
-      SupplierEntity supplierEntity);
+  Optional<ProductSuppliersEntity> findByProductAndSupplier(
+      ProductEntity product, SupplierEntity supplierEntity);
 }
