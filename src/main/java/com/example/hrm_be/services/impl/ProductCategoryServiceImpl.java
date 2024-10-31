@@ -3,19 +3,15 @@ package com.example.hrm_be.services.impl;
 import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.components.ProductCategoryMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
-import com.example.hrm_be.models.dtos.Branch;
 import com.example.hrm_be.models.dtos.ProductCategory;
-import com.example.hrm_be.models.entities.BranchEntity;
 import com.example.hrm_be.models.entities.ProductCategoryEntity;
 import com.example.hrm_be.repositories.ProductCategoryRepository;
 import com.example.hrm_be.services.ProductCategoryService;
-import io.micrometer.common.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import jdk.jfr.Category;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -59,7 +55,8 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
 
   // Retrieves a paginated list of ProductCategory entities, allowing sorting and searching by name
   @Override
-  public Page<ProductCategory> getByPaging(int pageNo, int pageSize, String sortBy, String keyword) {
+  public Page<ProductCategory> getByPaging(
+      int pageNo, int pageSize, String sortBy, String keyword) {
     if (pageNo < 0 || pageSize < 1) {
       throw new HrmCommonException(HrmConstant.ERROR.PAGE.INVALID);
     }
@@ -68,9 +65,9 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
       sortBy = "id";
     }
     if (!Objects.equals(sortBy, "id")
-            && !Objects.equals(sortBy, "categoryName")
-            && !Objects.equals(sortBy, "categoryDescription")
-            && !Objects.equals(sortBy, "taxRate")) {
+        && !Objects.equals(sortBy, "categoryName")
+        && !Objects.equals(sortBy, "categoryDescription")
+        && !Objects.equals(sortBy, "taxRate")) {
       throw new HrmCommonException(HrmConstant.ERROR.PAGE.INVALID);
     }
 
@@ -159,16 +156,16 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
   // This method will validate category field input values
   private boolean commonValidate(ProductCategory category) {
     if (category.getCategoryName() == null
-            || category.getCategoryName().isEmpty()
-            || category.getCategoryName().length() > 100) {
+        || category.getCategoryName().isEmpty()
+        || category.getCategoryName().length() > 100) {
       return false;
     }
     if (category.getCategoryDescription() != null
-            && category.getCategoryDescription().length() > 1000) {
+        && category.getCategoryDescription().length() > 1000) {
       return false;
     }
     if (category.getTaxRate() != null
-            && (category.getTaxRate().compareTo(BigDecimal.valueOf(100)) > 0
+        && (category.getTaxRate().compareTo(BigDecimal.valueOf(100)) > 0
             || (category.getTaxRate().compareTo(BigDecimal.ZERO) < 0))) {
       return false;
     }

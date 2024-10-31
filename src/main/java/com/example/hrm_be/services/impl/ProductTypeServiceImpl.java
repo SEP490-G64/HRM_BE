@@ -3,14 +3,11 @@ package com.example.hrm_be.services.impl;
 import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.components.ProductTypeMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
-import com.example.hrm_be.models.dtos.ProductCategory;
 import com.example.hrm_be.models.dtos.ProductType;
 import com.example.hrm_be.models.entities.ProductTypeEntity;
 import com.example.hrm_be.repositories.ProductTypeRepository;
 import com.example.hrm_be.services.ProductTypeService;
-import io.micrometer.common.util.StringUtils;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -63,8 +60,8 @@ public class ProductTypeServiceImpl implements ProductTypeService {
       sortBy = "id";
     }
     if (!Objects.equals(sortBy, "id")
-            && !Objects.equals(sortBy, "typeName")
-            && !Objects.equals(sortBy, "typeDescription")) {
+        && !Objects.equals(sortBy, "typeName")
+        && !Objects.equals(sortBy, "typeDescription")) {
       throw new HrmCommonException(HrmConstant.ERROR.PAGE.INVALID);
     }
 
@@ -151,12 +148,11 @@ public class ProductTypeServiceImpl implements ProductTypeService {
   // This method will validate category field input values
   private boolean commonValidate(ProductType type) {
     if (type.getTypeName() == null
-            || type.getTypeName().isEmpty()
-            || type.getTypeName().length() > 100) {
+        || type.getTypeName().isEmpty()
+        || type.getTypeName().length() > 100) {
       return false;
     }
-    if (type.getTypeDescription() != null
-            && type.getTypeDescription().length() > 500) {
+    if (type.getTypeDescription() != null && type.getTypeDescription().length() > 500) {
       return false;
     }
     return true;
