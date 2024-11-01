@@ -63,6 +63,7 @@ public class InboundMapper {
   private Inbound convertToDTO(InboundEntity entity) {
     return Inbound.builder()
         .id(entity.getId())
+        .inboundCode(entity.getInboundCode())
         .inboundType(entity.getInboundType())
         .fromBranch(
             entity.getFromBranch() != null
@@ -108,6 +109,7 @@ public class InboundMapper {
   public Inbound convertToBasicInfo(InboundEntity entity) {
     return Inbound.builder()
         .id(entity.getId())
+        .inboundCode(entity.getInboundCode())
         .inboundType(entity.getInboundType())
         .fromBranch(
             entity.getFromBranch() != null

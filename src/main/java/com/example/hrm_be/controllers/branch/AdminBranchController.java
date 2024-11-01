@@ -35,8 +35,10 @@ public class AdminBranchController {
       @RequestParam(defaultValue = "20") int size,
       @RequestParam(required = false, defaultValue = "id") String sortBy,
       @RequestParam(required = false, defaultValue = "") String keyword,
-      @RequestParam(required = false, defaultValue = "") BranchType branchType) {
-    Page<Branch> branchPage = branchService.getByPaging(page, size, sortBy, keyword, branchType);
+      @RequestParam(required = false, defaultValue = "") BranchType branchType,
+      @RequestParam(required = false, defaultValue = "") Boolean activeStatus) {
+    Page<Branch> branchPage =
+        branchService.getByPaging(page, size, sortBy, keyword, branchType, activeStatus);
 
     // Build the response with pagination details
     BaseOutput<List<Branch>> response =
@@ -55,15 +57,6 @@ public class AdminBranchController {
   // Retrieves a Branch by its ID
   @GetMapping("/{id}")
   protected ResponseEntity<BaseOutput<Branch>> getById(@PathVariable("id") Long id) {
-    // Validate the path variable ID
-    if (id <= 0 || id == null) {
-      BaseOutput<Branch> response =
-          BaseOutput.<Branch>builder()
-              .status(com.example.hrm_be.commons.enums.ResponseStatus.FAILED)
-              .errors(List.of(HrmConstant.ERROR.REQUEST.INVALID_PATH_VARIABLE))
-              .build();
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-    }
 
     // Fetch branch by ID
     Branch branch = branchService.getById(id);
@@ -139,16 +132,6 @@ public class AdminBranchController {
   // Deletes a Branch by ID
   @DeleteMapping("/{id}")
   protected ResponseEntity<BaseOutput<String>> delete(@PathVariable("id") Long id) {
-    // Validate the path variable ID
-    if (id <= 0 || id == null) {
-      BaseOutput<String> response =
-          BaseOutput.<String>builder()
-              .status(com.example.hrm_be.commons.enums.ResponseStatus.FAILED)
-              .errors(List.of(HrmConstant.ERROR.REQUEST.INVALID_PATH_VARIABLE))
-              .build();
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-    }
-
     // Delete the branch by ID
     branchService.delete(id);
 

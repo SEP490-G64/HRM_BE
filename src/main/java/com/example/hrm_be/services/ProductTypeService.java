@@ -13,7 +13,7 @@ public interface ProductTypeService {
   ProductType getById(Long id);
 
   // Retrieves a paginated list of ProductType objects, allowing sorting and searching name
-  Page<ProductType> getByPaging(int pageNo, int pageSize, String sortBy, String name);
+  Page<ProductType> getByPaging(int pageNo, int pageSize, String sortBy, String keyword);
 
   // Creates a new ProductType entity and returns the created entity
   ProductType create(ProductType productType);

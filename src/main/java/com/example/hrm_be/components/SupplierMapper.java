@@ -80,12 +80,6 @@ public class SupplierMapper {
                     .map(purchaseMapper::toDTO)
                     .collect(Collectors.toList())
                 : null)
-        .productSuppliers(
-            entity.getProductSuppliers() != null
-                ? entity.getProductSuppliers().stream()
-                    .map(productSuppliersMapper::toDTO)
-                    .collect(Collectors.toList())
-                : null)
         .build();
   }
 }

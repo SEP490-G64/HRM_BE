@@ -116,6 +116,13 @@ public class ProductMapper {
                     .map(branchProductMapper::toDTO)
                     .collect(Collectors.toList())
                 : null)
+        .category(
+            entity.getCategory() != null ? productCategoryMapper.toDTO(entity.getCategory()) : null)
+        .type(entity.getType() != null ? productTypeMapper.toDTO(entity.getType()) : null)
+        .manufacturer(
+            entity.getManufacturer() != null
+                ? manufacturerMapper.toDTO(entity.getManufacturer())
+                : null)
         .build();
   }
 

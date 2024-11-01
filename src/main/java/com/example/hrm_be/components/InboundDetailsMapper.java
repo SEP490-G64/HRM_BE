@@ -30,6 +30,7 @@ public class InboundDetailsMapper {
                     .product(d.getProduct() != null ? productMapper.toEntity(d.getProduct()) : null)
                     .requestQuantity(d.getRequestQuantity())
                     .receiveQuantity(d.getReceiveQuantity())
+                    .inboundPrice(d.getInboundPrice())
                     .build())
         .orElse(null);
   }

@@ -3,6 +3,8 @@ package com.example.hrm_be.repositories;
 import com.example.hrm_be.models.entities.BatchEntity;
 import com.example.hrm_be.models.entities.BranchBatchEntity;
 import com.example.hrm_be.models.entities.BranchEntity;
+
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -19,4 +21,6 @@ public interface BranchBatchRepository extends JpaRepository<BranchBatchEntity, 
   Integer findQuantityByBatchIdAndBranchId(
       @Param("batchId") Long batchId, @Param("branchId") Long branchId);
 
+
+  List<BranchBatchEntity> findByBatchId(Long batchId);
 }

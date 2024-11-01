@@ -8,7 +8,7 @@ import com.example.hrm_be.models.dtos.Branch;
 import com.example.hrm_be.models.entities.BranchEntity;
 import com.example.hrm_be.repositories.BranchRepository;
 import com.example.hrm_be.services.BranchService;
-import io.micrometer.common.util.StringUtils;
+import io.micrometer.common.lang.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -32,6 +32,11 @@ public class BranchServiceImpl implements BranchService {
   // Retrieves a Branch by its ID
   @Override
   public Branch getById(Long id) {
+    // Validation: Check if the ID is blank, this never happen
+    if (id == null) {
+      throw new HrmCommonException(HrmConstant.ERROR.BRANCH.INVALID);
+    }
+
     return Optional.ofNullable(id)
         .flatMap(e -> branchRepository.findById(e).map(b -> branchMapper.toDTO(b)))
         .orElse(null);
@@ -41,18 +46,52 @@ public class BranchServiceImpl implements BranchService {
   // location and type
   @Override
   public Page<Branch> getByPaging(
-      int pageNo, int pageSize, String sortBy, String keyword, BranchType branchType) {
+      int pageNo,
+      int pageSize,
+      String sortBy,
+      String keyword,
+      BranchType branchType,
+      @Nullable Boolean status) {
+
+    if (pageNo < 0 || pageSize < 1) {
+      throw new HrmCommonException(HrmConstant.ERROR.PAGE.INVALID);
+    }
+
+    if (sortBy == null) {
+      sortBy = "id";
+    }
+    if (!Objects.equals(sortBy, "id")
+        && !Objects.equals(sortBy, "branchName")
+        && !Objects.equals(sortBy, "location")
+        && !Objects.equals(sortBy, "branchType")
+        && !Objects.equals(sortBy, "contactPerson")
+        && !Objects.equals(sortBy, "phoneNumber")
+        && !Objects.equals(sortBy, "capacity")
+        && !Objects.equals(sortBy, "activeStatus")) {
+      throw new HrmCommonException(HrmConstant.ERROR.PAGE.INVALID);
+    }
+
+    if (keyword == null) {
+      keyword = "";
+    }
+
     Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(sortBy).ascending());
     return branchRepository
-        .findByBranchNameOrLocationAndBranchType(keyword, branchType, pageable)
+        .findByBranchNameOrLocationAndBranchType(keyword, branchType, status, pageable)
         .map(dao -> branchMapper.toDTO(dao));
   }
 
   // Creates a new Branch
   @Override
   public Branch create(Branch branch) {
-    // Validation: Ensure the branch is not null and does not already exist at the same location
-    if (branch == null || branchRepository.existsByLocation(branch.getLocation())) {
+    // Validation: Ensure the branch is not null and does not have any invalid field
+    if (branch == null || !commonValidate(branch)) {
+      throw new HrmCommonException(HrmConstant.ERROR.BRANCH.INVALID);
+    }
+
+    // Validation: Ensure the branch does not already exist at the same location
+    if (branchRepository.existsByBranchName(branch.getBranchName())
+        || branchRepository.existsByLocation(branch.getLocation())) {
       throw new HrmCommonException(HrmConstant.ERROR.BRANCH.EXIST);
     }
 
@@ -67,10 +106,24 @@ public class BranchServiceImpl implements BranchService {
   // Updates an existing Branch
   @Override
   public Branch update(Branch branch) {
+    if (branch == null || !commonValidate(branch)) {
+      throw new HrmCommonException(HrmConstant.ERROR.BRANCH.INVALID);
+    }
+
+    if (branch.getId() == null) {
+      throw new HrmCommonException(HrmConstant.ERROR.BRANCH.INVALID);
+    }
+
     // Retrieve the existing branch entity by ID
     BranchEntity oldBranchEntity = branchRepository.findById(branch.getId()).orElse(null);
     if (oldBranchEntity == null) {
       throw new HrmCommonException(HrmConstant.ERROR.BRANCH.NOT_EXIST);
+    }
+
+    // Check if branch name exist except current branch
+    if (branchRepository.existsByBranchName(branch.getBranchName())
+        && !Objects.equals(branch.getBranchName(), oldBranchEntity.getBranchName())) {
+      throw new HrmCommonException(HrmConstant.ERROR.BRANCH.EXIST);
     }
 
     // Check if branch location exist except current branch
@@ -100,9 +153,9 @@ public class BranchServiceImpl implements BranchService {
   // Deletes a Branch by ID
   @Override
   public void delete(Long id) {
-    // Validation: Check if the ID is blank
-    if (StringUtils.isBlank(id.toString())) {
-      return;
+    // Validation: Check if the ID is blank, this never happen
+    if (id == null) {
+      throw new HrmCommonException(HrmConstant.ERROR.BRANCH.INVALID);
     }
 
     // Retrieve the existing branch entity by ID
@@ -121,5 +174,41 @@ public class BranchServiceImpl implements BranchService {
         .findByLocationContainsIgnoreCase(location)
         .map(branchMapper::toDTO)
         .orElse(null);
+  }
+
+  // This method will validate branch name, simple location, contact person, phone number, capacity
+  private boolean commonValidate(Branch branch) {
+    if (branch.getBranchName() == null
+        || branch.getBranchName().isEmpty()
+        || branch.getBranchName().length() > 100) {
+      return false;
+    }
+    if (branch.getLocation() == null
+        || branch.getLocation().isEmpty()
+        || branch.getLocation().length() > 256) {
+      return false;
+    }
+    if (branch.getContactPerson() != null
+        && !branch.getContactPerson().isEmpty()
+        && branch.getContactPerson().length() > 100) {
+      return false;
+    }
+    if (branch.getPhoneNumber() == null
+        || branch.getPhoneNumber().isEmpty()
+        || !branch.getPhoneNumber().matches(HrmConstant.REGEX.PHONE_NUMBER)) {
+      return false;
+    }
+    if (branch.getCapacity() != null
+        && (branch.getCapacity() < 1
+            || branch.getCapacity()
+                > 100000)) { // Use 100000 instead of 100.000 for decimal format correction
+      return false;
+    }
+
+    if (branch.getActiveStatus() == null) {
+      return false;
+    }
+
+    return branch.getBranchType() != null;
   }
 }

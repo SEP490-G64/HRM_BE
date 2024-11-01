@@ -1,6 +1,7 @@
 package com.example.hrm_be.controllers.user;
 
 import com.example.hrm_be.commons.constants.HrmConstant.ERROR.REQUEST;
+import com.example.hrm_be.commons.enums.UserStatusType;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.User;
 import com.example.hrm_be.models.responses.BaseOutput;
@@ -44,10 +45,11 @@ public class AdminUserController {
       @RequestParam(required = false, defaultValue = "id") String sortBy, // Sort by specified field
       @RequestParam(required = false, defaultValue = "ASC")
           String sortDirection, // Sort direction (ASC or DESC)
-      @RequestParam(required = false, defaultValue = "")
-          String keyword) { // Search keyword for filtering
+      @RequestParam(required = false, defaultValue = "") String keyword,
+      @RequestParam(required = false) UserStatusType status) { // Search keyword for filtering
     // Call the user service to get paginated user data
-    Page<User> userPage = userService.getByPaging(page, size, sortBy, sortDirection, keyword);
+    Page<User> userPage =
+        userService.getByPaging(page, size, sortBy, sortDirection, keyword, status);
 
     // Create a response object containing the user data and metadata
     BaseOutput<List<User>> response =
