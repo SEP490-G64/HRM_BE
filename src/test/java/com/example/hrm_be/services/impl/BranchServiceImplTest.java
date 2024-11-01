@@ -6,7 +6,6 @@ import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.example.hrm_be.HrmBeApplication;
-import com.example.hrm_be.common.TestcontainersConfiguration;
 import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.commons.enums.BranchType;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
@@ -22,8 +21,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 @Testcontainers
@@ -33,10 +30,6 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @Import(BranchServiceImpl.class)
 @Transactional
 public class BranchServiceImplTest {
-
-  @Container
-  public static PostgreSQLContainer<TestcontainersConfiguration> postgreSQLContainer =
-      TestcontainersConfiguration.postgreSQLContainer;
 
   @Autowired private BranchService branchService;
   @Autowired private BranchRepository branchRepository;

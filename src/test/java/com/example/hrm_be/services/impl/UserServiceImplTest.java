@@ -3,7 +3,6 @@ package com.example.hrm_be.services.impl;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.example.hrm_be.HrmBeApplication;
-import com.example.hrm_be.common.TestcontainersConfiguration;
 import com.example.hrm_be.common.utils.TestUtils;
 import com.example.hrm_be.commons.enums.RoleType;
 import com.example.hrm_be.commons.enums.UserStatusType;
@@ -25,8 +24,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 @Testcontainers
@@ -36,10 +33,6 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @Import({UserServiceImpl.class, BranchServiceImpl.class, RoleServiceImpl.class})
 @Transactional
 public class UserServiceImplTest {
-  @Container
-  public static PostgreSQLContainer<TestcontainersConfiguration> postgreSQLContainer =
-      TestcontainersConfiguration.postgreSQLContainer;
-
   @Autowired private UserService userService;
   @Autowired private RoleService roleService;
   @Autowired private BranchService branchService;

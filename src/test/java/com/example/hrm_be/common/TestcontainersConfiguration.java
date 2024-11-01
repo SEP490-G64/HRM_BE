@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
 
 @Slf4j
 public class TestcontainersConfiguration extends PostgreSQLContainer<TestcontainersConfiguration> {
@@ -15,9 +14,9 @@ public class TestcontainersConfiguration extends PostgreSQLContainer<Testcontain
     super(IMAGE_VERSION);
   }
 
-  @Container
-  public static PostgreSQLContainer<TestcontainersConfiguration> postgreSQLContainer =
-      TestcontainersConfiguration.getInstance();
+  //  @Container
+  //  public static PostgreSQLContainer<TestcontainersConfiguration> postgreSQLContainer =
+  //      TestcontainersConfiguration.getInstance();
 
   public static synchronized TestcontainersConfiguration getInstance() {
     if (container == null) {

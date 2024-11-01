@@ -3,7 +3,6 @@ package com.example.hrm_be.models.entities;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.example.hrm_be.HrmBeApplication;
-import com.example.hrm_be.common.TestcontainersConfiguration;
 import com.example.hrm_be.common.utils.TestUtils;
 import com.example.hrm_be.commons.enums.RoleType;
 import com.example.hrm_be.configs.SecurityConfig;
@@ -16,8 +15,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 @ExtendWith(SpringExtension.class)
@@ -26,10 +23,6 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @ActiveProfiles("test")
 @Testcontainers
 class RoleEntityTest {
-
-  @Container
-  public static PostgreSQLContainer<TestcontainersConfiguration> postgreSQLContainer =
-      TestcontainersConfiguration.getInstance();
 
   @Autowired RoleRepository roleRepository;
 

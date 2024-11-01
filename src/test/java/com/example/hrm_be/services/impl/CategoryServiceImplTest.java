@@ -5,7 +5,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.example.hrm_be.HrmBeApplication;
-import com.example.hrm_be.common.TestcontainersConfiguration;
 import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.ProductCategory;
@@ -21,8 +20,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 @Testcontainers
@@ -32,10 +29,6 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @Import(ProductCategoryServiceImpl.class)
 @Transactional
 public class CategoryServiceImplTest {
-
-  @Container
-  public static PostgreSQLContainer<TestcontainersConfiguration> postgreSQLContainer =
-      TestcontainersConfiguration.postgreSQLContainer;
 
   @Autowired private ProductCategoryService productCategoryService;
   @Autowired private ProductCategoryRepository productCategoryRepository;
