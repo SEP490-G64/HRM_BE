@@ -120,13 +120,13 @@ public class OutboundServiceImpl implements OutboundService {
                 outboundProductDetail -> {
                   OutboundProductDetail productDetailDTO = new OutboundProductDetail();
 
-          // Set Product details
-          Product productDTO = new Product();
-          productDTO.setId(outboundProductDetail.getProduct().getId());
-          productDTO.setProductName(outboundProductDetail.getProduct().getProductName());
-          productDTO.setRegistrationCode(outboundProductDetail.getProduct().getRegistrationCode());
-          productDetailDTO.setProduct(productDTO);
-
+                  // Set Product details
+                  Product productDTO = new Product();
+                  productDTO.setId(outboundProductDetail.getProduct().getId());
+                  productDTO.setProductName(outboundProductDetail.getProduct().getProductName());
+                  productDTO.setRegistrationCode(
+                      outboundProductDetail.getProduct().getRegistrationCode());
+                  productDetailDTO.setProduct(productDTO);
 
                   // Set outbound quantity and price
                   productDetailDTO.setOutboundQuantity(outboundProductDetail.getOutboundQuantity());
@@ -142,13 +142,14 @@ public class OutboundServiceImpl implements OutboundService {
                 outboundDetail -> {
                   OutboundProductDetail productWithBatchDetailDTO = new OutboundProductDetail();
 
-
-          // Set Product details
-          Product productDTO = new Product();
-          productDTO.setId(outboundDetail.getBatch().getProduct().getId());
-          productDTO.setProductName(outboundDetail.getBatch().getProduct().getProductName());
-          productDTO.setRegistrationCode(outboundDetail.getBatch().getProduct().getRegistrationCode());
-          productWithBatchDetailDTO.setProduct(productDTO);
+                  // Set Product details
+                  Product productDTO = new Product();
+                  productDTO.setId(outboundDetail.getBatch().getProduct().getId());
+                  productDTO.setProductName(
+                      outboundDetail.getBatch().getProduct().getProductName());
+                  productDTO.setRegistrationCode(
+                      outboundDetail.getBatch().getProduct().getRegistrationCode());
+                  productWithBatchDetailDTO.setProduct(productDTO);
                   // Set Batch details
                   Batch batchDTO = new Batch();
                   batchDTO.setId(outboundDetail.getBatch().getId());
