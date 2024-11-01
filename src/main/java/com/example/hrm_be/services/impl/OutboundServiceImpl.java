@@ -120,7 +120,7 @@ public class OutboundServiceImpl implements OutboundService {
           Product productDTO = new Product();
           productDTO.setId(outboundProductDetail.getProduct().getId());
           productDTO.setProductName(outboundProductDetail.getProduct().getProductName());
-          productDTO.setProductCode(outboundProductDetail.getProduct().getRegistrationCode());
+          productDTO.setRegistrationCode(outboundProductDetail.getProduct().getRegistrationCode());
           productDetailDTO.setProduct(productDTO);
 
           // Set outbound quantity and price
@@ -139,7 +139,7 @@ public class OutboundServiceImpl implements OutboundService {
           Product productDTO = new Product();
           productDTO.setId(outboundDetail.getBatch().getProduct().getId());
           productDTO.setProductName(outboundDetail.getBatch().getProduct().getProductName());
-          productDTO.setProductCode(outboundDetail.getBatch().getProduct().getRegistrationCode());
+          productDTO.setRegistrationCode(outboundDetail.getBatch().getProduct().getRegistrationCode());
           productWithBatchDetailDTO.setProduct(productDTO);
 
           // Set Batch details

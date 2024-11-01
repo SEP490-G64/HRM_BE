@@ -31,7 +31,6 @@ public final class Product implements Serializable {
   Long id;
   String productName;
 
-  String productCode;
 
   String registrationCode;
 
