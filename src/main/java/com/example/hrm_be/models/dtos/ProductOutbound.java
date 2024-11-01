@@ -3,7 +3,6 @@ package com.example.hrm_be.models.dtos;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -24,8 +23,7 @@ import lombok.extern.jackson.Jacksonized;
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ProductOutbound implements Serializable {
-  @Serial
-  private static final long serialVersionUID = 8012723276726758269L;
+  @Serial private static final long serialVersionUID = 8012723276726758269L;
   Batch batch;
   Integer outboundQuantity;
 }

@@ -15,10 +15,10 @@ import org.springframework.stereotype.Repository;
 public interface OutboundDetailRepository extends JpaRepository<OutboundDetailEntity, Long> {
 
   Optional<OutboundDetailEntity> findByOutboundAndBatch(OutboundEntity outbound, BatchEntity batch);
+
   List<OutboundDetailEntity> findByBatchAndOutbound(BatchEntity batch, OutboundEntity outbound);
-  
+
   @Modifying
   @Query("DELETE FROM OutboundDetailEntity opd WHERE opd.outbound.id = :outboundId")
   void deleteByOutboundId(@Param("outboundId") Long outboundId);
-
 }

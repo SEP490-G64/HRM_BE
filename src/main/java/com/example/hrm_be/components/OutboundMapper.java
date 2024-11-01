@@ -2,8 +2,6 @@ package com.example.hrm_be.components;
 
 import com.example.hrm_be.models.dtos.Batch;
 import com.example.hrm_be.models.dtos.Outbound;
-import com.example.hrm_be.models.dtos.OutboundDetail;
-import com.example.hrm_be.models.dtos.OutboundProductDetail;
 import com.example.hrm_be.models.dtos.Product;
 import com.example.hrm_be.models.entities.*;
 import java.util.ArrayList;
@@ -76,20 +74,30 @@ public class OutboundMapper {
         .id(entity.getId())
         .outboundType(entity.getOutboundType())
         .fromBranch(
-            entity.getFromBranch() != null ? branchMapper.convertToDTOBasicInfo(entity.getFromBranch()) : null)
+            entity.getFromBranch() != null
+                ? branchMapper.convertToDTOBasicInfo(entity.getFromBranch())
+                : null)
         .supplier(entity.getSupplier() != null ? supplierMapper.toDTO(entity.getSupplier()) : null)
-        .toBranch(entity.getToBranch() != null ? branchMapper.convertToDTOBasicInfo(entity.getToBranch()) : null)
+        .toBranch(
+            entity.getToBranch() != null
+                ? branchMapper.convertToDTOBasicInfo(entity.getToBranch())
+                : null)
         .createdDate(entity.getCreatedDate())
         .outBoundCode(entity.getOutBoundCode())
         .outboundDate(entity.getOutboundDate())
         .totalPrice(entity.getTotalPrice())
         .isApproved(entity.getIsApproved())
         .approvedBy(
-            entity.getApprovedBy() != null ? userMapper.convertToDtoBasicInfo(entity.getApprovedBy()) : null)
+            entity.getApprovedBy() != null
+                ? userMapper.convertToDtoBasicInfo(entity.getApprovedBy())
+                : null)
         .status(entity.getStatus())
         .taxable(entity.getTaxable())
         .note(entity.getNote())
-        .createdBy(entity.getCreatedBy() != null ? userMapper.convertToDtoBasicInfo(entity.getCreatedBy()) : null)
+        .createdBy(
+            entity.getCreatedBy() != null
+                ? userMapper.convertToDtoBasicInfo(entity.getCreatedBy())
+                : null)
         .outboundDate(entity.getOutboundDate())
         .outboundDetails(
             entity.getOutboundDetails() != null
@@ -105,60 +113,87 @@ public class OutboundMapper {
                 : null)
         .build();
   } // Helper method to convert OutboundEntity to OutboundDTO
-  public Outbound convertToDTOWithProductDetail(OutboundEntity entity,
-      List<OutboundProductDetailEntity> outboundProductDetails) {
+
+  public Outbound convertToDTOWithProductDetail(
+      OutboundEntity entity, List<OutboundProductDetailEntity> outboundProductDetails) {
     // Initialize the OutboundDTO with basic fields
-    Outbound outboundDTO = Outbound.builder()
-        .id(entity.getId())
-        .outboundType(entity.getOutboundType())
-        .fromBranch(entity.getFromBranch() != null ? branchMapper.convertToDTOBasicInfo(entity.getFromBranch()) : null)
-        .supplier(entity.getSupplier() != null ? supplierMapper.toDTO(entity.getSupplier()) : null)
-        .toBranch(entity.getToBranch() != null ? branchMapper.convertToDTOBasicInfo(entity.getToBranch()) : null)
-        .createdDate(entity.getCreatedDate())
-        .outboundDate(entity.getOutboundDate())
-        .totalPrice(entity.getTotalPrice())
-        .isApproved(entity.getIsApproved())
-        .approvedBy(entity.getApprovedBy() != null ? userMapper.convertToDtoBasicInfo(entity.getApprovedBy()) : null)
-        .status(entity.getStatus())
-        .taxable(entity.getTaxable())
-        .note(entity.getNote())
-        .createdBy(entity.getCreatedBy() != null ? userMapper.convertToDtoBasicInfo(entity.getCreatedBy()) : null)
-        .outboundDetails(entity.getOutboundDetails() != null
-            ? entity.getOutboundDetails().stream()
-            .map(outboundDetailMapper::toDTOWithBatch)
-            .collect(Collectors.toList())
-            : null)
-        .build();
+    Outbound outboundDTO =
+        Outbound.builder()
+            .id(entity.getId())
+            .outboundType(entity.getOutboundType())
+            .fromBranch(
+                entity.getFromBranch() != null
+                    ? branchMapper.convertToDTOBasicInfo(entity.getFromBranch())
+                    : null)
+            .supplier(
+                entity.getSupplier() != null ? supplierMapper.toDTO(entity.getSupplier()) : null)
+            .toBranch(
+                entity.getToBranch() != null
+                    ? branchMapper.convertToDTOBasicInfo(entity.getToBranch())
+                    : null)
+            .createdDate(entity.getCreatedDate())
+            .outboundDate(entity.getOutboundDate())
+            .totalPrice(entity.getTotalPrice())
+            .isApproved(entity.getIsApproved())
+            .approvedBy(
+                entity.getApprovedBy() != null
+                    ? userMapper.convertToDtoBasicInfo(entity.getApprovedBy())
+                    : null)
+            .status(entity.getStatus())
+            .taxable(entity.getTaxable())
+            .note(entity.getNote())
+            .createdBy(
+                entity.getCreatedBy() != null
+                    ? userMapper.convertToDtoBasicInfo(entity.getCreatedBy())
+                    : null)
+            .outboundDetails(
+                entity.getOutboundDetails() != null
+                    ? entity.getOutboundDetails().stream()
+                        .map(outboundDetailMapper::toDTOWithBatch)
+                        .collect(Collectors.toList())
+                    : null)
+            .build();
 
     // Collect Batch IDs from OutboundDetails for easy lookup
-    Set<Long> batchIdsInOutboundDetails = entity.getOutboundDetails().stream()
-        .map(OutboundDetailEntity::getBatch)
-        .filter(Objects::nonNull)
-        .map(BatchEntity::getId)
-        .collect(Collectors.toSet());
+    Set<Long> batchIdsInOutboundDetails =
+        entity.getOutboundDetails().stream()
+            .map(OutboundDetailEntity::getBatch)
+            .filter(Objects::nonNull)
+            .map(BatchEntity::getId)
+            .collect(Collectors.toSet());
 
     // Use a Map to store unique ProductDTOs by product ID
     Map<Long, Product> productMap = new HashMap<>();
 
-    // Process OutboundProductDetails to build ProductDTOs and include batches only if they exist in outboundDetails
+    // Process OutboundProductDetails to build ProductDTOs and include batches only if they exist in
+    // outboundDetails
     for (OutboundProductDetailEntity opd : outboundProductDetails) {
-      Product product = productMapper.toDTO(opd.getProduct()) ;
+      Product product = productMapper.toDTO(opd.getProduct());
 
       // Fetch or create ProductDTO
-      Product productDTO = productMap.computeIfAbsent(product.getId(), id -> Product.builder()
-          .id(product.getId())
-          .productName(product.getProductName())  // Map other product-specific fields if needed
-          .batches(new ArrayList<>())
-          .build());
+      Product productDTO =
+          productMap.computeIfAbsent(
+              product.getId(),
+              id ->
+                  Product.builder()
+                      .id(product.getId())
+                      .productName(
+                          product.getProductName()) // Map other product-specific fields if needed
+                      .batches(new ArrayList<>())
+                      .build());
 
       // Add batches only if they exist in outboundDetails
       if (product.getBatches() != null) {
         for (Batch batch : product.getBatches()) {
           if (batchIdsInOutboundDetails.contains(batch.getId())) {
-            productDTO.getBatches().add(Batch.builder()
-                .id(batch.getId())
-                .batchCode(batch.getBatchCode())  // Map other batch-specific fields if needed
-                .build());
+            productDTO
+                .getBatches()
+                .add(
+                    Batch.builder()
+                        .id(batch.getId())
+                        .batchCode(
+                            batch.getBatchCode()) // Map other batch-specific fields if needed
+                        .build());
           }
         }
       }
@@ -169,6 +204,4 @@ public class OutboundMapper {
 
     return outboundDTO;
   }
-
-
 }

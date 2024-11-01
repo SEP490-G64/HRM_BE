@@ -1,6 +1,5 @@
 package com.example.hrm_be.repositories;
 
-import com.example.hrm_be.models.entities.OutboundDetailEntity;
 import com.example.hrm_be.models.entities.OutboundEntity;
 import com.example.hrm_be.models.entities.OutboundProductDetailEntity;
 import com.example.hrm_be.models.entities.ProductEntity;
@@ -23,9 +22,11 @@ public interface OutboundProductDetailRepository
   @Query("DELETE FROM OutboundProductDetailEntity opd WHERE opd.outbound.id = :outboundId")
   void deleteByOutboundId(@Param("outboundId") Long outboundId);
 
-  @Query("SELECT opd FROM OutboundProductDetailEntity opd " +
-      "JOIN FETCH opd.product p " +
-      "LEFT JOIN FETCH p.batches b " +
-      "WHERE opd.outbound.id = :outboundId")
-  List<OutboundProductDetailEntity> findOutboundProductDetailsWithProductsAndBatches(@Param("outboundId") Long outboundId);
+  @Query(
+      "SELECT opd FROM OutboundProductDetailEntity opd "
+          + "JOIN FETCH opd.product p "
+          + "LEFT JOIN FETCH p.batches b "
+          + "WHERE opd.outbound.id = :outboundId")
+  List<OutboundProductDetailEntity> findOutboundProductDetailsWithProductsAndBatches(
+      @Param("outboundId") Long outboundId);
 }

@@ -59,5 +59,4 @@ public class Outbound {
   List<OutboundDetail> outboundDetails;
   List<OutboundProductDetail> outboundProductDetails;
   List<Product> products;
-
 }
