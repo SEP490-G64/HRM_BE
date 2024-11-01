@@ -700,7 +700,7 @@ public class InboundServiceImpl implements InboundService {
       throw new HrmCommonException("Chỉ có Kho chính mới được phép nhập hàng từ nhà cung cấp");
     }
     LocalDateTime currentDateTime = LocalDateTime.now();
-    String inboundCode = WplUtil.generateNoteCode(currentDateTime,"IB");
+    String inboundCode = WplUtil.generateNoteCode(currentDateTime, "IB");
     if (inboundRepository.existsByInboundCode(inboundCode)) {
       throw new HrmCommonException(INBOUND.EXIST);
     }

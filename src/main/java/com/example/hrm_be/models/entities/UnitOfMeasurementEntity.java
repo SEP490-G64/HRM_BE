@@ -49,5 +49,6 @@ public class UnitOfMeasurementEntity extends CommonEntity {
   private List<OutboundDetailEntity> outboundDetails; // Batches in outbounds using this unit
 
   @OneToMany(mappedBy = "unitOfMeasurement")
-  private List<OutboundProductDetailEntity> outboundProductDetails; // Products in outbounds using this unit
+  private List<OutboundProductDetailEntity>
+      outboundProductDetails; // Products in outbounds using this unit
 }

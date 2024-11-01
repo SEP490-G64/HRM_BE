@@ -22,12 +22,13 @@ public interface UnitConversionRepository extends JpaRepository<UnitConversionEn
   void assignToProductByProductIdAndIds(
       @Param("productId") Long productId, @Param("ids") List<Long> ids);
 
-  Optional<UnitConversionEntity> findByProductAndLargerUnitAndSmallerUnit( ProductEntity product,
+  Optional<UnitConversionEntity> findByProductAndLargerUnitAndSmallerUnit(
+      ProductEntity product,
       UnitOfMeasurementEntity largerUnit,
       UnitOfMeasurementEntity smallerUnit);
 
-  List<UnitConversionEntity> findByProductAndLargerUnit(ProductEntity product,
-      UnitOfMeasurementEntity unit);
+  List<UnitConversionEntity> findByProductAndLargerUnit(
+      ProductEntity product, UnitOfMeasurementEntity unit);
 
   Optional<UnitConversionEntity> findByProductIdAndLargerUnitIdAndSmallerUnitId(
       Long productId, Long largerUnitId, Long smallerUnitId);

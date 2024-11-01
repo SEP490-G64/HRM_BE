@@ -20,7 +20,6 @@ import jakarta.validation.constraints.NotNull;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -267,7 +266,6 @@ public class StaffInboundController {
     List<ProductInbound> products = (List<ProductInbound>) session.getAttribute(sessionName);
     return products != null ? products : new ArrayList<>();
   }
-
 
   @GetMapping("/getSessionId")
   protected ResponseEntity<BaseOutput<String>> getSessionId(HttpSession session) {

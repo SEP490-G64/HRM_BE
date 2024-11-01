@@ -1,12 +1,9 @@
 package com.example.hrm_be.controllers.outbound;
 
 import com.example.hrm_be.commons.constants.HrmConstant;
-import com.example.hrm_be.commons.enums.InboundType;
 import com.example.hrm_be.commons.enums.OutboundType;
 import com.example.hrm_be.commons.enums.ResponseStatus;
-import com.example.hrm_be.models.dtos.Inbound;
 import com.example.hrm_be.models.dtos.Outbound;
-import com.example.hrm_be.models.requests.CreateInboundRequest;
 import com.example.hrm_be.models.requests.CreateOutboundRequest;
 import com.example.hrm_be.models.responses.BaseOutput;
 import com.example.hrm_be.services.OutboundService;
@@ -195,6 +192,7 @@ public class StaffOutboundController {
             .status(ResponseStatus.SUCCESS)
             .build());
   }
+
   @PostMapping("/create-init-outbound")
   public ResponseEntity<BaseOutput<Outbound>> createInnitOutBound(@RequestParam String type) {
     // Check if the type is valid using the exists method
@@ -219,6 +217,7 @@ public class StaffOutboundController {
     return ResponseEntity.ok(
         BaseOutput.<Outbound>builder().data(outbound).status(ResponseStatus.SUCCESS).build());
   }
+
   @PostMapping("/submit-draft-sell")
   public ResponseEntity<BaseOutput<Outbound>> submitDraftForSell(
       @RequestBody CreateOutboundRequest request) {
@@ -226,6 +225,7 @@ public class StaffOutboundController {
     return ResponseEntity.ok(
         BaseOutput.<Outbound>builder().data(outbound).status(ResponseStatus.SUCCESS).build());
   }
+
   @PutMapping("/{id}/submit")
   public ResponseEntity<BaseOutput<Outbound>> submitToSystem(@PathVariable(name = "id") Long id) {
     Outbound outbound = outboundService.submitOutboundToSystem(id);
@@ -236,4 +236,5 @@ public class StaffOutboundController {
             .status(ResponseStatus.SUCCESS)
             .build();
     return ResponseEntity.ok(response);
-}}
+  }
+}

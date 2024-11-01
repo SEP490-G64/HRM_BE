@@ -35,10 +35,7 @@ public class OutboundDetailMapper {
 
   // Helper method to convert OutboundDetailEntity to OutboundDetailDTO
   private OutboundDetail convertToDTO(OutboundDetailEntity entity) {
-    return OutboundDetail.builder()
-        .id(entity.getId())
-        .quantity(entity.getQuantity())
-        .build();
+    return OutboundDetail.builder().id(entity.getId()).quantity(entity.getQuantity()).build();
   }
 
   // Helper method to convert OutboundDetailEntity to OutboundDetailDTO with Outbound Information

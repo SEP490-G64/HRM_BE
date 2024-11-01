@@ -17,10 +17,10 @@ public interface BranchBatchRepository extends JpaRepository<BranchBatchEntity, 
   Optional<BranchBatchEntity> findByBranchAndBatch(BranchEntity branch, BatchEntity batch);
 
   @Query(
-      "SELECT b.quantity FROM BranchBatchEntity b WHERE b.batch.id = :batchId AND b.branch.id = :branchId")
+      "SELECT b.quantity FROM BranchBatchEntity b WHERE b.batch.id = :batchId AND b.branch.id ="
+          + " :branchId")
   Integer findQuantityByBatchIdAndBranchId(
       @Param("batchId") Long batchId, @Param("branchId") Long branchId);
-
 
   List<BranchBatchEntity> findByBatchId(Long batchId);
 }

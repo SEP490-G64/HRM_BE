@@ -1,20 +1,15 @@
 package com.example.hrm_be.components;
 
-import com.example.hrm_be.models.dtos.OutboundDetail;
 import com.example.hrm_be.models.dtos.OutboundProductDetail;
-import com.example.hrm_be.models.entities.OutboundDetailEntity;
 import com.example.hrm_be.models.entities.OutboundProductDetailEntity;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Controller;
 
 @Component
 public class OutboundProductDetailMapper {
-  @Autowired
-  @Lazy
-  private OutboundMapper outboundMapper;
+  @Autowired @Lazy private OutboundMapper outboundMapper;
   @Autowired @Lazy private ProductMapper productMapper;
 
   // Convert OutboundDetailEntity to OutboundDetailDTO
@@ -45,5 +40,4 @@ public class OutboundProductDetailMapper {
         .outboundQuantity(entity.getOutboundQuantity())
         .build();
   }
-
 }

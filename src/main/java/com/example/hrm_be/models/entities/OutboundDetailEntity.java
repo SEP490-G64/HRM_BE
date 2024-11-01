@@ -40,7 +40,9 @@ public class OutboundDetailEntity extends CommonEntity {
   BatchEntity batch;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "unit_of_measurement_id",foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+  @JoinColumn(
+      name = "unit_of_measurement_id",
+      foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   UnitOfMeasurementEntity unitOfMeasurement;
 
   @Column(name = "quantity")

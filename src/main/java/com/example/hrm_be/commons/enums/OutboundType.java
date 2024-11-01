@@ -1,6 +1,5 @@
 package com.example.hrm_be.commons.enums;
 
-
 import java.util.stream.Stream;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +12,6 @@ public enum OutboundType {
   HUY_HANG("Hủy hàng"),
   UNDEFINED("Undefined"),
   CHUYEN_KHO_NOI_BO("Chuyển kho nội bộ");
-
 
   private final String value;
 

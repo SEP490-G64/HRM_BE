@@ -12,9 +12,9 @@ public interface OutboundRepository extends JpaRepository<OutboundEntity, Long> 
 
   boolean existsByOutBoundCode(String outboundCode);
 
-  @Query("SELECT o FROM OutboundEntity o " +
-      "LEFT JOIN FETCH o.outboundDetails od " +
-      "WHERE o.id = :outboundId")
+  @Query(
+      "SELECT o FROM OutboundEntity o "
+          + "LEFT JOIN FETCH o.outboundDetails od "
+          + "WHERE o.id = :outboundId")
   Optional<OutboundEntity> findOutboundWithDetails(@Param("outboundId") Long outboundId);
-
 }
