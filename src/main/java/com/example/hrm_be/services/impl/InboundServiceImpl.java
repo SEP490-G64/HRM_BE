@@ -83,6 +83,8 @@ public class InboundServiceImpl implements InboundService {
     InboundDetail inboundDTO = new InboundDetail();
     inboundDTO.setId(optionalInbound.getId());
     inboundDTO.setInboundCode(optionalInbound.getInboundCode());
+    inboundDTO.setInboundType(optionalInbound.getInboundType());
+    inboundDTO.setCreatedDate(optionalInbound.getCreatedDate());
     inboundDTO.setInboundDate(optionalInbound.getInboundDate());
     inboundDTO.setTotalPrice(optionalInbound.getTotalPrice());
     inboundDTO.setIsApproved(optionalInbound.getIsApproved());
