@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 public class WplUtil {
   private static int counter = 1; // to generate the sequential number
 
-  public static String generateInboundCode(LocalDateTime theDate) {
+  public static String generateNoteCode(LocalDateTime theDate, String type) {
     // Format the date to YYMMDD
     DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyMMdd");
     String datePart = dateFormat.format(theDate);
@@ -25,7 +25,7 @@ public class WplUtil {
     String sequentialPart = String.format("%03d", counter);
 
     // Construct the code
-    String code = "IP." + datePart + "." + timePart + "." + sequentialPart;
+    String code = type + "." + datePart + "." + timePart + "." + sequentialPart;
     // Increment the counter
     counter++;
 

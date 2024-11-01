@@ -1,6 +1,7 @@
 package com.example.hrm_be.models.dtos;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import java.math.BigDecimal;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,9 +23,15 @@ import lombok.extern.jackson.Jacksonized;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class OutboundDetail {
   Long id;
+
   Outbound outbound;
 
   Batch batch;
+  Product product;
 
   Integer quantity;
+
+  BigDecimal remainQuantity;
+
+  UnitOfMeasurement unitOfMeasurement;
 }

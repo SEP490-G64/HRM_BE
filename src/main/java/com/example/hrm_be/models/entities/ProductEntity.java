@@ -4,7 +4,6 @@ import com.example.hrm_be.commons.enums.ProductStatus;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
-
 import java.math.BigDecimal;
 import java.util.List;
 import lombok.AccessLevel;
@@ -93,6 +92,10 @@ public class ProductEntity extends CommonEntity {
   @ToString.Exclude
   @OneToMany(mappedBy = "product")
   List<BranchProductEntity> branchProducs; // 1-N with Batch
+
+  @ToString.Exclude
+  @OneToMany(mappedBy = "product")
+  List<OutboundProductDetailEntity> outboundProductDetails; // 1-N with Batch
 
   @ToString.Exclude
   @OneToMany(mappedBy = "product")

@@ -27,7 +27,7 @@ public class InboundProductDetailDTO {
   private Long productId;
   private Double discount;
   private String productName;
-  private String productCode;
+  private String registrationCode;
   private UnitOfMeasurement baseUnit;
   private Integer requestQuantity;
   private Integer receiveQuantity;

@@ -82,6 +82,8 @@ public class InboundServiceImpl implements InboundService {
     InboundDetail inboundDTO = new InboundDetail();
     inboundDTO.setId(optionalInbound.getId());
     inboundDTO.setInboundCode(optionalInbound.getInboundCode());
+    inboundDTO.setInboundType(optionalInbound.getInboundType());
+    inboundDTO.setCreatedDate(optionalInbound.getCreatedDate());
     inboundDTO.setInboundDate(optionalInbound.getInboundDate());
     inboundDTO.setTotalPrice(optionalInbound.getTotalPrice());
     inboundDTO.setIsApproved(optionalInbound.getIsApproved());
@@ -100,7 +102,8 @@ public class InboundServiceImpl implements InboundService {
                 inboundDetail -> {
                   InboundProductDetailDTO productDetailDTO = new InboundProductDetailDTO();
                   productDetailDTO.setId(inboundDetail.getId());
-                  productDetailDTO.setProductCode(inboundDetail.getProduct().getRegistrationCode());
+                  productDetailDTO.setRegistrationCode(
+                      inboundDetail.getProduct().getRegistrationCode());
                   productDetailDTO.setBaseUnit(
                       unitOfMeasurementMapper.toDTO(inboundDetail.getProduct().getBaseUnit()));
                   productDetailDTO.setDiscount(inboundDetail.getDiscount());
@@ -137,6 +140,7 @@ public class InboundServiceImpl implements InboundService {
                                   batchDTO.setId(batch.getId());
                                   batchDTO.setInboundPrice(batch.getInboundPrice());
                                   batchDTO.setBatchCode(batch.getBatchCode());
+                                  batchDTO.setExpireDate(batch.getExpireDate());
 
                                   // Find the quantity for this product-batch from the
                                   // inboundBatchDetails
@@ -487,13 +491,13 @@ public class InboundServiceImpl implements InboundService {
               if (branchBatch.getId() != null) {
                 branchBatch.setQuantity(
                     branchBatch.getQuantity() != null
-                        ? branchBatch.getQuantity() + quantity
-                        : quantity); // Update existing
+                        ? branchBatch.getQuantity().add(BigDecimal.valueOf(quantity))
+                        : BigDecimal.valueOf(quantity)); // Update existing
                 // quantity
               } else {
                 branchBatch.setBatch(batch);
                 branchBatch.setBranch(toBranch);
-                branchBatch.setQuantity(quantity);
+                branchBatch.setQuantity(BigDecimal.valueOf(quantity));
               }
 
               // Save the BranchBatchEntity
@@ -532,12 +536,12 @@ public class InboundServiceImpl implements InboundService {
               if (branchProduct.getId() != null) {
                 branchProduct.setQuantity(
                     branchProduct.getQuantity() != null
-                        ? branchProduct.getQuantity() + quantity
-                        : quantity); // Update existing quantity
+                        ? branchProduct.getQuantity().add(BigDecimal.valueOf(quantity))
+                        : BigDecimal.valueOf(quantity)); // Update existing quantity
               } else {
                 branchProduct.setProduct(product);
                 branchProduct.setBranch(toBranch);
-                branchProduct.setQuantity(quantity);
+                branchProduct.setQuantity(BigDecimal.valueOf(quantity));
                 branchProduct.setMinQuantity(null); // Set default min quantity, or use business
                 // logic
                 branchProduct.setMaxQuantity(null); // Set default max quantity, or use business
@@ -623,10 +627,10 @@ public class InboundServiceImpl implements InboundService {
             // Get value of total batch price and total batch quantity
             for (BranchBatchEntity branchBatch : allBranchBatches) {
               BigDecimal batchPrice = batch.getInboundPrice();
-              Integer quantity = branchBatch.getQuantity();
+              BigDecimal quantity = branchBatch.getQuantity();
 
-              totalPrice = totalPrice.add(batchPrice.multiply(BigDecimal.valueOf(quantity)));
-              totalQuantity += quantity;
+              totalPrice = totalPrice.add(batchPrice.multiply(quantity));
+              totalQuantity += quantity.intValue();
             }
           }
 
@@ -696,7 +700,7 @@ public class InboundServiceImpl implements InboundService {
       throw new HrmCommonException("Chỉ có Kho chính mới được phép nhập hàng từ nhà cung cấp");
     }
     LocalDateTime currentDateTime = LocalDateTime.now();
-    String inboundCode = wplUtil.generateInboundCode(currentDateTime);
+    String inboundCode = WplUtil.generateNoteCode(currentDateTime, "IB");
     if (inboundRepository.existsByInboundCode(inboundCode)) {
       throw new HrmCommonException(INBOUND.EXIST);
     }

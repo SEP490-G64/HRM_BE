@@ -1,7 +1,7 @@
 package com.example.hrm_be.models.dtos;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import java.math.BigDecimal;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,19 +21,17 @@ import lombok.extern.jackson.Jacksonized;
 @EqualsAndHashCode
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class BranchProduct {
+public class OutboundProductDetail {
   Long id;
+
+  Outbound outbound;
+
   Product product;
 
-  ProductBaseDTO productBaseDTO;
+  Batch batch;
+  List<Batch> batches;
 
-  Branch branch;
+  Integer outboundQuantity;
 
-  StorageLocation storageLocation;
-
-  Integer minQuantity;
-
-  Integer maxQuantity;
-
-  BigDecimal quantity;
+  UnitOfMeasurement targetUnit;
 }

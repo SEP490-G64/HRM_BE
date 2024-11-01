@@ -43,4 +43,12 @@ public class UnitOfMeasurementEntity extends CommonEntity {
   @ToString.Exclude
   @OneToMany(mappedBy = "smallerUnit")
   List<UnitConversionEntity> smallerUnitConversions;
+
+  // New relationships with outbound detail entities
+  @OneToMany(mappedBy = "unitOfMeasurement")
+  private List<OutboundDetailEntity> outboundDetails; // Batches in outbounds using this unit
+
+  @OneToMany(mappedBy = "unitOfMeasurement")
+  private List<OutboundProductDetailEntity>
+      outboundProductDetails; // Products in outbounds using this unit
 }

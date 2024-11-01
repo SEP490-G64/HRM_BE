@@ -1,9 +1,11 @@
-package com.example.hrm_be.models.dtos;
+package com.example.hrm_be.models.requests;
 
-import com.example.hrm_be.commons.enums.OutboundStatus;
 import com.example.hrm_be.commons.enums.OutboundType;
+import com.example.hrm_be.models.dtos.Branch;
+import com.example.hrm_be.models.dtos.OutboundProductDetail;
+import com.example.hrm_be.models.dtos.Supplier;
+import com.example.hrm_be.models.dtos.User;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AccessLevel;
@@ -25,38 +27,15 @@ import lombok.extern.jackson.Jacksonized;
 @EqualsAndHashCode
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Outbound {
-  Long id;
-
-  String outBoundCode;
-
-  OutboundType outboundType; // Assume this is an Enum with values like "Bán hàng", "Trả hàng", etc.
-
-  Branch fromBranch;
-
-  Supplier supplier;
-
-  Branch toBranch;
-
-  LocalDateTime createdDate;
-
-  LocalDateTime outboundDate;
-
-  BigDecimal totalPrice;
-
-  Boolean isApproved;
-
-  User approvedBy;
-
-  OutboundStatus status; // Enum for "Chờ duyệt", "Đang xử lý", etc.
-
-  Boolean taxable;
-
+public class CreateOutboundRequest {
+  Long outboundId;
+  String outboundCode;
   String note;
-
+  LocalDateTime createdDate;
   User createdBy;
-
-  List<OutboundDetail> outboundDetails;
+  OutboundType outboundType;
+  Branch toBranch;
+  Branch fromBranch;
+  Supplier supplier;
   List<OutboundProductDetail> outboundProductDetails;
-  List<Product> products;
 }

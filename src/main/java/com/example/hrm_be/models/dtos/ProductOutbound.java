@@ -1,7 +1,8 @@
 package com.example.hrm_be.models.dtos;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import java.math.BigDecimal;
+import java.io.Serial;
+import java.io.Serializable;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,19 +22,8 @@ import lombok.extern.jackson.Jacksonized;
 @EqualsAndHashCode
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class BranchProduct {
-  Long id;
-  Product product;
-
-  ProductBaseDTO productBaseDTO;
-
-  Branch branch;
-
-  StorageLocation storageLocation;
-
-  Integer minQuantity;
-
-  Integer maxQuantity;
-
-  BigDecimal quantity;
+public class ProductOutbound implements Serializable {
+  @Serial private static final long serialVersionUID = 8012723276726758269L;
+  Batch batch;
+  Integer outboundQuantity;
 }
