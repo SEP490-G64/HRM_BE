@@ -104,7 +104,8 @@ public class InboundServiceImpl implements InboundService {
                 inboundDetail -> {
                   InboundProductDetailDTO productDetailDTO = new InboundProductDetailDTO();
                   productDetailDTO.setId(inboundDetail.getId());
-                  productDetailDTO.setRegistrationCode(inboundDetail.getProduct().getRegistrationCode());
+                  productDetailDTO.setRegistrationCode(
+                      inboundDetail.getProduct().getRegistrationCode());
                   productDetailDTO.setBaseUnit(
                       unitOfMeasurementMapper.toDTO(inboundDetail.getProduct().getBaseUnit()));
                   productDetailDTO.setDiscount(inboundDetail.getDiscount());
