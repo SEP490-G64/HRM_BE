@@ -1,8 +1,10 @@
 package com.example.hrm_be.controllers.outbound;
 
 import com.example.hrm_be.commons.constants.HrmConstant;
+import com.example.hrm_be.commons.enums.OutboundType;
 import com.example.hrm_be.commons.enums.ResponseStatus;
 import com.example.hrm_be.models.dtos.Outbound;
+import com.example.hrm_be.models.requests.CreateOutboundRequest;
 import com.example.hrm_be.models.responses.BaseOutput;
 import com.example.hrm_be.services.OutboundService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -189,5 +191,50 @@ public class StaffOutboundController {
             .data(HttpStatus.OK.toString())
             .status(ResponseStatus.SUCCESS)
             .build());
+  }
+
+  @PostMapping("/create-init-outbound")
+  public ResponseEntity<BaseOutput<Outbound>> createInnitOutBound(@RequestParam String type) {
+    // Check if the type is valid using the exists method
+    if (!OutboundType.exists(type)) {
+      // Return a bad request if the type is invalid
+      return ResponseEntity.badRequest()
+          .body(
+              BaseOutput.<Outbound>builder()
+                  .status(ResponseStatus.FAILED)
+                  .message("Invalid Inbound Type")
+                  .build());
+    }
+    Outbound outbound = outboundService.createInnitOutbound(OutboundType.parse(type));
+    return ResponseEntity.ok(
+        BaseOutput.<Outbound>builder().data(outbound).status(ResponseStatus.SUCCESS).build());
+  }
+
+  @PostMapping("/submit-draft")
+  public ResponseEntity<BaseOutput<Outbound>> submitDraft(
+      @RequestBody CreateOutboundRequest request) {
+    Outbound outbound = outboundService.saveOutbound(request);
+    return ResponseEntity.ok(
+        BaseOutput.<Outbound>builder().data(outbound).status(ResponseStatus.SUCCESS).build());
+  }
+
+  @PostMapping("/submit-draft-sell")
+  public ResponseEntity<BaseOutput<Outbound>> submitDraftForSell(
+      @RequestBody CreateOutboundRequest request) {
+    Outbound outbound = outboundService.saveOutboundForSell(request);
+    return ResponseEntity.ok(
+        BaseOutput.<Outbound>builder().data(outbound).status(ResponseStatus.SUCCESS).build());
+  }
+
+  @PutMapping("/{id}/submit")
+  public ResponseEntity<BaseOutput<Outbound>> submitToSystem(@PathVariable(name = "id") Long id) {
+    Outbound outbound = outboundService.submitOutboundToSystem(id);
+    BaseOutput<Outbound> response =
+        BaseOutput.<Outbound>builder()
+            .message(HttpStatus.OK.toString())
+            .data(outbound)
+            .status(ResponseStatus.SUCCESS)
+            .build();
+    return ResponseEntity.ok(response);
   }
 }

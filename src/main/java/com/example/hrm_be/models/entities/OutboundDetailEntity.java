@@ -32,19 +32,19 @@ import lombok.experimental.SuperBuilder;
 public class OutboundDetailEntity extends CommonEntity {
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(
-      name = "outbound_id",
-      nullable = false,
-      foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+  @JoinColumn(name = "outbound_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   OutboundEntity outbound;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(
-      name = "batch_id",
-      nullable = false,
-      foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+  @JoinColumn(name = "batch_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   BatchEntity batch;
 
-  @Column(name = "quantity", nullable = false)
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(
+      name = "unit_of_measurement_id",
+      foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+  UnitOfMeasurementEntity unitOfMeasurement;
+
+  @Column(name = "quantity")
   Integer quantity;
 }

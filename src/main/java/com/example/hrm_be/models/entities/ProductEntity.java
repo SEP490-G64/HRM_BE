@@ -96,5 +96,9 @@ public class ProductEntity extends CommonEntity {
 
   @ToString.Exclude
   @OneToMany(mappedBy = "product")
+  List<OutboundProductDetailEntity> outboundProductDetails; // 1-N with Batch
+
+  @ToString.Exclude
+  @OneToMany(mappedBy = "product")
   List<ProductSuppliersEntity> productSuppliers; // 1-N with ProductSuppliers
 }

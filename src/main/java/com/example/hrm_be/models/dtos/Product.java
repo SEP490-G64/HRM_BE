@@ -31,8 +31,6 @@ public final class Product implements Serializable {
   Long id;
   String productName;
 
-  String productCode;
-
   String registrationCode;
 
   String urlImage;
@@ -60,6 +58,8 @@ public final class Product implements Serializable {
   List<InboundDetails> inboundDetails;
 
   List<SpecialCondition> specialConditions;
+
+  Batch batch;
 
   List<Batch> batches;
 
