@@ -39,6 +39,7 @@ import com.example.hrm_be.repositories.ProductRepository;
 import com.example.hrm_be.services.InboundService;
 import com.example.hrm_be.services.UserService;
 import com.example.hrm_be.utils.WplUtil;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -447,12 +448,12 @@ public class InboundServiceImpl implements InboundService {
               if (branchProduct.getId() != null) {
                 branchProduct.setQuantity(
                     branchProduct.getQuantity() != null
-                        ? branchProduct.getQuantity() + quantity
-                        : quantity); // Update existing quantity
+                        ? branchProduct.getQuantity().add(BigDecimal.valueOf(quantity))
+                        : BigDecimal.valueOf(quantity)); // Update existing quantity
               } else {
                 branchProduct.setProduct(product);
                 branchProduct.setBranch(toBranch);
-                branchProduct.setQuantity(quantity);
+                branchProduct.setQuantity(BigDecimal.valueOf(quantity));
                 branchProduct.setMinQuantity(null); // Set default min quantity, or use business
                 // logic
                 branchProduct.setMaxQuantity(null); // Set default max quantity, or use business
@@ -486,13 +487,13 @@ public class InboundServiceImpl implements InboundService {
               if (branchBatch.getId() != null) {
                 branchBatch.setQuantity(
                     branchBatch.getQuantity() != null
-                        ? branchBatch.getQuantity() + quantity
-                        : quantity); // Update existing
+                        ? branchBatch.getQuantity().add(BigDecimal.valueOf(quantity))
+                        : BigDecimal.valueOf(quantity)); // Update existing
                 // quantity
               } else {
                 branchBatch.setBatch(batch);
                 branchBatch.setBranch(toBranch);
-                branchBatch.setQuantity(quantity);
+                branchBatch.setQuantity(BigDecimal.valueOf(quantity));
               }
 
               // Save the BranchBatchEntity

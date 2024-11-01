@@ -9,6 +9,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.math.BigDecimal;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -39,7 +40,7 @@ public class BranchBatchEntity extends CommonEntity {
   BranchEntity branch;
 
   @Column(name = "quantity")
-  Integer quantity;
+  BigDecimal quantity;
 
   @ToString.Exclude
   @OneToMany(mappedBy = "branchBatch")

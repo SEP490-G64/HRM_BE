@@ -3,6 +3,8 @@ package com.example.hrm_be.models.requests;
 import com.example.hrm_be.commons.enums.InboundType;
 import com.example.hrm_be.commons.enums.OutboundType;
 import com.example.hrm_be.models.dtos.Branch;
+import com.example.hrm_be.models.dtos.OutboundProductDetail;
+import com.example.hrm_be.models.dtos.Product;
 import com.example.hrm_be.models.dtos.ProductInbound;
 import com.example.hrm_be.models.dtos.ProductOutbound;
 import com.example.hrm_be.models.dtos.Supplier;
@@ -39,5 +41,5 @@ public class CreateOutboundRequest {
   Branch toBranch;
   Branch fromBranch;
   Supplier supplier;
-  List<ProductOutbound> productOutbounds;
+  List<OutboundProductDetail> outboundProductDetails;
 }

@@ -10,6 +10,7 @@ import jakarta.persistence.ForeignKey;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.math.BigDecimal;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -49,5 +50,5 @@ public class BranchProductEntity extends CommonEntity {
   Integer maxQuantity;
 
   @Column(name = "quantity")
-  Integer quantity;
+  BigDecimal quantity;
 }

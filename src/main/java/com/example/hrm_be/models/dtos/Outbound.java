@@ -57,5 +57,7 @@ public class Outbound {
   User createdBy;
 
   List<OutboundDetail> outboundDetails;
+  List<OutboundProductDetail> outboundProductDetails;
+  List<Product> products;
 
 }

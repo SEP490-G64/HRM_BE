@@ -9,6 +9,7 @@ import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.BranchProduct;
 import com.example.hrm_be.models.entities.BranchProductEntity;
 import com.example.hrm_be.repositories.BranchProductRepository;
+import java.math.BigDecimal;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,12 +34,12 @@ class BranchProductServiceImplTest {
   void setUp() {
     branchProductDto = new BranchProduct();
     branchProductDto.setId(1L);
-    branchProductDto.setQuantity(10);
+    branchProductDto.setQuantity(BigDecimal.TEN);
     branchProductDto.setMaxQuantity(20);
     branchProductDto.setMinQuantity(5);
 
     branchProductEntity =
-        BranchProductEntity.builder().id(1L).quantity(10).maxQuantity(20).minQuantity(5).build();
+        BranchProductEntity.builder().id(1L).quantity(BigDecimal.TEN).maxQuantity(20).minQuantity(5).build();
   }
 
   @Test

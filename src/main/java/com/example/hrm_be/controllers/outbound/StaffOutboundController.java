@@ -219,4 +219,21 @@ public class StaffOutboundController {
     return ResponseEntity.ok(
         BaseOutput.<Outbound>builder().data(outbound).status(ResponseStatus.SUCCESS).build());
   }
-}
+  @PostMapping("/submit-draft-sell")
+  public ResponseEntity<BaseOutput<Outbound>> submitDraftForSell(
+      @RequestBody CreateOutboundRequest request) {
+    Outbound outbound = outboundService.saveOutboundForSell(request);
+    return ResponseEntity.ok(
+        BaseOutput.<Outbound>builder().data(outbound).status(ResponseStatus.SUCCESS).build());
+  }
+  @PutMapping("/{id}/submit")
+  public ResponseEntity<BaseOutput<Outbound>> submitToSystem(@PathVariable(name = "id") Long id) {
+    Outbound outbound = outboundService.submitOutboundToSystem(id);
+    BaseOutput<Outbound> response =
+        BaseOutput.<Outbound>builder()
+            .message(HttpStatus.OK.toString())
+            .data(outbound)
+            .status(ResponseStatus.SUCCESS)
+            .build();
+    return ResponseEntity.ok(response);
+}}

@@ -14,4 +14,6 @@ public interface BranchProductRepository
         JpaSpecificationExecutor<BranchProductEntity> {
 
   Optional<BranchProductEntity> findByBranchAndProduct(BranchEntity branch, ProductEntity product);
+
+
 }

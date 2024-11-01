@@ -61,6 +61,8 @@ public final class Product implements Serializable {
 
   List<SpecialCondition> specialConditions;
 
+  Batch batch;
+
   List<Batch> batches;
 
   List<BranchProduct> branchProducts;

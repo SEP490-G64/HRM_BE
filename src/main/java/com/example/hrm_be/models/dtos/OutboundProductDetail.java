@@ -1,8 +1,15 @@
 package com.example.hrm_be.models.dtos;
 
-import com.example.hrm_be.models.entities.UnitOfMeasurementEntity;
+import com.example.hrm_be.models.entities.OutboundEntity;
+import com.example.hrm_be.models.entities.ProductEntity;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import java.math.BigDecimal;
+import jakarta.persistence.Column;
+import jakarta.persistence.ConstraintMode;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,17 +29,17 @@ import lombok.extern.jackson.Jacksonized;
 @EqualsAndHashCode
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class OutboundDetail {
+public class OutboundProductDetail {
   Long id;
 
   Outbound outbound;
 
-  Batch batch;
   Product product;
 
-  Integer quantity;
+  Batch batch;
+  List<Batch> batches;
 
-  BigDecimal remainQuantity;
+  Integer outboundQuantity;
 
-  UnitOfMeasurement unitOfMeasurement;
+  UnitOfMeasurement targetUnit;
 }

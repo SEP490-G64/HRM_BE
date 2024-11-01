@@ -9,6 +9,7 @@ import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.BranchBatch;
 import com.example.hrm_be.models.entities.BranchBatchEntity;
 import com.example.hrm_be.repositories.BranchBatchRepository;
+import java.math.BigDecimal;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,9 +34,9 @@ class BranchBatchServiceImplTest {
   void setUp() {
     branchBatchDto = new BranchBatch();
     branchBatchDto.setId(1L);
-    branchBatchDto.setQuantity(10);
+    branchBatchDto.setQuantity(BigDecimal.TEN);
 
-    branchBatchEntity = BranchBatchEntity.builder().id(1L).quantity(10).build();
+    branchBatchEntity = BranchBatchEntity.builder().id(1L).quantity(BigDecimal.TEN).build();
   }
 
   @Test

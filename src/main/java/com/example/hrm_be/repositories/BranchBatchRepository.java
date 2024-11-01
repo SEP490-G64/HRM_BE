@@ -18,4 +18,5 @@ public interface BranchBatchRepository extends JpaRepository<BranchBatchEntity, 
       "SELECT b.quantity FROM BranchBatchEntity b WHERE b.batch.id = :batchId AND b.branch.id = :branchId")
   Integer findQuantityByBatchIdAndBranchId(
       @Param("batchId") Long batchId, @Param("branchId") Long branchId);
+
 }

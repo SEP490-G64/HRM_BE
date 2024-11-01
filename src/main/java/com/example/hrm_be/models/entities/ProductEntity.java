@@ -27,7 +27,7 @@ import lombok.experimental.SuperBuilder;
 @Entity
 @Table(name = "product")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-public class ProductEntity extends CommonEntity {
+public class  ProductEntity extends CommonEntity {
 
   @Column(name = "product_name", length = 50)
   String productName;
@@ -93,6 +93,10 @@ public class ProductEntity extends CommonEntity {
   @ToString.Exclude
   @OneToMany(mappedBy = "product")
   List<BranchProductEntity> branchProducs; // 1-N with Batch
+
+   @ToString.Exclude
+  @OneToMany(mappedBy = "product")
+  List<OutboundProductDetailEntity> outboundProductDetails; // 1-N with Batch
 
   @ToString.Exclude
   @OneToMany(mappedBy = "product")

@@ -21,6 +21,7 @@ public interface OutboundService {
   Outbound approve(Long id, boolean accept);
 
   Outbound saveOutbound(CreateOutboundRequest initOutbound);
+  Outbound saveOutboundForSell(CreateOutboundRequest initOutbound);
 
   Outbound submitOutboundToSystem(Long outboundId);
 

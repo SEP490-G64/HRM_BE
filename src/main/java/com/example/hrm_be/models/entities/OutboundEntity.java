@@ -2,6 +2,7 @@ package com.example.hrm_be.models.entities;
 
 import com.example.hrm_be.commons.enums.OutboundStatus;
 import com.example.hrm_be.commons.enums.OutboundType;
+import com.example.hrm_be.models.dtos.OutboundProductDetail;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.Column;
@@ -107,4 +108,8 @@ public class OutboundEntity extends CommonEntity {
   @ToString.Exclude
   @OneToMany(mappedBy = "outbound")
   List<OutboundDetailEntity> outboundDetails;
+
+  @ToString.Exclude
+  @OneToMany(mappedBy = "outbound")
+  List<OutboundProductDetailEntity> outboundProductDetails;
 }

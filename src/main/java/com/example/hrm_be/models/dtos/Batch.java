@@ -46,4 +46,5 @@ public class Batch extends CommonEntity {
   Product product;
 
   Integer inboundBatchQuantity;
+  Integer outBoundBatchQuantity;
 }

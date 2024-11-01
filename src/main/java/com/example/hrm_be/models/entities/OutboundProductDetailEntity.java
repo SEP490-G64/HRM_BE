@@ -27,22 +27,21 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder(toBuilder = true)
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(name = "outbound_details")
+@Table(name = "outbound_product_details")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-public class OutboundDetailEntity extends CommonEntity {
-
+public class OutboundProductDetailEntity extends  CommonEntity{
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "outbound_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   OutboundEntity outbound;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "batch_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-  BatchEntity batch;
+  @JoinColumn(name = "product_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+  ProductEntity product;
+
+  @Column(name = "outbound_quantity")
+  Integer outboundQuantity;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "unit_of_measurement_id",foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   UnitOfMeasurementEntity unitOfMeasurement;
-
-  @Column(name = "quantity")
-  Integer quantity;
 }
