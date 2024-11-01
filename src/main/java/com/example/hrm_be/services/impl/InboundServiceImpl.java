@@ -142,6 +142,7 @@ public class InboundServiceImpl implements InboundService {
                                   batchDTO.setId(batch.getId());
                                   batchDTO.setInboundPrice(batch.getInboundPrice());
                                   batchDTO.setBatchCode(batch.getBatchCode());
+                                  batchDTO.setExpireDate(batch.getExpireDate());
 
                                   // Find the quantity for this product-batch from the
                                   // inboundBatchDetails
