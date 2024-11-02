@@ -37,6 +37,7 @@ public class ProductSuppliersMapper {
     return ProductSuppliers.builder()
         .id(entity.getId())
         .product(entity.getProduct() != null ? productMapper.toDTO(entity.getProduct()) : null)
+        .supplier(entity.getSupplier() != null ? supplierMapper.toDTO(entity.getSupplier()) : null)
         .build();
   }
 }

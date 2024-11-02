@@ -92,7 +92,7 @@ public class StaffInboundController {
     }
 
     // Fetch Inbound by ID
-    InboundDetail Inbound = inboundService.getById(id);
+    InboundDetail Inbound = inboundService.getDetail(id);
 
     // Build the response with the found Inbound data
     BaseOutput<InboundDetail> response =

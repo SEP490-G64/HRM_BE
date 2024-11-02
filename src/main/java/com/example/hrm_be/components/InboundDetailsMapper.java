@@ -45,6 +45,7 @@ public class InboundDetailsMapper {
                 : null)
         .requestQuantity(entity.getRequestQuantity())
         .receiveQuantity(entity.getReceiveQuantity())
+        .discount(entity.getDiscount())
         .build();
   }
 

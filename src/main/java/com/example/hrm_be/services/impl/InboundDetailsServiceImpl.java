@@ -8,6 +8,9 @@ import com.example.hrm_be.models.entities.InboundDetailsEntity;
 import com.example.hrm_be.repositories.InboundDetailsRepository;
 import com.example.hrm_be.services.InboundDetailsService;
 import io.micrometer.common.util.StringUtils;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -36,6 +39,16 @@ public class InboundDetailsServiceImpl implements InboundDetailsService {
                     .findById(e)
                     .map(b -> inboundDetailsMapper.toDTOWithInBoundDetails(b)))
         .orElse(null);
+  }
+
+  @Override
+  public List<InboundDetails> getByInboundId(Long id) {
+    // Retrieve inbound details by ID and convert to DTO
+    return Optional.ofNullable(id)
+        .map(e -> inboundDetailsRepository.findByInbound_Id(e).stream()
+            .map(b -> inboundDetailsMapper.toDTOWithInBoundDetails(b))
+            .collect(Collectors.toList()))
+        .orElse(Collections.emptyList());
   }
 
   @Override

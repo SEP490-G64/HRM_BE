@@ -3,6 +3,7 @@ package com.example.hrm_be.services;
 import com.example.hrm_be.models.dtos.BranchProduct;
 import com.example.hrm_be.models.dtos.Product;
 import com.example.hrm_be.models.dtos.ProductBaseDTO;
+import com.example.hrm_be.models.dtos.UnitOfMeasurement;
 import com.example.hrm_be.models.entities.AllowedProductEntity;
 import java.util.List;
 import java.util.Map;
@@ -11,7 +12,7 @@ import org.springframework.data.domain.Page;
 
 public interface ProductService {
   Product getById(Long id);
-
+  Product getByRegistrationCode(String code);
   Page<ProductBaseDTO> getByPaging(
       int pageNo,
       int pageSize,
@@ -22,6 +23,8 @@ public interface ProductService {
 
   Product create(Product product);
 
+  Product findOrCreateProductByRegistrationCode(String registrationCode, String productName,
+      UnitOfMeasurement baseUnit);
   Product update(Product product);
 
   void delete(Long id);

@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface BranchBatchRepository extends JpaRepository<BranchBatchEntity, Long> {
 
-  Optional<BranchBatchEntity> findByBranchAndBatch(BranchEntity branch, BatchEntity batch);
+  Optional<BranchBatchEntity> findByBranch_IdAndBatch_Id(Long branchId, Long batchId);
 
   @Query(
       "SELECT b.quantity FROM BranchBatchEntity b WHERE b.batch.id = :batchId AND b.branch.id ="

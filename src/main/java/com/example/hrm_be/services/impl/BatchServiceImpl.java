@@ -2,12 +2,16 @@ package com.example.hrm_be.services.impl;
 
 import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.components.BatchMapper;
+import com.example.hrm_be.components.ProductMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.Batch;
+import com.example.hrm_be.models.dtos.Product;
 import com.example.hrm_be.models.entities.BatchEntity;
 import com.example.hrm_be.repositories.BatchRepository;
 import com.example.hrm_be.services.BatchService;
 import io.micrometer.common.util.StringUtils;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -27,6 +31,7 @@ public class BatchServiceImpl implements BatchService {
 
   // Injects the mapper to convert between DTO and Entity objects for batches
   @Autowired private BatchMapper batchMapper;
+  @Autowired private ProductMapper productMapper;
 
   // Retrieves a Batch by its ID
   @Override
@@ -43,6 +48,23 @@ public class BatchServiceImpl implements BatchService {
     return batchRepository
         .findByBatchCodeContainingIgnoreCase(keyword, pageable)
         .map(dao -> batchMapper.toDTO(dao));
+  }
+
+  @Override
+  public Batch findOrCreateBatchByBatchCodeAndProduct(
+      String batchCode, Product product, BigDecimal inboundPrice, LocalDateTime expireDate) {
+    return batchRepository
+        .findByBatchCodeAndProduct(batchCode, productMapper.toEntity(product))
+        .map(batchMapper::convertToDtoBasicInfo)
+        .orElseGet(
+            () -> {
+              BatchEntity newBatch = new BatchEntity();
+              newBatch.setBatchCode(batchCode);
+              newBatch.setInboundPrice(inboundPrice);
+              newBatch.setProduct(productMapper.toEntity(product));
+              newBatch.setExpireDate(expireDate);
+              return batchMapper.convertToDtoBasicInfo(batchRepository.save(newBatch));
+            });
   }
 
   // Creates a new Batch

@@ -111,23 +111,6 @@ public class InboundMapper {
         .id(entity.getId())
         .inboundCode(entity.getInboundCode())
         .inboundType(entity.getInboundType())
-        .fromBranch(
-            entity.getFromBranch() != null
-                ? branchMapper.convertToDTOBasicInfo(entity.getFromBranch())
-                : null)
-        .toBranch(
-            entity.getToBranch() != null
-                ? branchMapper.convertToDTOBasicInfo(entity.getToBranch())
-                : null)
-        .supplier(entity.getSupplier() != null ? supplierMapper.toDTO(entity.getSupplier()) : null)
-        .createdBy(
-            entity.getCreatedBy() != null
-                ? userMapper.convertToDtoBasicInfo(entity.getCreatedBy())
-                : null)
-        .approvedBy(
-            entity.getApprovedBy() != null
-                ? userMapper.convertToDtoBasicInfo(entity.getCreatedBy())
-                : null)
         .createdDate(entity.getCreatedDate())
         .inboundDate(entity.getInboundDate())
         .totalPrice(entity.getTotalPrice())

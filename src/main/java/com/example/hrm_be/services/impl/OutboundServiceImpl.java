@@ -332,7 +332,7 @@ public class OutboundServiceImpl implements OutboundService {
         // Fetch quantity from BranchProduct
         BranchProductEntity branchProduct =
             branchProductRepository
-                .findByBranchAndProduct(fromBranch, productEntity)
+                .findByBranch_IdAndProduct_Id(fromBranch.getId(), productEntity.getId())
                 .orElseThrow(
                     () ->
                         new HrmCommonException(
@@ -429,7 +429,7 @@ public class OutboundServiceImpl implements OutboundService {
         // Validate and subtract the quantity from BranchBatch
         BranchBatchEntity branchBatch =
             branchBatchRepository
-                .findByBranchAndBatch(fromBranch, batchMapper.toEntity(batchDTO))
+                .findByBranch_IdAndBatch_Id(fromBranch.getId(), batchMapper.toEntity(batchDTO).getId())
                 .orElseThrow(
                     () ->
                         new HrmCommonException(
@@ -471,7 +471,7 @@ public class OutboundServiceImpl implements OutboundService {
         // Validate and subtract the quantity from BranchProduct
         BranchProductEntity branchProduct =
             branchProductRepository
-                .findByBranchAndProduct(fromBranch, productEntity)
+                .findByBranch_IdAndProduct_Id(fromBranch.getId(), productEntity.getId())
                 .orElseThrow(
                     () ->
                         new HrmCommonException(
@@ -525,8 +525,8 @@ public class OutboundServiceImpl implements OutboundService {
       // Find the BranchProduct entity for this product and branch
       BranchProductEntity branchProduct =
           branchProductRepository
-              .findByBranchAndProduct(
-                  branchMapper.toEntity(fromBranch), productMapper.toEntity(product))
+              .findByBranch_IdAndProduct_Id(
+                  branchMapper.toEntity(fromBranch).getId(), productMapper.toEntity(product).getId())
               .orElseThrow(
                   () ->
                       new HrmCommonException(
@@ -557,7 +557,8 @@ public class OutboundServiceImpl implements OutboundService {
       // Find the BranchBatch entity for this batch and branch
       BranchBatchEntity branchBatch =
           branchBatchRepository
-              .findByBranchAndBatch(branchMapper.toEntity(fromBranch), batchMapper.toEntity(batch))
+              .findByBranch_IdAndBatch_Id(branchMapper.toEntity(fromBranch).getId(),
+                  batchMapper.toEntity(batch).getId())
               .orElseThrow(
                   () ->
                       new HrmCommonException(
@@ -565,8 +566,8 @@ public class OutboundServiceImpl implements OutboundService {
       // Find the BranchProduct entity for this product and branch
       BranchProductEntity branchProduct =
           branchProductRepository
-              .findByBranchAndProduct(
-                  branchMapper.toEntity(fromBranch), branchBatch.getBatch().getProduct())
+              .findByBranch_IdAndProduct_Id(
+                  branchMapper.toEntity(fromBranch).getId(), branchBatch.getBatch().getProduct().getId())
               .orElseThrow(
                   () ->
                       new HrmCommonException(
