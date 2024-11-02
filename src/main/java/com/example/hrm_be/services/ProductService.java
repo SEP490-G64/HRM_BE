@@ -12,7 +12,9 @@ import org.springframework.data.domain.Page;
 
 public interface ProductService {
   Product getById(Long id);
+
   Product getByRegistrationCode(String code);
+
   Page<ProductBaseDTO> getByPaging(
       int pageNo,
       int pageSize,
@@ -23,8 +25,9 @@ public interface ProductService {
 
   Product create(Product product);
 
-  Product findOrCreateProductByRegistrationCode(String registrationCode, String productName,
-      UnitOfMeasurement baseUnit);
+  Product findOrCreateProductByRegistrationCode(
+      String registrationCode, String productName, UnitOfMeasurement baseUnit);
+
   Product update(Product product);
 
   void delete(Long id);

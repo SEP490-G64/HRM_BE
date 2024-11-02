@@ -5,7 +5,6 @@ import com.example.hrm_be.components.InboundBatchDetailMapper;
 import com.example.hrm_be.components.ProductMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.InboundBatchDetail;
-import com.example.hrm_be.models.dtos.InboundDetails;
 import com.example.hrm_be.models.dtos.Product;
 import com.example.hrm_be.models.entities.InboundBatchDetailEntity;
 import com.example.hrm_be.repositories.InboundBatchDetailRepository;
@@ -27,16 +26,18 @@ public class InboundBatchDetailServiceImpl implements InboundBatchDetailService 
   @Autowired private InboundBatchDetailMapper inboundBatchDetailMapper;
   @Autowired private ProductMapper productMapper;
 
-
   @Override
   public List<InboundBatchDetail> getByInboundId(Long id) {
     // Retrieve inbound details by ID and convert to DTO
     return Optional.ofNullable(id)
-        .map(e -> inboundBatchDetailRepository.findByInbound_Id(e).stream()
-            .map(b -> inboundBatchDetailMapper.toDTO(b))
-            .collect(Collectors.toList()))
+        .map(
+            e ->
+                inboundBatchDetailRepository.findByInbound_Id(e).stream()
+                    .map(b -> inboundBatchDetailMapper.toDTO(b))
+                    .collect(Collectors.toList()))
         .orElse(Collections.emptyList());
   }
+
   @Override
   public InboundBatchDetail create(InboundBatchDetail inboundBatchDetail) {
     if (inboundBatchDetail == null) {

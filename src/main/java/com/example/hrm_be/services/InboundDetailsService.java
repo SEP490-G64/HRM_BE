@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 @Service
 public interface InboundDetailsService {
   InboundDetails getById(Long id);
+
   List<InboundDetails> getByInboundId(Long id);
 
   Page<InboundDetails> getByPaging(int pageNo, int pageSize, String sortBy);

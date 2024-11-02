@@ -97,16 +97,21 @@ public class ProductServiceImpl implements ProductService {
         .flatMap(e -> productRepository.findByRegistrationCode(e).map(b -> productMapper.toDTO(b)))
         .orElse(null);
   }
+
   @Override
-  public Product findOrCreateProductByRegistrationCode(String registrationCode, String productName, UnitOfMeasurement baseUnit) {
-    return productRepository.findByRegistrationCode(registrationCode).map(productMapper::toDTO)
-        .orElseGet(() -> {
-          ProductEntity newProduct = new ProductEntity();
-          newProduct.setRegistrationCode(registrationCode);
-          newProduct.setProductName(productName);
-          newProduct.setBaseUnit(unitOfMeasurementMapper.toEntity(baseUnit));
-          return productMapper.toDTO(productRepository.save(newProduct));
-        });
+  public Product findOrCreateProductByRegistrationCode(
+      String registrationCode, String productName, UnitOfMeasurement baseUnit) {
+    return productRepository
+        .findByRegistrationCode(registrationCode)
+        .map(productMapper::toDTO)
+        .orElseGet(
+            () -> {
+              ProductEntity newProduct = new ProductEntity();
+              newProduct.setRegistrationCode(registrationCode);
+              newProduct.setProductName(productName);
+              newProduct.setBaseUnit(unitOfMeasurementMapper.toEntity(baseUnit));
+              return productMapper.toDTO(productRepository.save(newProduct));
+            });
   }
 
   @Override

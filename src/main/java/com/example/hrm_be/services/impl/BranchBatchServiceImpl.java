@@ -74,19 +74,20 @@ public class BranchBatchServiceImpl implements BranchBatchService {
   }
 
   @Override
-  public BranchBatch updateQuantityOrCreateBranchBatch(Branch branch, Batch batch, Integer quantity) {
+  public BranchBatch updateQuantityOrCreateBranchBatch(
+      Branch branch, Batch batch, Integer quantity) {
     // Retrieve or create a new BranchBatch entity
-    BranchBatchEntity branchBatch = branchBatchRepository
-        .findByBranch_IdAndBatch_Id(branch.getId(), batch.getId())
-        .orElse(new BranchBatchEntity());
+    BranchBatchEntity branchBatch =
+        branchBatchRepository
+            .findByBranch_IdAndBatch_Id(branch.getId(), batch.getId())
+            .orElse(new BranchBatchEntity());
 
     // If it exists, update the quantity
     if (branchBatch.getId() != null) {
       branchBatch.setQuantity(
           branchBatch.getQuantity() != null
               ? branchBatch.getQuantity().add(BigDecimal.valueOf(quantity))
-              : BigDecimal.valueOf(quantity)
-      );
+              : BigDecimal.valueOf(quantity));
     } else {
       // Otherwise, set the details for a new entity
       branchBatch.setBatch(batchMapper.toEntity(batch));

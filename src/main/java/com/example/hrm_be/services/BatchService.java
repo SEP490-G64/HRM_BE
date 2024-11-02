@@ -18,6 +18,7 @@ public interface BatchService {
 
   Batch findOrCreateBatchByBatchCodeAndProduct(
       String batchCode, Product product, BigDecimal inboundPrice, LocalDateTime expireDate);
+
   // Create a new Batch.
   Batch create(Batch batch);
 

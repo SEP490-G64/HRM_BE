@@ -162,7 +162,9 @@ public class ProductMapper {
                 : null)
         .batches(
             entity.getBatches() != null
-                ? entity.getBatches().stream().map(batchMapper::convertToDtoBasicInfo).collect(Collectors.toList())
+                ? entity.getBatches().stream()
+                    .map(batchMapper::convertToDtoBasicInfo)
+                    .collect(Collectors.toList())
                 : null)
         .build();
   }

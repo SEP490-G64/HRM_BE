@@ -397,9 +397,10 @@ public class InboundServiceImpl implements InboundService {
           InboundBatchDetail inboundBatchDetail;
           if (optionalInboundBatchDetail.isPresent()) {
             inboundBatchDetail = optionalInboundBatchDetail.get();
-            inboundBatchDetail.setQuantity(batch.getInboundBatchQuantity()!=null ?
-                batch.getInboundBatchQuantity() :0);
-            inboundBatchDetail.setInboundPrice(batch.getInboundPrice()!=null? batch.getInboundPrice(): BigDecimal.ZERO);
+            inboundBatchDetail.setQuantity(
+                batch.getInboundBatchQuantity() != null ? batch.getInboundBatchQuantity() : 0);
+            inboundBatchDetail.setInboundPrice(
+                batch.getInboundPrice() != null ? batch.getInboundPrice() : BigDecimal.ZERO);
             existingInboundBatchDetails.remove(
                 inboundBatchDetail); // Remove from existing list, mark as processed
           } else {
@@ -407,9 +408,12 @@ public class InboundServiceImpl implements InboundService {
                 InboundBatchDetail.builder()
                     .inbound(unsavedInbound)
                     .batch(batchEntity)
-                    .quantity(batch.getInboundBatchQuantity()!=null ?
-                        batch.getInboundBatchQuantity() :0)
-                    .inboundPrice(batch.getInboundPrice()!=null? batch.getInboundPrice(): BigDecimal.ZERO)
+                    .quantity(
+                        batch.getInboundBatchQuantity() != null
+                            ? batch.getInboundBatchQuantity()
+                            : 0)
+                    .inboundPrice(
+                        batch.getInboundPrice() != null ? batch.getInboundPrice() : BigDecimal.ZERO)
                     .build();
           }
           inboundBatchDetailsList.add(inboundBatchDetail);
@@ -471,7 +475,7 @@ public class InboundServiceImpl implements InboundService {
               // Assume this represents the batch
               // quantity
 
-              branchBatchService.updateQuantityOrCreateBranchBatch(toBranch,batch,quantity);
+              branchBatchService.updateQuantityOrCreateBranchBatch(toBranch, batch, quantity);
 
               updateAverageInboundPricesForBatches(batch);
             });
@@ -483,8 +487,8 @@ public class InboundServiceImpl implements InboundService {
             inboundDetail -> {
               Product product = inboundDetail.getProduct();
               Integer totalQuantity =
-                  inboundBatchDetailService.findTotalQuantityByInboundIdAndProduct(inboundId,
-                      product);
+                  inboundBatchDetailService.findTotalQuantityByInboundIdAndProduct(
+                      inboundId, product);
 
               Integer quantity =
                   totalQuantity != 0
@@ -494,7 +498,7 @@ public class InboundServiceImpl implements InboundService {
                           : 0); // Assume this represents the
               // quantity to be stored
               inboundDetail.setReceiveQuantity(quantity);
-              branchProductService.getOrUpdateBranchProduct(toBranch,product,quantity);
+              branchProductService.getOrUpdateBranchProduct(toBranch, product, quantity);
             });
 
     this.create(inbound);

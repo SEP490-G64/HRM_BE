@@ -35,8 +35,10 @@ public interface InboundService {
 
   Inbound updateInboundStatus(InboundStatus status, Long id);
 
-  void saveUpdatedEntities(List<InboundDetails> inboundDetailsList,
-      List<InboundBatchDetail> inboundBatchDetailsList);
-  void deleteUnmatchedEntities(List<InboundDetails> requestInboundDetails,
+  void saveUpdatedEntities(
+      List<InboundDetails> inboundDetailsList, List<InboundBatchDetail> inboundBatchDetailsList);
+
+  void deleteUnmatchedEntities(
+      List<InboundDetails> requestInboundDetails,
       List<InboundBatchDetail> requestInboundBatchDetails);
 }

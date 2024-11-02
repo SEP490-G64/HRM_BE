@@ -82,20 +82,20 @@ public class BranchProductServiceImpl implements BranchProductService {
   }
 
   @Override
-  public BranchProduct getOrUpdateBranchProduct(Branch toBranch, Product product,
-      Integer quantity) {
+  public BranchProduct getOrUpdateBranchProduct(
+      Branch toBranch, Product product, Integer quantity) {
     // Retrieve or create a new BranchProduct entity
-    BranchProductEntity branchProduct = branchProductRepository
-        .findByBranch_IdAndProduct_Id(toBranch.getId(), product.getId())
-        .orElse(new BranchProductEntity());
+    BranchProductEntity branchProduct =
+        branchProductRepository
+            .findByBranch_IdAndProduct_Id(toBranch.getId(), product.getId())
+            .orElse(new BranchProductEntity());
 
     // If it exists, update the quantity
     if (branchProduct.getId() != null) {
       branchProduct.setQuantity(
           branchProduct.getQuantity() != null
               ? branchProduct.getQuantity().add(BigDecimal.valueOf(quantity))
-              : BigDecimal.valueOf(quantity)
-      );
+              : BigDecimal.valueOf(quantity));
     } else {
       // Otherwise, set the details for a new entity
       branchProduct.setProduct(productMapper.toEntity(product));

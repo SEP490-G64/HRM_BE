@@ -13,5 +13,5 @@ public interface BranchBatchService {
 
   void delete(Long id);
 
-  BranchBatch  updateQuantityOrCreateBranchBatch(Branch branch, Batch batch, Integer quantity);
+  BranchBatch updateQuantityOrCreateBranchBatch(Branch branch, Batch batch, Integer quantity);
 }

@@ -429,7 +429,8 @@ public class OutboundServiceImpl implements OutboundService {
         // Validate and subtract the quantity from BranchBatch
         BranchBatchEntity branchBatch =
             branchBatchRepository
-                .findByBranch_IdAndBatch_Id(fromBranch.getId(), batchMapper.toEntity(batchDTO).getId())
+                .findByBranch_IdAndBatch_Id(
+                    fromBranch.getId(), batchMapper.toEntity(batchDTO).getId())
                 .orElseThrow(
                     () ->
                         new HrmCommonException(
@@ -526,7 +527,8 @@ public class OutboundServiceImpl implements OutboundService {
       BranchProductEntity branchProduct =
           branchProductRepository
               .findByBranch_IdAndProduct_Id(
-                  branchMapper.toEntity(fromBranch).getId(), productMapper.toEntity(product).getId())
+                  branchMapper.toEntity(fromBranch).getId(),
+                  productMapper.toEntity(product).getId())
               .orElseThrow(
                   () ->
                       new HrmCommonException(
@@ -557,8 +559,8 @@ public class OutboundServiceImpl implements OutboundService {
       // Find the BranchBatch entity for this batch and branch
       BranchBatchEntity branchBatch =
           branchBatchRepository
-              .findByBranch_IdAndBatch_Id(branchMapper.toEntity(fromBranch).getId(),
-                  batchMapper.toEntity(batch).getId())
+              .findByBranch_IdAndBatch_Id(
+                  branchMapper.toEntity(fromBranch).getId(), batchMapper.toEntity(batch).getId())
               .orElseThrow(
                   () ->
                       new HrmCommonException(
@@ -567,7 +569,8 @@ public class OutboundServiceImpl implements OutboundService {
       BranchProductEntity branchProduct =
           branchProductRepository
               .findByBranch_IdAndProduct_Id(
-                  branchMapper.toEntity(fromBranch).getId(), branchBatch.getBatch().getProduct().getId())
+                  branchMapper.toEntity(fromBranch).getId(),
+                  branchBatch.getBatch().getProduct().getId())
               .orElseThrow(
                   () ->
                       new HrmCommonException(

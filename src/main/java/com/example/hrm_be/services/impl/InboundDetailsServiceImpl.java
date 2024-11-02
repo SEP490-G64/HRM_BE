@@ -45,9 +45,11 @@ public class InboundDetailsServiceImpl implements InboundDetailsService {
   public List<InboundDetails> getByInboundId(Long id) {
     // Retrieve inbound details by ID and convert to DTO
     return Optional.ofNullable(id)
-        .map(e -> inboundDetailsRepository.findByInbound_Id(e).stream()
-            .map(b -> inboundDetailsMapper.toDTOWithInBoundDetails(b))
-            .collect(Collectors.toList()))
+        .map(
+            e ->
+                inboundDetailsRepository.findByInbound_Id(e).stream()
+                    .map(b -> inboundDetailsMapper.toDTOWithInBoundDetails(b))
+                    .collect(Collectors.toList()))
         .orElse(Collections.emptyList());
   }
 
