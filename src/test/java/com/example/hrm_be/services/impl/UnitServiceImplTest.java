@@ -20,7 +20,6 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import java.math.BigDecimal;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
@@ -43,8 +42,7 @@ public class UnitServiceImplTest {
 
   // Helper to create a valid unit entity
   private UnitOfMeasurement createValidUnit() {
-    return new UnitOfMeasurement()
-        .setUnitName("Valid Unit Name");
+    return new UnitOfMeasurement().setUnitName("Valid Unit Name");
   }
 
   // GET
@@ -164,9 +162,7 @@ public class UnitServiceImplTest {
   void testUTCID05_Create_unitNameDuplicate() {
     UnitOfMeasurement unit = createValidUnit();
     unitOfMeasurementService.create(unit);
-    UnitOfMeasurement duplicateunit =
-        new UnitOfMeasurement()
-            .setUnitName("Valid Unit Name");
+    UnitOfMeasurement duplicateunit = new UnitOfMeasurement().setUnitName("Valid Unit Name");
 
     assertThrows(HrmCommonException.class, () -> unitOfMeasurementService.create(duplicateunit));
   }
@@ -223,9 +219,7 @@ public class UnitServiceImplTest {
     unitOfMeasurementRepository.deleteAll();
     UnitOfMeasurement unit = createValidUnit();
     unitOfMeasurementService.create(unit);
-    UnitOfMeasurement secondUnit =
-        new UnitOfMeasurement()
-            .setUnitName("Valid Unit Name 123123");
+    UnitOfMeasurement secondUnit = new UnitOfMeasurement().setUnitName("Valid Unit Name 123123");
     UnitOfMeasurement returnValue = unitOfMeasurementService.create(secondUnit);
     returnValue.setUnitName("Valid Unit Name");
 

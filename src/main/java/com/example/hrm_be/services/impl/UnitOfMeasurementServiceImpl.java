@@ -1,11 +1,9 @@
 package com.example.hrm_be.services.impl;
 
 import com.example.hrm_be.commons.constants.HrmConstant;
-import com.example.hrm_be.commons.constants.HrmConstant.ERROR.UNIT_OF_MEASUREMENT;
 import com.example.hrm_be.components.ProductMapper;
 import com.example.hrm_be.components.UnitOfMeasurementMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
-import com.example.hrm_be.models.dtos.ProductType;
 import com.example.hrm_be.models.dtos.UnitOfMeasurement;
 import com.example.hrm_be.models.entities.UnitOfMeasurementEntity;
 import com.example.hrm_be.repositories.UnitOfMeasurementRepository;
@@ -43,7 +41,8 @@ public class UnitOfMeasurementServiceImpl implements UnitOfMeasurementService {
   }
 
   @Override
-  public Page<UnitOfMeasurement> getByPaging(int pageNo, int pageSize, String sortBy, String keyword) {
+  public Page<UnitOfMeasurement> getByPaging(
+      int pageNo, int pageSize, String sortBy, String keyword) {
     if (pageNo < 0 || pageSize < 1) {
       throw new HrmCommonException(HrmConstant.ERROR.PAGE.INVALID);
     }
@@ -51,8 +50,7 @@ public class UnitOfMeasurementServiceImpl implements UnitOfMeasurementService {
     if (sortBy == null) {
       sortBy = "id";
     }
-    if (!Objects.equals(sortBy, "id")
-            && !Objects.equals(sortBy, "unitName")) {
+    if (!Objects.equals(sortBy, "id") && !Objects.equals(sortBy, "unitName")) {
       throw new HrmCommonException(HrmConstant.ERROR.PAGE.INVALID);
     }
 
@@ -129,8 +127,8 @@ public class UnitOfMeasurementServiceImpl implements UnitOfMeasurementService {
   // This method will validate category field input values
   private boolean commonValidate(UnitOfMeasurement unit) {
     if (unit.getUnitName() == null
-            || unit.getUnitName().isEmpty()
-            || unit.getUnitName().length() > 100) {
+        || unit.getUnitName().isEmpty()
+        || unit.getUnitName().length() > 100) {
       return false;
     }
     return true;
