@@ -4,7 +4,6 @@ import com.example.hrm_be.HrmBeApplication;
 import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.Manufacturer;
-import com.example.hrm_be.models.dtos.Supplier;
 import com.example.hrm_be.repositories.ManufacturerRepository;
 import com.example.hrm_be.services.ManufacturerService;
 import org.junit.jupiter.api.Test;
@@ -80,9 +79,11 @@ public class ManufacturerServiceImplTest {
     Manufacturer savedManufacturer = manufacturerService.create(Manufacturer);
     assertThat(savedManufacturer).isNotNull();
 
-    Page<Manufacturer> result = manufacturerService.getByPaging(0, 1, "manufacturerName", "a", true);
+    Page<Manufacturer> result =
+        manufacturerService.getByPaging(0, 1, "manufacturerName", "a", true);
     assertEquals(1, result.getTotalElements());
-    assertEquals(Manufacturer.getManufacturerName(), result.getContent().get(0).getManufacturerName());
+    assertEquals(
+        Manufacturer.getManufacturerName(), result.getContent().get(0).getManufacturerName());
   }
 
   // UTCID02 - getByPaging: pageNo invalid
@@ -166,15 +167,16 @@ public class ManufacturerServiceImplTest {
     manufacturerService.create(Manufacturer);
     Manufacturer duplicateManufacturerName =
         new Manufacturer()
-                .setManufacturerName("Valid Manufacturer Name")
-                .setAddress("Valid Manufacturer Address")
-                .setPhoneNumber("0912345678")
-                .setTaxCode("1234567891")
-                .setPhoneNumber("0912345678")
-                .setOrigin("Valid Origin")
-                .setStatus(true);
+            .setManufacturerName("Valid Manufacturer Name")
+            .setAddress("Valid Manufacturer Address")
+            .setPhoneNumber("0912345678")
+            .setTaxCode("1234567891")
+            .setPhoneNumber("0912345678")
+            .setOrigin("Valid Origin")
+            .setStatus(true);
 
-    assertThrows(HrmCommonException.class, () -> manufacturerService.create(duplicateManufacturerName));
+    assertThrows(
+        HrmCommonException.class, () -> manufacturerService.create(duplicateManufacturerName));
   }
 
   // UTCID06 - create: address null
@@ -246,15 +248,16 @@ public class ManufacturerServiceImplTest {
     Manufacturer Manufacturer = createValidManufacturer();
     manufacturerService.create(Manufacturer);
     Manufacturer duplicateAddressManufacturer =
-            new Manufacturer()
-                    .setManufacturerName("Valid Manufacturer Name 1")
-                    .setAddress("Valid Manufacturer Address 1")
-                    .setPhoneNumber("0912345678")
-                    .setTaxCode("1234567890")
-                    .setPhoneNumber("0912345678")
-                    .setOrigin("Valid Origin")
-                    .setStatus(true);
-    assertThrows(HrmCommonException.class, () -> manufacturerService.create(duplicateAddressManufacturer));
+        new Manufacturer()
+            .setManufacturerName("Valid Manufacturer Name 1")
+            .setAddress("Valid Manufacturer Address 1")
+            .setPhoneNumber("0912345678")
+            .setTaxCode("1234567890")
+            .setPhoneNumber("0912345678")
+            .setOrigin("Valid Origin")
+            .setStatus(true);
+    assertThrows(
+        HrmCommonException.class, () -> manufacturerService.create(duplicateAddressManufacturer));
   }
 
   // UTCID014 - create: origin greater than 256 characters
@@ -425,14 +428,14 @@ public class ManufacturerServiceImplTest {
     Manufacturer Manufacturer = createValidManufacturer();
     manufacturerService.create(Manufacturer);
     Manufacturer secondManufacturer =
-            new Manufacturer()
-                    .setManufacturerName("Valid Manufacturer Name 1")
-                    .setAddress("Valid Manufacturer Address 1")
-                    .setPhoneNumber("0912345678")
-                    .setTaxCode("1234567891")
-                    .setPhoneNumber("0912345678")
-                    .setOrigin("Valid Origin")
-                    .setStatus(true);
+        new Manufacturer()
+            .setManufacturerName("Valid Manufacturer Name 1")
+            .setAddress("Valid Manufacturer Address 1")
+            .setPhoneNumber("0912345678")
+            .setTaxCode("1234567891")
+            .setPhoneNumber("0912345678")
+            .setOrigin("Valid Origin")
+            .setStatus(true);
     Manufacturer returnValue = manufacturerService.create(secondManufacturer);
     returnValue.setTaxCode("1234567890");
 

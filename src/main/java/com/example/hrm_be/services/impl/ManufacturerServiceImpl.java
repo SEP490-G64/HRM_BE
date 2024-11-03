@@ -4,7 +4,6 @@ import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.components.ManufacturerMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.Manufacturer;
-import com.example.hrm_be.models.dtos.Supplier;
 import com.example.hrm_be.models.entities.ManufacturerEntity;
 import com.example.hrm_be.repositories.ManufacturerRepository;
 import com.example.hrm_be.services.ManufacturerService;
@@ -67,13 +66,13 @@ public class ManufacturerServiceImpl implements ManufacturerService {
       sortBy = "id";
     }
     if (!Objects.equals(sortBy, "id")
-            && !Objects.equals(sortBy, "manufacturerName")
-            && !Objects.equals(sortBy, "address")
-            && !Objects.equals(sortBy, "email")
-            && !Objects.equals(sortBy, "phoneNumber")
-            && !Objects.equals(sortBy, "taxCode")
-            && !Objects.equals(sortBy, "origin")
-            && !Objects.equals(sortBy, "status")) {
+        && !Objects.equals(sortBy, "manufacturerName")
+        && !Objects.equals(sortBy, "address")
+        && !Objects.equals(sortBy, "email")
+        && !Objects.equals(sortBy, "phoneNumber")
+        && !Objects.equals(sortBy, "taxCode")
+        && !Objects.equals(sortBy, "origin")
+        && !Objects.equals(sortBy, "status")) {
       throw new HrmCommonException(HrmConstant.ERROR.PAGE.INVALID);
     }
 
@@ -98,7 +97,7 @@ public class ManufacturerServiceImpl implements ManufacturerService {
 
     // Validate that Manufacturer is not null and does not already exist
     if (manufacturerRepository.existsByManufacturerNameAndAddress(
-            manufacturer.getManufacturerName(), manufacturer.getAddress())) {
+        manufacturer.getManufacturerName(), manufacturer.getAddress())) {
       // Throw exception if Manufacturer already exists
       throw new HrmCommonException(HrmConstant.ERROR.MANUFACTURER.EXIST);
     }
@@ -196,30 +195,29 @@ public class ManufacturerServiceImpl implements ManufacturerService {
   // This method will validate category field input values
   private boolean commonValidate(Manufacturer manufacturer) {
     if (manufacturer.getManufacturerName() == null
-            || manufacturer.getManufacturerName().isEmpty()
-            || manufacturer.getManufacturerName().length() > 100) {
+        || manufacturer.getManufacturerName().isEmpty()
+        || manufacturer.getManufacturerName().length() > 100) {
       return false;
     }
     if (manufacturer.getAddress() == null
-            || manufacturer.getAddress().isEmpty()
-            || manufacturer.getAddress().length() > 256) {
+        || manufacturer.getAddress().isEmpty()
+        || manufacturer.getAddress().length() > 256) {
       return false;
     }
     if (manufacturer.getEmail() != null
-            && (!manufacturer.getEmail().matches(HrmConstant.REGEX.EMAIL)
+        && (!manufacturer.getEmail().matches(HrmConstant.REGEX.EMAIL)
             || (manufacturer.getEmail().length() > 256))) {
       return false;
     }
     if (manufacturer.getPhoneNumber() == null
-            || !manufacturer.getPhoneNumber().matches(HrmConstant.REGEX.PHONE_NUMBER)) {
+        || !manufacturer.getPhoneNumber().matches(HrmConstant.REGEX.PHONE_NUMBER)) {
       return false;
     }
     if (manufacturer.getTaxCode() != null
-            && !manufacturer.getTaxCode().matches(HrmConstant.REGEX.TAX_CODE)) {
+        && !manufacturer.getTaxCode().matches(HrmConstant.REGEX.TAX_CODE)) {
       return false;
     }
-    if (manufacturer.getOrigin() != null
-            && manufacturer.getOrigin().length() > 100) {
+    if (manufacturer.getOrigin() != null && manufacturer.getOrigin().length() > 100) {
       return false;
     }
     if (manufacturer.getStatus() == null) {

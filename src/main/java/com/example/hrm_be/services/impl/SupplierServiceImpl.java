@@ -3,7 +3,6 @@ package com.example.hrm_be.services.impl;
 import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.components.SupplierMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
-import com.example.hrm_be.models.dtos.ProductCategory;
 import com.example.hrm_be.models.dtos.Supplier;
 import com.example.hrm_be.models.entities.SupplierEntity;
 import com.example.hrm_be.repositories.SupplierRepository;
@@ -16,7 +15,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -53,13 +51,13 @@ public class SupplierServiceImpl implements SupplierService {
       sortBy = "id";
     }
     if (!Objects.equals(sortBy, "id")
-            && !Objects.equals(sortBy, "supplierName")
-            && !Objects.equals(sortBy, "address")
-            && !Objects.equals(sortBy, "email")
-            && !Objects.equals(sortBy, "phoneNumber")
-            && !Objects.equals(sortBy, "taxCode")
-            && !Objects.equals(sortBy, "faxNumber")
-            && !Objects.equals(sortBy, "status")) {
+        && !Objects.equals(sortBy, "supplierName")
+        && !Objects.equals(sortBy, "address")
+        && !Objects.equals(sortBy, "email")
+        && !Objects.equals(sortBy, "phoneNumber")
+        && !Objects.equals(sortBy, "taxCode")
+        && !Objects.equals(sortBy, "faxNumber")
+        && !Objects.equals(sortBy, "status")) {
       throw new HrmCommonException(HrmConstant.ERROR.PAGE.INVALID);
     }
 
@@ -84,7 +82,7 @@ public class SupplierServiceImpl implements SupplierService {
 
     // Validate that supplier is not null and does not already exist
     if (supplierRepository.existsBySupplierNameAndAddress(
-            supplier.getSupplierName(), supplier.getAddress())) {
+        supplier.getSupplierName(), supplier.getAddress())) {
       // Throw exception if supplier already exists
       throw new HrmCommonException(HrmConstant.ERROR.SUPPLIER.EXIST);
     }

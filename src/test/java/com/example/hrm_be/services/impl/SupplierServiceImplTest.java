@@ -165,13 +165,13 @@ public class SupplierServiceImplTest {
     supplierService.create(Supplier);
     Supplier duplicateSupplierName =
         new Supplier()
-                .setSupplierName("Valid Supplier Name")
-                .setAddress("Valid Supplier Address")
-                .setPhoneNumber("0912345678")
-                .setTaxCode("1234567891")
-                .setPhoneNumber("0912345678")
-                .setFaxNumber("012-1234567")
-                .setStatus(true);
+            .setSupplierName("Valid Supplier Name")
+            .setAddress("Valid Supplier Address")
+            .setPhoneNumber("0912345678")
+            .setTaxCode("1234567891")
+            .setPhoneNumber("0912345678")
+            .setFaxNumber("012-1234567")
+            .setStatus(true);
 
     assertThrows(HrmCommonException.class, () -> supplierService.create(duplicateSupplierName));
   }
@@ -263,14 +263,14 @@ public class SupplierServiceImplTest {
     Supplier Supplier = createValidSupplier();
     supplierService.create(Supplier);
     Supplier duplicateAddressSupplier =
-            new Supplier()
-                    .setSupplierName("Valid Supplier Name 1")
-                    .setAddress("Valid Supplier Address 1")
-                    .setPhoneNumber("0912345678")
-                    .setTaxCode("1234567890")
-                    .setPhoneNumber("0912345678")
-                    .setFaxNumber("012-1234567")
-                    .setStatus(true);
+        new Supplier()
+            .setSupplierName("Valid Supplier Name 1")
+            .setAddress("Valid Supplier Address 1")
+            .setPhoneNumber("0912345678")
+            .setTaxCode("1234567890")
+            .setPhoneNumber("0912345678")
+            .setFaxNumber("012-1234567")
+            .setStatus(true);
     assertThrows(HrmCommonException.class, () -> supplierService.create(duplicateAddressSupplier));
   }
 
@@ -464,14 +464,14 @@ public class SupplierServiceImplTest {
     Supplier Supplier = createValidSupplier();
     supplierService.create(Supplier);
     Supplier secondSupplier =
-            new Supplier()
-                    .setSupplierName("Valid Supplier Name 1")
-                    .setAddress("Valid Supplier Address 1")
-                    .setPhoneNumber("0912345678")
-                    .setTaxCode("1234567891")
-                    .setPhoneNumber("0912345678")
-                    .setFaxNumber("012-1234567")
-                    .setStatus(true);
+        new Supplier()
+            .setSupplierName("Valid Supplier Name 1")
+            .setAddress("Valid Supplier Address 1")
+            .setPhoneNumber("0912345678")
+            .setTaxCode("1234567891")
+            .setPhoneNumber("0912345678")
+            .setFaxNumber("012-1234567")
+            .setStatus(true);
     Supplier returnValue = supplierService.create(secondSupplier);
     returnValue.setTaxCode("1234567890");
 
