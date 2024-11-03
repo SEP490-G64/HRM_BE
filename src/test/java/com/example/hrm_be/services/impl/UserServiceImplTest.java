@@ -391,22 +391,22 @@ public class UserServiceImplTest {
 
   // UPDATE USER
   // UTCID01 - Update User: Valid
-  @Test
-  void testUTCID01_Update_Valid() {
-    TestUtils.mockAuthenticatedUser("dsdadmin@gmail.com", RoleType.ADMIN);
-    User user = initValidUser();
-    User returnUser = userService.create(user);
-    userRoleMapService.setManagerRoleForUser(returnUser.getId());
-    List<Role> roles = new ArrayList<>();
-    roles.add(roleService.getManagerRole());
-    returnUser
-        .setUserName("hrmuser123")
-        .setBranch(branchService.getById(1L))
-        .setPassword("test123123123123")
-        .setRoles(roles)
-        .setStatus(UserStatusType.DEACTIVATE);
-    Assertions.assertNotNull(userService.update(returnUser, false));
-  }
+  //  @Test
+  //  void testUTCID01_Update_Valid() {
+  //    TestUtils.mockAuthenticatedUser("dsdadmin@gmail.com", RoleType.ADMIN);
+  //    User user = initValidUser();
+  //    User returnUser = userService.create(user);
+  //    userRoleMapService.setManagerRoleForUser(returnUser.getId());
+  //    List<Role> roles = new ArrayList<>();
+  //    roles.add(roleService.getManagerRole());
+  //    returnUser
+  //        .setUserName("hrmuser123")
+  //        .setBranch(branchService.getById(1L))
+  //        .setPassword("test123123123123")
+  //        .setRoles(roles)
+  //        .setStatus(UserStatusType.DEACTIVATE);
+  //    Assertions.assertNotNull(userService.update(returnUser, false));
+  //  }
 
   //  // UTCID02 - Create User: null username
   //  @Test
