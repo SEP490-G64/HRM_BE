@@ -7,11 +7,11 @@ import com.example.hrm_be.models.dtos.ProductCategory;
 import com.example.hrm_be.models.entities.ProductCategoryEntity;
 import com.example.hrm_be.repositories.ProductCategoryRepository;
 import com.example.hrm_be.services.ProductCategoryService;
-
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,9 +19,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Objects;
-import java.util.Optional;
 
 @Service
 @Transactional

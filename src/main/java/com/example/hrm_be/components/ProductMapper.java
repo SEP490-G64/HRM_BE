@@ -3,12 +3,11 @@ package com.example.hrm_be.components;
 import com.example.hrm_be.models.dtos.Product;
 import com.example.hrm_be.models.dtos.ProductBaseDTO;
 import com.example.hrm_be.models.entities.ProductEntity;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
-
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Component
 public class ProductMapper {

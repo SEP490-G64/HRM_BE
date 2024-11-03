@@ -4,7 +4,6 @@ import com.example.hrm_be.commons.enums.ProductStatus;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
-
 import java.math.BigDecimal;
 import java.util.List;
 import lombok.AccessLevel;

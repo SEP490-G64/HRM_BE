@@ -1,12 +1,16 @@
 package com.example.hrm_be.services.impl;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import com.example.hrm_be.HrmBeApplication;
-import com.example.hrm_be.common.TestcontainersConfiguration;
 import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.ProductCategory;
 import com.example.hrm_be.repositories.ProductCategoryRepository;
 import com.example.hrm_be.services.ProductCategoryService;
+import java.math.BigDecimal;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,15 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-
-import java.math.BigDecimal;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Testcontainers
 @ExtendWith(SpringExtension.class)
@@ -33,10 +29,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @Import(ProductCategoryServiceImpl.class)
 @Transactional
 public class CategoryServiceImplTest {
-
-  @Container
-  public static PostgreSQLContainer<TestcontainersConfiguration> postgreSQLContainer =
-      TestcontainersConfiguration.getInstance();
 
   @Autowired private ProductCategoryService productCategoryService;
   @Autowired private ProductCategoryRepository productCategoryRepository;

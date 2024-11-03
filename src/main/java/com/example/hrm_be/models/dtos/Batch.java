@@ -2,7 +2,6 @@ package com.example.hrm_be.models.dtos;
 
 import com.example.hrm_be.models.entities.CommonEntity;
 import com.fasterxml.jackson.annotation.JsonInclude;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
