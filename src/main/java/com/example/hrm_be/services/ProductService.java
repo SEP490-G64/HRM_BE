@@ -3,6 +3,7 @@ package com.example.hrm_be.services;
 import com.example.hrm_be.models.dtos.BranchProduct;
 import com.example.hrm_be.models.dtos.Product;
 import com.example.hrm_be.models.dtos.ProductBaseDTO;
+import com.example.hrm_be.models.dtos.ProductSupplierDTO;
 import com.example.hrm_be.models.entities.AllowedProductEntity;
 import java.util.List;
 import java.util.Map;
@@ -46,5 +47,5 @@ public interface ProductService {
 
   List<AllowedProductEntity> getAllowProducts(String searchStr);
 
-  List<Product> getAllProductsBySupplier(Long id, String ProductName);
+  List<ProductSupplierDTO> getAllProductsBySupplier(Long id, String ProductName);
 }

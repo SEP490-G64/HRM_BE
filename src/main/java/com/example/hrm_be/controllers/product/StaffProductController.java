@@ -5,6 +5,7 @@ import com.example.hrm_be.commons.enums.ResponseStatus;
 import com.example.hrm_be.models.dtos.BranchProduct;
 import com.example.hrm_be.models.dtos.Product;
 import com.example.hrm_be.models.dtos.ProductBaseDTO;
+import com.example.hrm_be.models.dtos.ProductSupplierDTO;
 import com.example.hrm_be.models.entities.AllowedProductEntity;
 import com.example.hrm_be.models.responses.BaseOutput;
 import com.example.hrm_be.services.ProductService;
@@ -242,14 +243,15 @@ public class StaffProductController {
   }
 
   @GetMapping("/products-by-supplier/{supplierId}")
-  protected ResponseEntity<BaseOutput<List<Product>>> getAllProductsWithSupplier(
+  protected ResponseEntity<BaseOutput<List<ProductSupplierDTO>>> getAllProductsWithSupplier(
       @PathVariable("supplierId") Long supplierId,
       @RequestParam(value = "keyword", required = false, defaultValue = "") String keyword) {
 
-    List<Product> products = productService.getAllProductsBySupplier(supplierId, keyword);
+    List<ProductSupplierDTO> products =
+        productService.getAllProductsBySupplier(supplierId, keyword);
 
-    BaseOutput<List<Product>> response =
-        BaseOutput.<List<Product>>builder()
+    BaseOutput<List<ProductSupplierDTO>> response =
+        BaseOutput.<List<ProductSupplierDTO>>builder()
             .message(HttpStatus.OK.toString())
             .total((long) products.size())
             .data(products)
