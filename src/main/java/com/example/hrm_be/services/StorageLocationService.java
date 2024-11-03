@@ -10,9 +10,7 @@ public interface StorageLocationService {
 
   Page<StorageLocation> getByPaging(int pageNo, int pageSize, String sortBy, String name);
 
-  StorageLocation create(StorageLocation supplier);
-
-  StorageLocation update(StorageLocation supplier);
+  StorageLocation save(StorageLocation supplier);
 
   void delete(Long id);
 }

@@ -30,6 +30,11 @@ public class UnitOfMeasurementServiceImpl implements UnitOfMeasurementService {
   @Autowired private ProductMapper productMapper;
 
   @Override
+  public Boolean existById(Long id) {
+    return unitOfMeasurementRepository.existsById(id);
+  }
+
+  @Override
   public UnitOfMeasurement getById(Long id) {
     // Validation: Check if the ID is null
     if (id == null) {
@@ -129,7 +134,7 @@ public class UnitOfMeasurementServiceImpl implements UnitOfMeasurementService {
   // This method will validate category field input values
   private boolean commonValidate(UnitOfMeasurement unit) {
     if (unit.getUnitName() == null
-            || unit.getUnitName().isEmpty()
+            || unit.getUnitName().trim().isEmpty()
             || unit.getUnitName().length() > 100) {
       return false;
     }

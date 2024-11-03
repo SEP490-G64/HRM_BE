@@ -9,6 +9,7 @@ import com.example.hrm_be.models.requests.RegisterRequest;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 import io.micrometer.common.lang.Nullable;
 import lombok.NonNull;
@@ -64,4 +65,6 @@ public interface UserService {
   void resetPassword(User user, String newPassword);
 
   void changePassword(User user, ChangePasswordRequest request);
+
+  Optional<Long> findBranchIdByUserEmail(String loggedEmail);
 }

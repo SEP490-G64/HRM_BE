@@ -2,6 +2,9 @@ package com.example.hrm_be.services;
 
 import com.example.hrm_be.models.dtos.Batch;
 import java.util.List;
+
+import com.example.hrm_be.models.entities.BatchEntity;
+import com.example.hrm_be.models.entities.ProductEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
@@ -24,4 +27,8 @@ public interface BatchService {
 
   // Method to get a list of batches by productId through the intermediary table (BatchInbound)
   List<Batch> getBatchesByProductThroughInbound(Long productId);
+
+  BatchEntity addBatchInInbound(Batch batch, ProductEntity product);
+
+  List<BatchEntity> findAllByProductId(Long inboundId);
 }

@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface ProductTypeService {
+  Boolean existById(Long id);
+
   List<ProductType> getAll();
 
   // Retrieves a ProductType by its ID

@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface ManufacturerService {
+  Boolean existById(Long id);
+
   List<Manufacturer> getAll();
 
   Manufacturer getById(Long id);

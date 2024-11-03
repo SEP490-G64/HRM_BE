@@ -29,6 +29,11 @@ public class ProductTypeServiceImpl implements ProductTypeService {
   @Autowired private ProductTypeMapper productTypeMapper;
 
   @Override
+  public Boolean existById(Long id) {
+    return productTypeRepository.existsById(id);
+  }
+
+  @Override
   public List<ProductType> getAll() {
     List<ProductTypeEntity> productTypeEntities = productTypeRepository.findAll();
     return productTypeEntities.stream()
@@ -148,7 +153,7 @@ public class ProductTypeServiceImpl implements ProductTypeService {
   // This method will validate category field input values
   private boolean commonValidate(ProductType type) {
     if (type.getTypeName() == null
-        || type.getTypeName().isEmpty()
+        || type.getTypeName().trim().isEmpty()
         || type.getTypeName().length() > 100) {
       return false;
     }

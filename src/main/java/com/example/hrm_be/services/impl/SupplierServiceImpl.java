@@ -175,36 +175,52 @@ public class SupplierServiceImpl implements SupplierService {
 
   // This method will validate category field input values
   private boolean commonValidate(Supplier supplier) {
+    // Validate supplierName (required, non-empty, max length 100)
     if (supplier.getSupplierName() == null
-            || supplier.getSupplierName().isEmpty()
+            || supplier.getSupplierName().trim().isEmpty()
             || supplier.getSupplierName().length() > 100) {
       return false;
     }
+
+    // Validate address (required, non-empty, max length 256)
     if (supplier.getAddress() == null
-            || supplier.getAddress().isEmpty()
+            || supplier.getAddress().trim().isEmpty()
             || supplier.getAddress().length() > 256) {
       return false;
     }
-    if (supplier.getEmail() != null
-            && (!supplier.getEmail().matches(HrmConstant.REGEX.EMAIL)
-            || (supplier.getEmail().length() > 256))) {
-      return false;
+
+    // Validate email (optional, if provided must match regex and max length 256)
+    if (supplier.getEmail() != null && !supplier.getEmail().isEmpty()) {
+      if (!supplier.getEmail().matches(HrmConstant.REGEX.EMAIL) || supplier.getEmail().length() > 256) {
+        return false;
+      }
     }
+
+    // Validate phoneNumber (required, must match regex)
     if (supplier.getPhoneNumber() == null
             || !supplier.getPhoneNumber().matches(HrmConstant.REGEX.PHONE_NUMBER)) {
       return false;
     }
-    if (supplier.getTaxCode() != null
-            && !supplier.getTaxCode().matches(HrmConstant.REGEX.TAX_CODE)) {
-      return false;
+
+    // Validate taxCode (optional, if provided must match regex)
+    if (supplier.getTaxCode() != null && !supplier.getTaxCode().isEmpty()) {
+      if (!supplier.getTaxCode().matches(HrmConstant.REGEX.TAX_CODE)) {
+        return false;
+      }
     }
-    if (supplier.getFaxNumber() != null
-            && !supplier.getFaxNumber().matches(HrmConstant.REGEX.FAX_NUMBER)) {
-      return false;
+
+    // Validate faxNumber (optional, if provided must match regex)
+    if (supplier.getFaxNumber() != null && !supplier.getFaxNumber().isEmpty()) {
+      if (!supplier.getFaxNumber().matches(HrmConstant.REGEX.FAX_NUMBER)) {
+        return false;
+      }
     }
+
+    // Validate status (required)
     if (supplier.getStatus() == null) {
       return false;
     }
+
     return true;
   }
 }

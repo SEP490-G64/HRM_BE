@@ -29,6 +29,11 @@ public class ManufacturerServiceImpl implements ManufacturerService {
   @Autowired private ManufacturerMapper manufacturerMapper;
 
   @Override
+  public Boolean existById(Long id) {
+    return manufacturerRepository.existsById(id);
+  }
+
+  @Override
   public List<Manufacturer> getAll() {
     List<ManufacturerEntity> manufacturerEntities = manufacturerRepository.findAll();
     return manufacturerEntities.stream()

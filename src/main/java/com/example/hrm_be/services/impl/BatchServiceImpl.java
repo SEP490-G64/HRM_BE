@@ -5,6 +5,8 @@ import com.example.hrm_be.components.BatchMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.Batch;
 import com.example.hrm_be.models.entities.BatchEntity;
+import com.example.hrm_be.models.entities.InboundBatchDetailEntity;
+import com.example.hrm_be.models.entities.ProductEntity;
 import com.example.hrm_be.repositories.BatchRepository;
 import com.example.hrm_be.services.BatchService;
 import io.micrometer.common.util.StringUtils;
@@ -102,5 +104,22 @@ public class BatchServiceImpl implements BatchService {
     return batchRepository.findAllByProductIdThroughInbound(productId).stream()
         .map(batchMapper::toDTO)
         .collect(Collectors.toList());
+  }
+
+  @Override
+  public BatchEntity addBatchInInbound(Batch batch, ProductEntity product) {
+    batchRepository
+            .findByBatchCodeAndProduct(batch.getBatchCode(), product)
+            .orElseGet(
+                    () -> {
+                      return batchMapper.toEntity(this.create(batch));
+                    });
+
+    return null;
+  }
+
+  @Override
+  public List<BatchEntity> findAllByProductId(Long inboundId) {
+    return batchRepository.findAllByProductId(inboundId);
   }
 }

@@ -33,6 +33,11 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
   @Autowired private ProductCategoryMapper categoryMapper;
 
   @Override
+  public Boolean existById(Long id) {
+    return categoryRepository.existsById(id);
+  }
+
+  @Override
   public List<ProductCategory> getAll() {
     List<ProductCategoryEntity> productCategoryEntities = categoryRepository.findAll();
     return productCategoryEntities.stream()
@@ -156,7 +161,7 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
   // This method will validate category field input values
   private boolean commonValidate(ProductCategory category) {
     if (category.getCategoryName() == null
-        || category.getCategoryName().isEmpty()
+        || category.getCategoryName().trim().isEmpty()
         || category.getCategoryName().length() > 100) {
       return false;
     }

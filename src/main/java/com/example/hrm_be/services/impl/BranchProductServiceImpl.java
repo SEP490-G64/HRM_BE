@@ -4,14 +4,19 @@ import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.components.BranchProductMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.BranchProduct;
-import com.example.hrm_be.models.entities.BranchProductEntity;
+import com.example.hrm_be.models.entities.*;
 import com.example.hrm_be.repositories.BranchProductRepository;
 import com.example.hrm_be.services.BranchProductService;
+
+import java.util.List;
 import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.Pageable;
 
 @Service
 @Transactional
@@ -21,39 +26,12 @@ public class BranchProductServiceImpl implements BranchProductService {
   @Autowired private BranchProductMapper branchProductMapper;
 
   @Override
-  public BranchProduct create(BranchProduct branchProduct) {
-    if (branchProduct == null) {
-      throw new HrmCommonException(HrmConstant.ERROR.BRANCHPRODUCT.EXIST);
-    }
-
+  public BranchProduct save(BranchProduct branchProduct) {
     // Convert DTO to entity, save it, and convert back to DTO
     return Optional.ofNullable(branchProduct)
         .map(e -> branchProductMapper.toEntity(e))
         .map(e -> branchProductRepository.save(e))
         .map(e -> branchProductMapper.toDTO(e))
-        .orElse(null);
-  }
-
-  @Override
-  public BranchProduct update(BranchProduct branchProduct) {
-    // Retrieve the existing branch entity by ID
-    BranchProductEntity oldBranchProduct =
-        branchProductRepository.findById(branchProduct.getId()).orElse(null);
-    if (oldBranchProduct == null) {
-      throw new HrmCommonException(HrmConstant.ERROR.BRANCH.NOT_EXIST);
-    }
-
-    // Update the fields of the existing branch entity with new values
-    return Optional.ofNullable(oldBranchProduct)
-        .map(
-            op ->
-                op.toBuilder()
-                    .quantity(branchProduct.getQuantity())
-                    .maxQuantity(branchProduct.getMaxQuantity())
-                    .minQuantity(branchProduct.getMinQuantity())
-                    .build())
-        .map(branchProductRepository::save)
-        .map(branchProductMapper::toDTO)
         .orElse(null);
   }
 
@@ -70,5 +48,48 @@ public class BranchProductServiceImpl implements BranchProductService {
     }
 
     branchProductRepository.deleteById(id); // Delete the inbound entity by ID
+  }
+
+  @Override
+  public void updateBranchProductInInbound(BranchEntity toBranch, ProductEntity product, Integer quantity) {
+    // Check if BranchProductEntity already exists
+    BranchProductEntity branchProduct =
+            branchProductRepository
+                    .findByBranchAndProduct(toBranch, product)
+                    .orElse(new BranchProductEntity());
+
+    // If it exists, update the quantity, otherwise create a new one
+    if (branchProduct.getId() != null) {
+      branchProduct.setQuantity(
+              branchProduct.getQuantity() != null
+                      ? branchProduct.getQuantity() + quantity
+                      : quantity); // Update existing quantity
+    } else {
+      branchProduct.setProduct(product);
+      branchProduct.setBranch(toBranch);
+      branchProduct.setQuantity(quantity);
+      branchProduct.setMinQuantity(null); // Set default min quantity, or use business
+      // logic
+      branchProduct.setMaxQuantity(null); // Set default max quantity, or use business
+      // logic
+    }
+
+    // Save the BranchProductEntity
+    branchProductRepository.save(branchProduct);
+  }
+
+  @Override
+  public Integer findTotalQuantityForProduct(Long productId) {
+    return branchProductRepository.findTotalQuantityForProduct(productId);
+  }
+
+  @Override
+  public List<BranchProductEntity> saveAll(List<BranchProductEntity> branchProducts) {
+    return branchProductRepository.saveAll(branchProducts);
+  }
+
+  @Override
+  public Page<BranchProductEntity> findAll(Specification<BranchProductEntity> specification, Pageable pageable) {
+    return branchProductRepository.findAll(specification, pageable);
   }
 }

@@ -28,7 +28,7 @@ public class ProductTypeEntity extends CommonEntity {
   @Column(name = "type_name")
   String typeName;
 
-  @Column(name = "type_description")
+  @Column(name = "type_description", length = 500)
   String typeDescription;
 
   @ToString.Exclude

@@ -40,12 +40,6 @@ public class ProductMapper {
                     .productName(d.getProductName())
                     .registrationCode(d.getRegistrationCode())
                     .urlImage(d.getUrlImage())
-                    //                    .unitConversions(
-                    //                        d.getUnitConversions() != null
-                    //                             ? d.getUnitConversions().stream()
-                    //                                 .map(unitConversionMapper::toEntity)
-                    //                                        .collect(Collectors.toList())
-                    //                                        : null)
                     .specialConditions(
                         d.getSpecialConditions() != null
                             ? d.getSpecialConditions().stream()
@@ -79,6 +73,57 @@ public class ProductMapper {
                             : null)
                     .build())
         .orElse(null);
+  }
+
+  // Convert ProductDTO to ProductEntity
+  public ProductEntity toEntityWithUnitConversions(Product dto) {
+    return Optional.ofNullable(dto)
+            .map(
+                    d ->
+                            ProductEntity.builder()
+                                    .id(d.getId())
+                                    .productName(d.getProductName())
+                                    .registrationCode(d.getRegistrationCode())
+                                    .urlImage(d.getUrlImage())
+                                    .unitConversions(
+                                            d.getUnitConversions() != null
+                                                    ? d.getUnitConversions().stream()
+                                                    .map(unitConversionMapper::toEntity)
+                                                    .collect(Collectors.toList())
+                                                    : null)
+                                    .specialConditions(
+                                            d.getSpecialConditions() != null
+                                                    ? d.getSpecialConditions().stream()
+                                                    .map(specialConditionMapper::toEntity)
+                                                    .collect(Collectors.toList())
+                                                    : null)
+                                    .manufacturer(
+                                            d.getManufacturer() != null
+                                                    ? manufacturerMapper.toEntity(d.getManufacturer())
+                                                    : null)
+                                    .category(
+                                            d.getCategory() != null
+                                                    ? productCategoryMapper.toEntity(d.getCategory())
+                                                    : null)
+                                    .type(d.getType() != null ? productTypeMapper.toEntity(d.getType()) : null)
+                                    .activeIngredient(d.getActiveIngredient())
+                                    .excipient(d.getExcipient())
+                                    .formulation(d.getFormulation())
+                                    .inboundPrice(d.getInboundPrice())
+                                    .sellPrice(d.getSellPrice())
+                                    .status(d.getStatus())
+                                    .baseUnit(
+                                            d.getBaseUnit() != null
+                                                    ? unitOfMeasurementMapper.toEntity(d.getBaseUnit())
+                                                    : null)
+                                    .branchProducs(
+                                            d.getBranchProducts() != null
+                                                    ? d.getBranchProducts().stream()
+                                                    .map(branchProductMapper::toEntity)
+                                                    .collect(Collectors.toList())
+                                                    : null)
+                                    .build())
+            .orElse(null);
   }
 
   // Helper method to convert ProductEntity to ProductDTO

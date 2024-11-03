@@ -679,4 +679,9 @@ public class UserServiceImpl implements UserService {
     // Hash the new password before saving it
     this.resetPassword(user, request.getNewPassword());
   }
+
+  @Override
+  public Optional<Long> findBranchIdByUserEmail(String loggedEmail) {
+    return userRepository.findBranchIdByUserEmail(loggedEmail);
+  }
 }
