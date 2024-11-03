@@ -26,7 +26,6 @@ import com.example.hrm_be.models.entities.ProductEntity;
 import com.example.hrm_be.models.entities.ProductSuppliersEntity;
 import com.example.hrm_be.models.entities.SupplierEntity;
 import com.example.hrm_be.models.entities.UserEntity;
-import com.example.hrm_be.repositories.BranchRepository;
 import com.example.hrm_be.models.requests.CreateInboundRequest;
 import com.example.hrm_be.models.responses.InboundDetail;
 import com.example.hrm_be.repositories.BatchRepository;
