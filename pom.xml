@@ -208,6 +208,18 @@
       <version>1.78.1</version>
     </dependency>
 
+    <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-starter-bootstrap</artifactId>
+      <version>4.1.4</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.playtika.testcontainers</groupId>
+      <artifactId>embedded-postgresql</artifactId>
+      <version>3.1.9</version>
+      <scope>test</scope>
+    </dependency>
 
   </dependencies>
   <build>

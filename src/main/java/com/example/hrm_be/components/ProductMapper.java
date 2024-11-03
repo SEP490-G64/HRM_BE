@@ -2,13 +2,13 @@ package com.example.hrm_be.components;
 
 import com.example.hrm_be.models.dtos.Product;
 import com.example.hrm_be.models.dtos.ProductBaseDTO;
+import com.example.hrm_be.models.dtos.ProductSupplierDTO;
 import com.example.hrm_be.models.entities.ProductEntity;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
-
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Component
 public class ProductMapper {
@@ -116,6 +116,33 @@ public class ProductMapper {
                     .map(branchProductMapper::toDTO)
                     .collect(Collectors.toList())
                 : null)
+        .category(
+            entity.getCategory() != null ? productCategoryMapper.toDTO(entity.getCategory()) : null)
+        .type(entity.getType() != null ? productTypeMapper.toDTO(entity.getType()) : null)
+        .manufacturer(
+            entity.getManufacturer() != null
+                ? manufacturerMapper.toDTO(entity.getManufacturer())
+                : null)
+        .build();
+  }
+
+  // Helper method to convert ProductEntity to ProductDTO
+  public Product convertToBaseInfo(ProductEntity entity) {
+    return Product.builder()
+        .id(entity.getId())
+        .productName(entity.getProductName())
+        .registrationCode(entity.getRegistrationCode())
+        .urlImage(entity.getUrlImage())
+        .activeIngredient(entity.getActiveIngredient())
+        .excipient(entity.getExcipient())
+        .formulation(entity.getFormulation())
+        .inboundPrice(entity.getInboundPrice())
+        .sellPrice(entity.getSellPrice())
+        .status(entity.getStatus())
+        .baseUnit(
+            entity.getBaseUnit() != null
+                ? unitOfMeasurementMapper.toDTO(entity.getBaseUnit())
+                : null)
         .build();
   }
 
@@ -158,6 +185,18 @@ public class ProductMapper {
         .manufacturerName(
             entity.getManufacturer() != null
                 ? entity.getManufacturer().getManufacturerName()
+                : null)
+        .build();
+  }
+
+  public ProductSupplierDTO convertToProductSupplier(ProductEntity entity) {
+    return ProductSupplierDTO.builder()
+        .productName(entity.getProductName())
+        .registrationCode(entity.getRegistrationCode())
+        .image(entity.getUrlImage())
+        .baseUnit(
+            entity.getBaseUnit() != null
+                ? unitOfMeasurementMapper.toDTO(entity.getBaseUnit())
                 : null)
         .build();
   }

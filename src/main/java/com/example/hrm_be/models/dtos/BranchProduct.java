@@ -1,6 +1,7 @@
 package com.example.hrm_be.models.dtos;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import java.math.BigDecimal;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -23,6 +24,7 @@ import lombok.extern.jackson.Jacksonized;
 public class BranchProduct {
   Long id;
   Product product;
+
   ProductBaseDTO productBaseDTO;
 
   Branch branch;
@@ -33,5 +35,5 @@ public class BranchProduct {
 
   Integer maxQuantity;
 
-  Integer quantity;
+  BigDecimal quantity;
 }

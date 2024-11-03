@@ -8,7 +8,9 @@ import com.example.hrm_be.models.dtos.Branch;
 import com.example.hrm_be.models.entities.BranchEntity;
 import com.example.hrm_be.repositories.BranchRepository;
 import com.example.hrm_be.services.BranchService;
-import io.micrometer.common.util.StringUtils;
+import io.micrometer.common.lang.Nullable;
+import java.util.Objects;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,9 +18,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Objects;
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -32,6 +31,11 @@ public class BranchServiceImpl implements BranchService {
   // Retrieves a Branch by its ID
   @Override
   public Branch getById(Long id) {
+    // Validation: Check if the ID is blank, this never happen
+    if (id == null) {
+      throw new HrmCommonException(HrmConstant.ERROR.BRANCH.INVALID);
+    }
+
     return Optional.ofNullable(id)
         .flatMap(e -> branchRepository.findById(e).map(b -> branchMapper.toDTO(b)))
         .orElse(null);
@@ -46,14 +50,28 @@ public class BranchServiceImpl implements BranchService {
       String sortBy,
       String keyword,
       BranchType branchType,
-      Boolean status) {
+      @Nullable Boolean status) {
+
     if (pageNo < 0 || pageSize < 1) {
       throw new HrmCommonException(HrmConstant.ERROR.PAGE.INVALID);
     }
-    if (!Objects.equals(sortBy, "branchName")
+
+    if (sortBy == null) {
+      sortBy = "id";
+    }
+    if (!Objects.equals(sortBy, "id")
+        && !Objects.equals(sortBy, "branchName")
         && !Objects.equals(sortBy, "location")
-        && !Objects.equals(sortBy, "branchType")) {
-      sortBy = "branchName";
+        && !Objects.equals(sortBy, "branchType")
+        && !Objects.equals(sortBy, "contactPerson")
+        && !Objects.equals(sortBy, "phoneNumber")
+        && !Objects.equals(sortBy, "capacity")
+        && !Objects.equals(sortBy, "activeStatus")) {
+      throw new HrmCommonException(HrmConstant.ERROR.PAGE.INVALID);
+    }
+
+    if (keyword == null) {
+      keyword = "";
     }
 
     Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(sortBy).ascending());
@@ -90,6 +108,11 @@ public class BranchServiceImpl implements BranchService {
     if (branch == null || !commonValidate(branch)) {
       throw new HrmCommonException(HrmConstant.ERROR.BRANCH.INVALID);
     }
+
+    if (branch.getId() == null) {
+      throw new HrmCommonException(HrmConstant.ERROR.BRANCH.INVALID);
+    }
+
     // Retrieve the existing branch entity by ID
     BranchEntity oldBranchEntity = branchRepository.findById(branch.getId()).orElse(null);
     if (oldBranchEntity == null) {
@@ -130,8 +153,8 @@ public class BranchServiceImpl implements BranchService {
   @Override
   public void delete(Long id) {
     // Validation: Check if the ID is blank, this never happen
-    if (StringUtils.isBlank(id.toString())) {
-      throw new HrmCommonException(HrmConstant.ERROR.BRANCH.NOT_EXIST);
+    if (id == null) {
+      throw new HrmCommonException(HrmConstant.ERROR.BRANCH.INVALID);
     }
 
     // Retrieve the existing branch entity by ID
@@ -171,16 +194,20 @@ public class BranchServiceImpl implements BranchService {
     }
     if (branch.getPhoneNumber() == null
         || branch.getPhoneNumber().isEmpty()
-        || branch.getPhoneNumber().length() > 11
         || !branch.getPhoneNumber().matches(HrmConstant.REGEX.PHONE_NUMBER)) {
       return false;
     }
-    if (branch.getCapacity() == null
-        || branch.getCapacity() < 0
-        || branch.getCapacity()
-            > 100000) { // Use 100000 instead of 100.000 for decimal format correction
+    if (branch.getCapacity() != null
+        && (branch.getCapacity() < 1
+            || branch.getCapacity()
+                > 100000)) { // Use 100000 instead of 100.000 for decimal format correction
       return false;
     }
+
+    if (branch.getActiveStatus() == null) {
+      return false;
+    }
+
     return branch.getBranchType() != null;
   }
 }

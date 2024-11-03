@@ -3,6 +3,7 @@ package com.example.hrm_be.models.entities;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
+import java.math.BigDecimal;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -33,4 +34,7 @@ public class InboundBatchDetailEntity extends CommonEntity {
 
   @Column(name = "quantity")
   Integer quantity;
+
+  @Column(name = "price")
+  BigDecimal inboundPrice;
 }

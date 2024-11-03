@@ -28,6 +28,8 @@ import lombok.extern.jackson.Jacksonized;
 public class Outbound {
   Long id;
 
+  String outBoundCode;
+
   OutboundType outboundType; // Assume this is an Enum with values like "Bán hàng", "Trả hàng", etc.
 
   Branch fromBranch;
@@ -55,4 +57,6 @@ public class Outbound {
   User createdBy;
 
   List<OutboundDetail> outboundDetails;
+  List<OutboundProductDetail> outboundProductDetails;
+  List<Product> products;
 }

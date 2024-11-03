@@ -7,7 +7,6 @@ import com.example.hrm_be.models.dtos.ProductType;
 import com.example.hrm_be.models.entities.ProductTypeEntity;
 import com.example.hrm_be.repositories.ProductTypeRepository;
 import com.example.hrm_be.services.ProductTypeService;
-import io.micrometer.common.util.StringUtils;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -39,6 +38,11 @@ public class ProductTypeServiceImpl implements ProductTypeService {
   // Retrieves a ProductType by ID
   @Override
   public ProductType getById(Long id) {
+    // Validation: Check if the ID is null
+    if (id == null) {
+      throw new HrmCommonException(HrmConstant.ERROR.TYPE.INVALID);
+    }
+
     return Optional.ofNullable(id)
         .flatMap(e -> productTypeRepository.findById(e).map(b -> productTypeMapper.toDTO(b)))
         .orElse(null);
@@ -46,18 +50,39 @@ public class ProductTypeServiceImpl implements ProductTypeService {
 
   // Retrieves a paginated list of ProductType entities, allowing sorting and searching by name
   @Override
-  public Page<ProductType> getByPaging(int pageNo, int pageSize, String sortBy, String name) {
+  public Page<ProductType> getByPaging(int pageNo, int pageSize, String sortBy, String keyword) {
+    if (pageNo < 0 || pageSize < 1) {
+      throw new HrmCommonException(HrmConstant.ERROR.PAGE.INVALID);
+    }
+
+    if (sortBy == null) {
+      sortBy = "id";
+    }
+    if (!Objects.equals(sortBy, "id")
+        && !Objects.equals(sortBy, "typeName")
+        && !Objects.equals(sortBy, "typeDescription")) {
+      throw new HrmCommonException(HrmConstant.ERROR.PAGE.INVALID);
+    }
+
+    if (keyword == null) {
+      keyword = "";
+    }
+
     Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(sortBy).ascending());
     return productTypeRepository
-        .findByTypeNameContainingIgnoreCase(name, pageable)
+        .findByTypeNameContainingIgnoreCase(keyword, pageable)
         .map(dao -> productTypeMapper.toDTO(dao));
   }
 
   // Creates a new ProductType
   @Override
   public ProductType create(ProductType type) {
-    // Validation: Ensure the type is not null and the name does not already exist
-    if (type == null || productTypeRepository.existsByTypeName(type.getTypeName())) {
+    if (type == null || !commonValidate(type)) {
+      throw new HrmCommonException(HrmConstant.ERROR.TYPE.INVALID);
+    }
+
+    // Validation: Ensure the name does not already exist
+    if (productTypeRepository.existsByTypeName(type.getTypeName())) {
       throw new HrmCommonException(HrmConstant.ERROR.TYPE.EXIST);
     }
 
@@ -72,6 +97,10 @@ public class ProductTypeServiceImpl implements ProductTypeService {
   // Updates an existing ProductType
   @Override
   public ProductType update(ProductType type) {
+    if (type == null || type.getId() == null || !commonValidate(type)) {
+      throw new HrmCommonException(HrmConstant.ERROR.TYPE.INVALID);
+    }
+
     // Retrieve the existing type entity by ID
     ProductTypeEntity oldTypeEntity = productTypeRepository.findById(type.getId()).orElse(null);
     if (oldTypeEntity == null) {
@@ -100,9 +129,9 @@ public class ProductTypeServiceImpl implements ProductTypeService {
   // Deletes a ProductType by ID
   @Override
   public void delete(Long id) {
-    // Validation: Check if the ID is blank
-    if (StringUtils.isBlank(id.toString())) {
-      return;
+    // Validation: Check if the ID is null
+    if (id == null) {
+      throw new HrmCommonException(HrmConstant.ERROR.TYPE.INVALID);
     }
 
     // Retrieve the existing type entity by ID
@@ -113,5 +142,18 @@ public class ProductTypeServiceImpl implements ProductTypeService {
 
     // Delete the type by ID
     productTypeRepository.deleteById(id);
+  }
+
+  // This method will validate category field input values
+  private boolean commonValidate(ProductType type) {
+    if (type.getTypeName() == null
+        || type.getTypeName().isEmpty()
+        || type.getTypeName().length() > 100) {
+      return false;
+    }
+    if (type.getTypeDescription() != null && type.getTypeDescription().length() > 500) {
+      return false;
+    }
+    return true;
   }
 }

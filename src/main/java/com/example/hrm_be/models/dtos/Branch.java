@@ -1,7 +1,6 @@
 package com.example.hrm_be.models.dtos;
 
 import com.example.hrm_be.commons.enums.BranchType;
-import com.example.hrm_be.models.entities.CommonEntity;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.util.List;
 import lombok.AccessLevel;
@@ -23,7 +22,7 @@ import lombok.extern.jackson.Jacksonized;
 @EqualsAndHashCode
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Branch extends CommonEntity {
+public class Branch {
   Long id;
   String branchName;
 

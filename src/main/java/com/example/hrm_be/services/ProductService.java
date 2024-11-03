@@ -3,6 +3,7 @@ package com.example.hrm_be.services;
 import com.example.hrm_be.models.dtos.BranchProduct;
 import com.example.hrm_be.models.dtos.Product;
 import com.example.hrm_be.models.dtos.ProductBaseDTO;
+import com.example.hrm_be.models.dtos.ProductSupplierDTO;
 import com.example.hrm_be.models.entities.AllowedProductEntity;
 
 import java.io.ByteArrayInputStream;
@@ -53,4 +54,6 @@ public interface ProductService {
   ByteArrayInputStream exportFile() throws IOException;
 
   List<AllowedProductEntity> getAllowProducts(String searchStr);
+
+  List<ProductSupplierDTO> getAllProductsBySupplier(Long id, String ProductName);
 }
