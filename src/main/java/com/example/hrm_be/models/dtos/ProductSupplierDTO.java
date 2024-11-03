@@ -20,10 +20,9 @@ import java.io.Serializable;
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ProductSupplierDTO implements Serializable {
-    @Serial
-    private static final long serialVersionUID = -1092354895838817939L;
-    String productName;
-    String registrationCode;
-    String image;
-    UnitOfMeasurement baseUnit;
+  @Serial private static final long serialVersionUID = -1092354895838817939L;
+  String productName;
+  String registrationCode;
+  String image;
+  UnitOfMeasurement baseUnit;
 }

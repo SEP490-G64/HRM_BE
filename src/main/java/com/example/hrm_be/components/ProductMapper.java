@@ -191,13 +191,13 @@ public class ProductMapper {
 
   public ProductSupplierDTO convertToProductSupplier(ProductEntity entity) {
     return ProductSupplierDTO.builder()
-            .productName(entity.getProductName())
-            .registrationCode(entity.getRegistrationCode())
-            .image(entity.getUrlImage())
-            .baseUnit(
-                    entity.getBaseUnit() != null
-                            ? unitOfMeasurementMapper.toDTO(entity.getBaseUnit())
-                            : null)
-            .build();
+        .productName(entity.getProductName())
+        .registrationCode(entity.getRegistrationCode())
+        .image(entity.getUrlImage())
+        .baseUnit(
+            entity.getBaseUnit() != null
+                ? unitOfMeasurementMapper.toDTO(entity.getBaseUnit())
+                : null)
+        .build();
   }
 }

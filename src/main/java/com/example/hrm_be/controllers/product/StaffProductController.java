@@ -247,7 +247,8 @@ public class StaffProductController {
       @PathVariable("supplierId") Long supplierId,
       @RequestParam(value = "keyword", required = false, defaultValue = "") String keyword) {
 
-    List<ProductSupplierDTO> products = productService.getAllProductsBySupplier(supplierId, keyword);
+    List<ProductSupplierDTO> products =
+        productService.getAllProductsBySupplier(supplierId, keyword);
 
     BaseOutput<List<ProductSupplierDTO>> response =
         BaseOutput.<List<ProductSupplierDTO>>builder()
