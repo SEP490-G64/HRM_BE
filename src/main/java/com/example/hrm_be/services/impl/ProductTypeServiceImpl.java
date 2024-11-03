@@ -7,7 +7,6 @@ import com.example.hrm_be.models.dtos.ProductType;
 import com.example.hrm_be.models.entities.ProductTypeEntity;
 import com.example.hrm_be.repositories.ProductTypeRepository;
 import com.example.hrm_be.services.ProductTypeService;
-
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;

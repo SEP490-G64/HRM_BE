@@ -17,6 +17,8 @@ import com.example.hrm_be.models.entities.InboundBatchDetailEntity;
 import com.example.hrm_be.models.entities.InboundDetailsEntity;
 import com.example.hrm_be.models.entities.InboundEntity;
 import com.example.hrm_be.models.entities.ProductEntity;
+import com.example.hrm_be.models.entities.ProductSuppliersEntity;
+import com.example.hrm_be.models.entities.SupplierEntity;
 import com.example.hrm_be.models.entities.UserEntity;
 import com.example.hrm_be.models.requests.CreateInboundRequest;
 import com.example.hrm_be.models.responses.InboundDetail;
@@ -27,16 +29,16 @@ import com.example.hrm_be.repositories.InboundBatchDetailRepository;
 import com.example.hrm_be.repositories.InboundDetailsRepository;
 import com.example.hrm_be.repositories.InboundRepository;
 import com.example.hrm_be.repositories.ProductRepository;
-import com.example.hrm_be.services.*;
+import com.example.hrm_be.repositories.ProductSuppliersRepository;
+import com.example.hrm_be.services.InboundService;
+import com.example.hrm_be.services.UserService;
 import com.example.hrm_be.utils.WplUtil;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.validator.internal.util.stereotypes.Lazy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -49,6 +51,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class InboundServiceImpl implements InboundService {
   @Autowired private InboundRepository inboundRepository;
+  @Autowired private InboundDetailsRepository inboundDetailsRepository;
+  @Autowired private ProductSuppliersRepository productSuppliersRepository;
+  @Autowired private BranchProductRepository branchProductRepository;
+  @Autowired private BranchBatchRepository branchBatchRepository;
+  @Autowired private InboundBatchDetailRepository inboundBatchDetailRepository;
   @Autowired private WplUtil wplUtil;
   @Autowired private InboundMapper inboundMapper;
   @Autowired private BranchMapper branchMapper;
@@ -77,6 +84,8 @@ public class InboundServiceImpl implements InboundService {
     InboundDetail inboundDTO = new InboundDetail();
     inboundDTO.setId(optionalInbound.getId());
     inboundDTO.setInboundCode(optionalInbound.getInboundCode());
+    inboundDTO.setInboundType(optionalInbound.getInboundType());
+    inboundDTO.setCreatedDate(optionalInbound.getCreatedDate());
     inboundDTO.setInboundDate(optionalInbound.getInboundDate());
     inboundDTO.setTotalPrice(optionalInbound.getTotalPrice());
     inboundDTO.setIsApproved(optionalInbound.getIsApproved());
@@ -95,7 +104,8 @@ public class InboundServiceImpl implements InboundService {
                 inboundDetail -> {
                   InboundProductDetailDTO productDetailDTO = new InboundProductDetailDTO();
                   productDetailDTO.setId(inboundDetail.getId());
-                  productDetailDTO.setProductCode(inboundDetail.getProduct().getRegistrationCode());
+                  productDetailDTO.setRegistrationCode(
+                      inboundDetail.getProduct().getRegistrationCode());
                   productDetailDTO.setBaseUnit(
                       unitOfMeasurementMapper.toDTO(inboundDetail.getProduct().getBaseUnit()));
                   productDetailDTO.setDiscount(inboundDetail.getDiscount());
@@ -132,6 +142,7 @@ public class InboundServiceImpl implements InboundService {
                                   batchDTO.setId(batch.getId());
                                   batchDTO.setInboundPrice(batch.getInboundPrice());
                                   batchDTO.setBatchCode(batch.getBatchCode());
+                                  batchDTO.setExpireDate(batch.getExpireDate());
 
                                   // Find the quantity for this product-batch from the
                                   // inboundBatchDetails
@@ -407,6 +418,32 @@ public class InboundServiceImpl implements InboundService {
     if (!inboundEntity.getStatus().isCheck()) {
       throw new HrmCommonException("Trạng thái của phiếu không hợp lệ");
     }
+    List<ProductSuppliersEntity> productSuppliersEntities = new ArrayList<>();
+
+    // Iterate through InboundDetails to manage Product-Supplier relations
+    inboundEntity
+        .getInboundDetails()
+        .forEach(
+            inboundDetail -> {
+              ProductEntity product = inboundDetail.getProduct();
+              SupplierEntity supplier = inboundEntity.getSupplier();
+
+              if (supplier != null) {
+                // Check if a ProductSupplierEntity exists for the product-supplier pair
+                ProductSuppliersEntity productSupplier =
+                    productSuppliersRepository
+                        .findByProductAndSupplier(product, supplier)
+                        .orElse(new ProductSuppliersEntity());
+
+                // If it exists, update necessary fields, otherwise create a new one
+                if (productSupplier.getId() == null) {
+                  productSupplier.setProduct(product);
+                  productSupplier.setSupplier(supplier);
+                  productSuppliersEntities.add(productSupplier);
+                }
+              }
+              productSuppliersRepository.saveAll(productSuppliersEntities);
+            });
 
     // Get the branch details
     BranchEntity toBranch = inboundEntity.getToBranch();
@@ -470,7 +507,7 @@ public class InboundServiceImpl implements InboundService {
       throw new HrmCommonException("Chỉ có Kho chính mới được phép nhập hàng từ nhà cung cấp");
     }
     LocalDateTime currentDateTime = LocalDateTime.now();
-    String inboundCode = wplUtil.generateInboundCode(currentDateTime);
+    String inboundCode = WplUtil.generateNoteCode(currentDateTime, "IB");
     if (inboundRepository.existsByInboundCode(inboundCode)) {
       throw new HrmCommonException(INBOUND.EXIST);
     }
@@ -499,7 +536,6 @@ public class InboundServiceImpl implements InboundService {
     if (inbound.isEmpty()) {
       throw new HrmCommonException(INBOUND.NOT_EXIST);
     }
-
     inboundRepository.updateInboundStatus(status, id);
     return null;
   }
