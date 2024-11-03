@@ -10,6 +10,7 @@ import com.example.hrm_be.models.entities.BranchEntity;
 import com.example.hrm_be.repositories.BranchBatchRepository;
 import com.example.hrm_be.services.BranchBatchService;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
@@ -71,7 +72,7 @@ public class BranchBatchServiceImpl implements BranchBatchService {
   }
 
   @Override
-  public void updateBranchBatchInInbound(BranchEntity toBranch, BatchEntity batch, Integer quantity) {
+  public void updateBranchBatchInInbound(BranchEntity toBranch, BatchEntity batch, BigDecimal quantity) {
     // Check if BranchBatchEntity already exists
     BranchBatchEntity branchBatch =
             branchBatchRepository
@@ -82,7 +83,7 @@ public class BranchBatchServiceImpl implements BranchBatchService {
     if (branchBatch.getId() != null) {
       branchBatch.setQuantity(
               branchBatch.getQuantity() != null
-                      ? branchBatch.getQuantity() + quantity
+                      ? branchBatch.getQuantity().add(quantity)
                       : quantity); // Update existing
       // quantity
     } else {

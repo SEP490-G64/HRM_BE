@@ -62,44 +62,6 @@ public class InboundDetailsServiceImpl implements InboundDetailsService {
   }
 
   @Override
-  public InboundDetails create(InboundDetails inboundDetails) {
-    // Validate that inboundDetails is not null
-    if (inboundDetails == null) {
-      throw new HrmCommonException(HrmConstant.ERROR.INBOUND_DETAILS.EXIST); // Throw error if null
-    }
-
-    // Convert DTO to entity, save it, and convert back to DTO
-    return Optional.ofNullable(inboundDetails)
-        .map(inboundDetailsMapper::toEntity)
-        .map(e -> inboundDetailsRepository.save(e))
-        .map(e -> inboundDetailsMapper.toDTO(e))
-        .orElse(null);
-  }
-
-  @Override
-  public InboundDetails update(InboundDetails inboundDetails) {
-    // Find existing inbound details by ID
-    InboundDetailsEntity oldInboundDetailsEntity =
-        inboundDetailsRepository.findById(inboundDetails.getId()).orElse(null);
-    if (oldInboundDetailsEntity == null) {
-      throw new HrmCommonException(
-          HrmConstant.ERROR.INBOUND_DETAILS.NOT_EXIST); // Throw error if not found
-    }
-
-    // Update fields of the existing entity
-    return Optional.ofNullable(oldInboundDetailsEntity)
-        .map(
-            op ->
-                op.toBuilder()
-                    .receiveQuantity(inboundDetails.getReceiveQuantity())
-                    .requestQuantity(inboundDetails.getRequestQuantity())
-                    .build())
-        .map(inboundDetailsRepository::save)
-        .map(inboundDetailsMapper::toDTO)
-        .orElse(null);
-  }
-
-  @Override
   public void delete(Long id) {
     // Validate the ID
     if (StringUtils.isBlank(id.toString())) {
@@ -150,7 +112,7 @@ public class InboundDetailsServiceImpl implements InboundDetailsService {
 
       // Variable to store value for update product average inbound price
       BigDecimal totalPrice = BigDecimal.ZERO;
-      int totalQuantity = 0;
+      BigDecimal totalQuantity = BigDecimal.ZERO;
 
       // Get product tax rate
       BigDecimal taxRate = BigDecimal.ZERO;
@@ -177,10 +139,10 @@ public class InboundDetailsServiceImpl implements InboundDetailsService {
             // Get value of total batch price and total batch quantity
             for (BranchBatchEntity branchBatch : allBranchBatches) {
               BigDecimal batchPrice = batch.getInboundPrice();
-              Integer quantity = branchBatch.getQuantity();
+              BigDecimal quantity = branchBatch.getQuantity();
 
-              totalPrice = totalPrice.add(batchPrice.multiply(BigDecimal.valueOf(quantity)));
-              totalQuantity += quantity;
+              totalPrice = totalPrice.add(batchPrice.multiply(quantity));
+              totalQuantity = totalQuantity.add(quantity);
             }
           }
 
@@ -227,9 +189,9 @@ public class InboundDetailsServiceImpl implements InboundDetailsService {
                   inboundTotalPrice.subtract(originalPrice.multiply(BigDecimal.valueOf(discount)));
         }
       }
-      if (totalQuantity > 0) {
+      if (totalQuantity.compareTo(BigDecimal.ZERO) > 0) {
         BigDecimal averageProductPrice =
-                totalPrice.divide(BigDecimal.valueOf(totalQuantity), 2, RoundingMode.HALF_UP);
+                totalPrice.divide(totalQuantity, 2, RoundingMode.HALF_UP);
         inboundDetails.getProduct().setInboundPrice(averageProductPrice);
       } else {
         inboundDetails.getProduct().setInboundPrice(BigDecimal.ZERO);

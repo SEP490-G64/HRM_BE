@@ -14,10 +14,6 @@ public interface InboundDetailsService {
 
   Page<InboundDetails> getByPaging(int pageNo, int pageSize, String sortBy);
 
-  InboundDetails create(InboundDetails inboundDetails);
-
-  InboundDetails update(InboundDetails inboundDetails);
-
   void delete(Long id);
 
   List<InboundDetailsEntity> findByInboundId(Long inboundId);

@@ -1,7 +1,6 @@
 package com.example.hrm_be.services.impl;
 
 import com.example.hrm_be.HrmBeApplication;
-import com.example.hrm_be.common.TestcontainersConfiguration;
 import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.Manufacturer;
@@ -32,10 +31,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @Import(ManufacturerServiceImpl.class)
 @Transactional
 public class ManufacturerServiceImplTest {
-
-  @Container
-  public static PostgreSQLContainer<TestcontainersConfiguration> postgreSQLContainer =
-      TestcontainersConfiguration.getInstance();
 
   @Autowired private ManufacturerService manufacturerService;
   @Autowired private ManufacturerRepository manufacturerRepository;

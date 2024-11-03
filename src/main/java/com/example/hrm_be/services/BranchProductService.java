@@ -9,6 +9,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import org.springframework.data.domain.Pageable;
+
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -17,9 +19,9 @@ public interface BranchProductService {
 
   void delete(Long id);
 
-  void updateBranchProductInInbound(BranchEntity toBranch, ProductEntity product, Integer quantity);
+  void updateBranchProductInInbound(BranchEntity toBranch, ProductEntity product, BigDecimal quantity);
 
-  Integer findTotalQuantityForProduct(Long productId);
+  BigDecimal findTotalQuantityForProduct(Long productId);
 
   List<BranchProductEntity> saveAll(List<BranchProductEntity> branchProducts);
 

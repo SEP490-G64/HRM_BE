@@ -6,6 +6,7 @@ import com.example.hrm_be.models.entities.BranchBatchEntity;
 import com.example.hrm_be.models.entities.BranchEntity;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -16,7 +17,7 @@ public interface BranchBatchService {
 
   void delete(Long id);
 
-  void updateBranchBatchInInbound(BranchEntity toBranch, BatchEntity batch, Integer quantity);
+  void updateBranchBatchInInbound(BranchEntity toBranch, BatchEntity batch, BigDecimal quantity);
 
   List<BranchBatchEntity> findByBatchId(Long id);
 }

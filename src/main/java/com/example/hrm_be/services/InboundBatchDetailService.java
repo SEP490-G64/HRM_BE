@@ -11,10 +11,6 @@ import java.util.List;
 
 @Service
 public interface InboundBatchDetailService {
-  InboundBatchDetail create(InboundBatchDetail inboundBatchDetail);
-
-  InboundBatchDetail update(InboundBatchDetail inboundBatchDetail);
-
   void delete(Long id);
 
   List<InboundBatchDetailEntity> findByInboundId(Long inboundId);

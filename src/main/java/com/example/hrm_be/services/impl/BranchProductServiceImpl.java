@@ -8,6 +8,7 @@ import com.example.hrm_be.models.entities.*;
 import com.example.hrm_be.repositories.BranchProductRepository;
 import com.example.hrm_be.services.BranchProductService;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
@@ -51,7 +52,7 @@ public class BranchProductServiceImpl implements BranchProductService {
   }
 
   @Override
-  public void updateBranchProductInInbound(BranchEntity toBranch, ProductEntity product, Integer quantity) {
+  public void updateBranchProductInInbound(BranchEntity toBranch, ProductEntity product, BigDecimal quantity) {
     // Check if BranchProductEntity already exists
     BranchProductEntity branchProduct =
             branchProductRepository
@@ -62,7 +63,7 @@ public class BranchProductServiceImpl implements BranchProductService {
     if (branchProduct.getId() != null) {
       branchProduct.setQuantity(
               branchProduct.getQuantity() != null
-                      ? branchProduct.getQuantity() + quantity
+                      ? branchProduct.getQuantity().add(quantity)
                       : quantity); // Update existing quantity
     } else {
       branchProduct.setProduct(product);
@@ -79,7 +80,7 @@ public class BranchProductServiceImpl implements BranchProductService {
   }
 
   @Override
-  public Integer findTotalQuantityForProduct(Long productId) {
+  public BigDecimal findTotalQuantityForProduct(Long productId) {
     return branchProductRepository.findTotalQuantityForProduct(productId);
   }
 

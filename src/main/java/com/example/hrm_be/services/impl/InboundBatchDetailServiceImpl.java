@@ -33,37 +33,6 @@ public class InboundBatchDetailServiceImpl implements InboundBatchDetailService 
   @Autowired private BatchMapper batchMapper;
 
   @Override
-  public InboundBatchDetail create(InboundBatchDetail inboundBatchDetail) {
-    if (inboundBatchDetail == null) {
-      throw new HrmCommonException(HrmConstant.ERROR.INBOUND_BATCH_DETAIL.EXIST);
-    }
-
-    // Convert DTO to entity, save it, and convert back to DTO
-    return Optional.ofNullable(inboundBatchDetail)
-        .map(e -> inboundBatchDetailMapper.toEntity(e))
-        .map(e -> inboundBatchDetailRepository.save(e))
-        .map(e -> inboundBatchDetailMapper.toDTO(e))
-        .orElse(null);
-  }
-
-  @Override
-  public InboundBatchDetail update(InboundBatchDetail inboundBatchDetail) {
-    // Retrieve the existing branch entity by ID
-    InboundBatchDetailEntity oldInboundBatchDetail =
-        inboundBatchDetailRepository.findById(inboundBatchDetail.getId()).orElse(null);
-    if (oldInboundBatchDetail == null) {
-      throw new HrmCommonException(HrmConstant.ERROR.INBOUND_BATCH_DETAIL.NOT_EXIST);
-    }
-
-    // Update the fields of the existing branch entity with new values
-    return Optional.ofNullable(oldInboundBatchDetail)
-        .map(op -> op.toBuilder().quantity(inboundBatchDetail.getQuantity()).build())
-        .map(inboundBatchDetailRepository::save)
-        .map(inboundBatchDetailMapper::toDTO)
-        .orElse(null);
-  }
-
-  @Override
   public void delete(Long id) {
     if (id == null || StringUtils.isBlank(id.toString())) {
       return; // Return if the ID is invalid
