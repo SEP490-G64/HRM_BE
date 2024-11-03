@@ -299,14 +299,16 @@ public class UserServiceImpl implements UserService {
                       .userName(user.getUserName())
                       .email(user.getEmail());
 
-              // Only set new status if status is not null or not update user profile
-              if (user.getStatus() != null && !profile) {
-                builder.status(user.getStatus());
-              }
+              if (!profile) {
+                // Only set new status if status is not null or not update user profile
+                if (user.getStatus() != null && !profile) {
+                  builder.status(user.getStatus());
+                }
 
-              // Only set new branch if branch is not null or not update user profile
-              if (user.getBranch() != null && !profile) {
-                builder.branch(branchMapper.toEntity(user.getBranch()));
+                // Only set new branch if branch is not null or not update user profile
+                if (user.getBranch() != null && !profile) {
+                  builder.branch(branchMapper.toEntity(user.getBranch()));
+                }
               }
               return builder.build();
             })
