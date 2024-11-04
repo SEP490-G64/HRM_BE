@@ -1,8 +1,11 @@
 package com.example.hrm_be.components;
 
+import com.example.hrm_be.models.dtos.BranchProduct;
 import com.example.hrm_be.models.dtos.Product;
 import com.example.hrm_be.models.dtos.ProductBaseDTO;
 import com.example.hrm_be.models.entities.ProductEntity;
+
+import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -226,10 +229,23 @@ public class ProductMapper {
         .baseUnit(entity.getBaseUnit() != null ? entity.getBaseUnit().getUnitName() : null)
         .categoryName(entity.getCategory() != null ? entity.getCategory().getCategoryName() : null)
         .typeName(entity.getType() != null ? entity.getType().getTypeName() : null)
-        .manufacturerName(
-            entity.getManufacturer() != null
-                ? entity.getManufacturer().getManufacturerName()
+        .manufacturerName(entity.getManufacturer() != null ? entity.getManufacturer().getManufacturerName() : null)
+        .unitConversions(
+            entity.getUnitConversions() != null
+                ? entity.getUnitConversions().stream()
+                .map(unitConversionMapper::toDTO)
+                .collect(Collectors.toList())
                 : null)
+        .quantity(
+                entity.getBranchProducs() != null
+                        ? entity.getBranchProducs().stream()
+                        .map(branchProductMapper::toDTO)
+                        .toList().stream()
+                        .filter(product -> product.getQuantity() != null) // Lọc các giá trị null
+                        .map(BranchProduct::getQuantity) // Lấy giá trị quantity kiểu BigDecimal
+                        .reduce(BigDecimal.ZERO, BigDecimal::add) // Tính tổng
+                        : BigDecimal.ZERO // Nếu danh sách là null, trả về 0
+        )
         .build();
   }
 }

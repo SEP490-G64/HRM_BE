@@ -10,11 +10,13 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.joda.time.DateTime;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
@@ -33,8 +35,14 @@ public class StaffBatchController {
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "20") int size,
       @RequestParam(required = false, defaultValue = "id") String sortBy,
-      @RequestParam(required = false, defaultValue = "") String keyword) {
-    Page<Batch> batchPage = batchService.getByPaging(page, size, sortBy, keyword);
+      @RequestParam(required = false, defaultValue = "") Long productId,
+      @RequestParam(required = false, defaultValue = "") String keyword,
+      @RequestParam(required = false) LocalDateTime produceStartDate,
+      @RequestParam(required = false) LocalDateTime produceEndDate,
+      @RequestParam(required = false) LocalDateTime expireStartDate,
+      @RequestParam(required = false) LocalDateTime expireEndDate) {
+    Page<Batch> batchPage = batchService.getByPaging(page, size, sortBy, productId, keyword,
+            produceStartDate, produceEndDate, expireStartDate, expireEndDate);
 
     // Building response object with the retrieved data and pagination details
     BaseOutput<List<Batch>> response =

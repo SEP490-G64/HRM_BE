@@ -407,13 +407,6 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public User getByEmail(@NonNull String email) {
-    // TODO check admin, if admin, can getByEmail of other user, while not, can only get current
-    // user
-    // Retrieve user by email and map to DTO
-    if (!isAdmin()) {
-      throw new HrmCommonException(HrmConstant.ERROR.ROLE.NOT_ALLOWED);
-    }
-
     return userRepository.findByEmail(email).map(userMapper::toDTO).orElse(null);
   }
 

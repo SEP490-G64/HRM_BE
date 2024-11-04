@@ -5,19 +5,24 @@ import com.example.hrm_be.components.BatchMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.Batch;
 import com.example.hrm_be.models.entities.BatchEntity;
-import com.example.hrm_be.models.entities.InboundBatchDetailEntity;
 import com.example.hrm_be.models.entities.ProductEntity;
 import com.example.hrm_be.repositories.BatchRepository;
 import com.example.hrm_be.services.BatchService;
 import io.micrometer.common.util.StringUtils;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import jakarta.persistence.criteria.Predicate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,17 +39,54 @@ public class BatchServiceImpl implements BatchService {
   @Override
   public Batch getById(Long id) {
     return Optional.ofNullable(id)
-        .flatMap(e -> batchRepository.findById(e).map(b -> batchMapper.toDTO(b)))
+        .flatMap(e -> batchRepository.findById(e).map(b -> batchMapper.convertToDtoBasicInfo(b)))
         .orElse(null);
   }
 
   // Retrieves a paginated list of Batch entities, allowing sorting and searching by name
   @Override
-  public Page<Batch> getByPaging(int pageNo, int pageSize, String sortBy, String keyword) {
+  public Page<Batch> getByPaging(int pageNo, int pageSize, String sortBy, Long productId,
+                                 String keyword, LocalDateTime produceStartDate, LocalDateTime produceEndDate,
+                                 LocalDateTime expireStartDate, LocalDateTime expireEndDate) {
     Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(sortBy).ascending());
     return batchRepository
-        .findByBatchCodeContainingIgnoreCase(keyword, pageable)
-        .map(dao -> batchMapper.toDTO(dao));
+        .findAll(getSpecification(productId, keyword,
+                produceStartDate, produceEndDate, expireStartDate, expireEndDate), pageable)
+        .map(dao -> batchMapper.convertToDtoBasicInfo(dao));
+  }
+
+  private Specification<BatchEntity> getSpecification(Long productId, String keyword,
+                                                      LocalDateTime produceStartDate, LocalDateTime produceEndDate,
+                                                      LocalDateTime expireStartDate, LocalDateTime expireEndDate) {
+    return (root, query, criteriaBuilder) -> {
+      List<Predicate> predicates = new ArrayList<>();
+
+      // Điều kiện productId
+      predicates.add(criteriaBuilder.equal(root.get("product").get("id"), productId));
+
+      // Điều kiện batchCode chứa keyword
+      if (keyword != null && !keyword.isEmpty()) {
+        predicates.add(criteriaBuilder.like(root.get("batchCode"), "%" + keyword + "%"));
+      }
+
+      // Điều kiện về produceDate
+      if (produceStartDate != null) {
+        predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("produceDate"), produceStartDate));
+      }
+      if (produceEndDate != null) {
+        predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("produceDate"), produceEndDate));
+      }
+
+      // Điều kiện về expireDate
+      if (expireStartDate != null) {
+        predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("expireDate"), expireStartDate));
+      }
+      if (expireEndDate != null) {
+        predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("expireDate"), expireEndDate));
+      }
+
+      return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+    };
   }
 
   // Creates a new Batch
