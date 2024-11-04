@@ -88,9 +88,4 @@ public class BranchProductServiceImpl implements BranchProductService {
   public List<BranchProductEntity> saveAll(List<BranchProductEntity> branchProducts) {
     return branchProductRepository.saveAll(branchProducts);
   }
-
-  @Override
-  public Page<BranchProductEntity> findAll(Specification<BranchProductEntity> specification, Pageable pageable) {
-    return branchProductRepository.findAll(specification, pageable);
-  }
 }

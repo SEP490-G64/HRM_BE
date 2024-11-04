@@ -78,22 +78,6 @@ public class ProductServiceImpl implements ProductService {
   }
 
   @Override
-  public Page<ProductBaseDTO> getByPaging(
-      int pageNo,
-      int pageSize,
-      String sortBy,
-      String sortDirection,
-      String searchType,
-      String searchValue) {
-    Sort.Direction direction = Sort.Direction.fromString(sortDirection);
-    Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(direction, sortBy));
-    // Return all products if no search value is provided
-    return productRepository
-        .findAll(pageable)
-        .map(dao -> productMapper.convertToProductBaseDTO(dao));
-  }
-
-  @Override
   @Transactional
   public Product create(Product product) {
     if (product == null) {
@@ -413,24 +397,6 @@ public class ProductServiceImpl implements ProductService {
   }
 
   @Override
-  public Page<Product> getByPagingAndCateId(int pageNo, int pageSize, String sortBy, Long cateId) {
-    Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(sortBy).descending());
-    // Tìm kiếm theo tên
-    return productRepository
-        .findProductByPagingAndCategoryId(cateId, pageable)
-        .map(dao -> productMapper.toDTO(dao));
-  }
-
-  @Override
-  public Page<Product> getByPagingAndTypeId(int pageNo, int pageSize, String sortBy, Long typeId) {
-    Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(sortBy).descending());
-    // Tìm kiếm theo tên
-    return productRepository
-        .findProductByPagingAndTypeId(typeId, pageable)
-        .map(dao -> productMapper.toDTO(dao));
-  }
-
-  @Override
   public List<AllowedProductEntity> addProductFromJson(List<Map<String, Object>> productJsonList) {
     List<AllowedProductEntity> savedProducts = new ArrayList<>();
 
@@ -476,7 +442,7 @@ public class ProductServiceImpl implements ProductService {
   }
 
   @Override
-  public Page<BranchProduct> searchProducts(
+  public Page<ProductBaseDTO> searchProducts(
       int pageNo,
       int pageSize,
       String sortBy,
@@ -485,30 +451,10 @@ public class ProductServiceImpl implements ProductService {
       Optional<Long> manufacturerId,
       Optional<Long> categoryId,
       Optional<Long> typeId,
-      Optional<String> status,
-      Optional<Long> branchId) {
-    Specification<BranchProductEntity> specification = Specification.where(null);
+      Optional<String> status) {
+    Specification<ProductEntity> specification = Specification.where(null);
     Sort.Direction direction = Sort.Direction.fromString(sortDirection);
     Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(direction, sortBy));
-    // Filter by branchId if present
-    if (branchId.isPresent()) {
-      Optional<Long> finalBranchId = branchId;
-      specification =
-          specification.and(
-              (root, query, criteriaBuilder) ->
-                  criteriaBuilder.equal(root.get("branch").get("id"), finalBranchId.get()));
-    } else {
-      String loggedEmail = userService.getAuthenticatedUserEmail();
-      branchId = userService.findBranchIdByUserEmail(loggedEmail);
-      if (branchId.isEmpty()) {
-        throw new HrmCommonException(USER.NOT_ASSIGNED_BRANCH);
-      }
-      Optional<Long> finalBranchId1 = branchId;
-      specification =
-          specification.and(
-              (root, query, criteriaBuilder) ->
-                  criteriaBuilder.equal(root.get("branch").get("id"), finalBranchId1.get()));
-    }
 
     // Keyword search for product name, registration code, and active ingredient
     if (keyword.isPresent()) {
@@ -533,7 +479,7 @@ public class ProductServiceImpl implements ProductService {
           specification.and(
               (root, query, criteriaBuilder) ->
                   criteriaBuilder.equal(
-                      root.get("product").get("manufacturer").get("id"), manufacturerId.get()));
+                      root.get("manufacturer").get("id"), manufacturerId.get()));
     }
 
     // Filter by categoryId
@@ -542,7 +488,7 @@ public class ProductServiceImpl implements ProductService {
           specification.and(
               (root, query, criteriaBuilder) ->
                   criteriaBuilder.equal(
-                      root.get("product").get("category").get("id"), categoryId.get()));
+                      root.get("category").get("id"), categoryId.get()));
     }
 
     // Filter by typeId
@@ -560,9 +506,9 @@ public class ProductServiceImpl implements ProductService {
               (root, query, criteriaBuilder) ->
                   criteriaBuilder.equal(root.get("product").get("status"), status.get()));
     }
-    return branchProductService
+    return productRepository
         .findAll(specification, pageable)
-        .map(branchProductMapper::toDTOWithProduct);
+        .map(productMapper::convertToProductBaseDTO);
   }
 
   @Transactional(readOnly = true)

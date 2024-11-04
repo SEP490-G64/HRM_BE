@@ -24,6 +24,4 @@ public interface BranchProductService {
   BigDecimal findTotalQuantityForProduct(Long productId);
 
   List<BranchProductEntity> saveAll(List<BranchProductEntity> branchProducts);
-
-  Page<BranchProductEntity> findAll(Specification<BranchProductEntity>  specification, Pageable pageable);
 }
