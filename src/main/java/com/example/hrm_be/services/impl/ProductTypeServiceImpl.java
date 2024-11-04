@@ -144,6 +144,13 @@ public class ProductTypeServiceImpl implements ProductTypeService {
     productTypeRepository.deleteById(id);
   }
 
+  @Override
+  public ProductType getByName(String productTypeName) {
+    return Optional.ofNullable(productTypeName)
+        .flatMap(e -> productTypeRepository.findByTypeName(e).map(b -> productTypeMapper.toDTO(b)))
+        .orElse(null);
+  }
+
   // This method will validate category field input values
   private boolean commonValidate(ProductType type) {
     if (type.getTypeName() == null

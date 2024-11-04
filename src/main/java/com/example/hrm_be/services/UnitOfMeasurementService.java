@@ -15,4 +15,6 @@ public interface UnitOfMeasurementService {
   UnitOfMeasurement update(UnitOfMeasurement unitOfMeasurement);
 
   void delete(Long id);
+
+  UnitOfMeasurement getByName(String name);
 }

@@ -7,6 +7,7 @@ import com.example.hrm_be.commons.constants.HrmConstant.ERROR.SUPPLIER;
 import com.example.hrm_be.commons.enums.InboundStatus;
 import com.example.hrm_be.commons.enums.InboundType;
 import com.example.hrm_be.components.BranchMapper;
+import com.example.hrm_be.components.BranchMapper;
 import com.example.hrm_be.components.InboundMapper;
 import com.example.hrm_be.components.SupplierMapper;
 import com.example.hrm_be.components.UnitOfMeasurementMapper;
@@ -19,6 +20,7 @@ import com.example.hrm_be.models.entities.BranchEntity;
 import com.example.hrm_be.models.entities.BranchProductEntity;
 import com.example.hrm_be.models.entities.InboundBatchDetailEntity;
 import com.example.hrm_be.models.entities.InboundDetailsEntity;
+import com.example.hrm_be.models.dtos.*;
 import com.example.hrm_be.models.entities.InboundEntity;
 import com.example.hrm_be.models.entities.ProductEntity;
 import com.example.hrm_be.models.entities.ProductSuppliersEntity;
@@ -36,12 +38,25 @@ import com.example.hrm_be.repositories.ProductRepository;
 import com.example.hrm_be.repositories.ProductSuppliersRepository;
 import com.example.hrm_be.services.InboundService;
 import com.example.hrm_be.services.UserService;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import com.example.hrm_be.utils.WplUtil;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.ArrayList;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+
+import com.example.hrm_be.utils.PDFUtil;
+import com.itextpdf.text.DocumentException;
 import java.util.stream.Collectors;
+
+import jakarta.persistence.EntityNotFoundException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -420,7 +435,6 @@ public class InboundServiceImpl implements InboundService {
     // Save updated entities
     inboundDetailsRepository.saveAll(inboundDetailsList);
     inboundBatchDetailRepository.saveAll(inboundBatchDetailsList);
-
     return Optional.ofNullable(inboundEntity).map(inboundMapper::toDTO).orElse(null);
   }
 
@@ -731,5 +745,18 @@ public class InboundServiceImpl implements InboundService {
     }
     inboundRepository.updateInboundStatus(status, id);
     return null;
+  }
+
+  @Override
+  public ByteArrayOutputStream generateInboundPdf(Long inboundId)
+      throws DocumentException, IOException {
+    // Fetch Inbound and associated details
+    InboundDetail inbound = getById(inboundId);
+    if (inbound == null) {
+      throw new EntityNotFoundException("Inbound record not found with ID: " + inboundId);
+    }
+    ByteArrayOutputStream out = PDFUtil.createReceiptPdf(inbound);
+
+    return out;
   }
 }

@@ -21,4 +21,6 @@ public interface ManufacturerService {
   Manufacturer update(Manufacturer supplier);
 
   void delete(Long id);
+
+  Manufacturer getByName(String name);
 }
