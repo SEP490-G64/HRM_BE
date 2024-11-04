@@ -751,7 +751,7 @@ public class InboundServiceImpl implements InboundService {
   public ByteArrayOutputStream generateInboundPdf(Long inboundId)
       throws DocumentException, IOException {
     // Fetch Inbound and associated details
-    InboundDetail inbound = getById(inboundId);
+      InboundDetail inbound = getById(inboundId);
     if (inbound == null) {
       throw new EntityNotFoundException("Inbound record not found with ID: " + inboundId);
     }

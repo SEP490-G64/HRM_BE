@@ -681,6 +681,7 @@ public class ProductServiceImpl implements ProductService {
     List<String> errors = new ArrayList<>();
     List<Product> productsToSave = new ArrayList<>();
 
+    // Read and validate each row from the Excel file
     try (Workbook workbook = new XSSFWorkbook(file.getInputStream())) {
       Sheet sheet = workbook.getSheetAt(0);
 
