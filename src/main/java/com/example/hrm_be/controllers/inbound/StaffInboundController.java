@@ -253,7 +253,7 @@ public class StaffInboundController {
 
     // Use try-with-resources to automatically close resources
     try (ByteArrayOutputStream pdfStream = inboundService.generateInboundPdf(id);
-         ServletOutputStream outputStream = response.getOutputStream()) {
+        ServletOutputStream outputStream = response.getOutputStream()) {
 
       // Write the content of pdfStream to the response's OutputStream
       pdfStream.writeTo(outputStream);
@@ -273,5 +273,4 @@ public class StaffInboundController {
       }
     }
   }
-
 }

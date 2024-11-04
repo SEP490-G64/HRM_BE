@@ -272,7 +272,8 @@ public class StaffProductController {
 
   // Method to upload an Excel file for importing products
   @PostMapping("/excel/import")
-  public ResponseEntity<BaseOutput<String>> uploadProductFile(@RequestParam("file") MultipartFile file) {
+  public ResponseEntity<BaseOutput<String>> uploadProductFile(
+      @RequestParam("file") MultipartFile file) {
     // Check if the uploaded file is in Excel format
     if (ExcelUtility.hasExcelFormat(file)) {
       try {
@@ -283,38 +284,50 @@ public class StaffProductController {
         if (errors != null && !errors.isEmpty()) {
           // Return a bad request response with validation errors
           return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                  .body(BaseOutput.<String>builder()
-                          .message("File upload failed with validation errors") // Error message indicating validation issues
-                          .errors(errors) // List of validation errors
-                          .build());
+              .body(
+                  BaseOutput.<String>builder()
+                      .message(
+                          "File upload failed with validation errors") // Error message indicating
+                                                                       // validation issues
+                      .errors(errors) // List of validation errors
+                      .build());
         }
         // Return a success response if there are no errors
         return ResponseEntity.ok(
-                BaseOutput.<String>builder()
-                        .message("The Excel file is uploaded successfully: " + file.getOriginalFilename()) // Success message with the original file name
-                        .build());
+            BaseOutput.<String>builder()
+                .message(
+                    "The Excel file is uploaded successfully: "
+                        + file.getOriginalFilename()) // Success message with the original file name
+                .build());
       } catch (DataIntegrityViolationException e) {
         // Handle specific database integrity issues
         return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(BaseOutput.<String>builder()
-                        .message("File upload failed due to data integrity violation: " + e.getMessage())
-                        .build());
+            .body(
+                BaseOutput.<String>builder()
+                    .message(
+                        "File upload failed due to data integrity violation: " + e.getMessage())
+                    .build());
       } catch (Exception exp) {
         // Handle any unexpected exceptions that occur during import
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(BaseOutput.<String>builder()
-                        .message("File upload failed due to an unexpected error: " + exp.getMessage()) // Specific error message
-                        .build());
+            .body(
+                BaseOutput.<String>builder()
+                    .message(
+                        "File upload failed due to an unexpected error: "
+                            + exp.getMessage()) // Specific error message
+                    .build());
       }
     } else {
       // Return response if the file format is invalid
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-              .body(BaseOutput.<String>builder()
-                      .message("Invalid file format. Please upload an Excel file.") // Message indicating invalid file format
-                      .build());
+          .body(
+              BaseOutput.<String>builder()
+                  .message(
+                      "Invalid file format. Please upload an Excel file.") // Message indicating
+                                                                           // invalid file format
+                  .build());
     }
   }
-
 
   @GetMapping("/excel/export")
   public ResponseEntity<InputStreamResource> download() throws IOException {

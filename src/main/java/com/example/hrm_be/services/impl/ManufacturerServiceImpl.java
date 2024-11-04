@@ -156,7 +156,11 @@ public class ManufacturerServiceImpl implements ManufacturerService {
   @Override
   public Manufacturer getByName(String name) {
     return Optional.ofNullable(name)
-            .flatMap(e -> manufacturerRepository.findByManufacturerName(e).map(m -> manufacturerMapper.toDTO(m)))
-            .orElse(null);
+        .flatMap(
+            e ->
+                manufacturerRepository
+                    .findByManufacturerName(e)
+                    .map(m -> manufacturerMapper.toDTO(m)))
+        .orElse(null);
   }
 }

@@ -60,7 +60,6 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -103,16 +102,11 @@ public class ProductServiceImpl implements ProductService {
   @Autowired private UnitConversionRepository unitConversionRepository;
   @Autowired private UnitConversionMapper unitConversionMapper;
   @Autowired private UnitOfMeasurementMapper unitOfMeasurementMapper;
-    @Autowired
-    private UnitOfMeasurementService unitOfMeasurementService;
-    @Autowired
-    private ManufacturerService manufacturerService;
-    @Autowired
-    private ProductTypeService productTypeService;
-    @Autowired
-    private ProductCategoryService productCategoryService;
-    @Autowired
-    private AllowedProductService allowedProductService;
+  @Autowired private UnitOfMeasurementService unitOfMeasurementService;
+  @Autowired private ManufacturerService manufacturerService;
+  @Autowired private ProductTypeService productTypeService;
+  @Autowired private ProductCategoryService productCategoryService;
+  @Autowired private AllowedProductService allowedProductService;
 
   @Override
   public Product getById(Long id) {
@@ -630,53 +624,65 @@ public class ProductServiceImpl implements ProductService {
   @Override
   public List<String> importFile(MultipartFile file) {
     // Mapper to convert each Excel row into a Product object
-    Function<Row, Product> rowMapper = (Row row) -> {
-      Product product = new Product();
-      try {
-        // Map fields from the Excel row to the Product object
-        product.setRegistrationCode(row.getCell(0) != null ? row.getCell(0).getStringCellValue() : null);
+    Function<Row, Product> rowMapper =
+        (Row row) -> {
+          Product product = new Product();
+          try {
+            // Map fields from the Excel row to the Product object
+            product.setRegistrationCode(
+                row.getCell(0) != null ? row.getCell(0).getStringCellValue() : null);
 
-        // Populate product information from AllowedProductEntity if registration code exists
-        if (product.getRegistrationCode() != null) {
-          AllowedProductEntity allowedProduct = allowedProductService.getAllowedProductByCode(product.getRegistrationCode());
-          if (allowedProduct != null) {
-            product.setProductName(allowedProduct.getProductName());
-            product.setRegistrationCode(allowedProduct.getRegistrationCode());
-            product.setActiveIngredient(allowedProduct.getActiveIngredient());
-            product.setExcipient(allowedProduct.getExcipient());
-            product.setFormulation(allowedProduct.getFormulation());
+            // Populate product information from AllowedProductEntity if registration code exists
+            if (product.getRegistrationCode() != null) {
+              AllowedProductEntity allowedProduct =
+                  allowedProductService.getAllowedProductByCode(product.getRegistrationCode());
+              if (allowedProduct != null) {
+                product.setProductName(allowedProduct.getProductName());
+                product.setRegistrationCode(allowedProduct.getRegistrationCode());
+                product.setActiveIngredient(allowedProduct.getActiveIngredient());
+                product.setExcipient(allowedProduct.getExcipient());
+                product.setFormulation(allowedProduct.getFormulation());
+              }
+            }
+
+            // Set category if found
+            if (row.getCell(2) != null) {
+              String categoryName = row.getCell(2).getStringCellValue();
+              product.setCategory(
+                  categoryName != null
+                      ? productCategoryService.findByCategoryName(categoryName)
+                      : null);
+            }
+
+            // Set type if found
+            if (row.getCell(3) != null) {
+              String typeName = row.getCell(3).getStringCellValue();
+              product.setType(typeName != null ? productTypeService.getByName(typeName) : null);
+            }
+
+            // Set base unit if found
+            if (row.getCell(4) != null) {
+              String measurementName = row.getCell(4).getStringCellValue();
+              product.setBaseUnit(
+                  measurementName != null
+                      ? unitOfMeasurementService.getByName(measurementName)
+                      : null);
+            }
+
+            // Set manufacturer if found
+            if (row.getCell(5) != null) {
+              String manufacturerName = row.getCell(5).getStringCellValue();
+              product.setManufacturer(
+                  manufacturerName != null
+                      ? manufacturerService.getByName(manufacturerName)
+                      : null);
+            }
+
+          } catch (Exception e) {
+            throw new RuntimeException("Error parsing row: " + e.getMessage(), e);
           }
-        }
-
-        // Set category if found
-        if (row.getCell(2) != null) {
-          String categoryName = row.getCell(2).getStringCellValue();
-          product.setCategory(categoryName != null ? productCategoryService.findByCategoryName(categoryName) : null);
-        }
-
-        // Set type if found
-        if (row.getCell(3) != null) {
-          String typeName = row.getCell(3).getStringCellValue();
-          product.setType(typeName != null ? productTypeService.getByName(typeName) : null);
-        }
-
-        // Set base unit if found
-        if (row.getCell(4) != null) {
-          String measurementName = row.getCell(4).getStringCellValue();
-          product.setBaseUnit(measurementName != null ? unitOfMeasurementService.getByName(measurementName) : null);
-        }
-
-        // Set manufacturer if found
-        if (row.getCell(5) != null) {
-          String manufacturerName = row.getCell(5).getStringCellValue();
-          product.setManufacturer(manufacturerName != null ? manufacturerService.getByName(manufacturerName) : null);
-        }
-
-      } catch (Exception e) {
-        throw new RuntimeException("Error parsing row: " + e.getMessage(), e);
-      }
-      return product;
-    };
+          return product;
+        };
 
     List<String> errors = new ArrayList<>();
     List<Product> productsToSave = new ArrayList<>();
@@ -717,14 +723,15 @@ public class ProductServiceImpl implements ProductService {
     }
 
     // Save all valid products to the database if no errors occurred
-      try {
-        for (Product product : productsToSave) {
-          create(product); // Persist each Product entity
-        }
-      } catch (Exception e) {
-        errors.add("Error saving products: " + e.getMessage());
-        throw new RuntimeException("Transaction failed, rolling back due to error.", e); // Marks transaction for rollback
+    try {
+      for (Product product : productsToSave) {
+        create(product); // Persist each Product entity
       }
+    } catch (Exception e) {
+      errors.add("Error saving products: " + e.getMessage());
+      throw new RuntimeException(
+          "Transaction failed, rolling back due to error.", e); // Marks transaction for rollback
+    }
 
     return errors; // Return the list of errors
   }

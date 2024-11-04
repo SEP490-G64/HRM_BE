@@ -147,8 +147,8 @@ public class ProductTypeServiceImpl implements ProductTypeService {
   @Override
   public ProductType getByName(String productTypeName) {
     return Optional.ofNullable(productTypeName)
-            .flatMap(e -> productTypeRepository.findByTypeName(e).map(b -> productTypeMapper.toDTO(b)))
-            .orElse(null);
+        .flatMap(e -> productTypeRepository.findByTypeName(e).map(b -> productTypeMapper.toDTO(b)))
+        .orElse(null);
   }
 
   // This method will validate category field input values
