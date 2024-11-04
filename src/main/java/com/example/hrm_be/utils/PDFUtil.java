@@ -13,12 +13,16 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.Objects;
 
 public class PDFUtil {
 
+
   public static ByteArrayOutputStream createReceiptPdf(InboundDetail inbound)
       throws DocumentException, IOException {
+    LocalDateTime dateNow = LocalDateTime.now(); // Initializes with the current date and time
+
     // Create a new PDF document
     com.itextpdf.text.Document document = new com.itextpdf.text.Document();
     ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -71,28 +75,29 @@ public class PDFUtil {
       // Add date row
       PdfPCell dateCell =
           new PdfPCell(
-              getCenteredParagraph(formatInboundDate(inbound.getInboundDate()), fontTableHeader));
+              //getCenteredParagraph(formatInboundDate(inbound.getInboundDate()), fontTableHeader));
+              getCenteredParagraph(formatInboundDate(dateNow), fontTableHeader));
       dateCell.setBorder(PdfPCell.NO_BORDER); // Remove border
       dateCell.setHorizontalAlignment(Element.ALIGN_CENTER);
       titleTable.addCell(dateCell);
 
-      // Add debit information on the right
-      PdfPCell debitCell = new PdfPCell(new Phrase("Nợ: 1561", fontSubTitle));
-      debitCell.setBorder(PdfPCell.NO_BORDER); // Remove border
-      debitCell.setHorizontalAlignment(Element.ALIGN_LEFT); // Align left
-      titleTable.addCell(debitCell);
+//      // Add debit information on the right
+//      PdfPCell debitCell = new PdfPCell(new Phrase("Nợ: 1561", fontSubTitle));
+//      debitCell.setBorder(PdfPCell.NO_BORDER); // Remove border
+//      debitCell.setHorizontalAlignment(Element.ALIGN_LEFT); // Align left
+//      titleTable.addCell(debitCell);
 
       // Add number row
-      PdfPCell numberCell = new PdfPCell(getCenteredParagraph("Số: NK00012", fontSubTitle));
+      PdfPCell numberCell = new PdfPCell(getCenteredParagraph("Số: " + inbound.getId(), fontSubTitle));
       numberCell.setBorder(PdfPCell.NO_BORDER); // Remove border
       numberCell.setHorizontalAlignment(Element.ALIGN_CENTER);
       titleTable.addCell(numberCell);
 
-      // Add credit information on the right
-      PdfPCell creditCell = new PdfPCell(new Phrase("Có: 331", fontSubTitle));
-      creditCell.setBorder(PdfPCell.NO_BORDER); // Remove border
-      creditCell.setHorizontalAlignment(Element.ALIGN_LEFT); // Align left
-      titleTable.addCell(creditCell);
+//      // Add credit information on the right
+//      PdfPCell creditCell = new PdfPCell(new Phrase("Có: 331", fontSubTitle));
+//      creditCell.setBorder(PdfPCell.NO_BORDER); // Remove border
+//      creditCell.setHorizontalAlignment(Element.ALIGN_LEFT); // Align left
+//      titleTable.addCell(creditCell);
 
       // Add title table to the document
       document.add(titleTable);
@@ -107,7 +112,8 @@ public class PDFUtil {
               "- Theo hóa đơn số "
                   + inbound.getInboundCode()
                   + " "
-                  + formatInboundDate(inbound.getInboundDate())
+                 // + formatInboundDate(inbound.getInboundDate())
+                  + formatInboundDate(dateNow)
                   + " của "
                   + inbound.getSupplier().getSupplierName(),
               fontSubTitle));
@@ -137,8 +143,47 @@ public class PDFUtil {
       document.add(productTable);
       document.add(Chunk.NEWLINE);
 
-      // Calculate total for the final row
-      String amountInWords = NumberToWordsConverter.convert(inbound.getTotalPrice());
+      // Initialize the total amount for the invoice
+      BigDecimal total = BigDecimal.ZERO;
+
+      // Calculate total for all product batch details
+      for (InboundProductDetailDTO detail : inbound.getProductBatchDetails()) {
+        // Initialize the total value for the current detail
+        BigDecimal totalDetailAmount = BigDecimal.ZERO;
+
+        // Check if there are any batches for the current detail
+        if (detail.getBatches() != null && !detail.getBatches().isEmpty()) {
+          // Loop through each batch to calculate the total value
+          for (Batch batch : detail.getBatches()) {
+            // Ensure the batch quantity and price are valid
+            if (batch.getInboundBatchQuantity() > 0 && batch.getInboundPrice() != null) {
+              // Calculate the total price for the current batch
+              BigDecimal batchTotalPrice = batch.getInboundPrice()
+                      .multiply(BigDecimal.valueOf(batch.getInboundBatchQuantity()));
+              // Add the batch total price to the total detail amount
+              totalDetailAmount = totalDetailAmount.add(batchTotalPrice);
+            }
+          }
+        } else {
+          // If no batches, calculate the total based on the detail price and quantity received
+          if (detail.getPrice() != null && detail.getReceiveQuantity() > 0) {
+            totalDetailAmount = detail.getPrice()
+                    .multiply(BigDecimal.valueOf(detail.getReceiveQuantity()));
+          }
+        }
+        // Add the total detail amount to the overall total
+        total = total.add(totalDetailAmount);
+      }
+     // Convert the total amount to words for display or documentation
+      String amountInWords;
+      if (total.compareTo(BigDecimal.ZERO) > 0) {
+        amountInWords = NumberToWordsConverter.convert(total);
+        // Use or display amountInWords as needed
+      } else {
+        // Handle the case when the total is zero
+        amountInWords ="";
+      }
+      //String amountInWords = "";
 
       Paragraph totalAmountParagraph = new Paragraph();
       totalAmountParagraph.add(new Phrase("- Tổng số tiền (Viết bằng chữ): ", fontFooter));
@@ -203,6 +248,7 @@ public class PDFUtil {
   private static PdfPTable createProductTable(
       InboundDetail inbound, Font fontTableHeader, Font fontSubTitle) throws DocumentException {
     // Create a table with 8 columns to fit the structure shown
+    BigDecimal total = BigDecimal.ZERO;
     PdfPTable table = new PdfPTable(8);
     table.setWidthPercentage(100);
     table.setWidths(new int[] {1, 4, 2, 1, 1, 1, 1, 2}); // Adjust column ratios
@@ -275,7 +321,7 @@ public class PDFUtil {
       table.addCell(
           new PdfPCell(new Phrase(detail.getProductName(), fontSubTitle))); // Product name
       table.addCell(
-          new PdfPCell(new Phrase(detail.getProductCode(), fontSubTitle))); // Registration code
+          new PdfPCell(new Phrase(detail.getRegistrationCode(), fontSubTitle))); // Registration code
       table.addCell(
           new PdfPCell(
               new Phrase(detail.getBaseUnit().getUnitName(), fontSubTitle))); // Unit of measurement
@@ -290,26 +336,39 @@ public class PDFUtil {
                   String.valueOf(detail.getReceiveQuantity()),
                   fontSubTitle))); // Actual quantity received
 
+      // Initialize the total value for the current detail
       BigDecimal totalDetailAmount = BigDecimal.ZERO;
+// Initialize the unit price for the current detail (if needed for reference)
       BigDecimal unitPrice = BigDecimal.ZERO;
 
-      // Tính toán tổng giá trị của từng batch dựa trên inboundPrice và inboundBatchQuantity
-      for (Batch batch : detail.getBatches()) {
-        // Giá trị của lô hàng hiện tại
-        BigDecimal batchTotalPrice =
-            batch.getInboundPrice().multiply(new BigDecimal(batch.getInboundBatchQuantity()));
-        // Cộng dồn vào tổng giá trị của sản phẩm
-        totalDetailAmount = totalDetailAmount.add(batchTotalPrice);
+// Check if there are any batches
+      if (detail.getBatches() != null && !detail.getBatches().isEmpty()) {
+        // Loop through each batch to calculate the total value
+        for (Batch batch : detail.getBatches()) {
+          // Set the unit price only for the first batch encountered (optional)
+          if (unitPrice.compareTo(BigDecimal.ZERO) == 0) {
+            unitPrice = batch.getInboundPrice();
+          }
 
-        // Giả sử đơn giá là inboundPrice của lô đầu tiên
-        if (unitPrice.equals(BigDecimal.ZERO)) {
-          unitPrice = batch.getInboundPrice();
+          // Calculate the total price for the current batch
+          BigDecimal batchTotalPrice =
+                  batch.getInboundPrice().multiply(BigDecimal.valueOf(batch.getInboundBatchQuantity()));
+
+          // Add the batch total price to the total detail amount
+          totalDetailAmount = totalDetailAmount.add(batchTotalPrice);
         }
+      } else {
+          totalDetailAmount = detail.getPrice().multiply(BigDecimal.valueOf(detail.getReceiveQuantity()));
+          unitPrice = detail.getPrice();
       }
+      total = total.add(totalDetailAmount);
+
       table.addCell(
           new PdfPCell(new Phrase(String.valueOf(unitPrice), fontSubTitle))); // Unit price
+          //new PdfPCell(new Phrase())); // Unit price
       table.addCell(
           new PdfPCell(new Phrase(totalDetailAmount.toString(), fontSubTitle))); // Total amount
+          //new PdfPCell(new Phrase())); // Total amount
     }
 
     // "Total" row at the bottom of the table
@@ -321,9 +380,10 @@ public class PDFUtil {
     table.addCell(new PdfPCell(new Phrase("", fontSubTitle))); // Empty cell for "Theo chứng từ"
     table.addCell(new PdfPCell(new Phrase("", fontSubTitle))); // Empty cell for "Thực nhập"
     table.addCell(new PdfPCell(new Phrase("", fontSubTitle))); // Empty cell for "Đơn giá"
-    table.addCell(
-        new PdfPCell(
-            new Phrase(String.valueOf(inbound.getTotalPrice()), fontSubTitle))); // Total amount
+    PdfPCell pdfPCell = table.addCell(
+            new PdfPCell(
+                    new Phrase(String.valueOf(total), fontSubTitle))); // Total amount
+                    //new Phrase()));// Total amount
 
     return table; // Return the completed table
   }
@@ -331,6 +391,7 @@ public class PDFUtil {
   // Create the footer table
   private static PdfPTable createFooterTable(
       InboundDetail inbound, Font fontFooter, Font fontTableHeader) throws DocumentException {
+    LocalDateTime dateNow = LocalDateTime.now(); // Initializes with the current date and time
     PdfPTable footerTable = new PdfPTable(4);
     footerTable.setWidthPercentage(100);
     footerTable.setWidths(new float[] {1, 1, 1, 1.6f}); // Column 4 is wider than the others
@@ -345,7 +406,8 @@ public class PDFUtil {
 
     // Column 4: Date
     footerTable.addCell(
-        createCenteredCell(formatInboundDate(inbound.getInboundDate()), fontFooter));
+        //createCenteredCell(formatInboundDate(inbound.getInboundDate()), fontFooter));
+        createCenteredCell(formatInboundDate(dateNow), fontFooter));
 
     // Add the second row
     footerTable.addCell(createCenteredCell("(Ký, họ tên)", fontFooter));
@@ -417,4 +479,5 @@ public class PDFUtil {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("'Ngày' dd 'tháng' MM 'năm' yyyy");
     return inboundDate.format(formatter);
   }
+
 }

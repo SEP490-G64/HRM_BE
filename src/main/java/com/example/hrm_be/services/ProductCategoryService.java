@@ -24,4 +24,6 @@ public interface ProductCategoryService {
 
   // Deletes a ProductCategory by its ID
   void delete(Long id);
+
+  ProductCategory findByCategoryName(String categoryName);
 }

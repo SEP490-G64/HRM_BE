@@ -9,10 +9,15 @@ import com.example.hrm_be.models.requests.CreateInboundRequest;
 import com.example.hrm_be.models.responses.BaseOutput;
 import com.example.hrm_be.models.responses.InboundDetail;
 import com.example.hrm_be.services.InboundService;
+import com.itextpdf.text.DocumentException;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotNull;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -238,4 +243,35 @@ public class StaffInboundController {
             .build();
     return ResponseEntity.ok(response);
   }
+
+  @GetMapping("/generate-receipt/{id}")
+  public void generateReceipt(@PathVariable("id") Long id, HttpServletResponse response) {
+    // Set the content type of the response to PDF
+    response.setContentType("application/pdf");
+    // Set the header to inform the browser that this is a downloadable file named receipt.pdf
+    response.setHeader("Content-Disposition", "attachment; filename=receipt.pdf");
+
+    // Use try-with-resources to automatically close resources
+    try (ByteArrayOutputStream pdfStream = inboundService.generateInboundPdf(id);
+         ServletOutputStream outputStream = response.getOutputStream()) {
+
+      // Write the content of pdfStream to the response's OutputStream
+      pdfStream.writeTo(outputStream);
+      // Ensure that the data is sent
+      outputStream.flush();
+
+    } catch (IOException | DocumentException e) {
+      // Handle exceptions if an error occurs during PDF generation
+      response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR); // Set the status to 500
+      response.setContentType("text/plain"); // Set the content type to plain text
+      try {
+        // Write the error message to the response
+        response.getWriter().write("Error generating PDF receipt: " + e.getMessage());
+      } catch (IOException ioException) {
+        // Print the error if unable to write to the response
+        ioException.printStackTrace();
+      }
+    }
+  }
+
 }

@@ -11,4 +11,6 @@ public interface AllowedProductService {
   List<AllowedProductEntity> getAllAllowedProducts();
 
   List<AllowedProductEntity> addProductFromJson(List<Map<String, Object>> productJsonList);
+
+  AllowedProductEntity getAllowedProductByCode(String registerCode);
 }

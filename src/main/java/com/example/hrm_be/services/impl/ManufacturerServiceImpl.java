@@ -152,4 +152,11 @@ public class ManufacturerServiceImpl implements ManufacturerService {
     // Delete the Manufacturer by ID
     manufacturerRepository.deleteById(id);
   }
+
+  @Override
+  public Manufacturer getByName(String name) {
+    return Optional.ofNullable(name)
+            .flatMap(e -> manufacturerRepository.findByManufacturerName(e).map(m -> manufacturerMapper.toDTO(m)))
+            .orElse(null);
+  }
 }

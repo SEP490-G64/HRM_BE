@@ -8,7 +8,7 @@ import java.util.List;
 
 @Repository
 public interface AllowedProductRepository extends JpaRepository<AllowedProductEntity, Long> {
-  AllowedProductEntity findByRegistrationCode(String code);
+  AllowedProductEntity findByProductCode(String code);
 
   List<AllowedProductEntity> findAllByProductNameContainsIgnoreCase(String searchStr);
 }

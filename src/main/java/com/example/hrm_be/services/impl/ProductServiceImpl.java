@@ -38,12 +38,12 @@ import com.example.hrm_be.repositories.UserRepository;
 import com.example.hrm_be.models.dtos.*;
 import com.example.hrm_be.models.entities.*;
 import com.example.hrm_be.repositories.*;
-import com.example.hrm_be.services.ProductService;
+import com.example.hrm_be.services.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.*;
-import com.example.hrm_be.services.UserService;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -60,6 +60,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -102,6 +103,16 @@ public class ProductServiceImpl implements ProductService {
   @Autowired private UnitConversionRepository unitConversionRepository;
   @Autowired private UnitConversionMapper unitConversionMapper;
   @Autowired private UnitOfMeasurementMapper unitOfMeasurementMapper;
+    @Autowired
+    private UnitOfMeasurementService unitOfMeasurementService;
+    @Autowired
+    private ManufacturerService manufacturerService;
+    @Autowired
+    private ProductTypeService productTypeService;
+    @Autowired
+    private ProductCategoryService productCategoryService;
+    @Autowired
+    private AllowedProductService allowedProductService;
 
   @Override
   public Product getById(Long id) {
@@ -619,85 +630,57 @@ public class ProductServiceImpl implements ProductService {
   @Override
   public List<String> importFile(MultipartFile file) {
     // Mapper to convert each Excel row into a Product object
-    Function<Row, Product> rowMapper =
-        (Row row) -> {
-          Product product = new Product();
-          try {
-            // Mapping fields from the Excel row to the Product object
-            product.setProductCode(
-                row.getCell(0) != null ? row.getCell(0).getStringCellValue() : null);
+    Function<Row, Product> rowMapper = (Row row) -> {
+      Product product = new Product();
+      try {
+        // Map fields from the Excel row to the Product object
+        product.setRegistrationCode(row.getCell(0) != null ? row.getCell(0).getStringCellValue() : null);
 
-            // If the product code exists, populate product information from AllowedProductEntity
-            if (product.getProductCode() != null) {
-              AllowedProductEntity allowedProduct =
-                  allowedProductRepository.findByRegistrationCode(product.getProductCode());
-              if (allowedProduct != null) {
-                product.setProductName(allowedProduct.getProductName());
-                product.setRegistrationCode(allowedProduct.getRegistrationCode());
-                product.setActiveIngredient(allowedProduct.getActiveIngredient());
-                product.setExcipient(allowedProduct.getExcipient());
-                product.setFormulation(allowedProduct.getFormulation());
-              }
-            }
-
-            // Set category if found
-            if (row.getCell(2) != null) {
-              String categoryName = row.getCell(2).getStringCellValue();
-              if (categoryName != null) {
-                product.setCategory(
-                    productCategoryRepository
-                        .findByCategoryName(categoryName)
-                        .map(productCategoryMapper::toDTO)
-                        .orElse(null));
-              }
-            }
-
-            // Set type if found
-            if (row.getCell(3) != null) {
-              String typeName = row.getCell(3).getStringCellValue();
-              if (typeName != null) {
-                product.setType(
-                    productTypeRepository
-                        .findByTypeName(typeName)
-                        .map(productTypeMapper::toDTO)
-                        .orElse(null));
-              }
-            }
-
-            // Set base unit if found
-            if (row.getCell(4) != null) {
-              String measurementName = row.getCell(4).getStringCellValue();
-              if (measurementName != null) {
-                product.setBaseUnit(
-                    unitOfMeasurementRepository
-                        .findByUnitName(measurementName)
-                        .map(unitOfMeasurementMapper::toDTO)
-                        .orElse(null));
-              }
-            }
-
-            // Set manufacturer if found
-            if (row.getCell(5) != null) {
-              String manufacturerName = row.getCell(5).getStringCellValue();
-              if (manufacturerName != null) {
-                product.setManufacturer(
-                    manufacturerRepository
-                        .findByManufacturerName(manufacturerName)
-                        .map(manufacturerMapper::toDTO)
-                        .orElse(null));
-              }
-            }
-
-          } catch (Exception e) {
-            throw new RuntimeException("Error parsing row: " + e.getMessage(), e);
+        // Populate product information from AllowedProductEntity if registration code exists
+        if (product.getRegistrationCode() != null) {
+          AllowedProductEntity allowedProduct = allowedProductService.getAllowedProductByCode(product.getRegistrationCode());
+          if (allowedProduct != null) {
+            product.setProductName(allowedProduct.getProductName());
+            product.setRegistrationCode(allowedProduct.getRegistrationCode());
+            product.setActiveIngredient(allowedProduct.getActiveIngredient());
+            product.setExcipient(allowedProduct.getExcipient());
+            product.setFormulation(allowedProduct.getFormulation());
           }
-          return product;
-        };
+        }
+
+        // Set category if found
+        if (row.getCell(2) != null) {
+          String categoryName = row.getCell(2).getStringCellValue();
+          product.setCategory(categoryName != null ? productCategoryService.findByCategoryName(categoryName) : null);
+        }
+
+        // Set type if found
+        if (row.getCell(3) != null) {
+          String typeName = row.getCell(3).getStringCellValue();
+          product.setType(typeName != null ? productTypeService.getByName(typeName) : null);
+        }
+
+        // Set base unit if found
+        if (row.getCell(4) != null) {
+          String measurementName = row.getCell(4).getStringCellValue();
+          product.setBaseUnit(measurementName != null ? unitOfMeasurementService.getByName(measurementName) : null);
+        }
+
+        // Set manufacturer if found
+        if (row.getCell(5) != null) {
+          String manufacturerName = row.getCell(5).getStringCellValue();
+          product.setManufacturer(manufacturerName != null ? manufacturerService.getByName(manufacturerName) : null);
+        }
+
+      } catch (Exception e) {
+        throw new RuntimeException("Error parsing row: " + e.getMessage(), e);
+      }
+      return product;
+    };
 
     List<String> errors = new ArrayList<>();
     List<Product> productsToSave = new ArrayList<>();
 
-    // Read and validate each row from the Excel file
     try (Workbook workbook = new XSSFWorkbook(file.getInputStream())) {
       Sheet sheet = workbook.getSheetAt(0);
 
@@ -713,7 +696,10 @@ public class ProductServiceImpl implements ProductService {
             if (product.getProductName() == null || product.getProductName().isEmpty()) {
               rowErrors.add("Product name is missing at row " + (rowIndex + 1));
             }
-            // You can add more validations as needed, like checking mandatory fields, etc.
+
+            if (productRepository.existsByRegistrationCode(product.getRegistrationCode())) {
+              rowErrors.add("Registration Code exists at row " + (rowIndex + 1));
+            }
 
             if (rowErrors.isEmpty()) {
               productsToSave.add(product);
@@ -729,12 +715,15 @@ public class ProductServiceImpl implements ProductService {
       errors.add("Failed to parse Excel file: " + e.getMessage());
     }
 
-    // Save all valid products to the database
-    if (!productsToSave.isEmpty()) {
-      for (Product product : productsToSave) {
-        create(product); // Assuming `create` method persists the Product entity
+    // Save all valid products to the database if no errors occurred
+      try {
+        for (Product product : productsToSave) {
+          create(product); // Persist each Product entity
+        }
+      } catch (Exception e) {
+        errors.add("Error saving products: " + e.getMessage());
+        throw new RuntimeException("Transaction failed, rolling back due to error.", e); // Marks transaction for rollback
       }
-    }
 
     return errors; // Return the list of errors
   }

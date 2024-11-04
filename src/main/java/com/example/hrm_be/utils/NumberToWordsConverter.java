@@ -3,20 +3,14 @@ package com.example.hrm_be.utils;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 
-import java.math.BigDecimal;
-import java.text.DecimalFormat;
-
-import java.math.BigDecimal;
-import java.text.DecimalFormat;
-
 public class NumberToWordsConverter {
   private static final String[] tensNames = {
-    "", "mười", "hai mươi", "ba mươi", "bốn mươi",
-    "năm mươi", "sáu mươi", "bảy mươi", "tám mươi", "chín mươi"
+          "", "mười", "hai mươi", "ba mươi", "bốn mươi",
+          "năm mươi", "sáu mươi", "bảy mươi", "tám mươi", "chín mươi"
   };
 
   private static final String[] numNames = {
-    "", "một", "hai", "ba", "bốn", "năm", "sáu", "bảy", "tám", "chín"
+          "", "một", "hai", "ba", "bốn", "năm", "sáu", "bảy", "tám", "chín"
   };
 
   public static String convert(BigDecimal number) {
@@ -66,11 +60,11 @@ public class NumberToWordsConverter {
 
     String tradMillions = (millions == 0) ? "" : convertLessThanOneThousand(millions) + " triệu ";
     String tradHundredThousands =
-        (hundredThousands == 0)
-            ? ""
-            : (hundredThousands == 1
-                ? "một nghìn "
-                : convertLessThanOneThousand(hundredThousands) + " nghìn ");
+            (hundredThousands == 0)
+                    ? ""
+                    : (hundredThousands == 1
+                    ? "một nghìn "
+                    : convertLessThanOneThousand(hundredThousands) + " nghìn ");
     String tradThousand = convertLessThanOneThousand(thousands);
 
     return (tradMillions + tradHundredThousands + tradThousand).replaceAll("\\s+", " ").trim();
@@ -83,7 +77,7 @@ public class NumberToWordsConverter {
 
     StringBuilder fractionalWords = new StringBuilder(" phẩy");
     String fractionalString =
-        fractionalPart.toPlainString().split("\\.")[1]; // Get the decimal part
+            fractionalPart.toPlainString().split("\\.")[1]; // Get the decimal part
 
     for (char digit : fractionalString.toCharArray()) {
       int numericValue = Character.getNumericValue(digit);
@@ -99,25 +93,29 @@ public class NumberToWordsConverter {
   }
 
   private static String convertLessThanOneThousand(int number) {
+    if (number < 0 || number > 999) {
+      throw new IllegalArgumentException("Number must be between 0 and 999.");
+    }
+
     String current;
 
-    if (number % 100 < 10) { // Đối với số từ 0-9
+    if (number % 100 < 10) { // For numbers from 0-9
       current = numNames[number % 10];
       number /= 10;
-    } else { // Đối với số từ 10-99
-      current = numNames[number % 10]; // Lấy chữ số đơn vị
+    } else { // For numbers from 10-99
+      current = numNames[number % 10]; // Get the unit
       number /= 10;
 
-      current = tensNames[number % 10] + " " + current; // Lấy chữ số chục
+      current = tensNames[number % 10] + " " + current; // Get the ten
       number /= 10;
     }
 
-    // Xử lý số trăm
+    // Handle hundreds
     if (number > 0) {
-      // Nếu không có phần chục và đơn vị thì không cần khoảng trắng sau "trăm"
+      // If there are no tens and units, no need for a space after "trăm"
       return current.isEmpty() ? numNames[number] + " trăm" : numNames[number] + " trăm " + current;
     }
 
-    return current.trim(); // Trả về kết quả
+    return current.trim(); // Return result
   }
 }
