@@ -99,7 +99,11 @@ public class UnitOfMeasurementServiceImpl implements UnitOfMeasurementService {
   @Override
   public UnitOfMeasurement getByName(String name) {
     return Optional.ofNullable(name)
-            .flatMap(e -> unitOfMeasurementRepository.findByUnitName(name).map(u -> unitOfMeasurementMapper.toDTO(u)))
-            .orElse(null);
+        .flatMap(
+            e ->
+                unitOfMeasurementRepository
+                    .findByUnitName(name)
+                    .map(u -> unitOfMeasurementMapper.toDTO(u)))
+        .orElse(null);
   }
 }
