@@ -149,6 +149,7 @@ public class HrmConstant {
       public static final String EXIST = "error.batch.exist";
       public static final String NOT_CHILD = "error.batch.not_child";
       public static final String NOT_EXIST = "error.batch.not_exist";
+      public static final String INVALID = "error.batch.invalid";
     }
 
     public static class MANUFACTURER {
@@ -284,6 +285,10 @@ public class HrmConstant {
     public static class PAGE {
       public static final String INVALID = "error.page.invalid";
     }
+
+    public static class DATE {
+      public static final String INVALID_RANGE = "error.date.invalid_range";
+    }
   }
 
   public static String S3LINK = "https://hrm-be-bucket.sgp1.digitaloceanspaces.com";
@@ -294,6 +299,6 @@ public class HrmConstant {
     public static String TAX_CODE = "^(0[0-9]{9}|[1-9][0-9]{9}|[1-9][0-9]{13})$";
     public static String FAX_NUMBER =
         "^(0[1-9]{1}[0-9]{0,2}-[0-9]{7,8}|\\+84-[1-9]{1}[0-9]{0,2}-[0-9]{7,8})$";
-    public static String EMAIL = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$";
+    public static final String EMAIL = "^(?=.{1,255}$)[\\w.-]+@([\\w-]+\\.)+[\\w-]{2,4}$";
   }
 }

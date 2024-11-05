@@ -191,10 +191,10 @@ public class TypeServiceImplTest {
   void testUTCID02_Update_typeNameNull() {
     productTypeRepository.deleteAll();
     ProductType type = createValidType();
-    productTypeService.create(type);
-    type.setTypeName(null);
+    ProductType createType = productTypeService.create(type);
+    createType.setTypeName(null);
 
-    assertThrows(HrmCommonException.class, () -> productTypeService.update(type));
+    assertThrows(HrmCommonException.class, () -> productTypeService.update(createType));
   }
 
   // UTCID03 - Update: typeName empty
@@ -202,10 +202,10 @@ public class TypeServiceImplTest {
   void testUTCID03_Update_TypeNameEmpty() {
     productTypeRepository.deleteAll();
     ProductType type = createValidType();
-    productTypeService.create(type);
-    type.setTypeName("");
+    ProductType createType = productTypeService.create(type);
+    createType.setTypeName("");
 
-    assertThrows(HrmCommonException.class, () -> productTypeService.update(type));
+    assertThrows(HrmCommonException.class, () -> productTypeService.update(createType));
   }
 
   // UTCID04 - Update: typeName greater than 100 characters
@@ -213,10 +213,10 @@ public class TypeServiceImplTest {
   void testUTCID04_Update_typeNameLong() {
     productTypeRepository.deleteAll();
     ProductType type = createValidType();
-    productTypeService.create(type);
-    type.setTypeName("A".repeat(101));
+    ProductType createType = productTypeService.create(type);
+    createType.setTypeName("A".repeat(101));
 
-    assertThrows(HrmCommonException.class, () -> productTypeService.update(type));
+    assertThrows(HrmCommonException.class, () -> productTypeService.update(createType));
   }
 
   // UTCID05 - Update: typeName duplicate
@@ -240,10 +240,10 @@ public class TypeServiceImplTest {
   void testUTCID06_Update_typeDescriptionLong() {
     productTypeRepository.deleteAll();
     ProductType type = createValidType();
-    productTypeService.create(type);
-    type.setTypeDescription("A".repeat(501));
+    ProductType createType = productTypeService.create(type);
+    createType.setTypeDescription("A".repeat(501));
 
-    assertThrows(HrmCommonException.class, () -> productTypeService.update(type));
+    assertThrows(HrmCommonException.class, () -> productTypeService.update(createType));
   }
 
   // UTCID07 - Update: id null
@@ -251,10 +251,10 @@ public class TypeServiceImplTest {
   void testUTCID07_Update_idNull() {
     productTypeRepository.deleteAll();
     ProductType type = createValidType();
-    productTypeService.create(type);
-    type.setId(null);
+    ProductType createType = productTypeService.create(type);
+    createType.setId(null);
 
-    assertThrows(HrmCommonException.class, () -> productTypeService.update(type));
+    assertThrows(HrmCommonException.class, () -> productTypeService.update(createType));
   }
 
   // UTCID08 - Update: id not exist
@@ -262,7 +262,6 @@ public class TypeServiceImplTest {
   void testUTCID08_Update_idNotExist() {
     productTypeRepository.deleteAll();
     ProductType type = createValidType();
-    productTypeService.create(type);
     type.setId(1L);
 
     assertThrows(HrmCommonException.class, () -> productTypeService.update(type));

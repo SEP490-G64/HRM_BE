@@ -4,17 +4,19 @@ import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.components.BatchMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.Batch;
+import com.example.hrm_be.models.dtos.UnitOfMeasurement;
 import com.example.hrm_be.models.entities.BatchEntity;
 import com.example.hrm_be.models.entities.ProductEntity;
 import com.example.hrm_be.repositories.BatchRepository;
 import com.example.hrm_be.services.BatchService;
 import io.micrometer.common.util.StringUtils;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +40,11 @@ public class BatchServiceImpl implements BatchService {
   // Retrieves a Batch by its ID
   @Override
   public Batch getById(Long id) {
+    // Validation: Check if the ID is null
+    if (id == null) {
+      throw new HrmCommonException(HrmConstant.ERROR.TYPE.INVALID);
+    }
+
     return Optional.ofNullable(id)
         .flatMap(e -> batchRepository.findById(e).map(b -> batchMapper.convertToDtoBasicInfo(b)))
         .orElse(null);
@@ -48,6 +55,29 @@ public class BatchServiceImpl implements BatchService {
   public Page<Batch> getByPaging(int pageNo, int pageSize, String sortBy, Long productId,
                                  String keyword, LocalDateTime produceStartDate, LocalDateTime produceEndDate,
                                  LocalDateTime expireStartDate, LocalDateTime expireEndDate) {
+    if (pageNo < 0 || pageSize < 1) {
+      throw new HrmCommonException(HrmConstant.ERROR.PAGE.INVALID);
+    }
+
+    if (sortBy == null) {
+      sortBy = "id";
+    }
+    if (!Objects.equals(sortBy, "id")
+            && !Objects.equals(sortBy, "batchCode")
+            && !Objects.equals(sortBy, "produceDate")
+            && !Objects.equals(sortBy, "expireDate")
+            && !Objects.equals(sortBy, "inboundPrice")) {
+      throw new HrmCommonException(HrmConstant.ERROR.PAGE.INVALID);
+    }
+
+    if ((produceStartDate != null && produceEndDate != null) && produceStartDate.isAfter(produceEndDate)) {
+      throw new HrmCommonException(HrmConstant.ERROR.DATE.INVALID_RANGE);
+    }
+
+    if ((expireStartDate != null && expireEndDate != null) && expireStartDate.isAfter(expireEndDate)) {
+      throw new HrmCommonException(HrmConstant.ERROR.DATE.INVALID_RANGE);
+    }
+
     Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(sortBy).ascending());
     return batchRepository
         .findAll(getSpecification(productId, keyword,
@@ -92,8 +122,12 @@ public class BatchServiceImpl implements BatchService {
   // Creates a new Batch
   @Override
   public Batch create(Batch batch) {
-    // Validation: Ensure the Batch is not null and does not already exist at the same batch code
-    if (batch == null || batchRepository.existsByBatchCode(batch.getBatchCode())) {
+    if (batch == null || !commonValidate(batch)) {
+      throw new HrmCommonException(HrmConstant.ERROR.BATCH.INVALID);
+    }
+
+    // Validation: Ensure the Batch does not already exist at the same batch code
+    if (batchRepository.existsByBatchCode(batch.getBatchCode())) {
       throw new HrmCommonException(HrmConstant.ERROR.BATCH.EXIST);
     }
 
@@ -108,10 +142,19 @@ public class BatchServiceImpl implements BatchService {
   // Updates an existing Batch
   @Override
   public Batch update(Batch batch) {
+    if (batch == null || !commonValidate(batch)) {
+      throw new HrmCommonException(HrmConstant.ERROR.BATCH.INVALID);
+    }
+
     // Retrieve the existing Batch entity by ID
     BatchEntity oldBatchEntity = batchRepository.findById(batch.getId()).orElse(null);
     if (oldBatchEntity == null) {
       throw new HrmCommonException(HrmConstant.ERROR.BATCH.NOT_EXIST);
+    }
+
+    if (batchRepository.existsByBatchCode(batch.getBatchCode())
+            && !Objects.equals(batch.getBatchCode(), oldBatchEntity.getBatchCode())) {
+      throw new HrmCommonException(HrmConstant.ERROR.BATCH.EXIST);
     }
 
     // Update the fields of the existing Batch entity with new values
@@ -132,20 +175,13 @@ public class BatchServiceImpl implements BatchService {
   // Deletes a Batch by ID
   @Override
   public void delete(Long id) {
-    // Validation: Check if the ID is blank
-    if (StringUtils.isBlank(id.toString())) {
-      return;
+    // Validation: Check if the ID is null
+    if (id == null) {
+      throw new HrmCommonException(HrmConstant.ERROR.TYPE.INVALID);
     }
 
     // Delete the batch by ID
     batchRepository.deleteById(id);
-  }
-
-  @Override
-  public List<Batch> getBatchesByProductThroughInbound(Long productId) {
-    return batchRepository.findAllByProductIdThroughInbound(productId).stream()
-        .map(batchMapper::toDTO)
-        .collect(Collectors.toList());
   }
 
   @Override
@@ -163,5 +199,43 @@ public class BatchServiceImpl implements BatchService {
   @Override
   public List<BatchEntity> findAllByProductId(Long inboundId) {
     return batchRepository.findAllByProductId(inboundId);
+  }
+
+  // This method will validate category field input values
+  private boolean commonValidate(Batch batch) {
+    if (batch.getBatchCode() == null
+            || batch.getBatchCode().trim().isEmpty()
+            || batch.getBatchCode().length() > 100) {
+      return false;
+    }
+
+    LocalDateTime produceDate = batch.getProduceDate();
+    LocalDateTime earliestProduceDate = LocalDateTime.of(2000, 1, 1, 0, 0); // Adjust as reasonable earliest date
+    if (produceDate != null) {
+      if (produceDate.isBefore(earliestProduceDate) || produceDate.isAfter(LocalDateTime.now())) {
+        return false;
+      }
+    }
+
+    // Validate expireDate (required, must be after produceDate and within a reasonable range)
+    LocalDateTime expireDate = batch.getExpireDate();
+    LocalDateTime maxExpireDate = LocalDateTime.now().plusYears(10); // Adjust as reasonable max expire date
+    if (expireDate == null) {
+      return false;
+    } else if (produceDate != null && expireDate.isBefore(produceDate)) {
+      return false;
+    } else if (expireDate.isAfter(maxExpireDate)) {
+      return false;
+    }
+
+    BigDecimal inboundPrice = batch.getInboundPrice();
+    if (inboundPrice != null) {
+      if (inboundPrice.compareTo(BigDecimal.ZERO) <= 0
+              || inboundPrice.compareTo(new BigDecimal("10000000")) >= 0) {
+        return false;
+      }
+    }
+
+    return true;
   }
 }

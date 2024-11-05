@@ -180,10 +180,10 @@ public class UnitServiceImplTest {
   void testUTCID02_Update_unitNameNull() {
     unitOfMeasurementRepository.deleteAll();
     UnitOfMeasurement unit = createValidUnit();
-    unitOfMeasurementService.create(unit);
-    unit.setUnitName(null);
+    UnitOfMeasurement createUnit = unitOfMeasurementService.create(unit);
+    createUnit.setUnitName(null);
 
-    assertThrows(HrmCommonException.class, () -> unitOfMeasurementService.update(unit));
+    assertThrows(HrmCommonException.class, () -> unitOfMeasurementService.update(createUnit));
   }
 
   // UTCID03 - Update: unitName empty
@@ -191,10 +191,10 @@ public class UnitServiceImplTest {
   void testUTCID03_Update_unitNameEmpty() {
     unitOfMeasurementRepository.deleteAll();
     UnitOfMeasurement unit = createValidUnit();
-    unitOfMeasurementService.create(unit);
-    unit.setUnitName("");
+    UnitOfMeasurement createUnit = unitOfMeasurementService.create(unit);
+    createUnit.setUnitName("");
 
-    assertThrows(HrmCommonException.class, () -> unitOfMeasurementService.update(unit));
+    assertThrows(HrmCommonException.class, () -> unitOfMeasurementService.update(createUnit));
   }
 
   // UTCID04 - Update: unitName greater than 100 characters
@@ -202,10 +202,10 @@ public class UnitServiceImplTest {
   void testUTCID04_Update_unitNameLong() {
     unitOfMeasurementRepository.deleteAll();
     UnitOfMeasurement unit = createValidUnit();
-    unitOfMeasurementService.create(unit);
-    unit.setUnitName("A".repeat(101));
+    UnitOfMeasurement createUnit = unitOfMeasurementService.create(unit);
+    createUnit.setUnitName("A".repeat(101));
 
-    assertThrows(HrmCommonException.class, () -> unitOfMeasurementService.update(unit));
+    assertThrows(HrmCommonException.class, () -> unitOfMeasurementService.update(createUnit));
   }
 
   // UTCID05 - Update: unitName duplicate
@@ -226,10 +226,10 @@ public class UnitServiceImplTest {
   void testUTCID06_Update_idNull() {
     unitOfMeasurementRepository.deleteAll();
     UnitOfMeasurement unit = createValidUnit();
-    unitOfMeasurementService.create(unit);
-    unit.setId(null);
+    UnitOfMeasurement createUnit = unitOfMeasurementService.create(unit);
+    createUnit.setId(null);
 
-    assertThrows(HrmCommonException.class, () -> unitOfMeasurementService.update(unit));
+    assertThrows(HrmCommonException.class, () -> unitOfMeasurementService.update(createUnit));
   }
 
   // UTCID07 - Update: id not exist
@@ -237,7 +237,6 @@ public class UnitServiceImplTest {
   void testUTCID07_Update_idNotExist() {
     unitOfMeasurementRepository.deleteAll();
     UnitOfMeasurement unit = createValidUnit();
-    unitOfMeasurementService.create(unit);
     unit.setId(1L);
 
     assertThrows(HrmCommonException.class, () -> unitOfMeasurementService.update(unit));

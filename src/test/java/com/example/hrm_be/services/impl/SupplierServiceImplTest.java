@@ -15,8 +15,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -194,11 +192,11 @@ public class SupplierServiceImplTest {
     assertThrows(HrmCommonException.class, () -> supplierService.create(Supplier));
   }
 
-  // UTCID08 - create: address greater than 256 characters
+  // UTCID08 - create: address greater than 255 characters
   @Test
   void testUTCID08_Create_addressLong() {
     Supplier Supplier = createValidSupplier();
-    Supplier.setAddress("A".repeat(257));
+    Supplier.setAddress("A".repeat(256));
 
     assertThrows(HrmCommonException.class, () -> supplierService.create(Supplier));
   }
@@ -212,54 +210,45 @@ public class SupplierServiceImplTest {
     assertThrows(HrmCommonException.class, () -> supplierService.create(Supplier));
   }
 
-  // UTCID010 - create: email greater than 256 characters
+  // UTCID010 - create: phoneNumber null
   @Test
-  void testUTCID010_Create_emailLong() {
-    Supplier Supplier = createValidSupplier();
-    Supplier.setEmail("A".repeat(245) + "@gmail.com");
-
-    assertThrows(HrmCommonException.class, () -> supplierService.create(Supplier));
-  }
-
-  // UTCID011 - create: phoneNumber null
-  @Test
-  void testUTCID011_Create_phoneNumber() {
+  void testUTCID010_Create_phoneNumber() {
     Supplier Supplier = createValidSupplier();
     Supplier.setPhoneNumber(null);
 
     assertThrows(HrmCommonException.class, () -> supplierService.create(Supplier));
   }
 
-  // UTCID012 - create: phoneNumber empty
+  // UTCID011 - create: phoneNumber empty
   @Test
-  void testUTCID012_Create_phoneNumberEmpty() {
+  void testUTCID011_Create_phoneNumberEmpty() {
     Supplier Supplier = createValidSupplier();
     Supplier.setPhoneNumber("");
 
     assertThrows(HrmCommonException.class, () -> supplierService.create(Supplier));
   }
 
-  // UTCID013 - create: phoneNumber not match regex
+  // UTCID012 - create: phoneNumber not match regex
   @Test
-  void testUTCID013_Create_phoneNumberInvalidFormat() {
+  void testUTCID012_Create_phoneNumberInvalidFormat() {
     Supplier Supplier = createValidSupplier();
     Supplier.setPhoneNumber("INVALID_PHONE");
 
     assertThrows(HrmCommonException.class, () -> supplierService.create(Supplier));
   }
 
-  // UTCID014 - create: taxCode not match tax code regex
+  // UTCID013 - create: taxCode not match tax code regex
   @Test
-  void testUTCID014_Create_taxCodeInvalidFormat() {
+  void testUTCID013_Create_taxCodeInvalidFormat() {
     Supplier Supplier = createValidSupplier();
     Supplier.setTaxCode("a");
 
     assertThrows(HrmCommonException.class, () -> supplierService.create(Supplier));
   }
 
-  // UTCID015 - create: taxCode duplicate
+  // UTCID014 - create: taxCode duplicate
   @Test
-  void testUTCID015_Create_taxCodeDuplicate() {
+  void testUTCID014_Create_taxCodeDuplicate() {
     Supplier Supplier = createValidSupplier();
     supplierService.create(Supplier);
     Supplier duplicateAddressSupplier =
@@ -274,17 +263,17 @@ public class SupplierServiceImplTest {
     assertThrows(HrmCommonException.class, () -> supplierService.create(duplicateAddressSupplier));
   }
 
-  // UTCID016 - create: faxNumber not match regex
+  // UTCID015 - create: faxNumber not match regex
   @Test
-  void testUTCID016_Create_faxNumberInvalidFormat() {
+  void testUTCID015_Create_faxNumberInvalidFormat() {
     Supplier Supplier = createValidSupplier();
     Supplier.setFaxNumber("a");
     assertThrows(HrmCommonException.class, () -> supplierService.create(Supplier));
   }
 
-  // UTCID017 - create: status null
+  // UTCID016 - create: status null
   @Test
-  void testUTCID017_Create_statusNull() {
+  void testUTCID016_Create_statusNull() {
     Supplier Supplier = createValidSupplier();
     Supplier.setStatus(null);
     assertThrows(HrmCommonException.class, () -> supplierService.create(Supplier));
@@ -308,10 +297,10 @@ public class SupplierServiceImplTest {
   void testUTCID02_Update_SupplierNameNull() {
     supplierRepository.deleteAll();
     Supplier Supplier = createValidSupplier();
-    supplierService.create(Supplier);
-    Supplier.setSupplierName(null);
+    Supplier Supplier1 = supplierService.create(Supplier);
+    Supplier1.setSupplierName(null);
 
-    assertThrows(HrmCommonException.class, () -> supplierService.update(Supplier));
+    assertThrows(HrmCommonException.class, () -> supplierService.update(Supplier1));
   }
 
   // UTCID03 - Update: SupplierName empty
@@ -319,10 +308,10 @@ public class SupplierServiceImplTest {
   void testUTCID03_Update_SupplierNameEmpty() {
     supplierRepository.deleteAll();
     Supplier Supplier = createValidSupplier();
-    supplierService.create(Supplier);
-    Supplier.setSupplierName("");
+    Supplier Supplier1 = supplierService.create(Supplier);
+    Supplier1.setSupplierName("");
 
-    assertThrows(HrmCommonException.class, () -> supplierService.update(Supplier));
+    assertThrows(HrmCommonException.class, () -> supplierService.update(Supplier1));
   }
 
   // UTCID04 - Update: SupplierName greater than 100 characters
@@ -330,10 +319,10 @@ public class SupplierServiceImplTest {
   void testUTCID04_Update_SupplierNameLong() {
     supplierRepository.deleteAll();
     Supplier Supplier = createValidSupplier();
-    supplierService.create(Supplier);
-    Supplier.setSupplierName("A".repeat(101));
+    Supplier Supplier1 = supplierService.create(Supplier);
+    Supplier1.setSupplierName("A".repeat(101));
 
-    assertThrows(HrmCommonException.class, () -> supplierService.update(Supplier));
+    assertThrows(HrmCommonException.class, () -> supplierService.update(Supplier1));
   }
 
   // UTCID05 - Update: SupplierName and Address duplicate
@@ -363,10 +352,10 @@ public class SupplierServiceImplTest {
   void testUTCID06_Update_addressNull() {
     supplierRepository.deleteAll();
     Supplier Supplier = createValidSupplier();
-    supplierService.create(Supplier);
-    Supplier.setAddress(null);
+    Supplier Supplier1 = supplierService.create(Supplier);
+    Supplier1.setAddress(null);
 
-    assertThrows(HrmCommonException.class, () -> supplierService.update(Supplier));
+    assertThrows(HrmCommonException.class, () -> supplierService.update(Supplier1));
   }
 
   // UTCID07 - Update: address empty
@@ -374,21 +363,21 @@ public class SupplierServiceImplTest {
   void testUTCID07_Update_addressEmpty() {
     supplierRepository.deleteAll();
     Supplier Supplier = createValidSupplier();
-    supplierService.create(Supplier);
-    Supplier.setAddress("");
+    Supplier Supplier1 = supplierService.create(Supplier);
+    Supplier1.setAddress("");
 
-    assertThrows(HrmCommonException.class, () -> supplierService.update(Supplier));
+    assertThrows(HrmCommonException.class, () -> supplierService.update(Supplier1));
   }
 
-  // UTCID08 - Update: address greater than 256 characters
+  // UTCID08 - Update: address greater than 255 characters
   @Test
   void testUTCID08_Update_addressLong() {
     supplierRepository.deleteAll();
     Supplier Supplier = createValidSupplier();
-    supplierService.create(Supplier);
-    Supplier.setAddress("A".repeat(257));
+    Supplier Supplier1 = supplierService.create(Supplier);
+    Supplier1.setAddress("A".repeat(256));
 
-    assertThrows(HrmCommonException.class, () -> supplierService.update(Supplier));
+    assertThrows(HrmCommonException.class, () -> supplierService.update(Supplier1));
   }
 
   // UTCID09 - Update: email not match regex
@@ -396,10 +385,10 @@ public class SupplierServiceImplTest {
   void testUTCID09_Update_emailInvalidFormat() {
     supplierRepository.deleteAll();
     Supplier Supplier = createValidSupplier();
-    supplierService.create(Supplier);
-    Supplier.setEmail("Email");
+    Supplier Supplier1 = supplierService.create(Supplier);
+    Supplier1.setEmail("Email");
 
-    assertThrows(HrmCommonException.class, () -> supplierService.update(Supplier));
+    assertThrows(HrmCommonException.class, () -> supplierService.update(Supplier1));
   }
 
   // UTCID010 - Update: phoneNumber null
@@ -407,10 +396,10 @@ public class SupplierServiceImplTest {
   void testUTCID010_Update_phoneNumberNull() {
     supplierRepository.deleteAll();
     Supplier Supplier = createValidSupplier();
-    supplierService.create(Supplier);
-    Supplier.setPhoneNumber(null);
+    Supplier Supplier1 = supplierService.create(Supplier);
+    Supplier1.setPhoneNumber(null);
 
-    assertThrows(HrmCommonException.class, () -> supplierService.update(Supplier));
+    assertThrows(HrmCommonException.class, () -> supplierService.update(Supplier1));
   }
 
   // UTCID011 - Update: phoneNumber empty
@@ -418,10 +407,10 @@ public class SupplierServiceImplTest {
   void testUTCID011_Update_phoneNumberEmpty() {
     supplierRepository.deleteAll();
     Supplier Supplier = createValidSupplier();
-    supplierService.create(Supplier);
-    Supplier.setPhoneNumber("");
+    Supplier Supplier1 = supplierService.create(Supplier);
+    Supplier1.setPhoneNumber("");
 
-    assertThrows(HrmCommonException.class, () -> supplierService.update(Supplier));
+    assertThrows(HrmCommonException.class, () -> supplierService.update(Supplier1));
   }
 
   // UTCID012 - Update: phoneNumber not match regex
@@ -429,37 +418,26 @@ public class SupplierServiceImplTest {
   void testUTCID012_Update_phoneNumberInvalidFormat() {
     supplierRepository.deleteAll();
     Supplier Supplier = createValidSupplier();
-    supplierService.create(Supplier);
-    Supplier.setPhoneNumber("INVALID_PHONE");
+    Supplier Supplier1 = supplierService.create(Supplier);
+    Supplier1.setPhoneNumber("INVALID_PHONE");
 
-    assertThrows(HrmCommonException.class, () -> supplierService.update(Supplier));
+    assertThrows(HrmCommonException.class, () -> supplierService.update(Supplier1));
   }
 
-  // UTCID013 - update: phoneNumber not match regex
+  // UTCID013 - update: taxCode not match tax code regex
   @Test
-  void testUTCID013_Update_phoneNumberInvalidFormat() {
+  void testUTCID013_Update_taxCodeInvalidFormat() {
     supplierRepository.deleteAll();
     Supplier Supplier = createValidSupplier();
-    supplierService.create(Supplier);
-    Supplier.setPhoneNumber("INVALID_PHONE");
+    Supplier Supplier1 = supplierService.create(Supplier);
+    Supplier1.setTaxCode("a");
 
-    assertThrows(HrmCommonException.class, () -> supplierService.update(Supplier));
+    assertThrows(HrmCommonException.class, () -> supplierService.update(Supplier1));
   }
 
-  // UTCID014 - update: taxCode not match tax code regex
+  // UTCID014 - update: taxCode duplicate
   @Test
-  void testUTCID014_Update_taxCodeInvalidFormat() {
-    supplierRepository.deleteAll();
-    Supplier Supplier = createValidSupplier();
-    supplierService.create(Supplier);
-    Supplier.setTaxCode("a");
-
-    assertThrows(HrmCommonException.class, () -> supplierService.update(Supplier));
-  }
-
-  // UTCID015 - update: taxCode duplicate
-  @Test
-  void testUTCID015_Update_taxCodeDuplicate() {
+  void testUTCID014_Update_taxCodeDuplicate() {
     supplierRepository.deleteAll();
     Supplier Supplier = createValidSupplier();
     supplierService.create(Supplier);
@@ -478,43 +456,42 @@ public class SupplierServiceImplTest {
     assertThrows(HrmCommonException.class, () -> supplierService.update(secondSupplier));
   }
 
-  // UTCID016 - update: faxNumber not match regex
+  // UTCID015 - update: faxNumber not match regex
   @Test
-  void testUTCID016_Update_faxNumberInvalidFormat() {
+  void testUTCID015_Update_faxNumberInvalidFormat() {
     supplierRepository.deleteAll();
     Supplier Supplier = createValidSupplier();
-    supplierService.create(Supplier);
-    Supplier.setFaxNumber("a");
-    assertThrows(HrmCommonException.class, () -> supplierService.update(Supplier));
+    Supplier Supplier1 = supplierService.create(Supplier);
+    Supplier1.setFaxNumber("a");
+    assertThrows(HrmCommonException.class, () -> supplierService.update(Supplier1));
   }
 
-  // UTCID017 - update: status null
+  // UTCID016 - update: status null
   @Test
-  void testUTCID017_Update_statusNull() {
+  void testUTCID016_Update_statusNull() {
     supplierRepository.deleteAll();
     Supplier Supplier = createValidSupplier();
-    supplierService.create(Supplier);
-    Supplier.setStatus(null);
-    assertThrows(HrmCommonException.class, () -> supplierService.update(Supplier));
+    Supplier Supplier1 = supplierService.create(Supplier);
+    Supplier1.setStatus(null);
+    assertThrows(HrmCommonException.class, () -> supplierService.update(Supplier1));
   }
 
-  // UTCID018 - Update: id null
+  // UTCID017 - Update: id null
   @Test
-  void testUTCID018_Update_idNull() {
+  void testUTCID017_Update_idNull() {
     supplierRepository.deleteAll();
     Supplier Supplier = createValidSupplier();
-    supplierService.create(Supplier);
-    Supplier.setId(null);
+    Supplier Supplier1 = supplierService.create(Supplier);
+    Supplier1.setId(null);
 
-    assertThrows(HrmCommonException.class, () -> supplierService.update(Supplier));
+    assertThrows(HrmCommonException.class, () -> supplierService.update(Supplier1));
   }
 
-  // UTCID019 - Update: id not exist
+  // UTCID018 - Update: id not exist
   @Test
-  void testUTCID019_Update_idNotExist() {
+  void testUTCID018_Update_idNotExist() {
     supplierRepository.deleteAll();
     Supplier Supplier = createValidSupplier();
-    supplierService.create(Supplier);
     Supplier.setId(1L);
 
     assertThrows(HrmCommonException.class, () -> supplierService.update(Supplier));

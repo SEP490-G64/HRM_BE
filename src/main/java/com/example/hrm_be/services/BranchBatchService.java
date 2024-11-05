@@ -11,9 +11,7 @@ import java.util.List;
 
 @Service
 public interface BranchBatchService {
-  BranchBatch create(BranchBatch branchBatch);
-
-  BranchBatch update(BranchBatch branchBatch);
+  BranchBatch save(BranchBatch branchBatch);
 
   void delete(Long id);
 

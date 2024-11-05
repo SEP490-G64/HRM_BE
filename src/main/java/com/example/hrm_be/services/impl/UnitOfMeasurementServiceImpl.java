@@ -25,10 +25,14 @@ public class UnitOfMeasurementServiceImpl implements UnitOfMeasurementService {
   @Autowired private UnitOfMeasurementRepository unitOfMeasurementRepository;
 
   @Autowired private UnitOfMeasurementMapper unitOfMeasurementMapper;
-  @Autowired private ProductMapper productMapper;
 
   @Override
   public Boolean existById(Long id) {
+    // Validation: Check if the ID is null
+    if (id == null) {
+      throw new HrmCommonException(HrmConstant.ERROR.UNIT_OF_MEASUREMENT.INVALID);
+    }
+
     return unitOfMeasurementRepository.existsById(id);
   }
 
@@ -121,9 +125,7 @@ public class UnitOfMeasurementServiceImpl implements UnitOfMeasurementService {
       throw new HrmCommonException(HrmConstant.ERROR.UNIT_OF_MEASUREMENT.INVALID);
     }
 
-    UnitOfMeasurementEntity unitOfMeasurement =
-        unitOfMeasurementRepository.findById(id).orElse(null);
-    if (unitOfMeasurement == null) {
+    if (!this.existById(id)) {
       throw new HrmCommonException(HrmConstant.ERROR.UNIT_OF_MEASUREMENT.NOT_EXIST);
     }
     unitOfMeasurementRepository.deleteById(id);

@@ -184,7 +184,7 @@ public class BranchServiceImpl implements BranchService {
     }
     if (branch.getLocation() == null
         || branch.getLocation().trim().isEmpty()
-        || branch.getLocation().length() > 256) {
+        || branch.getLocation().length() > 255) {
       return false;
     }
     if (branch.getContactPerson() != null

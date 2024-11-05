@@ -30,9 +30,6 @@ public interface BatchService {
   // Delete a Batch by its ID.
   void delete(Long id);
 
-  // Method to get a list of batches by productId through the intermediary table (BatchInbound)
-  List<Batch> getBatchesByProductThroughInbound(Long productId);
-
   BatchEntity addBatchInInbound(Batch batch, ProductEntity product);
 
   List<BatchEntity> findAllByProductId(Long inboundId);

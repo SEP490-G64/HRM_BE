@@ -178,10 +178,7 @@ public class ManufacturerServiceImpl implements ManufacturerService {
       throw new HrmCommonException(HrmConstant.ERROR.MANUFACTURER.INVALID);
     }
 
-    // Retrieve existing Manufacturer entity by ID
-    ManufacturerEntity oldManufacturerEntity = manufacturerRepository.findById(id).orElse(null);
-    // Check if the Manufacturer to be deleted exists
-    if (oldManufacturerEntity == null) {
+    if (!this.existById(id)) {
       throw new HrmCommonException(
           HrmConstant.ERROR
               .MANUFACTURER
@@ -201,12 +198,12 @@ public class ManufacturerServiceImpl implements ManufacturerService {
     }
     if (manufacturer.getAddress() == null
         || manufacturer.getAddress().isEmpty()
-        || manufacturer.getAddress().length() > 256) {
+        || manufacturer.getAddress().length() > 255) {
       return false;
     }
     if (manufacturer.getEmail() != null
         && (!manufacturer.getEmail().matches(HrmConstant.REGEX.EMAIL)
-            || (manufacturer.getEmail().length() > 256))) {
+            || (manufacturer.getEmail().length() > 255))) {
       return false;
     }
     if (manufacturer.getPhoneNumber() == null

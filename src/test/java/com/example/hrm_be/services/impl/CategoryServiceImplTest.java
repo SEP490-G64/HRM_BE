@@ -212,10 +212,10 @@ public class CategoryServiceImplTest {
   void testUTCID02_Update_categoryNameNull() {
     productCategoryRepository.deleteAll();
     ProductCategory category = createValidCategory();
-    productCategoryService.create(category);
-    category.setCategoryName(null);
+    ProductCategory createCategory = productCategoryService.create(category);
+    createCategory.setCategoryName(null);
 
-    assertThrows(HrmCommonException.class, () -> productCategoryService.update(category));
+    assertThrows(HrmCommonException.class, () -> productCategoryService.update(createCategory));
   }
 
   // UTCID03 - Update: categoryName empty
@@ -223,10 +223,10 @@ public class CategoryServiceImplTest {
   void testUTCID03_Update_categoryNameEmpty() {
     productCategoryRepository.deleteAll();
     ProductCategory category = createValidCategory();
-    productCategoryService.create(category);
-    category.setCategoryName("");
+    ProductCategory createCategory = productCategoryService.create(category);
+    createCategory.setCategoryName("");
 
-    assertThrows(HrmCommonException.class, () -> productCategoryService.update(category));
+    assertThrows(HrmCommonException.class, () -> productCategoryService.update(createCategory));
   }
 
   // UTCID04 - Update: categoryName greater than 100 characters
@@ -234,10 +234,10 @@ public class CategoryServiceImplTest {
   void testUTCID04_Update_categoryNameLong() {
     productCategoryRepository.deleteAll();
     ProductCategory category = createValidCategory();
-    productCategoryService.create(category);
-    category.setCategoryName("A".repeat(101));
+    ProductCategory createCategory = productCategoryService.create(category);
+    createCategory.setCategoryName("A".repeat(101));
 
-    assertThrows(HrmCommonException.class, () -> productCategoryService.update(category));
+    assertThrows(HrmCommonException.class, () -> productCategoryService.update(createCategory));
   }
 
   // UTCID05 - Update: categoryName duplicate
@@ -262,10 +262,10 @@ public class CategoryServiceImplTest {
   void testUTCID06_Update_categoryDescriptionLong() {
     productCategoryRepository.deleteAll();
     ProductCategory category = createValidCategory();
-    productCategoryService.create(category);
-    category.setCategoryDescription("A".repeat(1001));
+    ProductCategory createCategory = productCategoryService.create(category);
+    createCategory.setCategoryDescription("A".repeat(1001));
 
-    assertThrows(HrmCommonException.class, () -> productCategoryService.update(category));
+    assertThrows(HrmCommonException.class, () -> productCategoryService.update(createCategory));
   }
 
   // UTCID07 - Update: taxRate negative number
@@ -273,10 +273,10 @@ public class CategoryServiceImplTest {
   void testUTCID07_Update_taxRateNegative() {
     productCategoryRepository.deleteAll();
     ProductCategory category = createValidCategory();
-    productCategoryService.create(category);
-    category.setTaxRate(BigDecimal.valueOf(-1));
+    ProductCategory createCategory = productCategoryService.create(category);
+    createCategory.setTaxRate(BigDecimal.valueOf(-1));
 
-    assertThrows(HrmCommonException.class, () -> productCategoryService.update(category));
+    assertThrows(HrmCommonException.class, () -> productCategoryService.update(createCategory));
   }
 
   // UTCID08 - Update: taxRate greater than 100
@@ -284,10 +284,10 @@ public class CategoryServiceImplTest {
   void testUTCID08_Update_taxRateExcessive() {
     productCategoryRepository.deleteAll();
     ProductCategory category = createValidCategory();
-    productCategoryService.create(category);
-    category.setTaxRate(BigDecimal.valueOf(101));
+    ProductCategory createCategory = productCategoryService.create(category);
+    createCategory.setTaxRate(BigDecimal.valueOf(101));
 
-    assertThrows(HrmCommonException.class, () -> productCategoryService.update(category));
+    assertThrows(HrmCommonException.class, () -> productCategoryService.update(createCategory));
   }
 
   // UTCID09 - Update: id null
@@ -295,10 +295,10 @@ public class CategoryServiceImplTest {
   void testUTCID09_Update_idNull() {
     productCategoryRepository.deleteAll();
     ProductCategory category = createValidCategory();
-    productCategoryService.create(category);
-    category.setId(null);
+    ProductCategory createCategory = productCategoryService.create(category);
+    createCategory.setId(null);
 
-    assertThrows(HrmCommonException.class, () -> productCategoryService.update(category));
+    assertThrows(HrmCommonException.class, () -> productCategoryService.update(createCategory));
   }
 
   // UTCID010 - Update: id not exist
@@ -306,8 +306,6 @@ public class CategoryServiceImplTest {
   void testUTCID010_Update_idNotExist() {
     productCategoryRepository.deleteAll();
     ProductCategory category = createValidCategory();
-    productCategoryService.create(category);
-    category.setId(1L);
 
     assertThrows(HrmCommonException.class, () -> productCategoryService.update(category));
   }

@@ -180,16 +180,16 @@ public class SupplierServiceImpl implements SupplierService {
       return false;
     }
 
-    // Validate address (required, non-empty, max length 256)
+    // Validate address (required, non-empty, max length 255)
     if (supplier.getAddress() == null
             || supplier.getAddress().trim().isEmpty()
-            || supplier.getAddress().length() > 256) {
+            || supplier.getAddress().length() > 255) {
       return false;
     }
 
-    // Validate email (optional, if provided must match regex and max length 256)
+    // Validate email (optional, if provided must match regex and max length 255)
     if (supplier.getEmail() != null && !supplier.getEmail().isEmpty()) {
-      if (!supplier.getEmail().matches(HrmConstant.REGEX.EMAIL) || supplier.getEmail().length() > 256) {
+      if (!supplier.getEmail().matches(HrmConstant.REGEX.EMAIL) || supplier.getEmail().length() > 255) {
         return false;
       }
     }

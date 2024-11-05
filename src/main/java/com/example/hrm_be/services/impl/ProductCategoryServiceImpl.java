@@ -31,6 +31,11 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
 
   @Override
   public Boolean existById(Long id) {
+    // Validation: Check if the ID is null
+    if (id == null) {
+      throw new HrmCommonException(HrmConstant.ERROR.TYPE.INVALID);
+    }
+
     return categoryRepository.existsById(id);
   }
 
@@ -145,9 +150,7 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
       throw new HrmCommonException(HrmConstant.ERROR.CATEGORY.INVALID);
     }
 
-    // Retrieve the existing category entity by ID
-    ProductCategoryEntity oldCategoryEntity = categoryRepository.findById(id).orElse(null);
-    if (oldCategoryEntity == null) {
+    if (!this.existById(id)) {
       throw new HrmCommonException(HrmConstant.ERROR.CATEGORY.NOT_EXIST);
     }
 

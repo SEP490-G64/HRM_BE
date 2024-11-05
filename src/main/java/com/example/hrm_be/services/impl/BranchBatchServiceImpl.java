@@ -26,7 +26,7 @@ public class BranchBatchServiceImpl implements BranchBatchService {
   @Autowired private BranchBatchMapper branchBatchMapper;
 
   @Override
-  public BranchBatch create(BranchBatch branchBatch) {
+  public BranchBatch save(BranchBatch branchBatch) {
     if (branchBatch == null) {
       throw new HrmCommonException(HrmConstant.ERROR.BRANCHBATCH.EXIST);
     }
@@ -36,23 +36,6 @@ public class BranchBatchServiceImpl implements BranchBatchService {
         .map(e -> branchBatchMapper.toEntity(e))
         .map(e -> branchBatchRepository.save(e))
         .map(e -> branchBatchMapper.toDTO(e))
-        .orElse(null);
-  }
-
-  @Override
-  public BranchBatch update(BranchBatch branchBatch) {
-    // Retrieve the existing branch entity by ID
-    BranchBatchEntity oldBranchBatch =
-        branchBatchRepository.findById(branchBatch.getId()).orElse(null);
-    if (oldBranchBatch == null) {
-      throw new HrmCommonException(HrmConstant.ERROR.BRANCH.NOT_EXIST);
-    }
-
-    // Update the fields of the existing branch entity with new values
-    return Optional.ofNullable(oldBranchBatch)
-        .map(op -> op.toBuilder().quantity(branchBatch.getQuantity()).build())
-        .map(branchBatchRepository::save)
-        .map(branchBatchMapper::toDTO)
         .orElse(null);
   }
 

@@ -29,6 +29,11 @@ public class ProductTypeServiceImpl implements ProductTypeService {
 
   @Override
   public Boolean existById(Long id) {
+    // Validation: Check if the ID is null
+    if (id == null) {
+      throw new HrmCommonException(HrmConstant.ERROR.TYPE.INVALID);
+    }
+
     return productTypeRepository.existsById(id);
   }
 
@@ -140,8 +145,7 @@ public class ProductTypeServiceImpl implements ProductTypeService {
     }
 
     // Retrieve the existing type entity by ID
-    ProductTypeEntity oldTypeEntity = productTypeRepository.findById(id).orElse(null);
-    if (oldTypeEntity == null) {
+    if (!this.existById(id)) {
       throw new HrmCommonException(HrmConstant.ERROR.TYPE.NOT_EXIST);
     }
 
