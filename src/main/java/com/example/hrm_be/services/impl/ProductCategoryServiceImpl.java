@@ -155,6 +155,13 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
     categoryRepository.deleteById(id);
   }
 
+  @Override
+  public ProductCategory findByCategoryName(String categoryName) {
+    return Optional.of(categoryName)
+        .flatMap(e -> categoryRepository.findByCategoryName(e).map(b -> categoryMapper.toDTO(b)))
+        .orElse(null);
+  }
+
   // This method will validate category field input values
   private boolean commonValidate(ProductCategory category) {
     if (category.getCategoryName() == null

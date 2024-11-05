@@ -3,6 +3,7 @@ package com.example.hrm_be.components;
 import com.example.hrm_be.models.dtos.BranchProduct;
 import com.example.hrm_be.models.dtos.Product;
 import com.example.hrm_be.models.dtos.ProductBaseDTO;
+import com.example.hrm_be.models.dtos.ProductSupplierDTO;
 import com.example.hrm_be.models.entities.ProductEntity;
 
 import java.math.BigDecimal;
@@ -246,6 +247,18 @@ public class ProductMapper {
                         .reduce(BigDecimal.ZERO, BigDecimal::add) // Tính tổng
                         : BigDecimal.ZERO // Nếu danh sách là null, trả về 0
         )
+        .build();
+  }
+
+  public ProductSupplierDTO convertToProductSupplier(ProductEntity entity) {
+    return ProductSupplierDTO.builder()
+        .productName(entity.getProductName())
+        .registrationCode(entity.getRegistrationCode())
+        .image(entity.getUrlImage())
+        .baseUnit(
+            entity.getBaseUnit() != null
+                ? unitOfMeasurementMapper.toDTO(entity.getBaseUnit())
+                : null)
         .build();
   }
 }

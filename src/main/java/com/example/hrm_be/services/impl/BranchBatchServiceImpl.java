@@ -100,4 +100,12 @@ public class BranchBatchServiceImpl implements BranchBatchService {
   public List<BranchBatchEntity> findByBatchId(Long id) {
     return branchBatchRepository.findByBatchId(id);
   }
+
+  @Override
+  public BranchBatch getByBranchIdAndBatchId(Long branchId, Long batchId) {
+    return branchBatchRepository
+        .findByBranch_IdAndBatch_Id(branchId, batchId)
+        .map(branchBatchMapper::toDTO)
+        .orElse(null);
+  }
 }

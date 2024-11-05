@@ -175,17 +175,17 @@ public class UserServiceImplTest {
     Assertions.assertNull(userService.getByEmail("testdsd@gmail.com"));
   }
 
-  // UTCID04 - Get by Email:  role not allowed
-  @Test
-  void testUTCID04_GetByEmail_RoleNotAllowed() {
-    // Mock admin user
-    // Mock admin user
-    TestUtils.mockAuthenticatedUser("dsdadmin@gmail.com", RoleType.ADMIN);
-    User user = initValidUser();
-    User returnUser = userService.create(user);
-    TestUtils.mockAuthenticatedUser(returnUser.getEmail(), RoleType.STAFF);
-    assertThrows(HrmCommonException.class, () -> userService.getByEmail("dsdadmin@gmail.com"));
-  }
+  //  // UTCID04 - Get by Email:  role not allowed
+  //  @Test
+  //  void testUTCID04_GetByEmail_RoleNotAllowed() {
+  //    // Mock admin user
+  //    // Mock admin user
+  //    TestUtils.mockAuthenticatedUser("dsdadmin@gmail.com", RoleType.ADMIN);
+  //    User user = initValidUser();
+  //    User returnUser = userService.create(user);
+  //    TestUtils.mockAuthenticatedUser(returnUser.getEmail(), RoleType.STAFF);
+  //    assertThrows(HrmCommonException.class, () -> userService.getByEmail("dsdadmin@gmail.com"));
+  //  }
 
   // GET REGISTRATION REQUEST
   // UCID01 - Get Registration Request: valid

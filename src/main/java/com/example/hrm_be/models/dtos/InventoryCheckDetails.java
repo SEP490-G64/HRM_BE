@@ -25,6 +25,7 @@ public class InventoryCheckDetails {
   InventoryCheck inventoryCheck; // N-1 with InventoryCheckEntity
 
   Batch batch;
+  Product product;
 
   Integer systemQuantity;
 

@@ -17,6 +17,8 @@ import java.util.List;
 public interface BranchProductService {
   BranchProduct save(BranchProduct branchProduct);
 
+  BranchProduct getByBranchIdAndProductId(Long branchId, Long productId);
+
   void delete(Long id);
 
   void updateBranchProductInInbound(BranchEntity toBranch, ProductEntity product, BigDecimal quantity);

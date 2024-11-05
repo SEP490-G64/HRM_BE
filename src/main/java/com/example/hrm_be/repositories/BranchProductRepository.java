@@ -18,4 +18,6 @@ public interface BranchProductRepository
 
   @Query("SELECT SUM(bp.quantity) FROM BranchProductEntity bp WHERE bp.product.id = :productId")
   BigDecimal findTotalQuantityForProduct(Long productId);
+
+  Optional<BranchProductEntity> findByBranch_IdAndProduct_Id(Long branchId, Long productId);
 }

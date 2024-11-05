@@ -20,4 +20,6 @@ public interface BranchBatchService {
   void updateBranchBatchInInbound(BranchEntity toBranch, BatchEntity batch, BigDecimal quantity);
 
   List<BranchBatchEntity> findByBatchId(Long id);
+
+  BranchBatch getByBranchIdAndBatchId(Long branchId, Long batchId);
 }

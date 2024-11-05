@@ -1,8 +1,10 @@
 package com.example.hrm_be.controllers.inventoryCheck;
 
 import com.example.hrm_be.commons.constants.HrmConstant;
+import com.example.hrm_be.commons.enums.InventoryCheckStatus;
 import com.example.hrm_be.commons.enums.ResponseStatus;
 import com.example.hrm_be.models.dtos.InventoryCheck;
+import com.example.hrm_be.models.requests.CreateInventoryCheckRequest;
 import com.example.hrm_be.models.responses.BaseOutput;
 import com.example.hrm_be.services.InventoryCheckService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -66,7 +68,7 @@ public class StaffInventoryCheckController {
     }
 
     // Fetch InventoryCheck by ID
-    InventoryCheck InventoryCheck = inventoryCheckService.getById(id);
+    InventoryCheck InventoryCheck = inventoryCheckService.getInventoryCheckDetailById(id);
 
     // Build the response with the found InventoryCheck data
     BaseOutput<InventoryCheck> response =
@@ -189,5 +191,41 @@ public class StaffInventoryCheckController {
             .data(HttpStatus.OK.toString())
             .status(ResponseStatus.SUCCESS)
             .build());
+  }
+
+  @PostMapping("/create-init-check")
+  public ResponseEntity<BaseOutput<InventoryCheck>> createInitCheck() {
+    // Check if the type is valid using the exists method
+    InventoryCheck check = inventoryCheckService.createInitInventoryCheck();
+    return ResponseEntity.ok(
+        BaseOutput.<InventoryCheck>builder().data(check).status(ResponseStatus.SUCCESS).build());
+  }
+
+  @PostMapping("/submit-draft")
+  public ResponseEntity<BaseOutput<InventoryCheck>> submitDraft(
+      @RequestBody CreateInventoryCheckRequest request) {
+    InventoryCheck check = inventoryCheckService.saveInventoryCheck(request);
+    return ResponseEntity.ok(
+        BaseOutput.<InventoryCheck>builder().data(check).status(ResponseStatus.SUCCESS).build());
+  }
+
+  @PutMapping("/{id}/submit")
+  public ResponseEntity<BaseOutput<InventoryCheck>> submitToSystem(
+      @PathVariable(name = "id") Long id) {
+    InventoryCheck check = inventoryCheckService.submitInventoryCheckToSystem(id);
+    BaseOutput<InventoryCheck> response =
+        BaseOutput.<InventoryCheck>builder()
+            .message(HttpStatus.OK.toString())
+            .data(check)
+            .status(ResponseStatus.SUCCESS)
+            .build();
+    return ResponseEntity.ok(response);
+  }
+
+  @PutMapping("/{id}/update-status")
+  public ResponseEntity<BaseOutput<String>> updateStatus(
+      @RequestParam String type, @PathVariable(name = "id") Long id) {
+    inventoryCheckService.updateInventoryCheckStatus(InventoryCheckStatus.valueOf(type), id);
+    return ResponseEntity.ok(BaseOutput.<String>builder().status(ResponseStatus.SUCCESS).build());
   }
 }

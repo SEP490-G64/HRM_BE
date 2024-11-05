@@ -5,8 +5,12 @@ import com.example.hrm_be.commons.enums.InboundType;
 import com.example.hrm_be.models.dtos.Inbound;
 import com.example.hrm_be.models.requests.CreateInboundRequest;
 import com.example.hrm_be.models.responses.InboundDetail;
+import com.itextpdf.text.DocumentException;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 @Service
 public interface InboundService {
@@ -25,4 +29,6 @@ public interface InboundService {
   Inbound createInnitInbound(InboundType type);
 
   void updateInboundStatus(InboundStatus status, Long id);
+
+  ByteArrayOutputStream generateInboundPdf(Long inboundId) throws DocumentException, IOException;
 }

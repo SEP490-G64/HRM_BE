@@ -28,16 +28,28 @@ import com.example.hrm_be.repositories.ProductRepository;
 import com.example.hrm_be.models.dtos.*;
 import com.example.hrm_be.models.entities.*;
 import com.example.hrm_be.services.*;
+import com.example.hrm_be.repositories.*;
+import com.example.hrm_be.services.*;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.example.hrm_be.services.UserService;
+import com.example.hrm_be.utils.ExcelUtility;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -46,12 +58,24 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+@Slf4j
+@RequiredArgsConstructor
 @Service
+@Transactional
 public class ProductServiceImpl implements ProductService {
   @Autowired private ProductRepository productRepository;
   @Autowired private AllowedProductRepository allowedProductRepository;
+  @Autowired private StorageLocationRepository storageLocationRepository;
 
+  @Autowired private ProductTypeRepository productTypeRepository;
+  @Autowired private ProductTypeMapper productTypeMapper;
+
+  @Autowired private ProductCategoryRepository productCategoryRepository;
+  @Autowired private ProductCategoryMapper productCategoryMapper;
+
+  @Autowired private UnitOfMeasurementRepository unitOfMeasurementRepository;
   @Autowired private UserService userService;
   @Autowired private ProductCategoryService productCategoryService;
   @Autowired private ProductTypeService productTypeService;
@@ -62,6 +86,9 @@ public class ProductServiceImpl implements ProductService {
   @Autowired private SpecialConditionService specialConditionService;
   @Autowired private UnitConversionService unitConversionService;
 
+  @Autowired private ManufacturerRepository manufacturerRepository;
+  @Autowired private ManufacturerMapper manufacturerMapper;
+
   @Autowired private ProductMapper productMapper;
   @Autowired private SpecialConditionMapper specialConditionMapper;
   @Autowired private BranchMapper branchMapper;
@@ -69,6 +96,11 @@ public class ProductServiceImpl implements ProductService {
   @Autowired private BranchProductMapper branchProductMapper;
   @Autowired private UnitConversionMapper unitConversionMapper;
   @Autowired private UnitOfMeasurementMapper unitOfMeasurementMapper;
+  @Autowired private UnitOfMeasurementService unitOfMeasurementService;
+  @Autowired private ManufacturerService manufacturerService;
+  @Autowired private ProductTypeService productTypeService;
+  @Autowired private ProductCategoryService productCategoryService;
+  @Autowired private AllowedProductService allowedProductService;
 
   @Override
   public Product getById(Long id) {
@@ -84,11 +116,9 @@ public class ProductServiceImpl implements ProductService {
       throw new HrmCommonException(REQUEST.INVALID_BODY);
     }
 
-    // Check only manager allow to sell price
-    if (userService.isManager()) {
-      if (product.getSellPrice() != null) {
-        throw new HrmCommonException(HrmConstant.ERROR.ROLE.NOT_ALLOWED);
-      }
+    // Only allow managers to set the sell price
+    if (!userService.isManager() && product.getSellPrice() != null) {
+      throw new HrmCommonException(HrmConstant.ERROR.ROLE.NOT_ALLOWED);
     }
 
     // Check if product registration code exists
@@ -121,36 +151,29 @@ public class ProductServiceImpl implements ProductService {
 
     ProductEntity savedProduct = productRepository.save(productMapper.toEntity(product));
 
-    // Add SpecialCondition
+    // Add special conditions if available
     if (product.getSpecialConditions() != null && !product.getSpecialConditions().isEmpty()) {
       List<SpecialConditionEntity> specialConditions = new ArrayList<>();
-
       for (SpecialCondition specialConditionDTO : product.getSpecialConditions()) {
         SpecialConditionEntity specialConditionEntity =
             specialConditionMapper.toEntity(specialConditionDTO);
-
-        // Set the product to this special condition
         specialConditionEntity.setProduct(savedProduct);
-
-        // Add to the list for any future use or associations
         specialConditions.add(specialConditionEntity);
       }
+      specialConditionRepository.saveAll(specialConditions);
       List<SpecialConditionEntity> savedSpecialCondition =
           specialConditionService.saveAll(specialConditions);
     }
 
-    // Add Unit Conversion
+    // Add unit conversions if available
     if (product.getUnitConversions() != null && !product.getUnitConversions().isEmpty()) {
       List<UnitConversionEntity> unitConversions = new ArrayList<>();
-
       for (UnitConversion unitConversionDto : product.getUnitConversions()) {
         unitConversionDto.setLargerUnit(product.getBaseUnit());
-
-        // Set the product to this unit conversion
         unitConversionDto.setProduct(productMapper.toDTO(savedProduct));
-        // Add to the list for any future use or associations
         unitConversions.add(unitConversionMapper.toEntity(unitConversionDto));
       }
+      unitConversionRepository.saveAll(unitConversions);
       List<UnitConversionEntity> savedUnitConversions =
           unitConversionService.saveAll(unitConversions);
     }
@@ -161,12 +184,22 @@ public class ProductServiceImpl implements ProductService {
     BranchProduct branchProduct = product.getBranchProducts().get(0);
     if (branchProduct == null) {
       throw new HrmCommonException(BRANCHPRODUCT.NOT_EXIST);
+    // Initialize branchProducts if null and add a new BranchProduct
+    if (product.getBranchProducts() == null) {
+      product.setBranchProducts(new ArrayList<>());
     }
+
+    BranchProduct branchProduct = new BranchProduct();
 
     // Get branch of current registered user
     String email = userService.getAuthenticatedUserEmail();
     Branch branch = userService.findLoggedInfoByEmail(email).getBranch();
 
+    // Create a BranchProductEntity to save
+    BranchProductEntity branchProductEntity = new BranchProductEntity();
+    branchProductEntity.setBranch(branchMapper.toEntity(branch));
+
+    // Handle storage location if it exists in BranchProduct
     branchProductEntity.setBranch(branch);
     if (branchProduct.getStorageLocation() != null) {
       StorageLocation savedStorageLocation =
@@ -174,6 +207,7 @@ public class ProductServiceImpl implements ProductService {
       branchProductEntity.setStorageLocation(savedStorageLocation);
     }
 
+    // Set quantity details
     branchProductEntity.setMinQuantity(branchProduct.getMinQuantity());
     branchProductEntity.setMaxQuantity(branchProduct.getMaxQuantity());
     branchProductEntity.setQuantity(branchProduct.getQuantity());
@@ -181,7 +215,7 @@ public class ProductServiceImpl implements ProductService {
 
     branchProductService.save(branchProductEntity);
 
-    return Optional.ofNullable(savedProduct).map(e -> productMapper.toDTO(e)).orElse(null);
+    return Optional.of(savedProduct).map(e -> productMapper.toDTO(e)).orElse(null);
   }
 
   @Override
@@ -511,6 +545,171 @@ public class ProductServiceImpl implements ProductService {
         .map(productMapper::convertToProductBaseDTO);
   }
 
+  @Override
+  public List<String> importFile(MultipartFile file) {
+    // Mapper to convert each Excel row into a Product object
+    Function<Row, Product> rowMapper =
+        (Row row) -> {
+          Product product = new Product();
+          try {
+            // Map fields from the Excel row to the Product object
+            product.setRegistrationCode(
+                row.getCell(0) != null ? row.getCell(0).getStringCellValue() : null);
+
+            // Populate product information from AllowedProductEntity if registration code exists
+            if (product.getRegistrationCode() != null) {
+              AllowedProductEntity allowedProduct =
+                  allowedProductService.getAllowedProductByCode(product.getRegistrationCode());
+              if (allowedProduct != null) {
+                product.setProductName(allowedProduct.getProductName());
+                product.setRegistrationCode(allowedProduct.getRegistrationCode());
+                product.setActiveIngredient(allowedProduct.getActiveIngredient());
+                product.setExcipient(allowedProduct.getExcipient());
+                product.setFormulation(allowedProduct.getFormulation());
+              }
+            }
+
+            // Set category if found
+            if (row.getCell(2) != null) {
+              String categoryName = row.getCell(2).getStringCellValue();
+              product.setCategory(
+                  categoryName != null
+                      ? productCategoryService.findByCategoryName(categoryName)
+                      : null);
+            }
+
+            // Set type if found
+            if (row.getCell(3) != null) {
+              String typeName = row.getCell(3).getStringCellValue();
+              product.setType(typeName != null ? productTypeService.getByName(typeName) : null);
+            }
+
+            // Set base unit if found
+            if (row.getCell(4) != null) {
+              String measurementName = row.getCell(4).getStringCellValue();
+              product.setBaseUnit(
+                  measurementName != null
+                      ? unitOfMeasurementService.getByName(measurementName)
+                      : null);
+            }
+
+            // Set manufacturer if found
+            if (row.getCell(5) != null) {
+              String manufacturerName = row.getCell(5).getStringCellValue();
+              product.setManufacturer(
+                  manufacturerName != null
+                      ? manufacturerService.getByName(manufacturerName)
+                      : null);
+            }
+
+          } catch (Exception e) {
+            throw new RuntimeException("Error parsing row: " + e.getMessage(), e);
+          }
+          return product;
+        };
+
+    List<String> errors = new ArrayList<>();
+    List<Product> productsToSave = new ArrayList<>();
+
+    // Read and validate each row from the Excel file
+    try (Workbook workbook = new XSSFWorkbook(file.getInputStream())) {
+      Sheet sheet = workbook.getSheetAt(0);
+
+      for (int rowIndex = 1; rowIndex <= sheet.getLastRowNum(); rowIndex++) {
+        Row row = sheet.getRow(rowIndex);
+        if (row != null) {
+          try {
+            Product product = rowMapper.apply(row); // Convert row to Product object
+
+            List<String> rowErrors = new ArrayList<>();
+
+            // Validate the Product object
+            if (product.getProductName() == null || product.getProductName().isEmpty()) {
+              rowErrors.add("Product name is missing at row " + (rowIndex + 1));
+            }
+
+            if (productRepository.existsByRegistrationCode(product.getRegistrationCode())) {
+              rowErrors.add("Registration Code exists at row " + (rowIndex + 1));
+            }
+
+            if (rowErrors.isEmpty()) {
+              productsToSave.add(product);
+            } else {
+              errors.addAll(rowErrors);
+            }
+          } catch (Exception e) {
+            errors.add("Error parsing row " + (rowIndex + 1) + ": " + e.getMessage());
+          }
+        }
+      }
+    } catch (IOException e) {
+      errors.add("Failed to parse Excel file: " + e.getMessage());
+    }
+
+    // Save all valid products to the database if no errors occurred
+    try {
+      for (Product product : productsToSave) {
+        create(product); // Persist each Product entity
+      }
+    } catch (Exception e) {
+      errors.add("Error saving products: " + e.getMessage());
+      throw new RuntimeException(
+          "Transaction failed, rolling back due to error.", e); // Marks transaction for rollback
+    }
+
+    return errors; // Return the list of errors
+  }
+
+  @Override
+  public ByteArrayInputStream exportFile() throws IOException {
+    String[] headers = {
+      "Regation Code",
+      "Product Name",
+      "Active Ingredient",
+      "Excipient",
+      "Formulation",
+      "Category",
+      "Type",
+      "Base Unit",
+      "Manufacturer",
+      "Sell Price"
+    };
+
+    // Row mapper to convert a Product object to a list of cell values
+    Function<ProductBaseDTO, List<String>> rowMapper =
+        (ProductBaseDTO product) -> {
+          List<String> cellValues = new ArrayList<>();
+          cellValues.add(
+              product.getRegistrationCode() != null ? product.getRegistrationCode() : "");
+          cellValues.add(product.getProductName() != null ? product.getProductName() : "");
+          cellValues.add(
+              product.getActiveIngredient() != null ? product.getActiveIngredient() : "");
+          cellValues.add(product.getExcipient() != null ? product.getExcipient() : "");
+          cellValues.add(product.getFormulation() != null ? product.getFormulation() : "");
+          cellValues.add(product.getCategoryName() != null ? product.getCategoryName() : "");
+          cellValues.add(product.getTypeName() != null ? product.getTypeName() : "");
+          cellValues.add(product.getBaseUnit() != null ? product.getBaseUnit() : "");
+          cellValues.add(
+              product.getManufacturerName() != null ? product.getManufacturerName() : "");
+          cellValues.add(product.getSellPrice() != null ? product.getSellPrice().toString() : "");
+
+          return cellValues;
+        };
+
+    // Fetch product data
+    List<ProductBaseDTO> products =
+        productRepository.findAll().stream()
+            .map(productMapper::convertToProductBaseDTO)
+            .collect(Collectors.toList());
+
+    // Export data using utility
+    try {
+      return ExcelUtility.exportToExcelWithErrors(products, headers, rowMapper);
+    } catch (IOException e) {
+      throw new RuntimeException("Error exporting product data to Excel", e);
+    }
+  }
+
   @Transactional(readOnly = true)
   public List<ProductEntity> getProductWithBranchProducts(Long branchId) {
     // Fetch the product along with only the BranchProductEntity related to the given branchId
@@ -518,9 +717,9 @@ public class ProductServiceImpl implements ProductService {
   }
 
   @Override
-  public List<Product> getAllProductsBySupplier(Long supplierId, String productName) {
-    return productRepository.findProductBySupplierAndName(supplierId, productName).stream()
-        .map(productMapper::toDTO)
+  public List<ProductSupplierDTO> getAllProductsBySupplier(Long supplierid, String productName) {
+    return productRepository.findProductBySupplierAndName(supplierid, productName).stream()
+        .map(productMapper::convertToProductSupplier)
         .collect(Collectors.toList());
   }
 

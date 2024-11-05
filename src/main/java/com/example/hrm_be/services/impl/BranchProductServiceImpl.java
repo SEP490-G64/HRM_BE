@@ -37,6 +37,14 @@ public class BranchProductServiceImpl implements BranchProductService {
   }
 
   @Override
+  public BranchProduct getByBranchIdAndProductId(Long branchId, Long productId) {
+    return branchProductRepository
+        .findByBranch_IdAndProduct_Id(branchId, productId)
+        .map(branchProductMapper::toDTO)
+        .orElse(null);
+  }
+
+  @Override
   public void delete(Long id) {
     if (id == null || StringUtils.isBlank(id.toString())) {
       return; // Return if the ID is invalid

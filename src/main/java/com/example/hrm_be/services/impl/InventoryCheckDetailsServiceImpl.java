@@ -90,6 +90,19 @@ public class InventoryCheckDetailsServiceImpl implements InventoryCheckDetailsSe
   }
 
   @Override
+  public InventoryCheckDetails findByCheckIdAndBatchId(Long checkId, Long batchId) {
+    return inventoryCheckDetailsRepository
+        .findByInventoryCheck_IdAndBatch_Id(checkId, batchId)
+        .map(inventoryCheckDetailsMapper::toDTO)
+        .orElse(null);
+  }
+
+  @Override
+  public void deleteByInventoryCheckId(Long checkId) {
+    inventoryCheckDetailsRepository.deleteByInventoryCheck_Id(checkId);
+  }
+
+  @Override
   public void delete(Long id) {
     // Validate the ID
     if (StringUtils.isBlank(id.toString())) {
