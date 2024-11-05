@@ -1,8 +1,6 @@
 package com.example.hrm_be.components;
 
-import com.example.hrm_be.models.dtos.InventoryCheckDetails;
 import com.example.hrm_be.models.dtos.InventoryCheckProductDetails;
-import com.example.hrm_be.models.entities.InventoryCheckDetailsEntity;
 import com.example.hrm_be.models.entities.InventoryCheckProductDetailsEntity;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,9 +9,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class InventoryCheckProductDetailsMapper {
-  @Autowired
-  @Lazy
-  private InventoryCheckMapper inventoryCheckMapper;
+  @Autowired @Lazy private InventoryCheckMapper inventoryCheckMapper;
   @Autowired @Lazy private ProductMapper productMapper;
   @Autowired @Lazy private BatchMapper batchMapper;
 
@@ -23,7 +19,7 @@ public class InventoryCheckProductDetailsMapper {
   }
 
   // Convert InventoryCheckDetailsDTO to InventoryCheckDetailsEntity
-  public InventoryCheckProductDetailsEntity toEntity( InventoryCheckProductDetails dto) {
+  public InventoryCheckProductDetailsEntity toEntity(InventoryCheckProductDetails dto) {
     return Optional.ofNullable(dto)
         .map(
             d ->
@@ -34,7 +30,9 @@ public class InventoryCheckProductDetailsMapper {
                             ? inventoryCheckMapper.toEntity(d.getInventoryCheck())
                             : null)
                     .product(
-                        d.getInventoryCheck() != null ? productMapper.toEntity(d.getProduct()) : null)
+                        d.getInventoryCheck() != null
+                            ? productMapper.toEntity(d.getProduct())
+                            : null)
                     .systemQuantity(d.getSystemQuantity())
                     .countedQuantity(d.getCountedQuantity())
                     .difference(d.getDifference())
@@ -54,5 +52,4 @@ public class InventoryCheckProductDetailsMapper {
         .reason(entity.getReason())
         .build();
   }
-
 }

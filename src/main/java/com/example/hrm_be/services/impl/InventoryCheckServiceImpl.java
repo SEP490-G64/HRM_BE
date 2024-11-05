@@ -4,10 +4,8 @@ import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.commons.constants.HrmConstant.ERROR.BRANCH;
 import com.example.hrm_be.commons.constants.HrmConstant.ERROR.BRANCHBATCH;
 import com.example.hrm_be.commons.constants.HrmConstant.ERROR.BRANCHPRODUCT;
-import com.example.hrm_be.commons.constants.HrmConstant.ERROR.INBOUND;
 import com.example.hrm_be.commons.constants.HrmConstant.ERROR.INVENTORY_CHECK;
 import com.example.hrm_be.commons.constants.HrmConstant.ERROR.PRODUCT;
-import com.example.hrm_be.commons.enums.InboundStatus;
 import com.example.hrm_be.commons.enums.InventoryCheckStatus;
 import com.example.hrm_be.components.BranchMapper;
 import com.example.hrm_be.components.InventoryCheckMapper;
@@ -17,17 +15,11 @@ import com.example.hrm_be.models.dtos.Batch;
 import com.example.hrm_be.models.dtos.Branch;
 import com.example.hrm_be.models.dtos.BranchBatch;
 import com.example.hrm_be.models.dtos.BranchProduct;
-import com.example.hrm_be.models.dtos.Inbound;
 import com.example.hrm_be.models.dtos.InventoryCheck;
 import com.example.hrm_be.models.dtos.InventoryCheckDetails;
 import com.example.hrm_be.models.dtos.InventoryCheckProductDetails;
-import com.example.hrm_be.models.dtos.OutboundDetail;
-import com.example.hrm_be.models.dtos.OutboundProductDetail;
 import com.example.hrm_be.models.dtos.Product;
-import com.example.hrm_be.models.entities.BranchBatchEntity;
 import com.example.hrm_be.models.entities.BranchEntity;
-import com.example.hrm_be.models.entities.BranchProductEntity;
-import com.example.hrm_be.models.entities.InboundEntity;
 import com.example.hrm_be.models.entities.InventoryCheckEntity;
 import com.example.hrm_be.models.entities.UserEntity;
 import com.example.hrm_be.models.requests.CreateInventoryCheckRequest;
@@ -88,7 +80,7 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
   @Override
   public InventoryCheck getInventoryCheckDetailById(Long id) {
     // Fetch the InventoryCheck entity by ID
-    InventoryCheck inventoryCheckEntity =  getById(id);
+    InventoryCheck inventoryCheckEntity = getById(id);
 
     // Map basic InventoryCheck details to InventoryCheckDTO
     InventoryCheck inventoryCheckDTO = new InventoryCheck();
@@ -113,51 +105,53 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
     // Populate inventoryCheckProductDetails
     List<InventoryCheckProductDetails> productDetails =
         inventoryCheckEntity.getInventoryCheckProductDetails().stream()
-        .map(detail -> {
-          InventoryCheckProductDetails detailDTO = new InventoryCheckProductDetails();
+            .map(
+                detail -> {
+                  InventoryCheckProductDetails detailDTO = new InventoryCheckProductDetails();
 
-          // Set product details
-          Product productDTO = new Product();
-          productDTO.setId(detail.getProduct().getId());
-          productDTO.setProductName(detail.getProduct().getProductName());
-          productDTO.setRegistrationCode(detail.getProduct().getRegistrationCode());
-          detailDTO.setProduct(productDTO);
-          detailDTO.setReason(detail.getReason());
+                  // Set product details
+                  Product productDTO = new Product();
+                  productDTO.setId(detail.getProduct().getId());
+                  productDTO.setProductName(detail.getProduct().getProductName());
+                  productDTO.setRegistrationCode(detail.getProduct().getRegistrationCode());
+                  detailDTO.setProduct(productDTO);
+                  detailDTO.setReason(detail.getReason());
 
-          // Set difference quantity
-          detailDTO.setDifference(detail.getDifference());
+                  // Set difference quantity
+                  detailDTO.setDifference(detail.getDifference());
 
-          return detailDTO;
-        })
-        .collect(Collectors.toList());
+                  return detailDTO;
+                })
+            .collect(Collectors.toList());
 
     // Populate inventoryCheckDetails (for batches)
     List<InventoryCheckDetails> batchDetails =
         inventoryCheckEntity.getInventoryCheckDetails().stream()
-        .map(batchDetail -> {
-          InventoryCheckDetails batchDetailDTO = new InventoryCheckDetails();
+            .map(
+                batchDetail -> {
+                  InventoryCheckDetails batchDetailDTO = new InventoryCheckDetails();
 
-          // Set batch and product details
-          Batch batchDTO = new Batch();
-          batchDTO.setId(batchDetail.getBatch().getId());
-          batchDTO.setBatchCode(batchDetail.getBatch().getBatchCode());
-          batchDTO.setExpireDate(batchDetail.getBatch().getExpireDate());
+                  // Set batch and product details
+                  Batch batchDTO = new Batch();
+                  batchDTO.setId(batchDetail.getBatch().getId());
+                  batchDTO.setBatchCode(batchDetail.getBatch().getBatchCode());
+                  batchDTO.setExpireDate(batchDetail.getBatch().getExpireDate());
 
-          Product productDTO = new Product();
-          productDTO.setId(batchDetail.getBatch().getProduct().getId());
-          productDTO.setProductName(batchDetail.getBatch().getProduct().getProductName());
-          productDTO.setRegistrationCode(batchDetail.getBatch().getProduct().getRegistrationCode());
+                  Product productDTO = new Product();
+                  productDTO.setId(batchDetail.getBatch().getProduct().getId());
+                  productDTO.setProductName(batchDetail.getBatch().getProduct().getProductName());
+                  productDTO.setRegistrationCode(
+                      batchDetail.getBatch().getProduct().getRegistrationCode());
 
-          batchDetailDTO.setBatch(batchDTO);
-          batchDetailDTO.setProduct(productDTO);
-          batchDetailDTO.setReason(batchDetail.getReason());
-          // Set difference quantity
-          batchDetailDTO.setDifference(batchDetail.getDifference());
+                  batchDetailDTO.setBatch(batchDTO);
+                  batchDetailDTO.setProduct(productDTO);
+                  batchDetailDTO.setReason(batchDetail.getReason());
+                  // Set difference quantity
+                  batchDetailDTO.setDifference(batchDetail.getDifference());
 
-
-          return batchDetailDTO;
-        })
-        .collect(Collectors.toList());
+                  return batchDetailDTO;
+                })
+            .collect(Collectors.toList());
 
     // Set details in the InventoryCheckDTO
     inventoryCheckDTO.setInventoryCheckProductDetails(productDetails);
@@ -420,19 +414,21 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
       Batch batch = batchDetail.getBatch();
 
       // Find the BranchBatch entity for this batch and branch
-      BranchBatch branchBatch =  branchBatchService.getByBranchIdAndBatchId(branch.getId(),
-          batch.getId());
-    if(branchBatch== null)
-    {
-      throw new HrmCommonException(BRANCHBATCH.NOT_EXIST);
-    }
+      BranchBatch branchBatch =
+          branchBatchService.getByBranchIdAndBatchId(branch.getId(), batch.getId());
+      if (branchBatch == null) {
+        throw new HrmCommonException(BRANCHBATCH.NOT_EXIST);
+      }
       // Find the BranchProduct entity for this product and branch
-      BranchProduct branchProduct = branchProductService.getByBranchIdAndProductId(branch.getId()
-          ,branchBatch.getBatch().getProduct().getId());
+      BranchProduct branchProduct =
+          branchProductService.getByBranchIdAndProductId(
+              branch.getId(), branchBatch.getBatch().getProduct().getId());
       // Subtract the quantity
-      branchBatch.setQuantity(branchBatch.getQuantity().subtract(BigDecimal.valueOf(batchDetail.getDifference())));
+      branchBatch.setQuantity(
+          branchBatch.getQuantity().subtract(BigDecimal.valueOf(batchDetail.getDifference())));
       branchBatchService.update(branchBatch);
-      branchProduct.setQuantity(branchProduct.getQuantity().subtract(BigDecimal.valueOf(batchDetail.getDifference())));
+      branchProduct.setQuantity(
+          branchProduct.getQuantity().subtract(BigDecimal.valueOf(batchDetail.getDifference())));
       branchProductService.update(branchProduct);
     }
     return null;
@@ -458,8 +454,8 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
 
   @Override
   public void updateInventoryCheckStatus(InventoryCheckStatus status, Long id) {
-    InventoryCheck inventoryCheck =getById(id);
-    if (inventoryCheck==null) {
+    InventoryCheck inventoryCheck = getById(id);
+    if (inventoryCheck == null) {
       throw new HrmCommonException(INVENTORY_CHECK.NOT_EXIST);
     }
     inventoryCheckRepository.updateInboundStatus(status, id);

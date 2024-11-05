@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 @Service
 public interface InventoryCheckService {
   InventoryCheck getById(Long id);
+
   InventoryCheck getInventoryCheckDetailById(Long id);
 
   Page<InventoryCheck> getByPaging(int pageNo, int pageSize, String sortBy);

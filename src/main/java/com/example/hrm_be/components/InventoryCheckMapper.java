@@ -51,10 +51,18 @@ public class InventoryCheckMapper {
   private InventoryCheck convertToDTO(InventoryCheckEntity entity) {
     return InventoryCheck.builder()
         .id(entity.getId())
-        .branch(entity.getBranch() != null ? branchMapper.convertToDTOBasicInfo(entity.getBranch()) : null)
-        .createdBy(entity.getCreatedBy() != null ? userMapper.convertToDtoBasicInfo(entity.getCreatedBy()) : null)
+        .branch(
+            entity.getBranch() != null
+                ? branchMapper.convertToDTOBasicInfo(entity.getBranch())
+                : null)
+        .createdBy(
+            entity.getCreatedBy() != null
+                ? userMapper.convertToDtoBasicInfo(entity.getCreatedBy())
+                : null)
         .approvedBy(
-            entity.getApprovedBy() != null ? userMapper.convertToDtoBasicInfo(entity.getApprovedBy()) : null)
+            entity.getApprovedBy() != null
+                ? userMapper.convertToDtoBasicInfo(entity.getApprovedBy())
+                : null)
         .createdDate(entity.getCreatedDate())
         .isApproved(entity.getIsApproved())
         .status(entity.getStatus())

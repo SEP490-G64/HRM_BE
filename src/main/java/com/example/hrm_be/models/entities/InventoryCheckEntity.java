@@ -38,15 +38,11 @@ import lombok.experimental.SuperBuilder;
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class InventoryCheckEntity extends CommonEntity {
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(
-      name = "branch_id",
-      foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+  @JoinColumn(name = "branch_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   BranchEntity branch; // N-1 with Branch
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(
-      name = "created_by",
-      foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+  @JoinColumn(name = "created_by", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   UserEntity createdBy; // N-1 with User (for the user who created the check)
 
   @ManyToOne(fetch = FetchType.LAZY)
@@ -60,8 +56,6 @@ public class InventoryCheckEntity extends CommonEntity {
   LocalDateTime createdDate;
 
   @Column(name = "is_approved")
-
-
   Boolean isApproved;
 
   @Column(name = "inventory_check_code")

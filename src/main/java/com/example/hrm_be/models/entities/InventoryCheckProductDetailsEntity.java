@@ -26,17 +26,13 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "inventory_check_product")
-public class InventoryCheckProductDetailsEntity extends CommonEntity{
+public class InventoryCheckProductDetailsEntity extends CommonEntity {
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(
-      name = "check_id",
-      foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+  @JoinColumn(name = "check_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   InventoryCheckEntity inventoryCheck; // N-1 with InventoryCheckEntity
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(
-      name = "product_id",
-      foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+  @JoinColumn(name = "product_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   ProductEntity product; // N-1 with ProductEntity
 
   @Column(name = "system_quantity")

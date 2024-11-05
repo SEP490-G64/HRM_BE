@@ -1,10 +1,6 @@
 package com.example.hrm_be.models.requests;
 
-import com.example.hrm_be.commons.enums.OutboundType;
-import com.example.hrm_be.models.dtos.Branch;
 import com.example.hrm_be.models.dtos.InventoryCheckProductDetails;
-import com.example.hrm_be.models.dtos.OutboundProductDetail;
-import com.example.hrm_be.models.dtos.Supplier;
 import com.example.hrm_be.models.dtos.User;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.time.LocalDateTime;
@@ -35,5 +31,4 @@ public class CreateInventoryCheckRequest {
   LocalDateTime createdDate;
   User createdBy;
   List<InventoryCheckProductDetails> inventoryCheckProductDetails;
-
 }

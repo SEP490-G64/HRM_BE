@@ -28,15 +28,11 @@ import lombok.experimental.SuperBuilder;
 @Table(name = "inventory_check_details")
 public class InventoryCheckDetailsEntity extends CommonEntity {
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(
-      name = "check_id",
-      foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+  @JoinColumn(name = "check_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   InventoryCheckEntity inventoryCheck; // N-1 with InventoryCheckEntity
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(
-      name = "batch_id",
-      foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+  @JoinColumn(name = "batch_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   BatchEntity batch; // N-1 with ProductEntity
 
   @Column(name = "system_quantity")

@@ -14,7 +14,7 @@ public interface InventoryCheckDetailsService {
 
   InventoryCheckDetails update(InventoryCheckDetails inventoryCheckDetails);
 
-  InventoryCheckDetails findByCheckIdAndBatchId(Long checkId,Long batchId);
+  InventoryCheckDetails findByCheckIdAndBatchId(Long checkId, Long batchId);
 
   void deleteByInventoryCheckId(Long checkId);
 

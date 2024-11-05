@@ -3,13 +3,11 @@ package com.example.hrm_be.services.impl;
 import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.components.InventoryCheckProductDetailsMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
-import com.example.hrm_be.models.dtos.InventoryCheckDetails;
 import com.example.hrm_be.models.dtos.InventoryCheckProductDetails;
 import com.example.hrm_be.models.dtos.InventoryCheckProductDetails;
 import com.example.hrm_be.models.entities.InventoryCheckProductDetailsEntity;
 import com.example.hrm_be.repositories.InventoryCheckProductDetailsRepository;
 import com.example.hrm_be.services.InventoryCheckProductDetailsService;
-import io.micrometer.common.util.StringUtils;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -19,11 +17,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 @Service
-public class InventoryCheckProductDetailsServiceImpl implements
-    InventoryCheckProductDetailsService {
+public class InventoryCheckProductDetailsServiceImpl
+    implements InventoryCheckProductDetailsService {
 
-  @Autowired
-  private InventoryCheckProductDetailsRepository inventoryCheckProductDetailsRepository;
+  @Autowired private InventoryCheckProductDetailsRepository inventoryCheckProductDetailsRepository;
 
   @Autowired private InventoryCheckProductDetailsMapper inventoryCheckDetailsMapper;
 
@@ -92,7 +89,7 @@ public class InventoryCheckProductDetailsServiceImpl implements
 
   @Override
   public void deleteByInventoryCheckId(Long checkId) {
-   inventoryCheckProductDetailsRepository.deleteAllByInventoryCheck_Id(checkId);
+    inventoryCheckProductDetailsRepository.deleteAllByInventoryCheck_Id(checkId);
   }
 
   @Override

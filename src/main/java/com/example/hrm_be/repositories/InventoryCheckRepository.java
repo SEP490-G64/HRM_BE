@@ -1,6 +1,5 @@
 package com.example.hrm_be.repositories;
 
-import com.example.hrm_be.commons.enums.InboundStatus;
 import com.example.hrm_be.commons.enums.InventoryCheckStatus;
 import com.example.hrm_be.models.entities.InventoryCheckEntity;
 import org.springframework.data.jpa.repository.JpaRepository;

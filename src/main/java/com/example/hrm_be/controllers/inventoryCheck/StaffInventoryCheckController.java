@@ -1,15 +1,9 @@
 package com.example.hrm_be.controllers.inventoryCheck;
 
 import com.example.hrm_be.commons.constants.HrmConstant;
-import com.example.hrm_be.commons.enums.InboundStatus;
-import com.example.hrm_be.commons.enums.InboundType;
 import com.example.hrm_be.commons.enums.InventoryCheckStatus;
 import com.example.hrm_be.commons.enums.ResponseStatus;
-import com.example.hrm_be.models.dtos.Inbound;
 import com.example.hrm_be.models.dtos.InventoryCheck;
-import com.example.hrm_be.models.dtos.InventoryCheckProductDetails;
-import com.example.hrm_be.models.dtos.Outbound;
-import com.example.hrm_be.models.requests.CreateInboundRequest;
 import com.example.hrm_be.models.requests.CreateInventoryCheckRequest;
 import com.example.hrm_be.models.responses.BaseOutput;
 import com.example.hrm_be.services.InventoryCheckService;
@@ -228,7 +222,7 @@ public class StaffInventoryCheckController {
     return ResponseEntity.ok(response);
   }
 
-    @PutMapping("/{id}/update-status")
+  @PutMapping("/{id}/update-status")
   public ResponseEntity<BaseOutput<String>> updateStatus(
       @RequestParam String type, @PathVariable(name = "id") Long id) {
     inventoryCheckService.updateInventoryCheckStatus(InventoryCheckStatus.valueOf(type), id);

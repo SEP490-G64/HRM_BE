@@ -1,6 +1,5 @@
 package com.example.hrm_be.services;
 
-import com.example.hrm_be.models.dtos.InventoryCheckDetails;
 import com.example.hrm_be.models.dtos.InventoryCheckProductDetails;
 import org.springframework.data.domain.Page;
 
@@ -14,8 +13,7 @@ public interface InventoryCheckProductDetailsService {
 
   InventoryCheckProductDetails update(InventoryCheckProductDetails inventoryCheckDetails);
 
-   void deleteByInventoryCheckId(Long checkId);
+  void deleteByInventoryCheckId(Long checkId);
 
-  InventoryCheckProductDetails findByCheckIdAndProductId(Long checkId,Long productId);
-
+  InventoryCheckProductDetails findByCheckIdAndProductId(Long checkId, Long productId);
 }
