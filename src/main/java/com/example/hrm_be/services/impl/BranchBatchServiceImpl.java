@@ -65,4 +65,12 @@ public class BranchBatchServiceImpl implements BranchBatchService {
 
     branchBatchRepository.deleteById(id); // Delete the inbound entity by ID
   }
+
+  @Override
+  public BranchBatch getByBranchIdAndBatchId(Long branchId, Long batchId) {
+    return branchBatchRepository
+        .findByBranch_IdAndBatch_Id(branchId, batchId)
+        .map(branchBatchMapper::toDTO)
+        .orElse(null);
+  }
 }

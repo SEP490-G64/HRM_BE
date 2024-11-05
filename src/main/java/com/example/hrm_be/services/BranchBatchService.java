@@ -10,4 +10,6 @@ public interface BranchBatchService {
   BranchBatch update(BranchBatch branchBatch);
 
   void delete(Long id);
+
+  BranchBatch getByBranchIdAndBatchId(Long branchId, Long batchId);
 }

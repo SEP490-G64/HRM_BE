@@ -7,7 +7,6 @@ import com.example.hrm_be.models.dtos.Manufacturer;
 import com.example.hrm_be.models.entities.ManufacturerEntity;
 import com.example.hrm_be.repositories.ManufacturerRepository;
 import com.example.hrm_be.services.ManufacturerService;
-
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -151,5 +150,16 @@ public class ManufacturerServiceImpl implements ManufacturerService {
 
     // Delete the Manufacturer by ID
     manufacturerRepository.deleteById(id);
+  }
+
+  @Override
+  public Manufacturer getByName(String name) {
+    return Optional.ofNullable(name)
+        .flatMap(
+            e ->
+                manufacturerRepository
+                    .findByManufacturerName(e)
+                    .map(m -> manufacturerMapper.toDTO(m)))
+        .orElse(null);
   }
 }

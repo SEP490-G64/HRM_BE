@@ -9,7 +9,6 @@ import com.example.hrm_be.models.dtos.UnitOfMeasurement;
 import com.example.hrm_be.models.entities.UnitOfMeasurementEntity;
 import com.example.hrm_be.repositories.UnitOfMeasurementRepository;
 import com.example.hrm_be.services.UnitOfMeasurementService;
-
 import java.util.Objects;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,5 +93,16 @@ public class UnitOfMeasurementServiceImpl implements UnitOfMeasurementService {
       throw new HrmCommonException(HrmConstant.ERROR.UNIT_OF_MEASUREMENT.NOT_EXIST);
     }
     unitOfMeasurementRepository.deleteById(id);
+  }
+
+  @Override
+  public UnitOfMeasurement getByName(String name) {
+    return Optional.ofNullable(name)
+        .flatMap(
+            e ->
+                unitOfMeasurementRepository
+                    .findByUnitName(name)
+                    .map(u -> unitOfMeasurementMapper.toDTO(u)))
+        .orElse(null);
   }
 }

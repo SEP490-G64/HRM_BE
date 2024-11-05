@@ -8,6 +8,7 @@ import com.example.hrm_be.models.entities.InventoryCheckDetailsEntity;
 import com.example.hrm_be.repositories.InventoryCheckDetailsRepository;
 import com.example.hrm_be.services.InventoryCheckDetailsService;
 import io.micrometer.common.util.StringUtils;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -15,8 +16,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -87,6 +86,19 @@ public class InventoryCheckDetailsServiceImpl implements InventoryCheckDetailsSe
         .map(inventoryCheckDetailsRepository::save)
         .map(inventoryCheckDetailsMapper::toDTO)
         .orElse(null);
+  }
+
+  @Override
+  public InventoryCheckDetails findByCheckIdAndBatchId(Long checkId, Long batchId) {
+    return inventoryCheckDetailsRepository
+        .findByInventoryCheck_IdAndBatch_Id(checkId, batchId)
+        .map(inventoryCheckDetailsMapper::toDTO)
+        .orElse(null);
+  }
+
+  @Override
+  public void deleteByInventoryCheckId(Long checkId) {
+    inventoryCheckDetailsRepository.deleteByInventoryCheck_Id(checkId);
   }
 
   @Override

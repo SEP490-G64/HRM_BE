@@ -1,9 +1,8 @@
 package com.example.hrm_be.services;
 
 import com.example.hrm_be.models.dtos.Manufacturer;
-import java.util.List;
-
 import io.micrometer.common.lang.Nullable;
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
@@ -21,4 +20,6 @@ public interface ManufacturerService {
   Manufacturer update(Manufacturer supplier);
 
   void delete(Long id);
+
+  Manufacturer getByName(String name);
 }

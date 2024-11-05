@@ -14,6 +14,7 @@ public class InventoryCheckMapper {
   @Autowired @Lazy private BranchMapper branchMapper;
   @Autowired @Lazy private UserMapper userMapper;
   @Autowired @Lazy private InventoryCheckDetailsMapper inventoryCheckDetailsMapper;
+  @Autowired @Lazy private InventoryCheckProductDetailsMapper inventoryCheckProductDetailsMapper;
 
   // Convert InventoryCheckEntity to InventoryCheckDTO
   public InventoryCheck toDTO(InventoryCheckEntity entity) {
@@ -50,10 +51,18 @@ public class InventoryCheckMapper {
   private InventoryCheck convertToDTO(InventoryCheckEntity entity) {
     return InventoryCheck.builder()
         .id(entity.getId())
-        .branch(entity.getBranch() != null ? branchMapper.toDTO(entity.getBranch()) : null)
-        .createdBy(entity.getCreatedBy() != null ? userMapper.toDTO(entity.getCreatedBy()) : null)
+        .branch(
+            entity.getBranch() != null
+                ? branchMapper.convertToDTOBasicInfo(entity.getBranch())
+                : null)
+        .createdBy(
+            entity.getCreatedBy() != null
+                ? userMapper.convertToDtoBasicInfo(entity.getCreatedBy())
+                : null)
         .approvedBy(
-            entity.getApprovedBy() != null ? userMapper.toDTO(entity.getApprovedBy()) : null)
+            entity.getApprovedBy() != null
+                ? userMapper.convertToDtoBasicInfo(entity.getApprovedBy())
+                : null)
         .createdDate(entity.getCreatedDate())
         .isApproved(entity.getIsApproved())
         .status(entity.getStatus())
@@ -62,6 +71,12 @@ public class InventoryCheckMapper {
             entity.getInventoryCheckDetails() != null
                 ? entity.getInventoryCheckDetails().stream()
                     .map(inventoryCheckDetailsMapper::toDTO)
+                    .collect(Collectors.toList())
+                : null)
+        .inventoryCheckProductDetails(
+            entity.getInventoryCheckProductDetails() != null
+                ? entity.getInventoryCheckProductDetails().stream()
+                    .map(inventoryCheckProductDetailsMapper::toDTO)
                     .collect(Collectors.toList())
                 : null)
         .build();

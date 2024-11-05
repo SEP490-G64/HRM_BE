@@ -23,4 +23,7 @@ public interface ProductTypeService {
 
   // Deletes a ProductType by its ID
   void delete(Long id);
+
+  //// Retrieves a ProductType by its typename
+  ProductType getByName(String productTypeName);
 }

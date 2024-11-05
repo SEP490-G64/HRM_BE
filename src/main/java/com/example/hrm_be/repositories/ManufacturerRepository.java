@@ -2,6 +2,7 @@ package com.example.hrm_be.repositories;
 
 import com.example.hrm_be.models.entities.ManufacturerEntity;
 import io.micrometer.common.lang.Nullable;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,6 +14,11 @@ public interface ManufacturerRepository extends JpaRepository<ManufacturerEntity
   boolean existsByManufacturerNameAndAddress(String name, String address);
 
   boolean existsByTaxCode(String code);
+
+  Page<ManufacturerEntity> findByManufacturerNameContainsIgnoreCaseOrAddressContainsIgnoreCase(
+      String searchSupplier, String searchName, Pageable pageable);
+
+  Optional<ManufacturerEntity> findByManufacturerName(String manufacturerName);
 
   @Query(
       "SELECT u FROM ManufacturerEntity u "

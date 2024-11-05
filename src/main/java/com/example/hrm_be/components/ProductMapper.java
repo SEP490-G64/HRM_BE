@@ -2,6 +2,7 @@ package com.example.hrm_be.components;
 
 import com.example.hrm_be.models.dtos.Product;
 import com.example.hrm_be.models.dtos.ProductBaseDTO;
+import com.example.hrm_be.models.dtos.ProductSupplierDTO;
 import com.example.hrm_be.models.entities.ProductEntity;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -184,6 +185,18 @@ public class ProductMapper {
         .manufacturerName(
             entity.getManufacturer() != null
                 ? entity.getManufacturer().getManufacturerName()
+                : null)
+        .build();
+  }
+
+  public ProductSupplierDTO convertToProductSupplier(ProductEntity entity) {
+    return ProductSupplierDTO.builder()
+        .productName(entity.getProductName())
+        .registrationCode(entity.getRegistrationCode())
+        .image(entity.getUrlImage())
+        .baseUnit(
+            entity.getBaseUnit() != null
+                ? unitOfMeasurementMapper.toDTO(entity.getBaseUnit())
                 : null)
         .build();
   }

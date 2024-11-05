@@ -39,5 +39,8 @@ public class InventoryCheck {
 
   String note;
 
+  String code;
+
   List<InventoryCheckDetails> inventoryCheckDetails;
+  List<InventoryCheckProductDetails> inventoryCheckProductDetails;
 }
