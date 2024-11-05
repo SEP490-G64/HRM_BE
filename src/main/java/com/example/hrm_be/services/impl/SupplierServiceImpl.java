@@ -175,28 +175,29 @@ public class SupplierServiceImpl implements SupplierService {
   private boolean commonValidate(Supplier supplier) {
     // Validate supplierName (required, non-empty, max length 100)
     if (supplier.getSupplierName() == null
-            || supplier.getSupplierName().trim().isEmpty()
-            || supplier.getSupplierName().length() > 100) {
+        || supplier.getSupplierName().trim().isEmpty()
+        || supplier.getSupplierName().length() > 100) {
       return false;
     }
 
     // Validate address (required, non-empty, max length 255)
     if (supplier.getAddress() == null
-            || supplier.getAddress().trim().isEmpty()
-            || supplier.getAddress().length() > 255) {
+        || supplier.getAddress().trim().isEmpty()
+        || supplier.getAddress().length() > 255) {
       return false;
     }
 
     // Validate email (optional, if provided must match regex and max length 255)
     if (supplier.getEmail() != null && !supplier.getEmail().isEmpty()) {
-      if (!supplier.getEmail().matches(HrmConstant.REGEX.EMAIL) || supplier.getEmail().length() > 255) {
+      if (!supplier.getEmail().matches(HrmConstant.REGEX.EMAIL)
+          || supplier.getEmail().length() > 255) {
         return false;
       }
     }
 
     // Validate phoneNumber (required, must match regex)
     if (supplier.getPhoneNumber() == null
-            || !supplier.getPhoneNumber().matches(HrmConstant.REGEX.PHONE_NUMBER)) {
+        || !supplier.getPhoneNumber().matches(HrmConstant.REGEX.PHONE_NUMBER)) {
       return false;
     }
 

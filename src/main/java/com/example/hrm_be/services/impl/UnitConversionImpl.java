@@ -2,12 +2,9 @@ package com.example.hrm_be.services.impl;
 
 import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.commons.constants.HrmConstant.ERROR.UNIT_CONVERSION;
-import com.example.hrm_be.components.BatchMapper;
 import com.example.hrm_be.components.UnitConversionMapper;
-import com.example.hrm_be.components.UnitOfMeasurementMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.UnitConversion;
-import com.example.hrm_be.models.entities.SpecialConditionEntity;
 import com.example.hrm_be.models.entities.UnitConversionEntity;
 import com.example.hrm_be.repositories.UnitConversionRepository;
 import com.example.hrm_be.services.UnitConversionService;

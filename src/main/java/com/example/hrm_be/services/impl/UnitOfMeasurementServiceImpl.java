@@ -1,7 +1,6 @@
 package com.example.hrm_be.services.impl;
 
 import com.example.hrm_be.commons.constants.HrmConstant;
-import com.example.hrm_be.components.ProductMapper;
 import com.example.hrm_be.components.UnitOfMeasurementMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.UnitOfMeasurement;
@@ -134,8 +133,8 @@ public class UnitOfMeasurementServiceImpl implements UnitOfMeasurementService {
   // This method will validate category field input values
   private boolean commonValidate(UnitOfMeasurement unit) {
     if (unit.getUnitName() == null
-            || unit.getUnitName().trim().isEmpty()
-            || unit.getUnitName().length() > 100) {
+        || unit.getUnitName().trim().isEmpty()
+        || unit.getUnitName().length() > 100) {
       return false;
     }
     return true;

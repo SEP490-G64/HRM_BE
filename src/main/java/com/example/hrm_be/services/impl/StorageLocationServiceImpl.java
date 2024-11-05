@@ -1,8 +1,6 @@
 package com.example.hrm_be.services.impl;
 
 import com.example.hrm_be.commons.constants.HrmConstant;
-import com.example.hrm_be.commons.constants.HrmConstant.ERROR.STORAGE_LOCATION;
-import com.example.hrm_be.components.BranchProductMapper;
 import com.example.hrm_be.components.StorageLocationMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.StorageLocation;

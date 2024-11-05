@@ -10,7 +10,6 @@ import com.example.hrm_be.components.*;
 import com.example.hrm_be.components.BranchMapper;
 import com.example.hrm_be.components.BranchMapper;
 import com.example.hrm_be.components.InboundMapper;
-import com.example.hrm_be.components.SupplierMapper;
 import com.example.hrm_be.components.UnitOfMeasurementMapper;
 import com.example.hrm_be.components.UserMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
@@ -29,8 +28,6 @@ import com.example.hrm_be.models.requests.CreateInboundRequest;
 import com.example.hrm_be.models.responses.InboundDetail;
 import com.example.hrm_be.repositories.InboundRepository;
 import com.example.hrm_be.services.*;
-import com.example.hrm_be.repositories.ProductRepository;
-import com.example.hrm_be.repositories.ProductSuppliersRepository;
 import com.example.hrm_be.services.InboundService;
 import com.example.hrm_be.services.UserService;
 
@@ -362,8 +359,7 @@ public class InboundServiceImpl implements InboundService {
               if (supplier != null) {
                 // Check if a ProductSupplierEntity exists for the product-supplier pair
                 ProductSuppliersEntity productSupplier =
-                    productSupplierService
-                        .findByProductAndSupplier(product, supplier);
+                    productSupplierService.findByProductAndSupplier(product, supplier);
 
                 // If it exists, update necessary fields, otherwise create a new one
                 if (productSupplier.getId() == null) {
@@ -385,14 +381,13 @@ public class InboundServiceImpl implements InboundService {
             inboundBatchDetail -> {
               BatchEntity batch = inboundBatchDetail.getBatch();
               Integer quantity =
-                  inboundBatchDetail.getQuantity() != null
-                      ? inboundBatchDetail.getQuantity()
-                      : 0;
+                  inboundBatchDetail.getQuantity() != null ? inboundBatchDetail.getQuantity() : 0;
               // Assume this represents the batch
               // quantity
 
               // Save the BranchBatchEntity
-              branchBatchService.updateBranchBatchInInbound(toBranch, batch, BigDecimal.valueOf(quantity));
+              branchBatchService.updateBranchBatchInInbound(
+                  toBranch, batch, BigDecimal.valueOf(quantity));
 
               inboundBatchDetailService.updateAverageInboundPricesForBatches(batch);
             });
@@ -404,7 +399,8 @@ public class InboundServiceImpl implements InboundService {
             inboundDetail -> {
               ProductEntity product = inboundDetail.getProduct();
               Integer totalQuantity =
-                  inboundBatchDetailService.findTotalQuantityByInboundAndProduct(inboundId, product);
+                  inboundBatchDetailService.findTotalQuantityByInboundAndProduct(
+                      inboundId, product);
 
               Integer quantity =
                   totalQuantity != 0
@@ -416,11 +412,14 @@ public class InboundServiceImpl implements InboundService {
 
               inboundDetail.setReceiveQuantity(quantity);
 
-              branchProductService.updateBranchProductInInbound(toBranch, product, BigDecimal.valueOf(quantity));
+              branchProductService.updateBranchProductInInbound(
+                  toBranch, product, BigDecimal.valueOf(quantity));
             });
 
     inboundRepository.save(inboundEntity);
-    InboundEntity inbound = inboundDetailsService.updateAverageInboundPricesForProductsAndInboundTotalPrice(inboundEntity);
+    InboundEntity inbound =
+        inboundDetailsService.updateAverageInboundPricesForProductsAndInboundTotalPrice(
+            inboundEntity);
     inboundRepository.save(inbound);
 
     // Return the updated inbound entity (or any other response you need)

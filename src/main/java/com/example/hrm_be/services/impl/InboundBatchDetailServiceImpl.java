@@ -4,10 +4,8 @@ import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.components.BatchMapper;
 import com.example.hrm_be.components.InboundBatchDetailMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
-import com.example.hrm_be.models.dtos.InboundBatchDetail;
 import com.example.hrm_be.models.entities.BatchEntity;
 import com.example.hrm_be.models.entities.InboundBatchDetailEntity;
-import com.example.hrm_be.models.entities.InboundDetailsEntity;
 import com.example.hrm_be.models.entities.ProductEntity;
 import com.example.hrm_be.repositories.InboundBatchDetailRepository;
 import com.example.hrm_be.services.BatchService;
@@ -16,10 +14,8 @@ import com.example.hrm_be.services.InboundBatchDetailService;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
-import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -73,7 +69,7 @@ public class InboundBatchDetailServiceImpl implements InboundBatchDetailService 
   public void updateAverageInboundPricesForBatches(BatchEntity batch) {
     // Get all inbound batch details of batch
     List<InboundBatchDetailEntity> allInboundBatchDetails =
-            inboundBatchDetailRepository.findAllByBatchId(batch.getId());
+        inboundBatchDetailRepository.findAllByBatchId(batch.getId());
 
     BigDecimal totalPrice = BigDecimal.ZERO;
     int totalQuantity = 0;
@@ -90,7 +86,7 @@ public class InboundBatchDetailServiceImpl implements InboundBatchDetailService 
     }
     if (totalQuantity > 0) {
       BigDecimal averageProductPrice =
-              totalPrice.divide(BigDecimal.valueOf(totalQuantity), 2, RoundingMode.HALF_UP);
+          totalPrice.divide(BigDecimal.valueOf(totalQuantity), 2, RoundingMode.HALF_UP);
       batch.setInboundPrice(averageProductPrice);
     }
     batchService.update(batchMapper.toDTO(batch));
@@ -104,7 +100,7 @@ public class InboundBatchDetailServiceImpl implements InboundBatchDetailService 
   @Override
   public InboundBatchDetailEntity findByBatchIdAndAndInboundId(Long batchId, Long inboundId) {
     return inboundBatchDetailRepository
-                    .findByBatch_IdAndAndInbound_Id(batchId, inboundId)
-                    .orElse(null);
+        .findByBatch_IdAndAndInbound_Id(batchId, inboundId)
+        .orElse(null);
   }
 }

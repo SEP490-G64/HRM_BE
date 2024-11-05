@@ -55,19 +55,18 @@ public class BranchBatchServiceImpl implements BranchBatchService {
   }
 
   @Override
-  public void updateBranchBatchInInbound(BranchEntity toBranch, BatchEntity batch, BigDecimal quantity) {
+  public void updateBranchBatchInInbound(
+      BranchEntity toBranch, BatchEntity batch, BigDecimal quantity) {
     // Check if BranchBatchEntity already exists
     BranchBatchEntity branchBatch =
-            branchBatchRepository
-                    .findByBranchAndBatch(toBranch, batch)
-                    .orElse(new BranchBatchEntity());
+        branchBatchRepository.findByBranchAndBatch(toBranch, batch).orElse(new BranchBatchEntity());
 
     // If it exists, update the quantity, otherwise create a new one
     if (branchBatch.getId() != null) {
       branchBatch.setQuantity(
-              branchBatch.getQuantity() != null
-                      ? branchBatch.getQuantity().add(quantity)
-                      : quantity); // Update existing
+          branchBatch.getQuantity() != null
+              ? branchBatch.getQuantity().add(quantity)
+              : quantity); // Update existing
       // quantity
     } else {
       branchBatch.setBatch(batch);

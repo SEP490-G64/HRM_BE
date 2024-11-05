@@ -146,40 +146,47 @@ public class InboundMapper {
   // Helper method to convert InboundEntity to InboundDetail
   public InboundDetail convertToInboundDetail(InboundEntity entity) {
     return InboundDetail.builder()
-            .id(entity.getId())
-            .inboundCode(entity.getInboundCode())
-            .inboundType(entity.getInboundType())
-            .createdDate(entity.getCreatedDate())
-            .inboundDate(entity.getInboundDate())
-            .totalPrice(entity.getTotalPrice())
-            .isApproved(entity.getIsApproved())
-            .status(entity.getStatus())
-            .taxable(entity.getTaxable())
-            .approvedBy(entity.getApprovedBy() != null ?
-                    userMapper.convertToDtoBasicInfo(entity.getApprovedBy()) : null)
-            .createdBy(entity.getCreatedBy() != null ?
-                    userMapper.convertToDtoBasicInfo(entity.getCreatedBy()) : null)
-            .supplier(entity.getSupplier() != null ?
-                    supplierMapper.toDTO(entity.getSupplier()) : null)
-            .fromBranch(entity.getFromBranch() != null ?
-                    branchMapper.convertToDTOBasicInfo(entity.getFromBranch()) : null)
-            .toBranch(entity.getFromBranch() != null ?
-                    branchMapper.convertToDTOBasicInfo(entity.getToBranch()) : null)
-            .build();
+        .id(entity.getId())
+        .inboundCode(entity.getInboundCode())
+        .inboundType(entity.getInboundType())
+        .createdDate(entity.getCreatedDate())
+        .inboundDate(entity.getInboundDate())
+        .totalPrice(entity.getTotalPrice())
+        .isApproved(entity.getIsApproved())
+        .status(entity.getStatus())
+        .taxable(entity.getTaxable())
+        .approvedBy(
+            entity.getApprovedBy() != null
+                ? userMapper.convertToDtoBasicInfo(entity.getApprovedBy())
+                : null)
+        .createdBy(
+            entity.getCreatedBy() != null
+                ? userMapper.convertToDtoBasicInfo(entity.getCreatedBy())
+                : null)
+        .supplier(entity.getSupplier() != null ? supplierMapper.toDTO(entity.getSupplier()) : null)
+        .fromBranch(
+            entity.getFromBranch() != null
+                ? branchMapper.convertToDTOBasicInfo(entity.getFromBranch())
+                : null)
+        .toBranch(
+            entity.getFromBranch() != null
+                ? branchMapper.convertToDTOBasicInfo(entity.getToBranch())
+                : null)
+        .build();
   }
 
   // Helper method to convert CreateInboundRequest to Inbound
   public Inbound convertFromCreateRequest(CreateInboundRequest entity) {
     return Inbound.builder()
-            .inboundCode(entity.getInboundCode())
-            .inboundType(entity.getInboundType())
-            .createdDate(entity.getCreatedDate() != null ? entity.getCreatedDate() : null)
-            .status(InboundStatus.BAN_NHAP)
-            .createdBy(entity.getCreatedBy() != null ? entity.getCreatedBy() : null)
-            .supplier(entity.getSupplier() != null ? entity.getSupplier() : null)
-            .fromBranch(entity.getFromBranch() != null ? entity.getFromBranch() : null)
-            .toBranch(entity.getFromBranch() != null ? entity.getToBranch() : null)
-            .note(entity.getNote())
-            .build();
+        .inboundCode(entity.getInboundCode())
+        .inboundType(entity.getInboundType())
+        .createdDate(entity.getCreatedDate() != null ? entity.getCreatedDate() : null)
+        .status(InboundStatus.BAN_NHAP)
+        .createdBy(entity.getCreatedBy() != null ? entity.getCreatedBy() : null)
+        .supplier(entity.getSupplier() != null ? entity.getSupplier() : null)
+        .fromBranch(entity.getFromBranch() != null ? entity.getFromBranch() : null)
+        .toBranch(entity.getFromBranch() != null ? entity.getToBranch() : null)
+        .note(entity.getNote())
+        .build();
   }
 }

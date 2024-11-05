@@ -113,7 +113,8 @@ public class SpecialConditionServiceImpl implements SpecialConditionService {
   }
 
   @Override
-  public List<SpecialConditionEntity> saveAll(List<SpecialConditionEntity> specialConditionEntities) {
+  public List<SpecialConditionEntity> saveAll(
+      List<SpecialConditionEntity> specialConditionEntities) {
     return specialConditionRepository.saveAll(specialConditionEntities);
   }
 

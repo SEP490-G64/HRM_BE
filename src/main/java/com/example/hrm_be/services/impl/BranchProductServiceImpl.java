@@ -13,11 +13,8 @@ import java.util.List;
 import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.data.domain.Pageable;
 
 @Service
 @Transactional
@@ -60,19 +57,20 @@ public class BranchProductServiceImpl implements BranchProductService {
   }
 
   @Override
-  public void updateBranchProductInInbound(BranchEntity toBranch, ProductEntity product, BigDecimal quantity) {
+  public void updateBranchProductInInbound(
+      BranchEntity toBranch, ProductEntity product, BigDecimal quantity) {
     // Check if BranchProductEntity already exists
     BranchProductEntity branchProduct =
-            branchProductRepository
-                    .findByBranchAndProduct(toBranch, product)
-                    .orElse(new BranchProductEntity());
+        branchProductRepository
+            .findByBranchAndProduct(toBranch, product)
+            .orElse(new BranchProductEntity());
 
     // If it exists, update the quantity, otherwise create a new one
     if (branchProduct.getId() != null) {
       branchProduct.setQuantity(
-              branchProduct.getQuantity() != null
-                      ? branchProduct.getQuantity().add(quantity)
-                      : quantity); // Update existing quantity
+          branchProduct.getQuantity() != null
+              ? branchProduct.getQuantity().add(quantity)
+              : quantity); // Update existing quantity
     } else {
       branchProduct.setProduct(product);
       branchProduct.setBranch(toBranch);

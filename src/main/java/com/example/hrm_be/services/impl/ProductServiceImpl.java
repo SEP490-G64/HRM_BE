@@ -8,9 +8,7 @@ import com.example.hrm_be.commons.constants.HrmConstant.ERROR.REQUEST;
 import com.example.hrm_be.commons.constants.HrmConstant.ERROR.TYPE;
 import com.example.hrm_be.commons.constants.HrmConstant.ERROR.UNIT_OF_MEASUREMENT;
 import com.example.hrm_be.components.*;
-import com.example.hrm_be.commons.constants.HrmConstant.ERROR.USER;
 import com.example.hrm_be.components.BranchMapper;
-import com.example.hrm_be.components.BranchProductMapper;
 import com.example.hrm_be.components.ProductMapper;
 import com.example.hrm_be.components.SpecialConditionMapper;
 import com.example.hrm_be.components.StorageLocationMapper;
@@ -119,19 +117,19 @@ public class ProductServiceImpl implements ProductService {
 
     // Check if the category exists
     if (product.getCategory() != null
-            && !productCategoryService.existById(product.getCategory().getId())) {
+        && !productCategoryService.existById(product.getCategory().getId())) {
       throw new HrmCommonException(CATEGORY.NOT_EXIST);
     }
 
     // Check if the base unit exists
     if (product.getBaseUnit() != null
-            && !unitOfMeasurementService.existById(product.getBaseUnit().getId())) {
+        && !unitOfMeasurementService.existById(product.getBaseUnit().getId())) {
       throw new HrmCommonException(UNIT_OF_MEASUREMENT.NOT_EXIST);
     }
 
     // Check if the manufacturer exists
     if (product.getManufacturer() != null
-            && !manufacturerService.existById(product.getManufacturer().getId())) {
+        && !manufacturerService.existById(product.getManufacturer().getId())) {
       throw new HrmCommonException(MANUFACTURER.NOT_EXIST);
     }
 
@@ -143,7 +141,7 @@ public class ProductServiceImpl implements ProductService {
 
       for (SpecialCondition specialConditionDTO : product.getSpecialConditions()) {
         SpecialConditionEntity specialConditionEntity =
-                specialConditionMapper.toEntity(specialConditionDTO);
+            specialConditionMapper.toEntity(specialConditionDTO);
 
         // Set the product to this special condition
         specialConditionEntity.setProduct(savedProduct);
@@ -184,7 +182,7 @@ public class ProductServiceImpl implements ProductService {
     branchProductEntity.setBranch(branch);
     if (branchProduct.getStorageLocation() != null) {
       StorageLocation savedStorageLocation =
-              storageLocationService.save(branchProduct.getStorageLocation());
+          storageLocationService.save(branchProduct.getStorageLocation());
       branchProductEntity.setStorageLocation(savedStorageLocation);
     }
 
@@ -217,7 +215,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     if (productRepository.existsByRegistrationCode(product.getRegistrationCode())
-            && !Objects.equals(product.getRegistrationCode(), oldProductEntity.getRegistrationCode())) {
+        && !Objects.equals(product.getRegistrationCode(), oldProductEntity.getRegistrationCode())) {
       throw new HrmCommonException(HrmConstant.ERROR.PRODUCT.REGISTRATION_EXIST);
     }
 
@@ -226,15 +224,15 @@ public class ProductServiceImpl implements ProductService {
       throw new HrmCommonException(TYPE.NOT_EXIST);
     }
     if (product.getCategory() != null
-            && !productCategoryService.existById(product.getCategory().getId())) {
+        && !productCategoryService.existById(product.getCategory().getId())) {
       throw new HrmCommonException(CATEGORY.NOT_EXIST);
     }
     if (product.getBaseUnit() != null
-            && !unitOfMeasurementService.existById(product.getBaseUnit().getId())) {
+        && !unitOfMeasurementService.existById(product.getBaseUnit().getId())) {
       throw new HrmCommonException(UNIT_OF_MEASUREMENT.NOT_EXIST);
     }
     if (product.getManufacturer() != null
-            && !manufacturerService.existById(product.getManufacturer().getId())) {
+        && !manufacturerService.existById(product.getManufacturer().getId())) {
       throw new HrmCommonException(MANUFACTURER.NOT_EXIST);
     }
 
@@ -252,16 +250,17 @@ public class ProductServiceImpl implements ProductService {
 
       // Create a map of old special conditions by ID for easier comparison
       Map<Long, SpecialConditionEntity> oldSpecialConditionsMap =
-              oldSpecialConditions.stream()
-                      .collect(Collectors.toMap(SpecialConditionEntity::getId, sc -> sc));
+          oldSpecialConditions.stream()
+              .collect(Collectors.toMap(SpecialConditionEntity::getId, sc -> sc));
 
       // Process new special conditions
       for (SpecialCondition newCondition : newSpecialConditions) {
-        if (newCondition.getId() == null || oldSpecialConditionsMap.containsKey(newCondition.getId())) {
+        if (newCondition.getId() == null
+            || oldSpecialConditionsMap.containsKey(newCondition.getId())) {
           // New condition -> add
           // Old condition -> update
           SpecialConditionEntity specialConditionEntity =
-                  specialConditionMapper.toEntity(newCondition);
+              specialConditionMapper.toEntity(newCondition);
           specialConditionEntity.setProduct(savedProduct);
           specialConditionsToAddOrUpdate.add(specialConditionEntity);
         }
@@ -269,15 +268,15 @@ public class ProductServiceImpl implements ProductService {
 
       // Identify old conditions to delete (those that are not in the new list)
       List<Long> newConditionIds =
-              newSpecialConditions.stream()
-                      .filter(sc -> sc.getId() != null)
-                      .map(SpecialCondition::getId)
-                      .collect(Collectors.toList());
+          newSpecialConditions.stream()
+              .filter(sc -> sc.getId() != null)
+              .map(SpecialCondition::getId)
+              .collect(Collectors.toList());
 
       specialConditionsToDelete =
-              oldSpecialConditions.stream()
-                      .filter(oldCondition -> !newConditionIds.contains(oldCondition.getId()))
-                      .collect(Collectors.toList());
+          oldSpecialConditions.stream()
+              .filter(oldCondition -> !newConditionIds.contains(oldCondition.getId()))
+              .collect(Collectors.toList());
 
       // Perform the database operations for add/update/delete
       if (!specialConditionsToAddOrUpdate.isEmpty()) {
@@ -296,7 +295,7 @@ public class ProductServiceImpl implements ProductService {
     // Handle Unit Conversions
     List<UnitConversion> newUnitConversions = product.getUnitConversions();
     List<UnitConversionEntity> oldUnitConversions =
-            unitConversionService.getByProductId(savedProduct.getId());
+        unitConversionService.getByProductId(savedProduct.getId());
 
     if (newUnitConversions != null && !newUnitConversions.isEmpty()) {
       // Prepare for add/update/delete
@@ -305,12 +304,13 @@ public class ProductServiceImpl implements ProductService {
 
       // Create a map of old unit conversions by ID for easier comparison
       Map<Long, UnitConversionEntity> oldUnitConversionsMap =
-              oldUnitConversions.stream()
-                      .collect(Collectors.toMap(UnitConversionEntity::getId, uc -> uc));
+          oldUnitConversions.stream()
+              .collect(Collectors.toMap(UnitConversionEntity::getId, uc -> uc));
 
       // Process new unit conversions
       for (UnitConversion newConversion : newUnitConversions) {
-        if (newConversion.getId() == null || oldUnitConversionsMap.containsKey(newConversion.getId())) {
+        if (newConversion.getId() == null
+            || oldUnitConversionsMap.containsKey(newConversion.getId())) {
           // New conversion -> add
           UnitConversionEntity unitConversionEntity = unitConversionMapper.toEntity(newConversion);
           unitConversionEntity.setLargerUnit(savedProduct.getBaseUnit());
@@ -321,15 +321,15 @@ public class ProductServiceImpl implements ProductService {
 
       // Identify old unit conversions to delete (those that are not in the new list)
       List<Long> newConversionIds =
-              newUnitConversions.stream()
-                      .filter(sc -> sc.getId() != null)
-                      .map(UnitConversion::getId)
-                      .collect(Collectors.toList());
+          newUnitConversions.stream()
+              .filter(sc -> sc.getId() != null)
+              .map(UnitConversion::getId)
+              .collect(Collectors.toList());
 
       unitConversionsToDelete =
-              oldUnitConversions.stream()
-                      .filter(oldCondition -> !newConversionIds.contains(oldCondition.getId()))
-                      .collect(Collectors.toList());
+          oldUnitConversions.stream()
+              .filter(oldCondition -> !newConversionIds.contains(oldCondition.getId()))
+              .collect(Collectors.toList());
 
       // Perform the database operations for add/update/delete
       if (!unitConversionsToAddOrUpdate.isEmpty()) {
@@ -347,9 +347,9 @@ public class ProductServiceImpl implements ProductService {
 
     List<BranchProductEntity> oldBranchProducts = oldProductEntity.getBranchProducs();
     List<Long> oldBranchProductsIds =
-            oldBranchProducts.stream()
-                    .map(branchProduct -> branchProduct.getBranch().getId())
-                    .collect(Collectors.toList());
+        oldBranchProducts.stream()
+            .map(branchProduct -> branchProduct.getBranch().getId())
+            .collect(Collectors.toList());
 
     BranchProduct branchProduct = product.getBranchProducts().get(0);
     if (branchProduct == null) {
@@ -386,8 +386,9 @@ public class ProductServiceImpl implements ProductService {
       branchProductEntity.setBranch(branchMapper.toEntity(branch));
       if (branchProduct.getStorageLocation() != null) {
         StorageLocation savedStorageLocation =
-                storageLocationService.save(branchProduct.getStorageLocation());
-        branchProductEntity.setStorageLocation(storageLocationMapper.toEntity(savedStorageLocation));
+            storageLocationService.save(branchProduct.getStorageLocation());
+        branchProductEntity.setStorageLocation(
+            storageLocationMapper.toEntity(savedStorageLocation));
       }
 
       branchProductEntity.setMinQuantity(branchProduct.getMinQuantity());
@@ -492,8 +493,7 @@ public class ProductServiceImpl implements ProductService {
       specification =
           specification.and(
               (root, query, criteriaBuilder) ->
-                  criteriaBuilder.equal(
-                      root.get("manufacturer").get("id"), manufacturerId.get()));
+                  criteriaBuilder.equal(root.get("manufacturer").get("id"), manufacturerId.get()));
     }
 
     // Filter by categoryId
@@ -501,8 +501,7 @@ public class ProductServiceImpl implements ProductService {
       specification =
           specification.and(
               (root, query, criteriaBuilder) ->
-                  criteriaBuilder.equal(
-                      root.get("category").get("id"), categoryId.get()));
+                  criteriaBuilder.equal(root.get("category").get("id"), categoryId.get()));
     }
 
     // Filter by typeId
@@ -700,16 +699,16 @@ public class ProductServiceImpl implements ProductService {
   @Override
   public ProductEntity addProductInInbound(ProductInbound productInbound) {
     productRepository
-            .findByRegistrationCode(productInbound.getRegistrationCode())
-            .orElseGet(
-                    () -> {
-                      ProductEntity newProduct = new ProductEntity();
-                      newProduct.setRegistrationCode(productInbound.getRegistrationCode());
-                      newProduct.setProductName(productInbound.getProductName());
-                      newProduct.setBaseUnit(
-                              unitOfMeasurementMapper.toEntity(productInbound.getBaseUnit()));
-                      return productRepository.save(newProduct);
-                    });
+        .findByRegistrationCode(productInbound.getRegistrationCode())
+        .orElseGet(
+            () -> {
+              ProductEntity newProduct = new ProductEntity();
+              newProduct.setRegistrationCode(productInbound.getRegistrationCode());
+              newProduct.setProductName(productInbound.getProductName());
+              newProduct.setBaseUnit(
+                  unitOfMeasurementMapper.toEntity(productInbound.getBaseUnit()));
+              return productRepository.save(newProduct);
+            });
     return null;
   }
 }

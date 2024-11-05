@@ -2,7 +2,6 @@ package com.example.hrm_be.controllers.product;
 
 import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.commons.enums.ResponseStatus;
-import com.example.hrm_be.models.dtos.BranchProduct;
 import com.example.hrm_be.models.dtos.Product;
 import com.example.hrm_be.models.dtos.ProductBaseDTO;
 import com.example.hrm_be.models.dtos.ProductSupplierDTO;
@@ -76,15 +75,7 @@ public class StaffProductController {
 
     Page<ProductBaseDTO> products =
         productService.searchProducts(
-            page,
-            size,
-            sortBy,
-            sortDirection,
-            keyword,
-            manufacturerId,
-            categoryId,
-            typeId,
-            status);
+            page, size, sortBy, sortDirection, keyword, manufacturerId, categoryId, typeId, status);
 
     BaseOutput<List<ProductBaseDTO>> response =
         BaseOutput.<List<ProductBaseDTO>>builder()

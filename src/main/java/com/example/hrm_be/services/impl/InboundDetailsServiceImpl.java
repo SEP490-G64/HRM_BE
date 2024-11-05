@@ -2,17 +2,13 @@ package com.example.hrm_be.services.impl;
 
 import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.components.InboundDetailsMapper;
-import com.example.hrm_be.components.InboundMapper;
 import com.example.hrm_be.components.ProductMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
-import com.example.hrm_be.models.dtos.Inbound;
 import com.example.hrm_be.models.dtos.InboundDetails;
 import com.example.hrm_be.models.entities.*;
 import com.example.hrm_be.repositories.InboundDetailsRepository;
-import com.example.hrm_be.repositories.InboundRepository;
 import com.example.hrm_be.services.*;
 import io.micrometer.common.util.StringUtils;
-import org.hibernate.validator.internal.util.stereotypes.Lazy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -82,7 +78,7 @@ public class InboundDetailsServiceImpl implements InboundDetailsService {
 
   @Override
   public List<InboundDetailsEntity> findByInboundId(Long inboundId) {
-      return inboundDetailsRepository.findByInbound_Id(inboundId);
+    return inboundDetailsRepository.findByInbound_Id(inboundId);
   }
 
   @Override
@@ -98,17 +94,18 @@ public class InboundDetailsServiceImpl implements InboundDetailsService {
   }
 
   @Override
-  public InboundEntity updateAverageInboundPricesForProductsAndInboundTotalPrice(InboundEntity inbound) {
+  public InboundEntity updateAverageInboundPricesForProductsAndInboundTotalPrice(
+      InboundEntity inbound) {
     // Get all products with tax rate in inbounds
     List<InboundDetailsEntity> allDetails =
-            inboundDetailsRepository.findInboundDetailsWithCategoryByInboundId(inbound.getId());
+        inboundDetailsRepository.findInboundDetailsWithCategoryByInboundId(inbound.getId());
     // Variable to store value for get inbound total price
     BigDecimal inboundTotalPrice = BigDecimal.ZERO;
 
     for (InboundDetailsEntity inboundDetails : allDetails) {
       // Get all batches of product
       List<BatchEntity> allBatches =
-              batchService.findAllByProductId(inboundDetails.getProduct().getId());
+          batchService.findAllByProductId(inboundDetails.getProduct().getId());
 
       // Variable to store value for update product average inbound price
       BigDecimal totalPrice = BigDecimal.ZERO;
@@ -134,7 +131,7 @@ public class InboundDetailsServiceImpl implements InboundDetailsService {
       if (!allBatches.isEmpty()) {
         for (BatchEntity batch : allBatches) {
           List<BranchBatchEntity> allBranchBatches =
-                  branchBatchService.findByBatchId(batch.getId());
+              branchBatchService.findByBatchId(batch.getId());
           if (!allBranchBatches.isEmpty()) {
             // Get value of total batch price and total batch quantity
             for (BranchBatchEntity branchBatch : allBranchBatches) {
@@ -147,14 +144,14 @@ public class InboundDetailsServiceImpl implements InboundDetailsService {
           }
 
           InboundBatchDetailEntity inboundBatchDetails =
-                  inboundBatchDetailService
-                          .findByBatchIdAndAndInboundId(batch.getId(), inbound.getId());
+              inboundBatchDetailService.findByBatchIdAndAndInboundId(
+                  batch.getId(), inbound.getId());
 
           if (inboundBatchDetails != null) {
             BigDecimal originalPrice =
-                    inboundBatchDetails
-                            .getInboundPrice()
-                            .multiply(BigDecimal.valueOf(inboundBatchDetails.getQuantity()));
+                inboundBatchDetails
+                    .getInboundPrice()
+                    .multiply(BigDecimal.valueOf(inboundBatchDetails.getQuantity()));
             inboundTotalPrice = inboundTotalPrice.add(originalPrice);
 
             if (taxRate.compareTo(BigDecimal.ZERO) != 0) {
@@ -163,21 +160,20 @@ public class InboundDetailsServiceImpl implements InboundDetailsService {
 
             if (discount != 0.0) {
               inboundTotalPrice =
-                      inboundTotalPrice.subtract(originalPrice.multiply(BigDecimal.valueOf(discount)));
+                  inboundTotalPrice.subtract(originalPrice.multiply(BigDecimal.valueOf(discount)));
             }
           }
         }
       } else {
         totalPrice =
-                inboundDetailsRepository.findTotalPriceForProduct(inboundDetails.getProduct().getId());
+            inboundDetailsRepository.findTotalPriceForProduct(inboundDetails.getProduct().getId());
         totalQuantity =
-                branchProductService.findTotalQuantityForProduct(
-                        inboundDetails.getProduct().getId());
+            branchProductService.findTotalQuantityForProduct(inboundDetails.getProduct().getId());
 
         BigDecimal originalPrice =
-                inboundDetails
-                        .getInboundPrice()
-                        .multiply(BigDecimal.valueOf(inboundDetails.getReceiveQuantity()));
+            inboundDetails
+                .getInboundPrice()
+                .multiply(BigDecimal.valueOf(inboundDetails.getReceiveQuantity()));
         inboundTotalPrice = inboundTotalPrice.add(originalPrice);
 
         if (taxRate.compareTo(BigDecimal.ZERO) != 0) {
@@ -186,12 +182,11 @@ public class InboundDetailsServiceImpl implements InboundDetailsService {
 
         if (discount != 0.0) {
           inboundTotalPrice =
-                  inboundTotalPrice.subtract(originalPrice.multiply(BigDecimal.valueOf(discount)));
+              inboundTotalPrice.subtract(originalPrice.multiply(BigDecimal.valueOf(discount)));
         }
       }
       if (totalQuantity.compareTo(BigDecimal.ZERO) > 0) {
-        BigDecimal averageProductPrice =
-                totalPrice.divide(totalQuantity, 2, RoundingMode.HALF_UP);
+        BigDecimal averageProductPrice = totalPrice.divide(totalQuantity, 2, RoundingMode.HALF_UP);
         inboundDetails.getProduct().setInboundPrice(averageProductPrice);
       } else {
         inboundDetails.getProduct().setInboundPrice(BigDecimal.ZERO);

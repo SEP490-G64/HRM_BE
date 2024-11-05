@@ -5,9 +5,6 @@ import com.example.hrm_be.models.entities.ProductEntity;
 import java.util.List;
 import java.util.Optional;
 
-import org.joda.time.DateTime;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -15,7 +12,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface BatchRepository extends JpaRepository<BatchEntity, Long>, JpaSpecificationExecutor<BatchEntity> {
+public interface BatchRepository
+    extends JpaRepository<BatchEntity, Long>, JpaSpecificationExecutor<BatchEntity> {
   // Check if a batch exists by its name.
   boolean existsByBatchCode(String batchCode);
 
