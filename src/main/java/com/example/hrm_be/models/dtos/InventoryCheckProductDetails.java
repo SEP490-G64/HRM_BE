@@ -1,9 +1,6 @@
 package com.example.hrm_be.models.dtos;
 
-import com.example.hrm_be.commons.enums.InventoryCheckStatus;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import java.time.LocalDateTime;
-import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -23,24 +20,19 @@ import lombok.extern.jackson.Jacksonized;
 @EqualsAndHashCode
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class InventoryCheck {
+public class InventoryCheckProductDetails {
   Long id;
-  Branch branch; // N-1 with Branch
+  InventoryCheck inventoryCheck; // N-1 with InventoryCheckEntity
 
-  User createdBy; // N-1 with User (for the user who created the check)
+  Product product;
 
-  User approvedBy; // N-1 with User (for the user who approved the check)
+  Batch batch;
 
-  LocalDateTime createdDate;
+  Integer systemQuantity;
 
-  Boolean isApproved;
+  Integer countedQuantity;
 
-  InventoryCheckStatus status; // Enum for 'Đang kiểm', 'Chờ duyệt', 'Đã cân bằng'
+  Integer difference;
 
-  String note;
-
-  String code;
-
-  List<InventoryCheckDetails> inventoryCheckDetails;
-  List<InventoryCheckProductDetails> inventoryCheckProductDetails;
+  String reason;
 }

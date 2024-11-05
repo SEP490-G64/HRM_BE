@@ -25,8 +25,8 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder(toBuilder = true)
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(name = "inventory_check_details")
-public class InventoryCheckDetailsEntity extends CommonEntity {
+@Table(name = "inventory_check_product")
+public class InventoryCheckProductDetailsEntity extends CommonEntity{
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(
       name = "check_id",
@@ -35,9 +35,9 @@ public class InventoryCheckDetailsEntity extends CommonEntity {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(
-      name = "batch_id",
+      name = "product_id",
       foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-  BatchEntity batch; // N-1 with ProductEntity
+  ProductEntity product; // N-1 with ProductEntity
 
   @Column(name = "system_quantity")
   Integer systemQuantity;

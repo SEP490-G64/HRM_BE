@@ -40,14 +40,12 @@ public class InventoryCheckEntity extends CommonEntity {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(
       name = "branch_id",
-      nullable = false,
       foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   BranchEntity branch; // N-1 with Branch
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(
       name = "created_by",
-      nullable = false,
       foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   UserEntity createdBy; // N-1 with User (for the user who created the check)
 
@@ -58,20 +56,29 @@ public class InventoryCheckEntity extends CommonEntity {
       foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   UserEntity approvedBy; // N-1 with User (for the user who approved the check)
 
-  @Column(name = "created_date", nullable = false)
+  @Column(name = "created_date")
   LocalDateTime createdDate;
 
-  @Column(name = "is_approved", nullable = false)
+  @Column(name = "is_approved")
+
+
   Boolean isApproved;
 
+  @Column(name = "inventory_check_code")
+  String code;
+
   @Enumerated(EnumType.STRING)
-  @Column(name = "status", nullable = false)
+  @Column(name = "status")
   InventoryCheckStatus status; // Enum for 'Đang kiểm', 'Chờ duyệt', 'Đã cân bằng'
 
-  @Column(name = "note", nullable = true)
+  @Column(name = "note")
   String note;
 
   @ToString.Exclude
   @OneToMany(mappedBy = "inventoryCheck")
   List<InventoryCheckDetailsEntity> inventoryCheckDetails;
+
+  @ToString.Exclude
+  @OneToMany(mappedBy = "inventoryCheck")
+  List<InventoryCheckProductDetailsEntity> inventoryCheckProductDetails;
 }
