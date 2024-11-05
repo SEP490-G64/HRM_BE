@@ -22,4 +22,6 @@ public interface BranchBatchRepository extends JpaRepository<BranchBatchEntity, 
       @Param("batchId") Long batchId, @Param("branchId") Long branchId);
 
   List<BranchBatchEntity> findByBatchId(Long batchId);
+
+  Optional<BranchBatchEntity> findByBranch_IdAndBatch_Id(Long branchId, Long batchId);
 }

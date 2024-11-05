@@ -2,7 +2,6 @@ package com.example.hrm_be.models.entities;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
@@ -49,22 +48,22 @@ public class BatchEntity extends CommonEntity {
   BigDecimal inboundPrice;
 
   @ToString.Exclude
-  @OneToMany(mappedBy = "batch", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "batch")
   List<OutboundDetailEntity> outboundDetails; // 1-N with OutboundDetails
 
   @ToString.Exclude
-  @OneToMany(mappedBy = "batch", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "batch")
   List<BranchBatchEntity> branchBatches; // 1-N with BranchBatch
 
   @ToString.Exclude
-  @OneToMany(mappedBy = "batch", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "batch")
   List<InboundBatchDetailEntity> inboundBatchDetail; // 1-N with InboundBatchDetail
 
-  @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "product_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   ProductEntity product;
 
   @ToString.Exclude
-  @OneToMany(mappedBy = "batch", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "batch")
   List<InventoryCheckDetailsEntity> inventoryCheckDetails; // 1-N with InventoryCheckDetails
 }

@@ -9,5 +9,7 @@ public interface BranchProductService {
 
   BranchProduct update(BranchProduct branchProduct);
 
+  BranchProduct getByBranchIdAndProductId(Long branchId, Long productId);
+
   void delete(Long id);
 }

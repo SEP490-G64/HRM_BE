@@ -25,15 +25,15 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder(toBuilder = true)
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(name = "inventory_check_details")
-public class InventoryCheckDetailsEntity extends CommonEntity {
+@Table(name = "inventory_check_product")
+public class InventoryCheckProductDetailsEntity extends CommonEntity {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "check_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   InventoryCheckEntity inventoryCheck; // N-1 with InventoryCheckEntity
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "batch_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-  BatchEntity batch; // N-1 with ProductEntity
+  @JoinColumn(name = "product_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+  ProductEntity product; // N-1 with ProductEntity
 
   @Column(name = "system_quantity")
   Integer systemQuantity;
