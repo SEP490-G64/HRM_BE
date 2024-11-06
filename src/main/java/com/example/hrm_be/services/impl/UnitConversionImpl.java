@@ -2,9 +2,7 @@ package com.example.hrm_be.services.impl;
 
 import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.commons.constants.HrmConstant.ERROR.UNIT_CONVERSION;
-import com.example.hrm_be.components.BatchMapper;
 import com.example.hrm_be.components.UnitConversionMapper;
-import com.example.hrm_be.components.UnitOfMeasurementMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.UnitConversion;
 import com.example.hrm_be.models.entities.UnitConversionEntity;
@@ -23,8 +21,6 @@ public class UnitConversionImpl implements UnitConversionService {
   @Autowired private UnitConversionRepository unitConversionRepository;
 
   @Autowired private UnitConversionMapper unitConversionMapper;
-  @Autowired private UnitOfMeasurementMapper unitOfMeasurementMapper;
-  @Autowired private BatchMapper batchMapper;
 
   @Override
   public UnitConversion getById(Long id) {
@@ -75,5 +71,20 @@ public class UnitConversionImpl implements UnitConversionService {
       throw new HrmCommonException(HrmConstant.ERROR.UNIT_CONVERSION.NOT_EXIST);
     }
     unitConversionRepository.deleteById(id);
+  }
+
+  @Override
+  public List<UnitConversionEntity> saveAll(List<UnitConversionEntity> unitConversionEntities) {
+    return unitConversionRepository.saveAll(unitConversionEntities);
+  }
+
+  @Override
+  public void deleteAll(List<UnitConversionEntity> unitConversionEntities) {
+    unitConversionRepository.deleteAll(unitConversionEntities);
+  }
+
+  @Override
+  public List<UnitConversionEntity> getByProductId(Long productId) {
+    return unitConversionRepository.getByProductId(productId);
   }
 }

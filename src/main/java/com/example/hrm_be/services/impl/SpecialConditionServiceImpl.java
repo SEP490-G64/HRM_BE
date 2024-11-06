@@ -111,5 +111,15 @@ public class SpecialConditionServiceImpl implements SpecialConditionService {
 
     specialConditionRepository.assignToProductByProductIdAndIds(productId, ids);
   }
-  ;
+
+  @Override
+  public List<SpecialConditionEntity> saveAll(
+      List<SpecialConditionEntity> specialConditionEntities) {
+    return specialConditionRepository.saveAll(specialConditionEntities);
+  }
+
+  @Override
+  public void deleteAll(List<SpecialConditionEntity> specialConditionEntities) {
+    specialConditionRepository.deleteAll(specialConditionEntities);
+  }
 }

@@ -2,7 +2,6 @@ package com.example.hrm_be.controllers.product;
 
 import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.commons.enums.ResponseStatus;
-import com.example.hrm_be.models.dtos.BranchProduct;
 import com.example.hrm_be.models.dtos.Product;
 import com.example.hrm_be.models.dtos.ProductBaseDTO;
 import com.example.hrm_be.models.dtos.ProductSupplierDTO;
@@ -47,30 +46,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class StaffProductController {
   private final ProductService productService;
 
-  @GetMapping("/search")
-  protected ResponseEntity<BaseOutput<List<ProductBaseDTO>>> getByPaging(
-      @RequestParam(defaultValue = "0") int page,
-      @RequestParam(defaultValue = "10") int size,
-      @RequestParam(required = false, defaultValue = "id") String sortBy,
-      @RequestParam(required = false, defaultValue = "ASC") String sortDirection,
-      @RequestParam(required = false, defaultValue = "name") String searchType,
-      @RequestParam(defaultValue = "") String searchValue) {
-    Page<ProductBaseDTO> productPage =
-        productService.getByPaging(page, size, sortBy, sortDirection, searchType, searchValue);
-
-    BaseOutput<List<ProductBaseDTO>> response =
-        BaseOutput.<List<ProductBaseDTO>>builder()
-            .message(HttpStatus.OK.toString())
-            .totalPages(productPage.getTotalPages())
-            .currentPage(page)
-            .pageSize(size)
-            .total(productPage.getTotalElements())
-            .data(productPage.getContent())
-            .status(ResponseStatus.SUCCESS)
-            .build();
-    return ResponseEntity.ok(response);
-  }
-
   @GetMapping("/allow-products")
   protected ResponseEntity<BaseOutput<List<AllowedProductEntity>>> getAllowProducts(
       @RequestParam(defaultValue = "") String keyword) {
@@ -87,7 +62,7 @@ public class StaffProductController {
   }
 
   @GetMapping("")
-  public ResponseEntity<BaseOutput<List<BranchProduct>>> searchProducts(
+  public ResponseEntity<BaseOutput<List<ProductBaseDTO>>> searchProducts(
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size,
       @RequestParam(required = false, defaultValue = "id") String sortBy,
@@ -96,72 +71,20 @@ public class StaffProductController {
       @RequestParam(required = false) Optional<Long> categoryId,
       @RequestParam(required = false) Optional<Long> typeId,
       @RequestParam(required = false) Optional<Long> manufacturerId,
-      @RequestParam(required = false) Optional<String> status,
-      @RequestParam(required = false) Optional<Long> branchId) {
+      @RequestParam(required = false) Optional<String> status) {
 
-    Page<BranchProduct> products =
+    Page<ProductBaseDTO> products =
         productService.searchProducts(
-            page,
-            size,
-            sortBy,
-            sortDirection,
-            keyword,
-            manufacturerId,
-            categoryId,
-            typeId,
-            status,
-            branchId);
+            page, size, sortBy, sortDirection, keyword, manufacturerId, categoryId, typeId, status);
 
-    BaseOutput<List<BranchProduct>> response =
-        BaseOutput.<List<BranchProduct>>builder()
+    BaseOutput<List<ProductBaseDTO>> response =
+        BaseOutput.<List<ProductBaseDTO>>builder()
             .totalPages(products.getTotalPages())
             .currentPage(page)
             .pageSize(size)
             .total(products.getTotalElements())
             .data(products.getContent())
             .message(HttpStatus.OK.toString())
-            .status(ResponseStatus.SUCCESS)
-            .build();
-    return ResponseEntity.ok(response);
-  }
-
-  @GetMapping("category/{id}")
-  protected ResponseEntity<BaseOutput<List<Product>>> getByPagingAndCateId(
-      @PathVariable("id") Long id,
-      @RequestParam(defaultValue = "0") int page,
-      @RequestParam(defaultValue = "10") int size,
-      @RequestParam(required = false, defaultValue = "id") String sortBy) {
-    Page<Product> productPage = productService.getByPagingAndCateId(page, size, sortBy, id);
-
-    BaseOutput<List<Product>> response =
-        BaseOutput.<List<Product>>builder()
-            .message(HttpStatus.OK.toString())
-            .totalPages(productPage.getTotalPages())
-            .currentPage(page)
-            .pageSize(size)
-            .total(productPage.getTotalElements())
-            .data(productPage.getContent())
-            .status(ResponseStatus.SUCCESS)
-            .build();
-    return ResponseEntity.ok(response);
-  }
-
-  @GetMapping("type/{id}")
-  protected ResponseEntity<BaseOutput<List<Product>>> getByPagingAndTypeId(
-      @PathVariable("id") Long id,
-      @RequestParam(defaultValue = "0") int page,
-      @RequestParam(defaultValue = "10") int size,
-      @RequestParam(required = false, defaultValue = "id") String sortBy) {
-    Page<Product> productPage = productService.getByPagingAndTypeId(page, size, sortBy, id);
-
-    BaseOutput<List<Product>> response =
-        BaseOutput.<List<Product>>builder()
-            .message(HttpStatus.OK.toString())
-            .totalPages(productPage.getTotalPages())
-            .currentPage(page)
-            .pageSize(size)
-            .total(productPage.getTotalElements())
-            .data(productPage.getContent())
             .status(ResponseStatus.SUCCESS)
             .build();
     return ResponseEntity.ok(response);

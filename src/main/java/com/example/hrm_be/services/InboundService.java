@@ -18,10 +18,6 @@ public interface InboundService {
 
   Page<Inbound> getByPaging(int pageNo, int pageSize, String sortBy);
 
-  Inbound create(Inbound inbound);
-
-  Inbound update(Inbound inbound);
-
   Inbound approve(Long id, boolean accept);
 
   void delete(Long id);
@@ -32,7 +28,7 @@ public interface InboundService {
 
   Inbound createInnitInbound(InboundType type);
 
-  Inbound updateInboundStatus(InboundStatus status, Long id);
+  void updateInboundStatus(InboundStatus status, Long id);
 
   ByteArrayOutputStream generateInboundPdf(Long inboundId) throws DocumentException, IOException;
 }

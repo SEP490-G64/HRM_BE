@@ -28,6 +28,16 @@ public class ProductTypeServiceImpl implements ProductTypeService {
   @Autowired private ProductTypeMapper productTypeMapper;
 
   @Override
+  public Boolean existById(Long id) {
+    // Validation: Check if the ID is null
+    if (id == null) {
+      throw new HrmCommonException(HrmConstant.ERROR.TYPE.INVALID);
+    }
+
+    return productTypeRepository.existsById(id);
+  }
+
+  @Override
   public List<ProductType> getAll() {
     List<ProductTypeEntity> productTypeEntities = productTypeRepository.findAll();
     return productTypeEntities.stream()
@@ -135,8 +145,7 @@ public class ProductTypeServiceImpl implements ProductTypeService {
     }
 
     // Retrieve the existing type entity by ID
-    ProductTypeEntity oldTypeEntity = productTypeRepository.findById(id).orElse(null);
-    if (oldTypeEntity == null) {
+    if (!this.existById(id)) {
       throw new HrmCommonException(HrmConstant.ERROR.TYPE.NOT_EXIST);
     }
 
@@ -154,7 +163,7 @@ public class ProductTypeServiceImpl implements ProductTypeService {
   // This method will validate category field input values
   private boolean commonValidate(ProductType type) {
     if (type.getTypeName() == null
-        || type.getTypeName().isEmpty()
+        || type.getTypeName().trim().isEmpty()
         || type.getTypeName().length() > 100) {
       return false;
     }

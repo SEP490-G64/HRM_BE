@@ -43,5 +43,6 @@ public class InboundDetail {
   private BigDecimal totalPrice;
   private Boolean isApproved;
   private InboundStatus status;
+  private Boolean taxable;
   private List<InboundProductDetailDTO> productBatchDetails;
 }

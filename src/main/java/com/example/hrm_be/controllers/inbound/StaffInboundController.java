@@ -14,7 +14,6 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.constraints.NotNull;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -82,66 +81,6 @@ public class StaffInboundController {
         BaseOutput.<InboundDetail>builder()
             .message(HttpStatus.OK.toString())
             .data(Inbound)
-            .status(ResponseStatus.SUCCESS)
-            .build();
-    return ResponseEntity.ok(response);
-  }
-
-  // POST: /api/v1/staff/inbound
-  // Creates a new Inbound
-  @PostMapping()
-  protected ResponseEntity<BaseOutput<Inbound>> create(
-      @RequestBody @NotNull(message = "error.request.body.invalid") Inbound Inbound) {
-    // Validate the request body
-    if (Inbound == null) {
-      BaseOutput<Inbound> response =
-          BaseOutput.<Inbound>builder()
-              .errors(List.of(HrmConstant.ERROR.REQUEST.INVALID_BODY))
-              .status(ResponseStatus.FAILED)
-              .build();
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-    }
-
-    // Create the Inbound
-    Inbound createdInbound = inboundService.create(Inbound);
-
-    // Build the response with the created Inbound data
-    BaseOutput<Inbound> response =
-        BaseOutput.<Inbound>builder()
-            .message(HttpStatus.OK.toString())
-            .data(createdInbound)
-            .status(ResponseStatus.SUCCESS)
-            .build();
-    return ResponseEntity.ok(response);
-  }
-
-  // PUT: /api/v1/staff/inbound/{id}
-  // Updates an existing Inbound
-  @PutMapping("/{id}")
-  protected ResponseEntity<BaseOutput<Inbound>> update(
-      @PathVariable("id") Long id,
-      @RequestBody @NotNull(message = "error.request.body.invalid") Inbound Inbound) {
-    // Validate the path variable ID
-    if (id <= 0 || id == null) {
-      BaseOutput<Inbound> response =
-          BaseOutput.<Inbound>builder()
-              .status(ResponseStatus.FAILED)
-              .errors(List.of(HrmConstant.ERROR.REQUEST.INVALID_PATH_VARIABLE))
-              .build();
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-    }
-
-    // Set the ID for the Inbound to update
-    Inbound.setId(id);
-
-    // Update the Inbound
-    Inbound updateInbound = inboundService.update(Inbound);
-
-    // Build the response with the updated Inbound data
-    BaseOutput<Inbound> response =
-        BaseOutput.<Inbound>builder()
-            .message(HttpStatus.OK.toString())
-            .data(updateInbound)
             .status(ResponseStatus.SUCCESS)
             .build();
     return ResponseEntity.ok(response);
