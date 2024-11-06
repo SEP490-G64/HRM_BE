@@ -6,7 +6,6 @@ import com.example.hrm_be.models.entities.BranchProductEntity;
 import com.example.hrm_be.models.entities.ProductEntity;
 import org.springframework.stereotype.Service;
 
-
 import java.math.BigDecimal;
 import java.util.List;
 
