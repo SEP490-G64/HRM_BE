@@ -32,5 +32,7 @@ public class OutboundDetail {
 
   BigDecimal quantity;
 
+  BigDecimal price;
+
   UnitOfMeasurement unitOfMeasurement;
 }

@@ -28,6 +28,7 @@ public class OutboundProductDetailMapper {
                         d.getOutbound() != null ? outboundMapper.toEntity(d.getOutbound()) : null)
                     .product(d.getBatch() != null ? productMapper.toEntity(d.getProduct()) : null)
                     .outboundQuantity(d.getOutboundQuantity())
+                    .price(d.getPrice())
                     .build())
         .orElse(null);
   }
@@ -38,6 +39,7 @@ public class OutboundProductDetailMapper {
         .id(entity.getId())
         .product(productMapper.toDTO(entity.getProduct()))
         .outboundQuantity(entity.getOutboundQuantity())
+        .price(entity.getPrice())
         .build();
   }
 }

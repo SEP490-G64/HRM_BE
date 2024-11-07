@@ -22,5 +22,10 @@ public interface OutboundDetailRepository extends JpaRepository<OutboundDetailEn
   @Query("DELETE FROM OutboundDetailEntity opd WHERE opd.outbound.id = :outboundId")
   void deleteByOutboundId(@Param("outboundId") Long outboundId);
 
-  List<OutboundDetailEntity> findAllByOutboundId(Long outboundId);
+  @Query("SELECT od FROM OutboundDetailEntity od " +
+          "JOIN FETCH od.batch b " +
+          "JOIN FETCH b.product p " +
+          "LEFT JOIN FETCH p.category c " +
+          "WHERE od.outbound.id = :outboundId")
+  List<OutboundDetailEntity> findAllWithBatchAndProductAndCategoryByOutboundId(Long outboundId);
 }

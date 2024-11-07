@@ -22,5 +22,10 @@ public interface OutboundProductDetailRepository
   @Query("DELETE FROM OutboundProductDetailEntity opd WHERE opd.outbound.id = :outboundId")
   void deleteByOutboundId(@Param("outboundId") Long outboundId);
 
-  List<OutboundProductDetailEntity> findAllByOutboundId(Long outboundId);
+  @Query("SELECT opd FROM OutboundProductDetailEntity opd " +
+          "JOIN FETCH opd.product p " +
+          "LEFT JOIN FETCH p.category c " +
+          "WHERE opd.outbound.id = :outboundId")
+  List<OutboundProductDetailEntity> findAllWithProductAndCategoryByOutboundId(Long outboundId);
+
 }

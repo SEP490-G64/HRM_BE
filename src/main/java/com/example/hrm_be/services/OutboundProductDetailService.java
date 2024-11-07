@@ -1,6 +1,7 @@
 package com.example.hrm_be.services;
 
 import com.example.hrm_be.models.dtos.OutboundDetail;
+import com.example.hrm_be.models.dtos.OutboundProductDetail;
 import com.example.hrm_be.models.entities.OutboundProductDetailEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -13,7 +14,7 @@ public interface OutboundProductDetailService {
 
     OutboundProductDetailEntity findByOutboundAndProduct(Long outboundId, Long productId);
 
-    List<OutboundProductDetailEntity> findByOutbound(Long outboundId);
+    List<OutboundProductDetail> findByOutbound(Long outboundId);
 
     List<OutboundProductDetailEntity> saveAll(List<OutboundProductDetailEntity> outboundProductDetailEntities);
 }

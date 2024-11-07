@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -119,6 +120,6 @@ public class OutboundDetailServiceImpl implements OutboundDetailService {
 
   @Override
   public List<OutboundDetailEntity> findByOutbound(Long outboundId) {
-    return outboundDetailRepository.findAllByOutboundId(outboundId);
+    return outboundDetailRepository.findAllWithBatchAndProductAndCategoryByOutboundId(outboundId);
   }
 }

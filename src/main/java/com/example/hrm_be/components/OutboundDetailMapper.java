@@ -29,13 +29,14 @@ public class OutboundDetailMapper {
                         d.getOutbound() != null ? outboundMapper.toEntity(d.getOutbound()) : null)
                     .batch(d.getBatch() != null ? batchMapper.toEntity(d.getBatch()) : null)
                     .quantity(d.getQuantity())
+                    .price(d.getPrice())
                     .build())
         .orElse(null);
   }
 
   // Helper method to convert OutboundDetailEntity to OutboundDetailDTO
   private OutboundDetail convertToDTO(OutboundDetailEntity entity) {
-    return OutboundDetail.builder().id(entity.getId()).quantity(entity.getQuantity()).build();
+    return OutboundDetail.builder().id(entity.getId()).quantity(entity.getQuantity()).price(entity.getPrice()).build();
   }
 
   // Helper method to convert OutboundDetailEntity to OutboundDetailDTO with Outbound Information
