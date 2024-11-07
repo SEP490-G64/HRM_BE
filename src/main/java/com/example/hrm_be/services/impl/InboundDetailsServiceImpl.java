@@ -79,8 +79,9 @@ public class InboundDetailsServiceImpl implements InboundDetailsService {
 
   @Override
   public List<InboundDetails> findByInboundId(Long inboundId) {
+
     return inboundDetailsRepository.findByInbound_Id(inboundId).stream()
-        .map(inboundDetailsMapper::toDTO)
+        .map(inboundDetailsMapper::toDTOWithInBoundDetails)
         .collect(Collectors.toList());
   }
 
@@ -198,7 +199,7 @@ public class InboundDetailsServiceImpl implements InboundDetailsService {
       } else {
         inboundDetails.getProduct().setInboundPrice(BigDecimal.ZERO);
       }
-      productService.update(productMapper.toDTO(inboundDetails.getProduct()));
+      productService.updateInboundPrice(productMapper.toDTO(inboundDetails.getProduct()));
     }
 
     inbound.setTotalPrice(inboundTotalPrice);

@@ -25,6 +25,7 @@ import com.example.hrm_be.models.entities.UserEntity;
 import com.example.hrm_be.models.requests.CreateInboundRequest;
 import com.example.hrm_be.models.responses.InboundDetail;
 import com.example.hrm_be.repositories.InboundRepository;
+import com.example.hrm_be.repositories.ProductSuppliersRepository;
 import com.example.hrm_be.services.*;
 import com.example.hrm_be.services.InboundService;
 import com.example.hrm_be.services.UserService;
@@ -59,10 +60,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class InboundServiceImpl implements InboundService {
   @Autowired private InboundRepository inboundRepository;
+  @Autowired private ProductSuppliersRepository productSuppliersRepository;
 
   @Autowired private WplUtil wplUtil;
   @Autowired private InboundMapper inboundMapper;
   @Autowired private BranchMapper branchMapper;
+  @Autowired private ProductMapper productMapper;
+  @Autowired private SupplierMapper supplierMapper;
   @Autowired private UnitOfMeasurementMapper unitOfMeasurementMapper;
   @Autowired private UserMapper userMapper;
 
@@ -250,7 +254,6 @@ public class InboundServiceImpl implements InboundService {
     // Process InboundDetails from request
     for (ProductInbound productInbound : request.getProductInbounds()) {
       Product product = productService.addProductInInbound(productInbound);
-
       // Update or create InboundDetails
       Optional<InboundDetails> optionalInboundDetails =
           existingInboundDetails.stream()
@@ -301,7 +304,8 @@ public class InboundServiceImpl implements InboundService {
           InboundBatchDetail inboundBatchDetail;
           if (optionalInboundBatchDetail.isPresent()) {
             inboundBatchDetail = optionalInboundBatchDetail.get();
-            inboundBatchDetail.setQuantity(batch.getInboundBatchQuantity());
+            inboundBatchDetail.setQuantity(
+                batch.getInboundBatchQuantity() != null ? batch.getInboundBatchQuantity() : 0);
             inboundBatchDetail.setInboundPrice(batch.getInboundPrice());
             existingInboundBatchDetails.remove(
                 inboundBatchDetail); // Remove from existing list, mark as processed
@@ -310,7 +314,10 @@ public class InboundServiceImpl implements InboundService {
                 InboundBatchDetail.builder()
                     .inbound(inboundMapper.toDTO(updatedInboundEntity))
                     .batch(batchEntity)
-                    .quantity(batch.getInboundBatchQuantity())
+                    .quantity(
+                        batch.getInboundBatchQuantity() != null
+                            ? batch.getInboundBatchQuantity()
+                            : 0)
                     .inboundPrice(batch.getInboundPrice())
                     .build();
           }
@@ -360,10 +367,11 @@ public class InboundServiceImpl implements InboundService {
                     productSupplierService.findByProductAndSupplier(product, supplier);
 
                 // If it exists, update necessary fields, otherwise create a new one
-                if (productSupplier.getId() == null) {
-                  productSupplier.setProduct(product);
-                  productSupplier.setSupplier(supplier);
-                  productSuppliersEntities.add(productSupplier);
+                if (productSupplier == null) {
+                  ProductSuppliersEntity productSuppliersAdd = new ProductSuppliersEntity();
+                  productSuppliersAdd.setProduct(product);
+                  productSuppliersAdd.setSupplier(supplier);
+                  productSuppliersEntities.add(productSuppliersAdd);
                 }
               }
               productSupplierService.saveAll(productSuppliersEntities);
