@@ -16,8 +16,6 @@ import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.*;
 import com.example.hrm_be.models.entities.BatchEntity;
 import com.example.hrm_be.models.entities.BranchEntity;
-import com.example.hrm_be.models.entities.InboundBatchDetailEntity;
-import com.example.hrm_be.models.entities.InboundDetailsEntity;
 import com.example.hrm_be.models.dtos.*;
 import com.example.hrm_be.models.entities.InboundEntity;
 import com.example.hrm_be.models.entities.ProductEntity;

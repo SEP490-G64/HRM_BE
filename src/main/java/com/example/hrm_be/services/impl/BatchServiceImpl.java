@@ -207,6 +207,7 @@ public class BatchServiceImpl implements BatchService {
 
   @Override
   public Batch addBatchInInbound(Batch batch, Product product) {
+
     Optional<BatchEntity> existingBatch =
         batchRepository.findByBatchCodeAndProduct_Id(batch.getBatchCode(), product.getId());
      batch.setProduct(product);
@@ -214,6 +215,7 @@ public class BatchServiceImpl implements BatchService {
         .orElseGet(() -> batchRepository.save(batchMapper.toEntity(batch)));
 
     return batchMapper.toDTO(savedBatch);
+
   }
 
   @Override
