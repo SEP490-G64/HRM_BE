@@ -30,12 +30,9 @@ public class OutboundProductDetailServiceImpl implements OutboundProductDetailSe
   }
 
   @Override
-  public List<OutboundProductDetail> findByOutbound(Long outboundId) {
+  public List<OutboundProductDetailEntity> findByOutbound(Long outboundId) {
     return outboundProductDetailRepository
-            .findAllWithProductAndCategoryByOutboundId(outboundId)
-            .stream()
-            .map(outboundProductDetailMapper::toDTO)
-            .collect(Collectors.toList());
+            .findAllWithProductAndCategoryByOutboundId(outboundId);
   }
 
   @Override

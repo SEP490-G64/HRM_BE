@@ -65,7 +65,7 @@ public class OutboundEntity extends CommonEntity {
   BranchEntity toBranch;
 
   @Column(name = "outbound_code")
-  String outBoundCode;
+  String outboundCode;
 
   @Column(name = "created_date")
   LocalDateTime createdDate;

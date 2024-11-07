@@ -28,7 +28,7 @@ import lombok.extern.jackson.Jacksonized;
 public class Outbound {
   Long id;
 
-  String outBoundCode;
+  String outboundCode;
 
   OutboundType outboundType; // Assume this is an Enum with values like "Bán hàng", "Trả hàng", etc.
 

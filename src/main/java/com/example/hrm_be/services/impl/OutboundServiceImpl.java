@@ -109,6 +109,7 @@ public class OutboundServiceImpl implements OutboundService {
                   // Set outbound quantity and price
                   productDetailDTO.setOutboundQuantity(outboundProductDetail.getOutboundQuantity());
                   productDetailDTO.setPrice(outboundProductDetail.getPrice());
+                  productDetailDTO.setTargetUnit(unitOfMeasurementMapper.toDTO(outboundProductDetail.getUnitOfMeasurement()));
 
                   return productDetailDTO;
                 })
@@ -139,6 +140,7 @@ public class OutboundServiceImpl implements OutboundService {
                   // Set outbound quantity and price
                   productWithBatchDetailDTO.setOutboundQuantity(outboundDetail.getQuantity());
                   productWithBatchDetailDTO.setPrice(outboundDetail.getPrice());
+                  productWithBatchDetailDTO.setTargetUnit(unitOfMeasurementMapper.toDTO(outboundDetail.getUnitOfMeasurement()));
 
                   return productWithBatchDetailDTO;
                 })
@@ -197,7 +199,7 @@ public class OutboundServiceImpl implements OutboundService {
     Outbound updatedOutbound =
         Outbound.builder()
             .id(outboundEntity.getId()) // Retain the existing ID
-            .outBoundCode(request.getOutboundCode())
+            .outboundCode(request.getOutboundCode())
             .createdDate(
                 request.getCreatedDate() != null ? request.getCreatedDate() : LocalDateTime.now())
             .status(OutboundStatus.BAN_NHAP)
@@ -220,6 +222,10 @@ public class OutboundServiceImpl implements OutboundService {
     for (OutboundProductDetail productDetail : request.getOutboundProductDetails()) {
       Product product = productDetail.getProduct();
       Batch batch = productDetail.getBatch();
+      ProductEntity productEntity = productMapper.toEntity(productService.getById(product.getId()));
+
+      BigDecimal convertedQuantity = this.convertToUnit(product.getId(), productEntity.getBaseUnit().getId(),
+              productDetail.getOutboundQuantity(), productDetail.getTargetUnit(), true);
 
       // If batch information is provided, process as a batch detail
       if (batch != null) {
@@ -227,7 +233,7 @@ public class OutboundServiceImpl implements OutboundService {
         BigDecimal realityQuantity = branchBatchService.findQuantityByBatchIdAndBranchId(
                 batch.getId(), fromBranch.getId());
 
-        if (realityQuantity.compareTo(productDetail.getOutboundQuantity()) < 0) {
+        if (realityQuantity.compareTo(convertedQuantity) < 0) {
           throw new HrmCommonException(
               "Insufficient stock for batch: " + batch.getBatchCode());
         }
@@ -247,19 +253,18 @@ public class OutboundServiceImpl implements OutboundService {
                   .outbound(updatedOutboundEntity)
                   .quantity(productDetail.getOutboundQuantity())
                   .batch(batchEntity)
+                  .unitOfMeasurement(unitOfMeasurementMapper.toEntity(productDetail.getTargetUnit()))
                   .build();
         }
         outboundDetailEntities.add(outboundDetail);
       } else {
         // Process as a product detail if no batch is specified
-        ProductEntity productEntity = productMapper.toEntity(productService.getById(product.getId()));
-
         // Fetch quantity from BranchProduct
         BranchProductEntity branchProduct =
                 branchProductMapper.toEntity(branchProductService
                 .getByBranchIdAndProductId(fromBranch.getId(), productEntity.getId()));
 
-        if (branchProduct.getQuantity().compareTo(productDetail.getOutboundQuantity()) < 0) {
+        if (branchProduct.getQuantity().compareTo(convertedQuantity) < 0) {
           throw new HrmCommonException(
               "Insufficient stock for product: " + productEntity.getProductName());
         }
@@ -280,6 +285,7 @@ public class OutboundServiceImpl implements OutboundService {
                   .outbound(updatedOutboundEntity)
                   .product(productEntity)
                   .outboundQuantity(productDetail.getOutboundQuantity())
+                  .unitOfMeasurement(unitOfMeasurementMapper.toEntity(productDetail.getTargetUnit()))
                   .build();
         }
         outboundProductDetailEntities.add(outboundProductDetail);
@@ -313,7 +319,7 @@ public class OutboundServiceImpl implements OutboundService {
     Outbound updatedOutbound =
         Outbound.builder()
             .id(outboundEntity.getId())
-            .outBoundCode(request.getOutboundCode())
+            .outboundCode(request.getOutboundCode())
             .createdDate(
                 request.getCreatedDate() != null ? request.getCreatedDate() : LocalDateTime.now())
             .status(OutboundStatus.BAN_NHAP)
@@ -448,30 +454,33 @@ public class OutboundServiceImpl implements OutboundService {
     Outbound outboundEntity = outboundMapper.toDTO(outbound);
     Branch fromBranch = outboundEntity.getFromBranch();
 
-    boolean taxable = outbound.getTaxable();
+    Boolean taxable = false;
+    if (outbound.getTaxable() != null && outbound.getTaxable()) {
+      taxable = true;
+    }
+
     BigDecimal totalPrice = BigDecimal.ZERO;
 
-    List<OutboundProductDetail> outboundProductDetails =
+    List<OutboundProductDetailEntity> outboundProductDetails =
             outboundProductDetailService.findByOutbound(outboundId);
     List<OutboundDetailEntity> outboundDetailEntities = new ArrayList<>();
     List<OutboundProductDetailEntity> outboundProductDetailEntities = new ArrayList<>();
 
     // Process each OutboundProductDetail
-    for (OutboundProductDetail productDetail : outboundProductDetails) {
-      Product product = productDetail.getProduct();
-      Product productEntity = productService.getById(product.getId());
+    for (OutboundProductDetailEntity productDetail : outboundProductDetails) {
+      ProductEntity productEntity = productDetail.getProduct();
 
       // Find the BranchProduct entity for this product and branch
       BranchProductEntity branchProduct =
-          branchProductService.findByBranchAndProduct(fromBranch.getId(), product.getId());
+          branchProductService.findByBranchAndProduct(fromBranch.getId(), productEntity.getId());
 
       // Convert the outbound quantity to the product's base unit if a different target unit is
       // specified
       BigDecimal convertedQuantity = BigDecimal.ONE;
           convertToUnit(
-                  product.getId(), productEntity.getBaseUnit().getId(),
+                  productEntity.getId(), productEntity.getBaseUnit().getId(),
                   productDetail.getOutboundQuantity(),
-                  productDetail.getTargetUnit(), true);
+                  unitOfMeasurementMapper.toDTO(productDetail.getUnitOfMeasurement()), true);
 
       // Check if sufficient quantity is available
       if (branchProduct.getQuantity().compareTo(convertedQuantity) < 0) {
@@ -494,7 +503,7 @@ public class OutboundServiceImpl implements OutboundService {
       }
       productDetail.setPrice(updateOutboundProductDetailPrice);
       totalPrice = totalPrice.add(updateOutboundProductDetailPrice);
-      outboundProductDetailEntities.add(outboundProductDetailMapper.toEntity(productDetail));
+      outboundProductDetailEntities.add(productDetail);
     }
 
     List<OutboundDetailEntity> outboundDetails =
@@ -564,7 +573,7 @@ public class OutboundServiceImpl implements OutboundService {
   public Outbound createInnitOutbound(OutboundType type) {
     LocalDateTime currentDateTime = LocalDateTime.now();
     String outboundCode = WplUtil.generateNoteCode(currentDateTime, "OP");
-    if (outboundRepository.existsByOutBoundCode(outboundCode)) {
+    if (outboundRepository.existsByOutboundCode(outboundCode)) {
       throw new HrmCommonException(INBOUND.EXIST);
     }
     String email = userService.getAuthenticatedUserEmail(); // Retrieve the logged-in user's email
@@ -578,7 +587,7 @@ public class OutboundServiceImpl implements OutboundService {
             .createdDate(currentDateTime)
             .outboundType(type)
             .status(OutboundStatus.CHUA_LUU)
-            .outBoundCode(outboundCode)
+            .outboundCode(outboundCode)
             .createdBy(userEntity)
             .fromBranch(branchEntity)
             .build();
