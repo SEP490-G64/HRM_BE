@@ -53,7 +53,7 @@ public class InboundBatchDetailServiceImpl implements InboundBatchDetailService 
     }
 
     return inboundBatchDetailRepository.findByInbound_Id(inboundId).stream()
-        .map(inboundBatchDetailMapper::toDTO)
+        .map(inboundBatchDetailMapper::convertToDTOWithBatchAndInbound)
         .collect(Collectors.toList());
   }
 

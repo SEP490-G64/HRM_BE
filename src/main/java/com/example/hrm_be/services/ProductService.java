@@ -23,6 +23,11 @@ public interface ProductService {
 
   Product update(Product product);
 
+
+  Product updateInboundPrice(Product product);
+
+
+
   void delete(Long id);
 
   List<AllowedProductEntity> addProductFromJson(List<Map<String, Object>> productJsonList);

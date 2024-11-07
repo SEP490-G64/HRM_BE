@@ -17,6 +17,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import jakarta.persistence.criteria.Predicate;
+import org.hibernate.sql.results.graph.entity.internal.BatchEntityInsideEmbeddableSelectFetchInitializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -206,11 +207,13 @@ public class BatchServiceImpl implements BatchService {
 
   @Override
   public Batch addBatchInInbound(Batch batch, Product product) {
-  Batch saved =  batchRepository.findByBatchCodeAndProduct_Id(batch.getBatchCode(),
-          product.getId()).map(batchMapper::toDTO)
-        .orElseGet(
-            () -> batchMapper.toDTO(batchRepository.save(batchMapper.toEntity(batch))));
-return saved;
+    Optional<BatchEntity> existingBatch =
+        batchRepository.findByBatchCodeAndProduct_Id(batch.getBatchCode(), product.getId());
+     batch.setProduct(product);
+    BatchEntity savedBatch = existingBatch
+        .orElseGet(() -> batchRepository.save(batchMapper.toEntity(batch)));
+
+    return batchMapper.toDTO(savedBatch);
   }
 
   @Override

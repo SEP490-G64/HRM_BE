@@ -169,7 +169,7 @@ public class InboundMapper {
                 ? branchMapper.convertToDTOBasicInfo(entity.getFromBranch())
                 : null)
         .toBranch(
-            entity.getFromBranch() != null
+            entity.getToBranch() != null
                 ? branchMapper.convertToDTOBasicInfo(entity.getToBranch())
                 : null)
         .build();

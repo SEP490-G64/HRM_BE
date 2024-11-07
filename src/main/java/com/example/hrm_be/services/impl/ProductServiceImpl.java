@@ -79,6 +79,7 @@ public class ProductServiceImpl implements ProductService {
   @Autowired private ProductMapper productMapper;
   @Autowired private SpecialConditionMapper specialConditionMapper;
   @Autowired private BranchMapper branchMapper;
+  @Autowired private SupplierMapper  supplierMapper;
   @Autowired private StorageLocationMapper storageLocationMapper;
   @Autowired private UserMapper userMapper;
   @Autowired private UnitConversionMapper unitConversionMapper;
@@ -401,6 +402,15 @@ public class ProductServiceImpl implements ProductService {
     branchProductService.saveAll(oldBranchProducts);
 
     return productMapper.toDTO(savedProduct);
+  }
+
+  @Override
+  public Product updateInboundPrice(Product product) {
+    ProductEntity unsavedProduct = productRepository.findById(product.getId()).orElse(null);
+
+    unsavedProduct.setInboundPrice(product.getInboundPrice());
+    ProductEntity saved = productRepository.save(unsavedProduct);
+    return  productMapper.toDTO(saved);
   }
 
   @Override
