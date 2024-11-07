@@ -291,8 +291,8 @@ public class InboundServiceImpl implements InboundService {
       inboundDetailsList.add(inboundDetails);
 
       // Process InboundBatchDetails for each batch in the product inbound
-      if (productInbound.getBatchList() != null && !productInbound.getBatchList().isEmpty()) {
-        for (Batch batch : productInbound.getBatchList()) {
+      if (productInbound.getBatches() != null && !productInbound.getBatches().isEmpty()) {
+        for (Batch batch : productInbound.getBatches()) {
           BatchEntity batchEntity = batchService.addBatchInInbound(batch, product);
 
           Optional<InboundBatchDetailEntity> optionalInboundBatchDetail =
