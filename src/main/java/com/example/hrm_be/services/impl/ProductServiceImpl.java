@@ -157,12 +157,11 @@ public class ProductServiceImpl implements ProductService {
       List<UnitConversionEntity> unitConversions = new ArrayList<>();
 
       for (UnitConversion unitConversionDto : product.getUnitConversions()) {
-        unitConversionDto.setLargerUnit(product.getBaseUnit());
+        UnitConversionEntity unitConversionEntity = unitConversionMapper.toEntity(unitConversionDto);
 
-        // Set the product to this unit conversion
-        unitConversionDto.setProduct(productMapper.toDTO(savedProduct));
-        // Add to the list for any future use or associations
-        unitConversions.add(unitConversionMapper.toEntity(unitConversionDto));
+        unitConversionEntity.setProduct(savedProduct);
+        unitConversionEntity.setLargerUnit(savedProduct.getBaseUnit());
+        unitConversions.add(unitConversionEntity);
       }
       unitConversionService.saveAll(unitConversions);
     }
