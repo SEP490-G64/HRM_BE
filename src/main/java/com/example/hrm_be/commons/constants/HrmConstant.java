@@ -27,6 +27,10 @@ public class HrmConstant {
       public static final String INVALID = "error.request.invalid";
     }
 
+    public static class RESPONSE {
+      public static final String NOT_FOUND = "error.response.not_found";
+    }
+
     public static class FILE {
       public static final String DELETE = "error.file.delete";
       public static final String CREATE = "error.file.create";
