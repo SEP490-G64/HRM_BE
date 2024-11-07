@@ -7,7 +7,6 @@ import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.InboundBatchDetail;
 import com.example.hrm_be.models.entities.BatchEntity;
 import com.example.hrm_be.models.entities.InboundBatchDetailEntity;
-import com.example.hrm_be.models.entities.InboundDetailsEntity;
 import com.example.hrm_be.models.entities.ProductEntity;
 import com.example.hrm_be.repositories.InboundBatchDetailRepository;
 import com.example.hrm_be.services.BatchService;
@@ -59,17 +58,19 @@ public class InboundBatchDetailServiceImpl implements InboundBatchDetailService 
 
   @Override
   public void deleteAll(List<InboundBatchDetail> inboundDetailsEntities) {
-    List<Long> inboundDetailsIds = inboundDetailsEntities.stream()
-        .map(InboundBatchDetail::getId) // Assuming getId() returns the ID of the entity
-        .collect(Collectors.toList());
+    List<Long> inboundDetailsIds =
+        inboundDetailsEntities.stream()
+            .map(InboundBatchDetail::getId) // Assuming getId() returns the ID of the entity
+            .collect(Collectors.toList());
     inboundBatchDetailRepository.deleteByIds(inboundDetailsIds);
   }
 
   @Override
   public void saveAll(List<InboundBatchDetail> inboundBatchDetailEntities) {
     List<InboundBatchDetailEntity> save =
-        inboundBatchDetailEntities.stream().map(inboundBatchDetailMapper::toEntity).collect(
-        Collectors.toList());
+        inboundBatchDetailEntities.stream()
+            .map(inboundBatchDetailMapper::toEntity)
+            .collect(Collectors.toList());
     inboundBatchDetailRepository.saveAll(save);
   }
 

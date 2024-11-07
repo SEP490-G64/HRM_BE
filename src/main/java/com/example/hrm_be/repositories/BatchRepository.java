@@ -1,6 +1,5 @@
 package com.example.hrm_be.repositories;
 
-import com.example.hrm_be.configs.OpenApiConfig;
 import com.example.hrm_be.models.entities.BatchEntity;
 import com.example.hrm_be.models.entities.ProductEntity;
 import java.util.List;

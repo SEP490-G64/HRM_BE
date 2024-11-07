@@ -79,22 +79,24 @@ public class InboundDetailsServiceImpl implements InboundDetailsService {
 
   @Override
   public List<InboundDetails> findByInboundId(Long inboundId) {
-    return inboundDetailsRepository.findByInbound_Id(inboundId).stream().map(inboundDetailsMapper::toDTO).collect(
-        Collectors.toList());
+    return inboundDetailsRepository.findByInbound_Id(inboundId).stream()
+        .map(inboundDetailsMapper::toDTO)
+        .collect(Collectors.toList());
   }
 
   @Override
   public void deleteAll(List<InboundDetails> inboundDetails) {
-    List<Long> inboundDetailsIds = inboundDetails.stream()
-        .map(InboundDetails::getId) // Assuming getId() returns the ID of the entity
-        .collect(Collectors.toList());
+    List<Long> inboundDetailsIds =
+        inboundDetails.stream()
+            .map(InboundDetails::getId) // Assuming getId() returns the ID of the entity
+            .collect(Collectors.toList());
     inboundDetailsRepository.deleteAllById(inboundDetailsIds);
   }
 
   @Override
   public void saveAll(List<InboundDetails> inboundDetails) {
-List<InboundDetailsEntity> save =inboundDetails.stream().map(inboundDetailsMapper::toEntity).collect(
-    Collectors.toList());
+    List<InboundDetailsEntity> save =
+        inboundDetails.stream().map(inboundDetailsMapper::toEntity).collect(Collectors.toList());
     inboundDetailsRepository.saveAll(save);
   }
 

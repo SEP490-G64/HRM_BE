@@ -7,7 +7,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import com.example.hrm_be.models.entities.BatchEntity;
-import com.example.hrm_be.models.entities.ProductEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 

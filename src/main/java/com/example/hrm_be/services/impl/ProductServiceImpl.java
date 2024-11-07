@@ -699,18 +699,20 @@ public class ProductServiceImpl implements ProductService {
 
   @Override
   public Product addProductInInbound(ProductInbound productInbound) {
-    Product product =productRepository
-        .findByRegistrationCode(productInbound.getRegistrationCode())
-        .map(productMapper::convertToBaseInfo)
-        .orElseGet(
-            () -> {
-              Product newProduct = new Product();
-              newProduct.setRegistrationCode(productInbound.getRegistrationCode());
-              newProduct.setProductName(productInbound.getProductName());
-              newProduct.setBaseUnit(
-                productInbound.getBaseUnit()!=null? productInbound.getBaseUnit() :null);
-              return productMapper.toDTO(productRepository.save(productMapper.toEntity(newProduct)));
-            });
+    Product product =
+        productRepository
+            .findByRegistrationCode(productInbound.getRegistrationCode())
+            .map(productMapper::convertToBaseInfo)
+            .orElseGet(
+                () -> {
+                  Product newProduct = new Product();
+                  newProduct.setRegistrationCode(productInbound.getRegistrationCode());
+                  newProduct.setProductName(productInbound.getProductName());
+                  newProduct.setBaseUnit(
+                      productInbound.getBaseUnit() != null ? productInbound.getBaseUnit() : null);
+                  return productMapper.toDTO(
+                      productRepository.save(productMapper.toEntity(newProduct)));
+                });
     return product;
   }
 }
