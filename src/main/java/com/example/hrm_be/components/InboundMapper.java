@@ -148,6 +148,7 @@ public class InboundMapper {
     return InboundDetail.builder()
         .id(entity.getId())
         .inboundCode(entity.getInboundCode())
+        .note(entity.getNote())
         .inboundType(entity.getInboundType())
         .createdDate(entity.getCreatedDate())
         .inboundDate(entity.getInboundDate())
