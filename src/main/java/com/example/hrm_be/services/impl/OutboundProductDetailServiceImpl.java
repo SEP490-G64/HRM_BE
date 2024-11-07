@@ -26,6 +26,11 @@ public class OutboundProductDetailServiceImpl implements OutboundProductDetailSe
   }
 
   @Override
+  public List<OutboundProductDetailEntity> findByOutbound(Long outboundId) {
+    return outboundProductDetailRepository.findAllByOutboundId(outboundId);
+  }
+
+  @Override
   public List<OutboundProductDetailEntity> saveAll(List<OutboundProductDetailEntity> outboundProductDetailEntities) {
     return outboundProductDetailRepository.saveAll(outboundProductDetailEntities);
   }

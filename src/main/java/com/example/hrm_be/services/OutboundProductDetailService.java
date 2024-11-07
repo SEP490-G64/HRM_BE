@@ -13,5 +13,7 @@ public interface OutboundProductDetailService {
 
     OutboundProductDetailEntity findByOutboundAndProduct(Long outboundId, Long productId);
 
+    List<OutboundProductDetailEntity> findByOutbound(Long outboundId);
+
     List<OutboundProductDetailEntity> saveAll(List<OutboundProductDetailEntity> outboundProductDetailEntities);
 }

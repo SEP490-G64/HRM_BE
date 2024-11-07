@@ -41,7 +41,7 @@ public class OutboundProductDetailEntity extends CommonEntity {
   ProductEntity product;
 
   @Column(name = "outbound_quantity")
-  Integer outboundQuantity;
+  BigDecimal outboundQuantity;
 
   @Column(name = "price")
   BigDecimal price;

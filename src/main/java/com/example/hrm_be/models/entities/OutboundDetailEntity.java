@@ -48,7 +48,7 @@ public class OutboundDetailEntity extends CommonEntity {
   UnitOfMeasurementEntity unitOfMeasurement;
 
   @Column(name = "quantity")
-  Integer quantity;
+  BigDecimal quantity;
 
   @Column(name = "price")
   BigDecimal price;

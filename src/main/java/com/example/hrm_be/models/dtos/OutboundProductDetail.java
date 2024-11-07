@@ -34,7 +34,7 @@ public class OutboundProductDetail {
 
   List<Batch> batches;
 
-  Integer outboundQuantity;
+  BigDecimal outboundQuantity;
 
   BigDecimal price;
 

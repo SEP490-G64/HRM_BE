@@ -30,7 +30,7 @@ public class OutboundDetail {
 
   Product product;
 
-  Integer quantity;
+  BigDecimal quantity;
 
   UnitOfMeasurement unitOfMeasurement;
 }

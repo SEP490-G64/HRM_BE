@@ -5,6 +5,7 @@ import com.example.hrm_be.components.OutboundDetailMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.OutboundDetail;
 import com.example.hrm_be.models.entities.OutboundDetailEntity;
+import com.example.hrm_be.models.entities.OutboundProductDetailEntity;
 import com.example.hrm_be.repositories.OutboundDetailRepository;
 import com.example.hrm_be.services.OutboundDetailService;
 import io.micrometer.common.util.StringUtils;
@@ -114,5 +115,10 @@ public class OutboundDetailServiceImpl implements OutboundDetailService {
   @Override
   public List<OutboundDetailEntity> saveAll(List<OutboundDetailEntity> outboundDetailEntities) {
     return outboundDetailRepository.saveAll(outboundDetailEntities);
+  }
+
+  @Override
+  public List<OutboundDetailEntity> findByOutbound(Long outboundId) {
+    return outboundDetailRepository.findAllByOutboundId(outboundId);
   }
 }
