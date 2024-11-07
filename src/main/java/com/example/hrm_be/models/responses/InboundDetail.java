@@ -33,6 +33,7 @@ public class InboundDetail {
   private Long id;
   private InboundType inboundType;
   private String inboundCode;
+  private String note;
   private Branch fromBranch;
   private Branch toBranch;
   private Supplier supplier;
