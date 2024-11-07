@@ -16,11 +16,11 @@ public interface InboundDetailsService {
 
   void delete(Long id);
 
-  List<InboundDetailsEntity> findByInboundId(Long inboundId);
+  List<InboundDetails> findByInboundId(Long inboundId);
 
-  void deleteAll(List<InboundDetailsEntity> inboundDetailsEntities);
+  void deleteAll(List<InboundDetails> inboundDetailsEntities);
 
-  void saveAll(List<InboundDetailsEntity> inboundDetailsEntities);
+  void saveAll(List<InboundDetails> inboundDetailsEntities);
 
   InboundEntity updateAverageInboundPricesForProductsAndInboundTotalPrice(InboundEntity inbound);
 }

@@ -1,5 +1,6 @@
 package com.example.hrm_be.services;
 
+import com.example.hrm_be.models.dtos.InboundBatchDetail;
 import com.example.hrm_be.models.entities.BatchEntity;
 import com.example.hrm_be.models.entities.InboundBatchDetailEntity;
 import com.example.hrm_be.models.entities.ProductEntity;
@@ -11,11 +12,11 @@ import java.util.List;
 public interface InboundBatchDetailService {
   void delete(Long id);
 
-  List<InboundBatchDetailEntity> findByInboundId(Long inboundId);
+  List<InboundBatchDetail> findByInboundId(Long inboundId);
 
-  void deleteAll(List<InboundBatchDetailEntity> inboundBatchDetailEntities);
+  void deleteAll(List<InboundBatchDetail> inboundBatchDetailEntities);
 
-  void saveAll(List<InboundBatchDetailEntity> inboundBatchDetailEntities);
+  void saveAll(List<InboundBatchDetail> inboundBatchDetailEntities);
 
   void updateAverageInboundPricesForBatches(BatchEntity batch);
 

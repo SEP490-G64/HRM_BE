@@ -44,7 +44,7 @@ public interface ProductService {
 
   List<AllowedProductEntity> getAllowProducts(String searchStr);
 
-  ProductEntity addProductInInbound(ProductInbound productInbound);
+  Product addProductInInbound(ProductInbound productInbound);
 
   List<ProductSupplierDTO> getAllProductsBySupplier(Long id, String ProductName);
 }

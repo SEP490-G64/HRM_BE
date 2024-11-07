@@ -80,6 +80,7 @@ public class ProductServiceImpl implements ProductService {
   @Autowired private SpecialConditionMapper specialConditionMapper;
   @Autowired private BranchMapper branchMapper;
   @Autowired private StorageLocationMapper storageLocationMapper;
+  @Autowired private UserMapper userMapper;
   @Autowired private UnitConversionMapper unitConversionMapper;
   @Autowired private UnitOfMeasurementMapper unitOfMeasurementMapper;
   @Autowired private AllowedProductService allowedProductService;
@@ -697,18 +698,19 @@ public class ProductServiceImpl implements ProductService {
   }
 
   @Override
-  public ProductEntity addProductInInbound(ProductInbound productInbound) {
-    productRepository
+  public Product addProductInInbound(ProductInbound productInbound) {
+    Product product =productRepository
         .findByRegistrationCode(productInbound.getRegistrationCode())
+        .map(productMapper::convertToBaseInfo)
         .orElseGet(
             () -> {
-              ProductEntity newProduct = new ProductEntity();
+              Product newProduct = new Product();
               newProduct.setRegistrationCode(productInbound.getRegistrationCode());
               newProduct.setProductName(productInbound.getProductName());
               newProduct.setBaseUnit(
-                  unitOfMeasurementMapper.toEntity(productInbound.getBaseUnit()));
-              return productRepository.save(newProduct);
+                productInbound.getBaseUnit()!=null? productInbound.getBaseUnit() :null);
+              return productMapper.toDTO(productRepository.save(productMapper.toEntity(newProduct)));
             });
-    return null;
+    return product;
   }
 }

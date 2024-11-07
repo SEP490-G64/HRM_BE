@@ -9,6 +9,7 @@ import com.example.hrm_be.models.entities.*;
 import com.example.hrm_be.repositories.InboundDetailsRepository;
 import com.example.hrm_be.services.*;
 import io.micrometer.common.util.StringUtils;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -77,20 +78,24 @@ public class InboundDetailsServiceImpl implements InboundDetailsService {
   }
 
   @Override
-  public List<InboundDetailsEntity> findByInboundId(Long inboundId) {
-    return inboundDetailsRepository.findByInbound_Id(inboundId);
+  public List<InboundDetails> findByInboundId(Long inboundId) {
+    return inboundDetailsRepository.findByInbound_Id(inboundId).stream().map(inboundDetailsMapper::toDTO).collect(
+        Collectors.toList());
   }
 
   @Override
-  public void deleteAll(List<InboundDetailsEntity> inboundDetailsEntities) {
-
-    inboundDetailsRepository.deleteAll(inboundDetailsEntities);
+  public void deleteAll(List<InboundDetails> inboundDetails) {
+    List<Long> inboundDetailsIds = inboundDetails.stream()
+        .map(InboundDetails::getId) // Assuming getId() returns the ID of the entity
+        .collect(Collectors.toList());
+    inboundDetailsRepository.deleteAllById(inboundDetailsIds);
   }
 
   @Override
-  public void saveAll(List<InboundDetailsEntity> inboundDetailsEntities) {
-
-    inboundDetailsRepository.saveAll(inboundDetailsEntities);
+  public void saveAll(List<InboundDetails> inboundDetails) {
+List<InboundDetailsEntity> save =inboundDetails.stream().map(inboundDetailsMapper::toEntity).collect(
+    Collectors.toList());
+    inboundDetailsRepository.saveAll(save);
   }
 
   @Override
