@@ -101,7 +101,7 @@ public class AdminUserController {
   public ResponseEntity<BaseOutput<User>> getById(
       @PathVariable("id") @NotNull(message = "error.request.path.variable.id.invalid")
           Long id) { // Validate ID input
-    BaseOutput<User> response = null;
+    BaseOutput<User> response;
     if (id == null) { // Check if ID is null
       response =
           BaseOutput.<User>builder()
@@ -127,16 +127,15 @@ public class AdminUserController {
               .build();
       return ResponseEntity.status(HttpStatus.NOT_FOUND)
           .body(response); // Return BAD_REQUEST status
-    } else {
-      response =
-          BaseOutput.<User>builder()
-              .message(HttpStatus.OK.toString()) // Set response message to OK
-              .data(user) // Attach the user data
-              .status(
-                  com.example.hrm_be.commons.enums.ResponseStatus
-                      .SUCCESS) // Set response status to SUCCESS
-              .build();
     }
+    response =
+        BaseOutput.<User>builder()
+            .message(HttpStatus.OK.toString()) // Set response message to OK
+            .data(user) // Attach the user data
+            .status(
+                com.example.hrm_be.commons.enums.ResponseStatus
+                    .SUCCESS) // Set response status to SUCCESS
+            .build();
 
     // Return the response entity with a status of OK
     return ResponseEntity.ok(response);
@@ -148,7 +147,7 @@ public class AdminUserController {
   public ResponseEntity<BaseOutput<User>> getByEmail(
       @PathVariable("email") @NotNull(message = REQUEST.INVALID_PATH_VARIABLE)
           String email) { // Validate email input
-    BaseOutput<User> response = null;
+    BaseOutput<User> response;
     if (StringUtils.isAllBlank(email)) { // Check if email is blank
       response =
           BaseOutput.<User>builder()
@@ -171,10 +170,9 @@ public class AdminUserController {
               .build();
       return ResponseEntity.status(HttpStatus.NOT_FOUND)
           .body(response); // Return BAD_REQUEST status
-    } else {
-      // Create response object containing the retrieved user
-      response = BaseOutput.<User>builder().message(HttpStatus.OK.toString()).data(user).build();
     }
+    // Create response object containing the retrieved user
+    response = BaseOutput.<User>builder().message(HttpStatus.OK.toString()).data(user).build();
 
     // Return the response entity with a status of OK
     return ResponseEntity.ok(response);
