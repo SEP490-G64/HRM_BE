@@ -148,8 +148,9 @@ public class AdminUserController {
   public ResponseEntity<BaseOutput<User>> getByEmail(
       @PathVariable("email") @NotNull(message = REQUEST.INVALID_PATH_VARIABLE)
           String email) { // Validate email input
+    BaseOutput<User> response = null;
     if (StringUtils.isAllBlank(email)) { // Check if email is blank
-      BaseOutput<User> response =
+      response =
           BaseOutput.<User>builder()
               .errors(List.of(REQUEST.INVALID_PATH_VARIABLE))
               .build(); // Create error response
@@ -161,8 +162,19 @@ public class AdminUserController {
     User user = userService.getByEmail(email);
 
     // Create response object containing the retrieved user
-    BaseOutput<User> response =
-        BaseOutput.<User>builder().message(HttpStatus.OK.toString()).data(user).build();
+    if (user == null) {
+      response =
+          BaseOutput.<User>builder()
+              .status(ResponseStatus.FAILED) // Set response status to FAILED
+              .errors(
+                  List.of(HrmConstant.ERROR.RESPONSE.NOT_FOUND)) // Add error message for invalid ID
+              .build();
+      return ResponseEntity.status(HttpStatus.NOT_FOUND)
+          .body(response); // Return BAD_REQUEST status
+    } else {
+      // Create response object containing the retrieved user
+      response = BaseOutput.<User>builder().message(HttpStatus.OK.toString()).data(user).build();
+    }
 
     // Return the response entity with a status of OK
     return ResponseEntity.ok(response);
