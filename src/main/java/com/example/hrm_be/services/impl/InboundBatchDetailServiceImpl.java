@@ -4,16 +4,17 @@ import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.components.BatchMapper;
 import com.example.hrm_be.components.InboundBatchDetailMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
+import com.example.hrm_be.models.dtos.InboundBatchDetail;
 import com.example.hrm_be.models.entities.BatchEntity;
 import com.example.hrm_be.models.entities.InboundBatchDetailEntity;
 import com.example.hrm_be.models.entities.ProductEntity;
 import com.example.hrm_be.repositories.InboundBatchDetailRepository;
 import com.example.hrm_be.services.BatchService;
 import com.example.hrm_be.services.InboundBatchDetailService;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -45,24 +46,32 @@ public class InboundBatchDetailServiceImpl implements InboundBatchDetailService 
   }
 
   @Override
-  public List<InboundBatchDetailEntity> findByInboundId(Long inboundId) {
+  public List<InboundBatchDetail> findByInboundId(Long inboundId) {
     if (inboundId == null || inboundBatchDetailRepository.findById(inboundId).isPresent()) {
       throw new HrmCommonException(HrmConstant.ERROR.INBOUND.NOT_EXIST);
     }
 
-    return inboundBatchDetailRepository.findByInbound_Id(inboundId);
+    return inboundBatchDetailRepository.findByInbound_Id(inboundId).stream()
+        .map(inboundBatchDetailMapper::toDTO)
+        .collect(Collectors.toList());
   }
 
   @Override
-  public void deleteAll(List<InboundBatchDetailEntity> inboundDetailsEntities) {
-
-    inboundBatchDetailRepository.deleteAll(inboundDetailsEntities);
+  public void deleteAll(List<InboundBatchDetail> inboundDetailsEntities) {
+    List<Long> inboundDetailsIds =
+        inboundDetailsEntities.stream()
+            .map(InboundBatchDetail::getId) // Assuming getId() returns the ID of the entity
+            .collect(Collectors.toList());
+    inboundBatchDetailRepository.deleteByIds(inboundDetailsIds);
   }
 
   @Override
-  public void saveAll(List<InboundBatchDetailEntity> inboundBatchDetailEntities) {
-
-    inboundBatchDetailRepository.saveAll(inboundBatchDetailEntities);
+  public void saveAll(List<InboundBatchDetail> inboundBatchDetailEntities) {
+    List<InboundBatchDetailEntity> save =
+        inboundBatchDetailEntities.stream()
+            .map(inboundBatchDetailMapper::toEntity)
+            .collect(Collectors.toList());
+    inboundBatchDetailRepository.saveAll(save);
   }
 
   @Override

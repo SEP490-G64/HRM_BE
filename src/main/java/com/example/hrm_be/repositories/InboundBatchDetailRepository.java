@@ -5,6 +5,7 @@ import com.example.hrm_be.models.entities.ProductEntity;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -35,4 +36,8 @@ public interface InboundBatchDetailRepository
   List<InboundBatchDetailEntity> findAllByBatchId(Long batchId);
 
   List<InboundBatchDetailEntity> findByInbound_Id(Long id);
+
+  @Modifying
+  @Query("DELETE FROM InboundBatchDetailEntity opd WHERE opd.id in :outboundId")
+  void deleteByIds(@Param("outboundId") List<Long> outboundId);
 }

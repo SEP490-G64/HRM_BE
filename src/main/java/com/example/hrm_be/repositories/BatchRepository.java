@@ -27,4 +27,6 @@ public interface BatchRepository
   List<BatchEntity> findAllByProductIdThroughInbound(@Param("productId") Long productId);
 
   List<BatchEntity> findAllByProductId(Long productId);
+
+  Optional<BatchEntity> findByBatchCodeAndProduct_Id(String code, Long id);
 }
