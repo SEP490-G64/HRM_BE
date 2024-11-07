@@ -3,7 +3,9 @@ package com.example.hrm_be.services;
 import com.example.hrm_be.models.dtos.UnitConversion;
 import java.util.List;
 
+import com.example.hrm_be.models.entities.ProductEntity;
 import com.example.hrm_be.models.entities.UnitConversionEntity;
+import com.example.hrm_be.models.entities.UnitOfMeasurementEntity;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -23,4 +25,7 @@ public interface UnitConversionService {
   void deleteAll(List<UnitConversionEntity> unitConversionEntities);
 
   List<UnitConversionEntity> getByProductId(Long productId);
+
+  UnitConversionEntity findByProductIdAndLargerUnitIdAndSmallerUnitId(
+          Long productId, Long largerUnitId, Long smallerUnitId);
 }

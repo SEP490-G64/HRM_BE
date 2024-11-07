@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface OutboundDetailRepository extends JpaRepository<OutboundDetailEntity, Long> {
 
-  Optional<OutboundDetailEntity> findByOutboundAndBatch(OutboundEntity outbound, BatchEntity batch);
+  Optional<OutboundDetailEntity> findByOutboundIdAndBatchId(Long outboundId, Long batchId);
 
   List<OutboundDetailEntity> findByBatchAndOutbound(BatchEntity batch, OutboundEntity outbound);
 

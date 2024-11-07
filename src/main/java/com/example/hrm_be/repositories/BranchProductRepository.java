@@ -14,8 +14,6 @@ public interface BranchProductRepository
     extends JpaRepository<BranchProductEntity, Long>,
         JpaSpecificationExecutor<BranchProductEntity> {
 
-  Optional<BranchProductEntity> findByBranchAndProduct(BranchEntity branch, ProductEntity product);
-
   @Query("SELECT SUM(bp.quantity) FROM BranchProductEntity bp WHERE bp.product.id = :productId")
   BigDecimal findTotalQuantityForProduct(Long productId);
 

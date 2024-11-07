@@ -15,8 +15,8 @@ import org.springframework.stereotype.Repository;
 public interface OutboundProductDetailRepository
     extends JpaRepository<OutboundProductDetailEntity, Long> {
 
-  Optional<OutboundProductDetailEntity> findByOutboundAndProduct(
-      OutboundEntity outbound, ProductEntity product);
+  Optional<OutboundProductDetailEntity> findByOutboundIdAndProductId(
+          Long outboundId, Long productId);
 
   @Modifying
   @Query("DELETE FROM OutboundProductDetailEntity opd WHERE opd.outbound.id = :outboundId")

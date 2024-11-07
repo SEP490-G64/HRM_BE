@@ -5,7 +5,9 @@ import com.example.hrm_be.commons.constants.HrmConstant.ERROR.UNIT_CONVERSION;
 import com.example.hrm_be.components.UnitConversionMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.UnitConversion;
+import com.example.hrm_be.models.entities.ProductEntity;
 import com.example.hrm_be.models.entities.UnitConversionEntity;
+import com.example.hrm_be.models.entities.UnitOfMeasurementEntity;
 import com.example.hrm_be.repositories.UnitConversionRepository;
 import com.example.hrm_be.services.UnitConversionService;
 import java.util.List;
@@ -86,5 +88,10 @@ public class UnitConversionImpl implements UnitConversionService {
   @Override
   public List<UnitConversionEntity> getByProductId(Long productId) {
     return unitConversionRepository.getByProductId(productId);
+  }
+
+  @Override
+  public UnitConversionEntity findByProductIdAndLargerUnitIdAndSmallerUnitId(Long productId, Long largerUnitId, Long smallerUnitId) {
+    return unitConversionRepository.findByProductIdAndLargerUnitIdAndSmallerUnitId(productId, largerUnitId, smallerUnitId).orElse(null);
   }
 }

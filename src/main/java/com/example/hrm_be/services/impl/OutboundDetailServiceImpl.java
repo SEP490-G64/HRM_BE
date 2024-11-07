@@ -16,6 +16,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -98,5 +99,20 @@ public class OutboundDetailServiceImpl implements OutboundDetailService {
 
     // Delete the entity from the repository
     outboundDetailRepository.deleteById(id);
+  }
+
+  @Override
+  public void deleteByOutboundId(Long outboundId) {
+    outboundDetailRepository.deleteByOutboundId(outboundId);
+  }
+
+  @Override
+  public OutboundDetailEntity findByOutboundAndBatch(Long outboundId, Long batchId) {
+    return outboundDetailRepository.findByOutboundIdAndBatchId(outboundId, batchId).orElse(null);
+  }
+
+  @Override
+  public List<OutboundDetailEntity> saveAll(List<OutboundDetailEntity> outboundDetailEntities) {
+    return outboundDetailRepository.saveAll(outboundDetailEntities);
   }
 }

@@ -7,6 +7,7 @@ import com.example.hrm_be.commons.constants.HrmConstant.ERROR.BRANCHPRODUCT;
 import com.example.hrm_be.commons.constants.HrmConstant.ERROR.INVENTORY_CHECK;
 import com.example.hrm_be.commons.constants.HrmConstant.ERROR.PRODUCT;
 import com.example.hrm_be.commons.enums.InventoryCheckStatus;
+import com.example.hrm_be.components.BranchBatchMapper;
 import com.example.hrm_be.components.BranchMapper;
 import com.example.hrm_be.components.InventoryCheckMapper;
 import com.example.hrm_be.components.UserMapper;
@@ -68,6 +69,8 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
 
   @Autowired private UserMapper userMapper;
   @Autowired private BranchMapper branchMapper;
+    @Autowired
+    private BranchBatchMapper branchBatchMapper;
 
   @Override
   public InventoryCheck getById(Long id) {
@@ -415,7 +418,7 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
 
       // Find the BranchBatch entity for this batch and branch
       BranchBatch branchBatch =
-          branchBatchService.getByBranchIdAndBatchId(branch.getId(), batch.getId());
+          branchBatchMapper.toDTO(branchBatchService.getByBranchIdAndBatchId(branch.getId(), batch.getId()));
       if (branchBatch == null) {
         throw new HrmCommonException(BRANCHBATCH.NOT_EXIST);
       }

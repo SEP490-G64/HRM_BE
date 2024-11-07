@@ -36,8 +36,6 @@ import java.io.IOException;
 import com.example.hrm_be.utils.WplUtil;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.*;
-import java.util.ArrayList;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -62,7 +60,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class InboundServiceImpl implements InboundService {
   @Autowired private InboundRepository inboundRepository;
 
-  @Autowired private WplUtil wplUtil;
   @Autowired private InboundMapper inboundMapper;
   @Autowired private BranchMapper branchMapper;
   @Autowired private UnitOfMeasurementMapper unitOfMeasurementMapper;
@@ -380,7 +377,7 @@ public class InboundServiceImpl implements InboundService {
         .forEach(
             inboundBatchDetail -> {
               BatchEntity batch = inboundBatchDetail.getBatch();
-              Integer quantity =
+              int quantity =
                   inboundBatchDetail.getQuantity() != null ? inboundBatchDetail.getQuantity() : 0;
               // Assume this represents the batch
               // quantity

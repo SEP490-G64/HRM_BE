@@ -27,11 +27,10 @@ public class OutboundDetail {
   Outbound outbound;
 
   Batch batch;
+
   Product product;
 
   Integer quantity;
-
-  BigDecimal remainQuantity;
 
   UnitOfMeasurement unitOfMeasurement;
 }

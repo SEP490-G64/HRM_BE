@@ -19,5 +19,9 @@ public interface BranchBatchService {
 
   List<BranchBatchEntity> findByBatchId(Long id);
 
-  BranchBatch getByBranchIdAndBatchId(Long branchId, Long batchId);
+  BranchBatchEntity getByBranchIdAndBatchId(Long branchId, Long batchId);
+
+  BigDecimal findQuantityByBatchIdAndBranchId(Long batchId, Long branchId);
+
+  List<BranchBatchEntity> findByProductAndBranch(Long productId, Long branchId);
 }

@@ -19,6 +19,8 @@ import lombok.experimental.Accessors;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 
+import java.math.BigDecimal;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -47,4 +49,7 @@ public class OutboundDetailEntity extends CommonEntity {
 
   @Column(name = "quantity")
   Integer quantity;
+
+  @Column(name = "price")
+  BigDecimal price;
 }

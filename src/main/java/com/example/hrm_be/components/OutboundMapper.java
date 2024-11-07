@@ -203,4 +203,42 @@ public class OutboundMapper {
 
     return outboundDTO;
   }
+
+  // Helper method to convert OutboundEntity to Outbound with just basic info
+  public Outbound convertToDtoBasicInfo(OutboundEntity entity) {
+    return Outbound.builder()
+            .id(entity.getId())
+            .outBoundCode(entity.getOutBoundCode())
+            .outboundDate(entity.getOutboundDate())
+            .totalPrice(entity.getTotalPrice())
+            .isApproved(entity.getIsApproved())
+            .status(entity.getStatus())
+            .fromBranch(
+                    entity.getFromBranch() != null
+                            ? branchMapper.convertToDTOBasicInfo(entity.getFromBranch())
+                            : null)
+            .supplier(entity.getSupplier() != null ? supplierMapper.toDTO(entity.getSupplier()) : null)
+            .toBranch(
+                    entity.getToBranch() != null
+                            ? branchMapper.convertToDTOBasicInfo(entity.getToBranch())
+                            : null)
+            .createdDate(entity.getCreatedDate())
+            .outBoundCode(entity.getOutBoundCode())
+            .outboundDate(entity.getOutboundDate())
+            .totalPrice(entity.getTotalPrice())
+            .isApproved(entity.getIsApproved())
+            .approvedBy(
+                    entity.getApprovedBy() != null
+                            ? userMapper.convertToDtoBasicInfo(entity.getApprovedBy())
+                            : null)
+            .status(entity.getStatus())
+            .taxable(entity.getTaxable())
+            .note(entity.getNote())
+            .createdBy(
+                    entity.getCreatedBy() != null
+                            ? userMapper.convertToDtoBasicInfo(entity.getCreatedBy())
+                            : null)
+            .outboundDate(entity.getOutboundDate())
+            .build();
+  }
 }
