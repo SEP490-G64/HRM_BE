@@ -69,6 +69,7 @@ public class OutboundServiceImpl implements OutboundService {
   @Autowired private BranchProductMapper branchProductMapper;
   @Autowired private BranchBatchMapper branchBatchMapper;
   @Autowired private OutboundProductDetailMapper outboundProductDetailMapper;
+  @Autowired private OutboundDetailMapper outboundDetailMapper;
 
   @Autowired private UserService userService;
   @Autowired private BatchService batchService;
@@ -109,7 +110,7 @@ public class OutboundServiceImpl implements OutboundService {
                   // Set outbound quantity and price
                   productDetailDTO.setOutboundQuantity(outboundProductDetail.getOutboundQuantity());
                   productDetailDTO.setPrice(outboundProductDetail.getPrice());
-                  productDetailDTO.setTargetUnit(unitOfMeasurementMapper.toDTO(outboundProductDetail.getUnitOfMeasurement()));
+                  productDetailDTO.setTargetUnit(outboundProductDetail.getTargetUnit());
 
                   return productDetailDTO;
                 })
@@ -140,7 +141,7 @@ public class OutboundServiceImpl implements OutboundService {
                   // Set outbound quantity and price
                   productWithBatchDetailDTO.setOutboundQuantity(outboundDetail.getQuantity());
                   productWithBatchDetailDTO.setPrice(outboundDetail.getPrice());
-                  productWithBatchDetailDTO.setTargetUnit(unitOfMeasurementMapper.toDTO(outboundDetail.getUnitOfMeasurement()));
+                  productWithBatchDetailDTO.setTargetUnit(outboundDetail.getUnitOfMeasurement());
 
                   return productWithBatchDetailDTO;
                 })
@@ -224,7 +225,7 @@ public class OutboundServiceImpl implements OutboundService {
       Batch batch = productDetail.getBatch();
       ProductEntity productEntity = productMapper.toEntity(productService.getById(product.getId()));
 
-      BigDecimal convertedQuantity = this.convertToUnit(product.getId(), productEntity.getBaseUnit().getId(),
+      BigDecimal convertedQuantity = unitConversionService.convertToUnit(product.getId(), productEntity.getBaseUnit().getId(),
               productDetail.getOutboundQuantity(), productDetail.getTargetUnit(), true);
 
       // If batch information is provided, process as a batch detail
@@ -239,7 +240,8 @@ public class OutboundServiceImpl implements OutboundService {
         }
 
         OutboundDetailEntity existingBatchDetail =
-            outboundDetailService.findByOutboundAndBatch(updatedOutboundEntity.getId(), batch.getId());
+            outboundDetailMapper.toEntity(outboundDetailService.findByOutboundAndBatch
+                    (updatedOutboundEntity.getId(), batch.getId()));
 
         OutboundDetailEntity outboundDetail;
         if (existingBatchDetail != null) {
@@ -270,8 +272,8 @@ public class OutboundServiceImpl implements OutboundService {
         }
 
         OutboundProductDetailEntity existingProductDetail =
-            outboundProductDetailService.findByOutboundAndProduct(
-                updatedOutboundEntity.getId(), productEntity.getId());
+            outboundProductDetailMapper.toEntity(outboundProductDetailService.findByOutboundAndProduct(
+                updatedOutboundEntity.getId(), productEntity.getId()));
 
         OutboundProductDetailEntity outboundProductDetail;
         if (existingProductDetail != null) {
@@ -349,12 +351,12 @@ public class OutboundServiceImpl implements OutboundService {
 
       if (branchProduct != null) {
         BigDecimal pricePreUnit =
-                convertToUnit(product.getId(), productEntity.getBaseUnit().getId(),
+                unitConversionService.convertToUnit(product.getId(), productEntity.getBaseUnit().getId(),
                         productEntity.getSellPrice(), productDetail.getTargetUnit(), true);
 
         BigDecimal outboundQuantity = productDetail.getOutboundQuantity();
         BigDecimal convertedQuantity =
-                convertToUnit(
+                unitConversionService.convertToUnit(
                         productEntity.getId(), productEntity.getBaseUnit().getId(),
                         outboundQuantity,
                         productDetail.getTargetUnit(), true);
@@ -382,9 +384,9 @@ public class OutboundServiceImpl implements OutboundService {
               // If the current batch is insufficient, issue all of it and update the remaining quantity
               BigDecimal priceOutboundDetail = branchBatch.getQuantity().multiply(pricePreUnit);
               this.addOutboundDetailForSell(updatedOutboundEntity, batchDTO,
-                      convertToUnit(product.getId(), productEntity.getBaseUnit().getId(),
+                      unitConversionService.convertToUnit(product.getId(), productEntity.getBaseUnit().getId(),
                       branchBatch.getQuantity(), productDetail.getTargetUnit(), false),
-                      priceOutboundDetail, outboundDetailEntities);
+                      priceOutboundDetail, productDetail.getTargetUnit(), outboundDetailEntities);
 
               totalPrice = totalPrice.add(priceOutboundDetail);
               remainingQuantity = remainingQuantity.subtract(branchBatch.getQuantity());
@@ -394,9 +396,9 @@ public class OutboundServiceImpl implements OutboundService {
               BigDecimal priceOutboundDetail = remainingQuantity.multiply(pricePreUnit);
               // Issue only the required quantity and deduct it from the batch
               this.addOutboundDetailForSell(updatedOutboundEntity, batchDTO,
-                      convertToUnit(product.getId(), productEntity.getBaseUnit().getId(),
+                      unitConversionService.convertToUnit(product.getId(), productEntity.getBaseUnit().getId(),
                       remainingQuantity, productDetail.getTargetUnit(), false),
-                      priceOutboundDetail, outboundDetailEntities);
+                      priceOutboundDetail, productDetail.getTargetUnit(), outboundDetailEntities);
 
               totalPrice = totalPrice.add(priceOutboundDetail);
               branchBatch.setQuantity(branchBatch.getQuantity().subtract(remainingQuantity));
@@ -461,26 +463,26 @@ public class OutboundServiceImpl implements OutboundService {
 
     BigDecimal totalPrice = BigDecimal.ZERO;
 
-    List<OutboundProductDetailEntity> outboundProductDetails =
+    List<OutboundProductDetail> outboundProductDetails =
             outboundProductDetailService.findByOutbound(outboundId);
     List<OutboundDetailEntity> outboundDetailEntities = new ArrayList<>();
     List<OutboundProductDetailEntity> outboundProductDetailEntities = new ArrayList<>();
 
     // Process each OutboundProductDetail
-    for (OutboundProductDetailEntity productDetail : outboundProductDetails) {
-      ProductEntity productEntity = productDetail.getProduct();
+    for (OutboundProductDetail productDetail : outboundProductDetails) {
+      Product productEntity = productDetail.getProduct();
 
       // Find the BranchProduct entity for this product and branch
-      BranchProductEntity branchProduct =
-          branchProductService.findByBranchAndProduct(fromBranch.getId(), productEntity.getId());
+      BranchProduct branchProduct =
+          branchProductService.getByBranchIdAndProductId(fromBranch.getId(), productEntity.getId());
 
       // Convert the outbound quantity to the product's base unit if a different target unit is
       // specified
       BigDecimal convertedQuantity = BigDecimal.ONE;
-          convertToUnit(
+          unitConversionService.convertToUnit(
                   productEntity.getId(), productEntity.getBaseUnit().getId(),
                   productDetail.getOutboundQuantity(),
-                  unitOfMeasurementMapper.toDTO(productDetail.getUnitOfMeasurement()), true);
+                  productDetail.getTargetUnit(), true);
 
       // Check if sufficient quantity is available
       if (branchProduct.getQuantity().compareTo(convertedQuantity) < 0) {
@@ -489,7 +491,7 @@ public class OutboundServiceImpl implements OutboundService {
 
       // Subtract the converted quantity
       branchProduct.setQuantity(branchProduct.getQuantity().subtract(convertedQuantity));
-      branchProductService.save(branchProductMapper.toDTO(branchProduct));
+      branchProductService.save(branchProduct);
 
       BigDecimal outboundProductDetailPrice = productEntity.getSellPrice().multiply(convertedQuantity);
       BigDecimal updateOutboundProductDetailPrice = outboundProductDetailPrice;
@@ -503,15 +505,15 @@ public class OutboundServiceImpl implements OutboundService {
       }
       productDetail.setPrice(updateOutboundProductDetailPrice);
       totalPrice = totalPrice.add(updateOutboundProductDetailPrice);
-      outboundProductDetailEntities.add(productDetail);
+      outboundProductDetailEntities.add(outboundProductDetailMapper.toEntity(productDetail));
     }
 
-    List<OutboundDetailEntity> outboundDetails =
+    List<OutboundDetail> outboundDetails =
             outboundDetailService.findByOutbound(outboundId);
 
     // Process each OutboundDetail (for batches)
-    for (OutboundDetailEntity batchDetail : outboundDetails) {
-      BatchEntity batch = batchDetail.getBatch();
+    for (OutboundDetail batchDetail : outboundDetails) {
+      Batch batch = batchDetail.getBatch();
 
       // Find the BranchBatch entity for this batch and branch
       BranchBatchEntity branchBatch =
@@ -519,16 +521,16 @@ public class OutboundServiceImpl implements OutboundService {
               .getByBranchIdAndBatchId(fromBranch.getId(), batch.getId());
 
       // Find the BranchProduct entity for this product and branch
-      BranchProductEntity branchProduct =
+      BranchProduct branchProduct =
           branchProductService
-              .findByBranchAndProduct(
+              .getByBranchIdAndProductId(
                   fromBranch.getId(), branchBatch.getBatch().getProduct().getId());
       // Convert the outbound quantity to the product's base unit if a different target unit is
       // specified
       BigDecimal convertedQuantity =
-          convertToUnit(
+          unitConversionService.convertToUnit(
               batch.getProduct().getId(), batch.getProduct().getBaseUnit().getId(),
-              batchDetail.getQuantity(), unitOfMeasurementMapper.toDTO(batchDetail.getUnitOfMeasurement()), true);
+              batchDetail.getQuantity(), batchDetail.getUnitOfMeasurement(), true);
 
       // Check if sufficient quantity is available
       if (branchBatch.getQuantity().compareTo(convertedQuantity) < 0) {
@@ -539,6 +541,7 @@ public class OutboundServiceImpl implements OutboundService {
       branchBatch.setQuantity(branchBatch.getQuantity().subtract(convertedQuantity));
       branchProduct.setQuantity(branchProduct.getQuantity().subtract(convertedQuantity));
       branchBatchService.save(branchBatchMapper.toDTO(branchBatch));
+      branchProductService.save(branchProduct);
 
       BigDecimal outboundDetailPrice = batch.getProduct().getSellPrice().multiply(convertedQuantity);
       BigDecimal updateOutboundDetailPrice = outboundDetailPrice;
@@ -552,7 +555,7 @@ public class OutboundServiceImpl implements OutboundService {
       }
       batchDetail.setPrice(updateOutboundDetailPrice);
       totalPrice = totalPrice.add(updateOutboundDetailPrice);
-      outboundDetailEntities.add(batchDetail);
+      outboundDetailEntities.add(outboundDetailMapper.toEntity(batchDetail));
     }
 
     // Save all outbound details to the repositories
@@ -615,43 +618,14 @@ public class OutboundServiceImpl implements OutboundService {
     outboundRepository.deleteById(id); // Delete the outbound entity by ID
   }
 
-  private BigDecimal convertToUnit(Long productId, Long baseUnitId, BigDecimal quantity,
-                                   UnitOfMeasurement targetUnit, Boolean toBaseUnit) {
-    // If the target unit is the same as the base unit, no conversion is needed
-    if (targetUnit == null || targetUnit.getId().equals(baseUnitId)) {
-      return quantity;
-    }
-
-    // Check if conversion is from smaller to larger or larger to smaller
-    UnitConversionEntity conversion =
-            unitConversionService.findByProductIdAndLargerUnitIdAndSmallerUnitId(
-                productId, baseUnitId, targetUnit.getId());
-
-    if (conversion != null) {
-      if (toBaseUnit) {
-        return quantity.divide(
-                BigDecimal.valueOf(conversion.getFactorConversion()), RoundingMode.HALF_UP);
-      }
-      else {
-        return quantity.multiply(BigDecimal.valueOf(conversion.getFactorConversion()));
-      }
-    } else {
-      return BigDecimal.ZERO;
-    }
-  }
-
   private void addOutboundDetailForSell(OutboundEntity outboundEntity, Batch batchDTO,
-                                 BigDecimal quantity, BigDecimal price, List<OutboundDetailEntity> outboundDetailEntities) {
+                                 BigDecimal quantity, BigDecimal price, UnitOfMeasurement targetUnit, List<OutboundDetailEntity> outboundDetailEntities) {
     OutboundDetailEntity outboundDetail = OutboundDetailEntity.builder()
             .outbound(outboundEntity)
             .batch(batchMapper.toEntity(batchDTO))
             .quantity(quantity)
             .price(price)
-            .unitOfMeasurement(
-                    batchMapper
-                            .toEntity(batchDTO)
-                            .getProduct()
-                            .getBaseUnit()) // Use product's base unit for batch
+            .unitOfMeasurement(unitOfMeasurementMapper.toEntity(targetUnit)) // Use product's base unit for batch
             .build();
     outboundDetailEntities.add(outboundDetail);
   }

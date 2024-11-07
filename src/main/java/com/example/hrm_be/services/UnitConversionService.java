@@ -1,8 +1,11 @@
 package com.example.hrm_be.services;
 
 import com.example.hrm_be.models.dtos.UnitConversion;
+
+import java.math.BigDecimal;
 import java.util.List;
 
+import com.example.hrm_be.models.dtos.UnitOfMeasurement;
 import com.example.hrm_be.models.entities.ProductEntity;
 import com.example.hrm_be.models.entities.UnitConversionEntity;
 import com.example.hrm_be.models.entities.UnitOfMeasurementEntity;
@@ -26,6 +29,6 @@ public interface UnitConversionService {
 
   List<UnitConversionEntity> getByProductId(Long productId);
 
-  UnitConversionEntity findByProductIdAndLargerUnitIdAndSmallerUnitId(
-          Long productId, Long largerUnitId, Long smallerUnitId);
+  BigDecimal convertToUnit(Long productId, Long baseUnitId, BigDecimal quantity,
+                           UnitOfMeasurement targetUnit, Boolean toBaseUnit);
 }

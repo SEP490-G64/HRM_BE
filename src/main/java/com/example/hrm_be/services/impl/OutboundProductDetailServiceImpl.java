@@ -25,18 +25,24 @@ public class OutboundProductDetailServiceImpl implements OutboundProductDetailSe
   }
 
   @Override
-  public OutboundProductDetailEntity findByOutboundAndProduct(Long outboundId, Long productId) {
-    return outboundProductDetailRepository.findByOutboundIdAndProductId(outboundId, productId).orElse(null);
+  public OutboundProductDetail findByOutboundAndProduct(Long outboundId, Long productId) {
+    OutboundProductDetailEntity outboundProductDetail = outboundProductDetailRepository
+            .findByOutboundIdAndProductId(outboundId, productId).orElse(null);
+    return outboundProductDetailMapper.toDTO(outboundProductDetail);
   }
 
   @Override
-  public List<OutboundProductDetailEntity> findByOutbound(Long outboundId) {
-    return outboundProductDetailRepository
+  public List<OutboundProductDetail> findByOutbound(Long outboundId) {
+    List<OutboundProductDetailEntity> outboundProductDetailEntities =
+            outboundProductDetailRepository
             .findAllWithProductAndCategoryByOutboundId(outboundId);
+    return outboundProductDetailEntities.stream()
+            .map(outboundProductDetailMapper::toDTO)
+            .collect(Collectors.toList());
   }
 
   @Override
-  public List<OutboundProductDetailEntity> saveAll(List<OutboundProductDetailEntity> outboundProductDetailEntities) {
-    return outboundProductDetailRepository.saveAll(outboundProductDetailEntities);
+  public void saveAll(List<OutboundProductDetailEntity> outboundProductDetailEntities) {
+    outboundProductDetailRepository.saveAll(outboundProductDetailEntities);
   }
 }

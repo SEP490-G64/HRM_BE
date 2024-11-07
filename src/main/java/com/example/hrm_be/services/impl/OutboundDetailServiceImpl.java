@@ -109,17 +109,22 @@ public class OutboundDetailServiceImpl implements OutboundDetailService {
   }
 
   @Override
-  public OutboundDetailEntity findByOutboundAndBatch(Long outboundId, Long batchId) {
-    return outboundDetailRepository.findByOutboundIdAndBatchId(outboundId, batchId).orElse(null);
+  public OutboundDetail findByOutboundAndBatch(Long outboundId, Long batchId) {
+    OutboundDetailEntity entity = outboundDetailRepository.findByOutboundIdAndBatchId(outboundId, batchId).orElse(null);
+    return outboundDetailMapper.toDTO(entity);
   }
 
   @Override
-  public List<OutboundDetailEntity> saveAll(List<OutboundDetailEntity> outboundDetailEntities) {
-    return outboundDetailRepository.saveAll(outboundDetailEntities);
+  public void saveAll(List<OutboundDetailEntity> outboundDetailEntities) {
+    outboundDetailRepository.saveAll(outboundDetailEntities);
   }
 
   @Override
-  public List<OutboundDetailEntity> findByOutbound(Long outboundId) {
-    return outboundDetailRepository.findAllWithBatchAndProductAndCategoryByOutboundId(outboundId);
+  public List<OutboundDetail> findByOutbound(Long outboundId) {
+    List<OutboundDetailEntity> outboundDetailEntities =
+            outboundDetailRepository.findAllWithBatchAndProductAndCategoryByOutboundId(outboundId);
+    return outboundDetailEntities.stream()
+            .map(outboundDetailMapper::toDTOWithProductAndCategory)
+            .collect(Collectors.toList());
   }
 }

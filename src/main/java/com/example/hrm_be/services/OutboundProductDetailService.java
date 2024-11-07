@@ -12,9 +12,9 @@ import java.util.List;
 public interface OutboundProductDetailService {
     void deleteByOutboundId(Long outboundId);
 
-    OutboundProductDetailEntity findByOutboundAndProduct(Long outboundId, Long productId);
+    OutboundProductDetail findByOutboundAndProduct(Long outboundId, Long productId);
 
-    List<OutboundProductDetailEntity> findByOutbound(Long outboundId);
+    List<OutboundProductDetail> findByOutbound(Long outboundId);
 
-    List<OutboundProductDetailEntity> saveAll(List<OutboundProductDetailEntity> outboundProductDetailEntities);
+    void saveAll(List<OutboundProductDetailEntity> outboundProductDetailEntities);
 }

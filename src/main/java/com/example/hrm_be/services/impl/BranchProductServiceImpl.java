@@ -91,12 +91,7 @@ public class BranchProductServiceImpl implements BranchProductService {
   }
 
   @Override
-  public List<BranchProductEntity> saveAll(List<BranchProductEntity> branchProducts) {
-    return branchProductRepository.saveAll(branchProducts);
-  }
-
-  @Override
-  public BranchProductEntity findByBranchAndProduct(Long branchId, Long productId) {
-    return branchProductRepository.findByBranch_IdAndProduct_Id(branchId, productId).orElse(null);
+  public void saveAll(List<BranchProductEntity> branchProducts) {
+    branchProductRepository.saveAll(branchProducts);
   }
 }
