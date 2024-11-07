@@ -80,9 +80,9 @@ public class InboundDetailsServiceImpl implements InboundDetailsService {
   @Override
   public List<InboundDetails> findByInboundId(Long inboundId) {
 
-    return inboundDetailsRepository.findByInbound_Id(inboundId).stream().map(inboundDetailsMapper::toDTOWithInBoundDetails).collect(
-        Collectors.toList());
-
+    return inboundDetailsRepository.findByInbound_Id(inboundId).stream()
+        .map(inboundDetailsMapper::toDTOWithInBoundDetails)
+        .collect(Collectors.toList());
   }
 
   @Override
@@ -102,7 +102,7 @@ public class InboundDetailsServiceImpl implements InboundDetailsService {
   }
 
   @Override
-  public InboundEntity  updateAverageInboundPricesForProductsAndInboundTotalPrice(
+  public InboundEntity updateAverageInboundPricesForProductsAndInboundTotalPrice(
       InboundEntity inbound) {
     // Get all products with tax rate in inbounds
     List<InboundDetailsEntity> allDetails =

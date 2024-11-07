@@ -79,7 +79,6 @@ public class InboundServiceImpl implements InboundService {
   @Autowired private BranchProductService branchProductService;
   @Autowired private ProductSupplierService productSupplierService;
 
-
   @Override
   public InboundDetail getById(Long inboundId) {
     InboundEntity optionalInbound = inboundRepository.findById(inboundId).orElse(null);
@@ -305,8 +304,8 @@ public class InboundServiceImpl implements InboundService {
           InboundBatchDetail inboundBatchDetail;
           if (optionalInboundBatchDetail.isPresent()) {
             inboundBatchDetail = optionalInboundBatchDetail.get();
-            inboundBatchDetail.setQuantity(batch.getInboundBatchQuantity()!=null?
-                batch.getInboundBatchQuantity():0);
+            inboundBatchDetail.setQuantity(
+                batch.getInboundBatchQuantity() != null ? batch.getInboundBatchQuantity() : 0);
             inboundBatchDetail.setInboundPrice(batch.getInboundPrice());
             existingInboundBatchDetails.remove(
                 inboundBatchDetail); // Remove from existing list, mark as processed
@@ -315,8 +314,10 @@ public class InboundServiceImpl implements InboundService {
                 InboundBatchDetail.builder()
                     .inbound(inboundMapper.toDTO(updatedInboundEntity))
                     .batch(batchEntity)
-                    .quantity(batch.getInboundBatchQuantity()!=null?
-                        batch.getInboundBatchQuantity():0)
+                    .quantity(
+                        batch.getInboundBatchQuantity() != null
+                            ? batch.getInboundBatchQuantity()
+                            : 0)
                     .inboundPrice(batch.getInboundPrice())
                     .build();
           }
@@ -366,8 +367,8 @@ public class InboundServiceImpl implements InboundService {
                     productSupplierService.findByProductAndSupplier(product, supplier);
 
                 // If it exists, update necessary fields, otherwise create a new one
-                if (productSupplier==null) {
-                  ProductSuppliersEntity productSuppliersAdd= new ProductSuppliersEntity();
+                if (productSupplier == null) {
+                  ProductSuppliersEntity productSuppliersAdd = new ProductSuppliersEntity();
                   productSuppliersAdd.setProduct(product);
                   productSuppliersAdd.setSupplier(supplier);
                   productSuppliersEntities.add(productSuppliersAdd);

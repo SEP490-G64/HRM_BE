@@ -79,7 +79,7 @@ public class ProductServiceImpl implements ProductService {
   @Autowired private ProductMapper productMapper;
   @Autowired private SpecialConditionMapper specialConditionMapper;
   @Autowired private BranchMapper branchMapper;
-  @Autowired private SupplierMapper  supplierMapper;
+  @Autowired private SupplierMapper supplierMapper;
   @Autowired private StorageLocationMapper storageLocationMapper;
   @Autowired private UserMapper userMapper;
   @Autowired private UnitConversionMapper unitConversionMapper;
@@ -410,7 +410,7 @@ public class ProductServiceImpl implements ProductService {
 
     unsavedProduct.setInboundPrice(product.getInboundPrice());
     ProductEntity saved = productRepository.save(unsavedProduct);
-    return  productMapper.toDTO(saved);
+    return productMapper.toDTO(saved);
   }
 
   @Override

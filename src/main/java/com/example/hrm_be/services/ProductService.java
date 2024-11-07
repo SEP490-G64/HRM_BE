@@ -22,10 +22,7 @@ public interface ProductService {
 
   Product update(Product product);
 
-
   Product updateInboundPrice(Product product);
-
-
 
   void delete(Long id);
 
