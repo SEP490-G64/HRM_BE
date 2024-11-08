@@ -415,10 +415,9 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
     for (InventoryCheckDetails batchDetail : unsavedInventoryCheck.getInventoryCheckDetails()) {
       Batch batch = batchDetail.getBatch();
 
-      // Find the BranchBatch entity for this batch and branch
+      // Find the BranchBatch for this batch and branch
       BranchBatch branchBatch =
-          branchBatchMapper.toDTO(
-              branchBatchService.getByBranchIdAndBatchId(branch.getId(), batch.getId()));
+          branchBatchService.getByBranchIdAndBatchId(branch.getId(), batch.getId());
       if (branchBatch == null) {
         throw new HrmCommonException(BRANCHBATCH.NOT_EXIST);
       }

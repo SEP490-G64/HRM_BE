@@ -23,7 +23,7 @@ public interface OutboundDetailService {
 
   OutboundDetail findByOutboundAndBatch(Long outboundId, Long batchId);
 
-  void saveAll(List<OutboundDetailEntity> outboundDetailEntities);
+  List<OutboundDetail> saveAll(List<OutboundDetailEntity> outboundDetailEntities);
 
-  List<OutboundDetail> findByOutbound(Long outboundId);
+  List<OutboundDetail> findByOutboundWithCategory(Long outboundId);
 }

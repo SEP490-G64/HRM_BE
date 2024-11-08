@@ -88,8 +88,8 @@ public class BranchBatchServiceImpl implements BranchBatchService {
   }
 
   @Override
-  public BranchBatchEntity getByBranchIdAndBatchId(Long branchId, Long batchId) {
-    return branchBatchRepository.findByBranch_IdAndBatch_Id(branchId, batchId).orElse(null);
+  public BranchBatch getByBranchIdAndBatchId(Long branchId, Long batchId) {
+    return branchBatchMapper.toDTO(branchBatchRepository.findByBranch_IdAndBatch_Id(branchId, batchId).orElse(null));
   }
 
   @Override

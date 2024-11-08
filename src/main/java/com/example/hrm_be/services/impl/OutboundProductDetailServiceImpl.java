@@ -34,7 +34,7 @@ public class OutboundProductDetailServiceImpl implements OutboundProductDetailSe
   }
 
   @Override
-  public List<OutboundProductDetail> findByOutbound(Long outboundId) {
+  public List<OutboundProductDetail> findByOutboundWithCategory(Long outboundId) {
     List<OutboundProductDetailEntity> outboundProductDetailEntities =
         outboundProductDetailRepository.findAllWithProductAndCategoryByOutboundId(outboundId);
     return outboundProductDetailEntities.stream()
@@ -43,7 +43,9 @@ public class OutboundProductDetailServiceImpl implements OutboundProductDetailSe
   }
 
   @Override
-  public void saveAll(List<OutboundProductDetailEntity> outboundProductDetailEntities) {
-    outboundProductDetailRepository.saveAll(outboundProductDetailEntities);
+  public List<OutboundProductDetail> saveAll(List<OutboundProductDetailEntity> outboundProductDetailEntities) {
+    return  outboundProductDetailRepository.saveAll(outboundProductDetailEntities).stream()
+            .map(outboundProductDetailMapper::toDTO)
+            .collect(Collectors.toList());
   }
 }

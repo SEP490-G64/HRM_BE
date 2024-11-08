@@ -115,12 +115,15 @@ public class OutboundDetailServiceImpl implements OutboundDetailService {
   }
 
   @Override
-  public void saveAll(List<OutboundDetailEntity> outboundDetailEntities) {
-    outboundDetailRepository.saveAll(outboundDetailEntities);
+  public List<OutboundDetail> saveAll(List<OutboundDetailEntity> outboundDetailEntities) {
+    return outboundDetailRepository.saveAll(outboundDetailEntities)
+            .stream()
+            .map(outboundDetailMapper::toDTOWithProductAndCategory)
+            .collect(Collectors.toList());
   }
 
   @Override
-  public List<OutboundDetail> findByOutbound(Long outboundId) {
+  public List<OutboundDetail> findByOutboundWithCategory(Long outboundId) {
     List<OutboundDetailEntity> outboundDetailEntities =
         outboundDetailRepository.findAllWithBatchAndProductAndCategoryByOutboundId(outboundId);
     return outboundDetailEntities.stream()
