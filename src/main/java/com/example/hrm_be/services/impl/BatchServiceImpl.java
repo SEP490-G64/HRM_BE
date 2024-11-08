@@ -4,8 +4,8 @@ import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.components.BatchMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.Batch;
+import com.example.hrm_be.models.dtos.Product;
 import com.example.hrm_be.models.entities.BatchEntity;
-import com.example.hrm_be.models.entities.ProductEntity;
 import com.example.hrm_be.repositories.BatchRepository;
 import com.example.hrm_be.services.BatchService;
 
@@ -205,15 +205,15 @@ public class BatchServiceImpl implements BatchService {
   }
 
   @Override
-  public BatchEntity addBatchInInbound(Batch batch, ProductEntity product) {
-    batchRepository
-        .findByBatchCodeAndProduct(batch.getBatchCode(), product)
-        .orElseGet(
-            () -> {
-              return batchMapper.toEntity(this.create(batch));
-            });
+  public Batch addBatchInInbound(Batch batch, Product product) {
 
-    return null;
+    Optional<BatchEntity> existingBatch =
+        batchRepository.findByBatchCodeAndProduct_Id(batch.getBatchCode(), product.getId());
+    batch.setProduct(product);
+    BatchEntity savedBatch =
+        existingBatch.orElseGet(() -> batchRepository.save(batchMapper.toEntity(batch)));
+
+    return batchMapper.toDTO(savedBatch);
   }
 
   @Override

@@ -79,7 +79,9 @@ public class ProductServiceImpl implements ProductService {
   @Autowired private ProductMapper productMapper;
   @Autowired private SpecialConditionMapper specialConditionMapper;
   @Autowired private BranchMapper branchMapper;
+  @Autowired private SupplierMapper supplierMapper;
   @Autowired private StorageLocationMapper storageLocationMapper;
+  @Autowired private UserMapper userMapper;
   @Autowired private UnitConversionMapper unitConversionMapper;
   @Autowired private UnitOfMeasurementMapper unitOfMeasurementMapper;
   @Autowired private AllowedProductService allowedProductService;
@@ -402,6 +404,15 @@ public class ProductServiceImpl implements ProductService {
   }
 
   @Override
+  public Product updateInboundPrice(Product product) {
+    ProductEntity unsavedProduct = productRepository.findById(product.getId()).orElse(null);
+
+    unsavedProduct.setInboundPrice(product.getInboundPrice());
+    ProductEntity saved = productRepository.save(unsavedProduct);
+    return productMapper.toDTO(saved);
+  }
+
+  @Override
   public void delete(Long id) {
     ProductEntity productEntity = productRepository.findById(id).orElse(null);
     if (productEntity == null) {
@@ -696,18 +707,21 @@ public class ProductServiceImpl implements ProductService {
   }
 
   @Override
-  public ProductEntity addProductInInbound(ProductInbound productInbound) {
-    productRepository
-        .findByRegistrationCode(productInbound.getRegistrationCode())
-        .orElseGet(
-            () -> {
-              ProductEntity newProduct = new ProductEntity();
-              newProduct.setRegistrationCode(productInbound.getRegistrationCode());
-              newProduct.setProductName(productInbound.getProductName());
-              newProduct.setBaseUnit(
-                  unitOfMeasurementMapper.toEntity(productInbound.getBaseUnit()));
-              return productRepository.save(newProduct);
-            });
-    return null;
+  public Product addProductInInbound(ProductInbound productInbound) {
+    Product product =
+        productRepository
+            .findByRegistrationCode(productInbound.getRegistrationCode())
+            .map(productMapper::convertToBaseInfo)
+            .orElseGet(
+                () -> {
+                  Product newProduct = new Product();
+                  newProduct.setRegistrationCode(productInbound.getRegistrationCode());
+                  newProduct.setProductName(productInbound.getProductName());
+                  newProduct.setBaseUnit(
+                      productInbound.getBaseUnit() != null ? productInbound.getBaseUnit() : null);
+                  return productMapper.toDTO(
+                      productRepository.save(productMapper.toEntity(newProduct)));
+                });
+    return product;
   }
 }

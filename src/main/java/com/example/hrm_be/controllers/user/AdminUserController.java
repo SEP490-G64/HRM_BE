@@ -1,6 +1,8 @@
 package com.example.hrm_be.controllers.user;
 
+import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.commons.constants.HrmConstant.ERROR.REQUEST;
+import com.example.hrm_be.commons.enums.ResponseStatus;
 import com.example.hrm_be.commons.enums.UserStatusType;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.User;
@@ -10,7 +12,6 @@ import com.example.hrm_be.utils.ExcelUtility;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotNull;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.List;
@@ -100,8 +101,9 @@ public class AdminUserController {
   public ResponseEntity<BaseOutput<User>> getById(
       @PathVariable("id") @NotNull(message = "error.request.path.variable.id.invalid")
           Long id) { // Validate ID input
+    BaseOutput<User> response = null;
     if (id == null) { // Check if ID is null
-      BaseOutput<User> response =
+      response =
           BaseOutput.<User>builder()
               .status(
                   com.example.hrm_be.commons.enums.ResponseStatus
@@ -116,14 +118,25 @@ public class AdminUserController {
     User user = userService.getById(id);
 
     // Create response object containing the retrieved user
-    BaseOutput<User> response =
-        BaseOutput.<User>builder()
-            .message(HttpStatus.OK.toString()) // Set response message to OK
-            .data(user) // Attach the user data
-            .status(
-                com.example.hrm_be.commons.enums.ResponseStatus
-                    .SUCCESS) // Set response status to SUCCESS
-            .build();
+    if (user == null) {
+      response =
+          BaseOutput.<User>builder()
+              .status(ResponseStatus.FAILED) // Set response status to FAILED
+              .errors(
+                  List.of(HrmConstant.ERROR.RESPONSE.NOT_FOUND)) // Add error message for invalid ID
+              .build();
+      return ResponseEntity.status(HttpStatus.NOT_FOUND)
+          .body(response); // Return BAD_REQUEST status
+    } else {
+      response =
+          BaseOutput.<User>builder()
+              .message(HttpStatus.OK.toString()) // Set response message to OK
+              .data(user) // Attach the user data
+              .status(
+                  com.example.hrm_be.commons.enums.ResponseStatus
+                      .SUCCESS) // Set response status to SUCCESS
+              .build();
+    }
 
     // Return the response entity with a status of OK
     return ResponseEntity.ok(response);

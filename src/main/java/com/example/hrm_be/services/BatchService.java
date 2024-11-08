@@ -2,11 +2,11 @@ package com.example.hrm_be.services;
 
 import com.example.hrm_be.models.dtos.Batch;
 
+import com.example.hrm_be.models.dtos.Product;
 import java.time.LocalDateTime;
 import java.util.List;
 
 import com.example.hrm_be.models.entities.BatchEntity;
-import com.example.hrm_be.models.entities.ProductEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
@@ -36,7 +36,7 @@ public interface BatchService {
   // Delete a Batch by its ID.
   void delete(Long id);
 
-  BatchEntity addBatchInInbound(Batch batch, ProductEntity product);
+  Batch addBatchInInbound(Batch batch, Product product);
 
   List<BatchEntity> findAllByProductId(Long inboundId);
 }

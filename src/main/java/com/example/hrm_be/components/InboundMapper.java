@@ -148,6 +148,7 @@ public class InboundMapper {
     return InboundDetail.builder()
         .id(entity.getId())
         .inboundCode(entity.getInboundCode())
+        .note(entity.getNote())
         .inboundType(entity.getInboundType())
         .createdDate(entity.getCreatedDate())
         .inboundDate(entity.getInboundDate())
@@ -169,7 +170,7 @@ public class InboundMapper {
                 ? branchMapper.convertToDTOBasicInfo(entity.getFromBranch())
                 : null)
         .toBranch(
-            entity.getFromBranch() != null
+            entity.getToBranch() != null
                 ? branchMapper.convertToDTOBasicInfo(entity.getToBranch())
                 : null)
         .build();

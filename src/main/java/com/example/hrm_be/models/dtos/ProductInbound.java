@@ -28,7 +28,7 @@ public class ProductInbound implements Serializable {
   @Serial private static final long serialVersionUID = 8012723276726758269L;
   String registrationCode;
   String productName;
-  List<Batch> batchList;
+  List<Batch> batches;
   Integer requestQuantity;
   Integer receiveQuantity;
   UnitOfMeasurement baseUnit;
