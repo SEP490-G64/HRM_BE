@@ -2,10 +2,12 @@ name: GitHub Actions CI
 run-name: CI for Spring Boot
 on:
   pull_request:
+    branches:
+      - "develop"
+      - "main"
   workflow_dispatch:
   push:
     branches:
-      - "develop"
       - "main"
 jobs:
   Spring-Boot-Build:
@@ -30,12 +32,12 @@ jobs:
           java-version: "21"
           distribution: "temurin"
           cache: maven
-      
+
       - name: Linting for Java - Using Google
         uses: axel-op/googlejavaformat-action@v3
         with:
           args: "--skip-sorting-imports --replace"
-      
+
       - name: Print diffs
         run: git --no-pager diff
 
