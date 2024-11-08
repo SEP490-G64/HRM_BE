@@ -5,7 +5,6 @@ import com.example.hrm_be.components.OutboundDetailMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.OutboundDetail;
 import com.example.hrm_be.models.entities.OutboundDetailEntity;
-import com.example.hrm_be.models.entities.OutboundProductDetailEntity;
 import com.example.hrm_be.repositories.OutboundDetailRepository;
 import com.example.hrm_be.services.OutboundDetailService;
 import io.micrometer.common.util.StringUtils;
@@ -110,7 +109,8 @@ public class OutboundDetailServiceImpl implements OutboundDetailService {
 
   @Override
   public OutboundDetail findByOutboundAndBatch(Long outboundId, Long batchId) {
-    OutboundDetailEntity entity = outboundDetailRepository.findByOutboundIdAndBatchId(outboundId, batchId).orElse(null);
+    OutboundDetailEntity entity =
+        outboundDetailRepository.findByOutboundIdAndBatchId(outboundId, batchId).orElse(null);
     return outboundDetailMapper.toDTO(entity);
   }
 
@@ -122,9 +122,9 @@ public class OutboundDetailServiceImpl implements OutboundDetailService {
   @Override
   public List<OutboundDetail> findByOutbound(Long outboundId) {
     List<OutboundDetailEntity> outboundDetailEntities =
-            outboundDetailRepository.findAllWithBatchAndProductAndCategoryByOutboundId(outboundId);
+        outboundDetailRepository.findAllWithBatchAndProductAndCategoryByOutboundId(outboundId);
     return outboundDetailEntities.stream()
-            .map(outboundDetailMapper::toDTOWithProductAndCategory)
-            .collect(Collectors.toList());
+        .map(outboundDetailMapper::toDTOWithProductAndCategory)
+        .collect(Collectors.toList());
   }
 }

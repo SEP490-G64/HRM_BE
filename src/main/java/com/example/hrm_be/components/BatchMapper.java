@@ -106,19 +106,19 @@ public class BatchMapper {
   // Helper method to map BatchEntity to BatchDTO
   public Batch convertToDtoWithCategory(BatchEntity entity) {
     return Optional.ofNullable(entity)
-            .map(
-                    e ->
-                            Batch.builder()
-                                    .id(e.getId())
-                                    .batchCode(e.getBatchCode())
-                                    .produceDate(e.getProduceDate())
-                                    .expireDate(e.getExpireDate())
-                                    .inboundPrice(e.getInboundPrice())
-                                    .product(
-                                            e.getProduct() != null
-                                                    ? productMapper.convertToDtoWithCategory(e.getProduct())
-                                                    : null)
-                                    .build())
-            .orElse(null);
+        .map(
+            e ->
+                Batch.builder()
+                    .id(e.getId())
+                    .batchCode(e.getBatchCode())
+                    .produceDate(e.getProduceDate())
+                    .expireDate(e.getExpireDate())
+                    .inboundPrice(e.getInboundPrice())
+                    .product(
+                        e.getProduct() != null
+                            ? productMapper.convertToDtoWithCategory(e.getProduct())
+                            : null)
+                    .build())
+        .orElse(null);
   }
 }
