@@ -74,10 +74,14 @@ jobs:
 
   Push-To-Image-Repo:
     if: github.ref_name == 'main'
+    needs: Spring-Boot-Build
     runs-on: ubuntu-latest
     env:
       IMAGE_NAME: hrm-be
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Install doctl
         uses: digitalocean/action-doctl@v2
         with:
