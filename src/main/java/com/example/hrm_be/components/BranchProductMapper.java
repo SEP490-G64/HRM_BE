@@ -74,4 +74,22 @@ public class BranchProductMapper {
                 : null)
         .build();
   }
+
+  // Helper method to convert BranchProductEntity to BranchProductDTO
+  public BranchProduct convertToDTOWithoutProduct(BranchProductEntity entity) {
+    return BranchProduct.builder()
+            .id(entity.getId())
+            .minQuantity(entity.getMinQuantity())
+            .maxQuantity(entity.getMaxQuantity())
+            .quantity(entity.getQuantity())
+            .storageLocation(
+                    entity.getStorageLocation() != null
+                            ? storageLocationMapper.toDTO(entity.getStorageLocation())
+                            : null)
+            .branch(
+                    entity.getBranch() != null
+                            ? branchMapper.convertToDTOBasicInfo(entity.getBranch())
+                            : null)
+            .build();
+  }
 }

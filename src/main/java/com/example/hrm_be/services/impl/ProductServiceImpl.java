@@ -86,7 +86,7 @@ public class ProductServiceImpl implements ProductService {
   @Override
   public Product getById(Long id) {
     return Optional.ofNullable(id)
-        .flatMap(e -> productRepository.findById(e).map(b -> productMapper.toDTO(b)))
+        .flatMap(e -> productRepository.findById(e).map(b -> productMapper.convertToDTOWithoutProductInBranchProduct(b)))
         .orElse(null);
   }
 
