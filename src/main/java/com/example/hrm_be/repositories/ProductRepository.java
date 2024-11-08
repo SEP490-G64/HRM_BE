@@ -29,7 +29,8 @@ public interface ProductRepository
   boolean existsByRegistrationCode(String code);
 
   @Query(
-      "SELECT p FROM ProductEntity p JOIN FETCH p.branchProducs bp WHERE bp.branch.id = :branchId AND bp.quantity > 0")
+      "SELECT p FROM ProductEntity p JOIN FETCH p.branchProducs bp WHERE bp.branch.id = :branchId"
+          + " AND bp.quantity > 0")
   List<ProductEntity> findProductByBranchId(@Param("branchId") Long branchId);
 
   List<ProductEntity> findByRegistrationCodeIn(List<String> productName);

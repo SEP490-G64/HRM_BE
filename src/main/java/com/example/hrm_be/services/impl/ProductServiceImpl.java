@@ -725,9 +725,8 @@ public class ProductServiceImpl implements ProductService {
 
   @Override
   public List<ProductBaseDTO> getProductInBranch(Long branchId) {
-    return productRepository.findProductByBranchId(branchId)
-            .stream()
-            .map(productMapper::convertToProductBaseDTO)
-            .collect(Collectors.toList());
+    return productRepository.findProductByBranchId(branchId).stream()
+        .map(productMapper::convertToProductBaseDTO)
+        .collect(Collectors.toList());
   }
 }
