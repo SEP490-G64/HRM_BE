@@ -48,4 +48,6 @@ public interface ProductService {
   Product addProductInInbound(ProductInbound productInbound);
 
   List<ProductSupplierDTO> getAllProductsBySupplier(Long id, String ProductName);
+
+  List<ProductBaseDTO> getProductInBranch(Long branchId);
 }
