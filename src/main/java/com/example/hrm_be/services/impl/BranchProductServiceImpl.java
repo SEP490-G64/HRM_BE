@@ -62,7 +62,7 @@ public class BranchProductServiceImpl implements BranchProductService {
     // Check if BranchProductEntity already exists
     BranchProductEntity branchProduct =
         branchProductRepository
-            .findByBranchAndProduct(toBranch, product)
+            .findByBranch_IdAndProduct_Id(toBranch.getId(), product.getId())
             .orElse(new BranchProductEntity());
 
     // If it exists, update the quantity, otherwise create a new one
@@ -91,7 +91,7 @@ public class BranchProductServiceImpl implements BranchProductService {
   }
 
   @Override
-  public List<BranchProductEntity> saveAll(List<BranchProductEntity> branchProducts) {
-    return branchProductRepository.saveAll(branchProducts);
+  public void saveAll(List<BranchProductEntity> branchProducts) {
+    branchProductRepository.saveAll(branchProducts);
   }
 }

@@ -12,6 +12,7 @@ public class OutboundDetailMapper {
 
   @Autowired @Lazy private OutboundMapper outboundMapper;
   @Autowired @Lazy private BatchMapper batchMapper;
+  @Autowired @Lazy private UnitOfMeasurementMapper unitOfMeasurementMapper;
 
   // Convert OutboundDetailEntity to OutboundDetailDTO
   public OutboundDetail toDTO(OutboundDetailEntity entity) {
@@ -28,14 +29,23 @@ public class OutboundDetailMapper {
                     .outbound(
                         d.getOutbound() != null ? outboundMapper.toEntity(d.getOutbound()) : null)
                     .batch(d.getBatch() != null ? batchMapper.toEntity(d.getBatch()) : null)
+                    .unitOfMeasurement(
+                        d.getUnitOfMeasurement() != null
+                            ? unitOfMeasurementMapper.toEntity(d.getUnitOfMeasurement())
+                            : null)
                     .quantity(d.getQuantity())
+                    .price(d.getPrice())
                     .build())
         .orElse(null);
   }
 
   // Helper method to convert OutboundDetailEntity to OutboundDetailDTO
   private OutboundDetail convertToDTO(OutboundDetailEntity entity) {
-    return OutboundDetail.builder().id(entity.getId()).quantity(entity.getQuantity()).build();
+    return OutboundDetail.builder()
+        .id(entity.getId())
+        .quantity(entity.getQuantity())
+        .price(entity.getPrice())
+        .build();
   }
 
   // Helper method to convert OutboundDetailEntity to OutboundDetailDTO with Outbound Information
@@ -62,6 +72,28 @@ public class OutboundDetailMapper {
                     .batch(
                         entity.getBatch() != null
                             ? batchMapper.convertToDtoBasicInfo(entity.getBatch())
+                            : null)
+                    .build())
+        .orElse(null);
+  }
+
+  public OutboundDetail toDTOWithProductAndCategory(OutboundDetailEntity entity) {
+    return Optional.ofNullable(entity)
+        .map(this::convertToDTO)
+        .map(
+            e ->
+                e.toBuilder()
+                    .batch(
+                        entity.getBatch() != null
+                            ? batchMapper.convertToDtoWithCategory(entity.getBatch())
+                            : null)
+                    .outbound(
+                        entity.getOutbound() != null
+                            ? outboundMapper.toDTO(entity.getOutbound())
+                            : null)
+                    .unitOfMeasurement(
+                        entity.getUnitOfMeasurement() != null
+                            ? unitOfMeasurementMapper.toDTO(entity.getUnitOfMeasurement())
                             : null)
                     .build())
         .orElse(null);

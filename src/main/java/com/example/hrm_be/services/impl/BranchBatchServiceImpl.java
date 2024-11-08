@@ -13,6 +13,8 @@ import com.example.hrm_be.services.BranchBatchService;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -59,7 +61,9 @@ public class BranchBatchServiceImpl implements BranchBatchService {
       BranchEntity toBranch, BatchEntity batch, BigDecimal quantity) {
     // Check if BranchBatchEntity already exists
     BranchBatchEntity branchBatch =
-        branchBatchRepository.findByBranchAndBatch(toBranch, batch).orElse(new BranchBatchEntity());
+        branchBatchRepository
+            .findByBranch_IdAndBatch_Id(toBranch.getId(), batch.getId())
+            .orElse(new BranchBatchEntity());
 
     // If it exists, update the quantity, otherwise create a new one
     if (branchBatch.getId() != null) {
@@ -85,9 +89,21 @@ public class BranchBatchServiceImpl implements BranchBatchService {
 
   @Override
   public BranchBatch getByBranchIdAndBatchId(Long branchId, Long batchId) {
+    return branchBatchMapper.toDTO(
+        branchBatchRepository.findByBranch_IdAndBatch_Id(branchId, batchId).orElse(null));
+  }
+
+  @Override
+  public BigDecimal findQuantityByBatchIdAndBranchId(Long batchId, Long branchId) {
+    return branchBatchRepository.findQuantityByBatchIdAndBranchId(batchId, branchId);
+  }
+
+  @Override
+  public List<BranchBatch> findByProductAndBranchForSell(Long productId, Long branchId) {
     return branchBatchRepository
-        .findByBranch_IdAndBatch_Id(branchId, batchId)
+        .findByProductIdAndBranchIdOrderByExpireDate(productId, branchId)
+        .stream()
         .map(branchBatchMapper::toDTO)
-        .orElse(null);
+        .collect(Collectors.toList());
   }
 }

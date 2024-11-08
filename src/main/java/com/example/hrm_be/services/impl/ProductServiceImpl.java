@@ -79,11 +79,8 @@ public class ProductServiceImpl implements ProductService {
   @Autowired private ProductMapper productMapper;
   @Autowired private SpecialConditionMapper specialConditionMapper;
   @Autowired private BranchMapper branchMapper;
-  @Autowired private SupplierMapper supplierMapper;
   @Autowired private StorageLocationMapper storageLocationMapper;
-  @Autowired private UserMapper userMapper;
   @Autowired private UnitConversionMapper unitConversionMapper;
-  @Autowired private UnitOfMeasurementMapper unitOfMeasurementMapper;
   @Autowired private AllowedProductService allowedProductService;
 
   @Override
@@ -159,12 +156,12 @@ public class ProductServiceImpl implements ProductService {
       List<UnitConversionEntity> unitConversions = new ArrayList<>();
 
       for (UnitConversion unitConversionDto : product.getUnitConversions()) {
-        unitConversionDto.setLargerUnit(product.getBaseUnit());
+        UnitConversionEntity unitConversionEntity =
+            unitConversionMapper.toEntity(unitConversionDto);
 
-        // Set the product to this unit conversion
-        unitConversionDto.setProduct(productMapper.toDTO(savedProduct));
-        // Add to the list for any future use or associations
-        unitConversions.add(unitConversionMapper.toEntity(unitConversionDto));
+        unitConversionEntity.setProduct(savedProduct);
+        unitConversionEntity.setLargerUnit(savedProduct.getBaseUnit());
+        unitConversions.add(unitConversionEntity);
       }
       unitConversionService.saveAll(unitConversions);
     }
@@ -724,5 +721,12 @@ public class ProductServiceImpl implements ProductService {
                       productRepository.save(productMapper.toEntity(newProduct)));
                 });
     return product;
+  }
+
+  @Override
+  public List<ProductBaseDTO> getProductInBranch(Long branchId) {
+    return productRepository.findProductByBranchId(branchId).stream()
+        .map(productMapper::convertToProductBaseDTO)
+        .collect(Collectors.toList());
   }
 }

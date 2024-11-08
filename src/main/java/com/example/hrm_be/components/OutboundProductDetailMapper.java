@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 public class OutboundProductDetailMapper {
   @Autowired @Lazy private OutboundMapper outboundMapper;
   @Autowired @Lazy private ProductMapper productMapper;
+  @Autowired @Lazy private UnitOfMeasurementMapper unitOfMeasurementMapper;
 
   // Convert OutboundDetailEntity to OutboundDetailDTO
   public OutboundProductDetail toDTO(OutboundProductDetailEntity entity) {
@@ -26,8 +27,13 @@ public class OutboundProductDetailMapper {
                     .id(d.getId())
                     .outbound(
                         d.getOutbound() != null ? outboundMapper.toEntity(d.getOutbound()) : null)
-                    .product(d.getBatch() != null ? productMapper.toEntity(d.getProduct()) : null)
+                    .product(d.getProduct() != null ? productMapper.toEntity(d.getProduct()) : null)
+                    .unitOfMeasurement(
+                        d.getTargetUnit() != null
+                            ? unitOfMeasurementMapper.toEntity(d.getTargetUnit())
+                            : null)
                     .outboundQuantity(d.getOutboundQuantity())
+                    .price(d.getPrice())
                     .build())
         .orElse(null);
   }
@@ -38,6 +44,15 @@ public class OutboundProductDetailMapper {
         .id(entity.getId())
         .product(productMapper.toDTO(entity.getProduct()))
         .outboundQuantity(entity.getOutboundQuantity())
+        .outbound(
+            entity.getOutbound() != null
+                ? outboundMapper.convertToDtoBasicInfo(entity.getOutbound())
+                : null)
+        .targetUnit(
+            entity.getUnitOfMeasurement() != null
+                ? unitOfMeasurementMapper.toDTO(entity.getUnitOfMeasurement())
+                : null)
+        .price(entity.getPrice())
         .build();
   }
 }

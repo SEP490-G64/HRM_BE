@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface OutboundRepository extends JpaRepository<OutboundEntity, Long> {
 
-  boolean existsByOutBoundCode(String outboundCode);
+  boolean existsByOutboundCode(String outboundCode);
 
   @Query(
       "SELECT o FROM OutboundEntity o "

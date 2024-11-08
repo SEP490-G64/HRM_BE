@@ -194,6 +194,28 @@ public class ProductMapper {
         .build();
   }
 
+  // Helper method to convert ProductEntity to ProductDTO
+  public Product convertToDtoWithCategory(ProductEntity entity) {
+    return Product.builder()
+        .id(entity.getId())
+        .productName(entity.getProductName())
+        .registrationCode(entity.getRegistrationCode())
+        .urlImage(entity.getUrlImage())
+        .activeIngredient(entity.getActiveIngredient())
+        .excipient(entity.getExcipient())
+        .formulation(entity.getFormulation())
+        .inboundPrice(entity.getInboundPrice())
+        .sellPrice(entity.getSellPrice())
+        .status(entity.getStatus())
+        .baseUnit(
+            entity.getBaseUnit() != null
+                ? unitOfMeasurementMapper.toDTO(entity.getBaseUnit())
+                : null)
+        .category(
+            entity.getCategory() != null ? productCategoryMapper.toDTO(entity.getCategory()) : null)
+        .build();
+  }
+
   public Product convertToDTOWithBatch(ProductEntity entity) {
     return Product.builder()
         .id(entity.getId())

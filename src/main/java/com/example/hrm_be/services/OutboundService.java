@@ -12,10 +12,6 @@ public interface OutboundService {
 
   Page<Outbound> getByPaging(int pageNo, int pageSize, String sortBy);
 
-  Outbound create(Outbound outbound);
-
-  Outbound update(Outbound outbound);
-
   Outbound approve(Long id, boolean accept);
 
   Outbound saveOutbound(CreateOutboundRequest initOutbound);

@@ -9,7 +9,6 @@ import com.example.hrm_be.models.responses.BaseOutput;
 import com.example.hrm_be.services.OutboundService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -74,66 +73,6 @@ public class StaffOutboundController {
         BaseOutput.<Outbound>builder()
             .message(HttpStatus.OK.toString())
             .data(Outbound)
-            .status(com.example.hrm_be.commons.enums.ResponseStatus.SUCCESS)
-            .build();
-    return ResponseEntity.ok(response);
-  }
-
-  // POST: /api/v1/staff/outbound
-  // Creates a new Outbound
-  @PostMapping()
-  protected ResponseEntity<BaseOutput<Outbound>> create(
-      @RequestBody @NotNull(message = "error.request.body.invalid") Outbound Outbound) {
-    // Validate the request body
-    if (Outbound == null) {
-      BaseOutput<Outbound> response =
-          BaseOutput.<Outbound>builder()
-              .errors(List.of(HrmConstant.ERROR.REQUEST.INVALID_BODY))
-              .status(com.example.hrm_be.commons.enums.ResponseStatus.FAILED)
-              .build();
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-    }
-
-    // Create the Outbound
-    Outbound createdOutbound = outboundService.create(Outbound);
-
-    // Build the response with the created Outbound data
-    BaseOutput<Outbound> response =
-        BaseOutput.<Outbound>builder()
-            .message(HttpStatus.OK.toString())
-            .data(createdOutbound)
-            .status(com.example.hrm_be.commons.enums.ResponseStatus.SUCCESS)
-            .build();
-    return ResponseEntity.ok(response);
-  }
-
-  // PUT: /api/v1/staff/outbound/{id}
-  // Updates an existing Outbound
-  @PutMapping("/{id}")
-  protected ResponseEntity<BaseOutput<Outbound>> update(
-      @PathVariable("id") Long id,
-      @RequestBody @NotNull(message = "error.request.body.invalid") Outbound Outbound) {
-    // Validate the path variable ID
-    if (id <= 0 || id == null) {
-      BaseOutput<Outbound> response =
-          BaseOutput.<Outbound>builder()
-              .status(com.example.hrm_be.commons.enums.ResponseStatus.FAILED)
-              .errors(List.of(HrmConstant.ERROR.REQUEST.INVALID_PATH_VARIABLE))
-              .build();
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-    }
-
-    // Set the ID for the Outbound to update
-    Outbound.setId(id);
-
-    // Update the Outbound
-    Outbound updateOutbound = outboundService.update(Outbound);
-
-    // Build the response with the updated Outbound data
-    BaseOutput<Outbound> response =
-        BaseOutput.<Outbound>builder()
-            .message(HttpStatus.OK.toString())
-            .data(updateOutbound)
             .status(com.example.hrm_be.commons.enums.ResponseStatus.SUCCESS)
             .build();
     return ResponseEntity.ok(response);

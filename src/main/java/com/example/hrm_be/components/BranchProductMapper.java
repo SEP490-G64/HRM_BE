@@ -68,6 +68,10 @@ public class BranchProductMapper {
             entity.getBranch() != null
                 ? branchMapper.convertToDTOBasicInfo(entity.getBranch())
                 : null)
+        .product(
+            entity.getProduct() != null
+                ? productMapper.convertToBaseInfo(entity.getProduct())
+                : null)
         .build();
   }
 }
