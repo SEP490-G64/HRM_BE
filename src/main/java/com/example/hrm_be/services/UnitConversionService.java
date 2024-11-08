@@ -6,9 +6,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import com.example.hrm_be.models.dtos.UnitOfMeasurement;
-import com.example.hrm_be.models.entities.ProductEntity;
 import com.example.hrm_be.models.entities.UnitConversionEntity;
-import com.example.hrm_be.models.entities.UnitOfMeasurementEntity;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -29,6 +27,10 @@ public interface UnitConversionService {
 
   List<UnitConversionEntity> getByProductId(Long productId);
 
-  BigDecimal convertToUnit(Long productId, Long baseUnitId, BigDecimal quantity,
-                           UnitOfMeasurement targetUnit, Boolean toBaseUnit);
+  BigDecimal convertToUnit(
+      Long productId,
+      Long baseUnitId,
+      BigDecimal quantity,
+      UnitOfMeasurement targetUnit,
+      Boolean toBaseUnit);
 }

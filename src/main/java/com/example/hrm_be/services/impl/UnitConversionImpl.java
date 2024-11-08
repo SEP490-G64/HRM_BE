@@ -6,14 +6,11 @@ import com.example.hrm_be.components.UnitConversionMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.UnitConversion;
 import com.example.hrm_be.models.dtos.UnitOfMeasurement;
-import com.example.hrm_be.models.entities.ProductEntity;
 import com.example.hrm_be.models.entities.UnitConversionEntity;
-import com.example.hrm_be.models.entities.UnitOfMeasurementEntity;
 import com.example.hrm_be.repositories.UnitConversionRepository;
 import com.example.hrm_be.services.UnitConversionService;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -95,7 +92,12 @@ public class UnitConversionImpl implements UnitConversionService {
   }
 
   @Override
-  public BigDecimal convertToUnit(Long productId, Long baseUnitId, BigDecimal quantity, UnitOfMeasurement targetUnit, Boolean toBaseUnit) {
+  public BigDecimal convertToUnit(
+      Long productId,
+      Long baseUnitId,
+      BigDecimal quantity,
+      UnitOfMeasurement targetUnit,
+      Boolean toBaseUnit) {
     // If the target unit is the same as the base unit, no conversion is needed
     if (targetUnit == null || targetUnit.getId().equals(baseUnitId)) {
       return quantity;
@@ -103,15 +105,15 @@ public class UnitConversionImpl implements UnitConversionService {
 
     // Check if conversion is from smaller to larger or larger to smaller
     UnitConversionEntity conversion =
-            unitConversionRepository.findByProductIdAndLargerUnitIdAndSmallerUnitId(
-                    productId, baseUnitId, targetUnit.getId()).orElse(null);
+        unitConversionRepository
+            .findByProductIdAndLargerUnitIdAndSmallerUnitId(
+                productId, baseUnitId, targetUnit.getId())
+            .orElse(null);
 
     if (conversion != null) {
       if (toBaseUnit) {
-        return quantity.divide(
-                BigDecimal.valueOf(conversion.getFactorConversion()));
-      }
-      else {
+        return quantity.divide(BigDecimal.valueOf(conversion.getFactorConversion()));
+      } else {
         return quantity.multiply(BigDecimal.valueOf(conversion.getFactorConversion()));
       }
     } else {

@@ -2,7 +2,6 @@ package com.example.hrm_be.services;
 
 import com.example.hrm_be.models.dtos.OutboundDetail;
 import com.example.hrm_be.models.entities.OutboundDetailEntity;
-import com.example.hrm_be.models.entities.OutboundProductDetailEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 

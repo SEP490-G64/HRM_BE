@@ -1,8 +1,6 @@
 package com.example.hrm_be.repositories;
 
-import com.example.hrm_be.models.entities.BatchEntity;
 import com.example.hrm_be.models.entities.BranchBatchEntity;
-import com.example.hrm_be.models.entities.BranchEntity;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -25,11 +23,12 @@ public interface BranchBatchRepository extends JpaRepository<BranchBatchEntity, 
   Optional<BranchBatchEntity> findByBranch_IdAndBatch_Id(Long branchId, Long batchId);
 
   @Query(
-          "SELECT b FROM BranchBatchEntity b " +
-                  "JOIN b.batch batch " +
-                  "WHERE batch.product.id = :productId " +
-                  "AND b.branch.id = :branchId " +
-                  "AND (batch.expireDate > CURRENT_TIMESTAMP OR batch.expireDate IS NULL) " +
-                  "ORDER BY CASE WHEN batch.expireDate IS NULL THEN 1 ELSE 0 END, batch.expireDate ASC")
-  List<BranchBatchEntity> findByProductIdAndBranchIdOrderByExpireDate(Long productId, Long branchId);
+      "SELECT b FROM BranchBatchEntity b "
+          + "JOIN b.batch batch "
+          + "WHERE batch.product.id = :productId "
+          + "AND b.branch.id = :branchId "
+          + "AND (batch.expireDate > CURRENT_TIMESTAMP OR batch.expireDate IS NULL) "
+          + "ORDER BY CASE WHEN batch.expireDate IS NULL THEN 1 ELSE 0 END, batch.expireDate ASC")
+  List<BranchBatchEntity> findByProductIdAndBranchIdOrderByExpireDate(
+      Long productId, Long branchId);
 }

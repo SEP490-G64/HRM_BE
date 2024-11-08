@@ -61,7 +61,9 @@ public class BranchBatchServiceImpl implements BranchBatchService {
       BranchEntity toBranch, BatchEntity batch, BigDecimal quantity) {
     // Check if BranchBatchEntity already exists
     BranchBatchEntity branchBatch =
-        branchBatchRepository.findByBranch_IdAndBatch_Id(toBranch.getId(), batch.getId()).orElse(new BranchBatchEntity());
+        branchBatchRepository
+            .findByBranch_IdAndBatch_Id(toBranch.getId(), batch.getId())
+            .orElse(new BranchBatchEntity());
 
     // If it exists, update the quantity, otherwise create a new one
     if (branchBatch.getId() != null) {
@@ -87,9 +89,7 @@ public class BranchBatchServiceImpl implements BranchBatchService {
 
   @Override
   public BranchBatchEntity getByBranchIdAndBatchId(Long branchId, Long batchId) {
-    return branchBatchRepository
-        .findByBranch_IdAndBatch_Id(branchId, batchId)
-        .orElse(null);
+    return branchBatchRepository.findByBranch_IdAndBatch_Id(branchId, batchId).orElse(null);
   }
 
   @Override
@@ -99,9 +99,10 @@ public class BranchBatchServiceImpl implements BranchBatchService {
 
   @Override
   public List<BranchBatch> findByProductAndBranchForSell(Long productId, Long branchId) {
-    return branchBatchRepository.findByProductIdAndBranchIdOrderByExpireDate(productId, branchId)
-            .stream()
-            .map(branchBatchMapper::toDTO)
-            .collect(Collectors.toList());
+    return branchBatchRepository
+        .findByProductIdAndBranchIdOrderByExpireDate(productId, branchId)
+        .stream()
+        .map(branchBatchMapper::toDTO)
+        .collect(Collectors.toList());
   }
 }

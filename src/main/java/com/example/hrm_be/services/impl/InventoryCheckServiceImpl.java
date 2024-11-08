@@ -69,8 +69,7 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
 
   @Autowired private UserMapper userMapper;
   @Autowired private BranchMapper branchMapper;
-    @Autowired
-    private BranchBatchMapper branchBatchMapper;
+  @Autowired private BranchBatchMapper branchBatchMapper;
 
   @Override
   public InventoryCheck getById(Long id) {
@@ -418,7 +417,8 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
 
       // Find the BranchBatch entity for this batch and branch
       BranchBatch branchBatch =
-          branchBatchMapper.toDTO(branchBatchService.getByBranchIdAndBatchId(branch.getId(), batch.getId()));
+          branchBatchMapper.toDTO(
+              branchBatchService.getByBranchIdAndBatchId(branch.getId(), batch.getId()));
       if (branchBatch == null) {
         throw new HrmCommonException(BRANCHBATCH.NOT_EXIST);
       }

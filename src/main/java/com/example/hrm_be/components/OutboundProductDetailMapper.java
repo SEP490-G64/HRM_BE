@@ -28,7 +28,10 @@ public class OutboundProductDetailMapper {
                     .outbound(
                         d.getOutbound() != null ? outboundMapper.toEntity(d.getOutbound()) : null)
                     .product(d.getProduct() != null ? productMapper.toEntity(d.getProduct()) : null)
-                    .unitOfMeasurement(d.getTargetUnit() != null ? unitOfMeasurementMapper.toEntity(d.getTargetUnit()) : null)
+                    .unitOfMeasurement(
+                        d.getTargetUnit() != null
+                            ? unitOfMeasurementMapper.toEntity(d.getTargetUnit())
+                            : null)
                     .outboundQuantity(d.getOutboundQuantity())
                     .price(d.getPrice())
                     .build())
@@ -41,10 +44,14 @@ public class OutboundProductDetailMapper {
         .id(entity.getId())
         .product(productMapper.toDTO(entity.getProduct()))
         .outboundQuantity(entity.getOutboundQuantity())
-        .outbound(entity.getOutbound() != null ?
-                outboundMapper.convertToDtoBasicInfo(entity.getOutbound()) : null)
-        .targetUnit(entity.getUnitOfMeasurement() != null ?
-                unitOfMeasurementMapper.toDTO(entity.getUnitOfMeasurement()) : null)
+        .outbound(
+            entity.getOutbound() != null
+                ? outboundMapper.convertToDtoBasicInfo(entity.getOutbound())
+                : null)
+        .targetUnit(
+            entity.getUnitOfMeasurement() != null
+                ? unitOfMeasurementMapper.toDTO(entity.getUnitOfMeasurement())
+                : null)
         .price(entity.getPrice())
         .build();
   }
