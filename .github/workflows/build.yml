@@ -96,7 +96,7 @@ jobs:
         run: docker build . -t ${{ env.IMAGE_NAME }}:latest
 
       - name: Tag image with DO
-        run: docker tag hrm-fe:latest registry.digitalocean.com/capstone-registry/${{ env.IMAGE_NAME }}:latest
+        run: docker tag ${{ env.IMAGE_NAME }}:latest registry.digitalocean.com/capstone-registry/${{ env.IMAGE_NAME }}:latest
 
       - name: Push image to registry
         run: docker push registry.digitalocean.com/capstone-registry/${{ env.IMAGE_NAME }}:latest
