@@ -4,7 +4,6 @@ import com.example.hrm_be.models.dtos.UnitOfMeasurement;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
-
 @Service
 public interface UnitOfMeasurementService {
   Boolean existById(Long id);

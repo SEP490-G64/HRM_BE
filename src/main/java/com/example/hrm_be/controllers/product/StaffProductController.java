@@ -270,16 +270,15 @@ public class StaffProductController {
 
   @GetMapping("/products-in-branch/{branchId}")
   public ResponseEntity<BaseOutput<List<ProductBaseDTO>>> getProductInBranch(
-          @PathVariable("branchId") Long branchId) {
-    List<ProductBaseDTO> products =
-            productService.getProductInBranch(branchId);
+      @PathVariable("branchId") Long branchId) {
+    List<ProductBaseDTO> products = productService.getProductInBranch(branchId);
 
     BaseOutput<List<ProductBaseDTO>> response =
-            BaseOutput.<List<ProductBaseDTO>>builder()
-                    .data(products)
-                    .message(HttpStatus.OK.toString())
-                    .status(ResponseStatus.SUCCESS)
-                    .build();
+        BaseOutput.<List<ProductBaseDTO>>builder()
+            .data(products)
+            .message(HttpStatus.OK.toString())
+            .status(ResponseStatus.SUCCESS)
+            .build();
     return ResponseEntity.ok(response);
   }
 }
