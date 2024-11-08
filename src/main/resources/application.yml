@@ -9,7 +9,17 @@ spring:
   profiles:
     active:
       - "@spring.profiles.active@"
+      - "local"
     include:
       - "common"
-  
+
+  # Mail Configuration
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: tiendat288966@gmail.com
+    password: hfqcaubtteeyrmef
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
 

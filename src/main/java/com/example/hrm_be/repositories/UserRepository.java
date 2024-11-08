@@ -1,10 +1,12 @@
 package com.example.hrm_be.repositories;
 
-
+import com.example.hrm_be.commons.enums.UserStatusType;
 import com.example.hrm_be.models.entities.RoleEntity;
 import com.example.hrm_be.models.entities.UserEntity;
 import java.util.List;
 import java.util.Optional;
+
+import io.micrometer.common.lang.Nullable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -22,9 +24,20 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
   boolean existsByUserName(String username);
 
-  @Query("SELECT u FROM UserEntity u WHERE u.userName LIKE %:keyword% OR u.email LIKE %:keyword%")
-  Page<UserEntity> findByKeyword(String keyword, Pageable pageable);
+  @Query(
+      "SELECT u FROM UserEntity u "
+          + "WHERE (LOWER(u.userName) LIKE LOWER(CONCAT('%', :searchKeyword, '%')) "
+          + "OR LOWER(u.email) LIKE LOWER(CONCAT('%', :searchKeyword, '%')) "
+          + "OR LOWER(u.firstName) LIKE LOWER(CONCAT('%', :searchKeyword, '%')) "
+          + "OR LOWER(u.lastName) LIKE LOWER(CONCAT('%', :searchKeyword, '%'))) "
+          + "AND (u.status <> :pending) AND (:status IS NULL OR u.status = :status)")
+  Page<UserEntity> searchUsers(
+      String searchKeyword,
+      UserStatusType pending,
+      @Nullable UserStatusType status,
+      Pageable pageable);
 
+  Page<UserEntity> findByStatus(UserStatusType status, Pageable pageable);
 
   @Modifying
   @Transactional
@@ -37,4 +50,13 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
           + "JOIN urm.role role "
           + "WHERE user.email = :email")
   List<RoleEntity> findRolesByEmail(String email);
+
+  @Modifying
+  @Transactional
+  @Query("UPDATE UserEntity f SET f.branch.id = :branchId WHERE f.id IN :ids")
+  void assignToBranchByBranchIdAndIds(
+      @Param("branchId") Long branchId, @Param("ids") List<Long> ids);
+
+  @Query("SELECT u.branch.id FROM UserEntity u WHERE u.email = :userEmail")
+  Optional<Long> findBranchIdByUserEmail(@Param("userEmail") String userEmail);
 }

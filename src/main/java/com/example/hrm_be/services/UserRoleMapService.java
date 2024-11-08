@@ -7,7 +7,9 @@ import java.util.List;
 public interface UserRoleMapService {
   List<UserRoleMap> findByUser(User user);
 
-  void setUserRoleForUser(Long userId);
+  void setManagerRoleForUser(Long userId);
+
+  void setStaffRoleForUser(Long userId);
 
   void setAdminRoleForUser(Long userId);
 }

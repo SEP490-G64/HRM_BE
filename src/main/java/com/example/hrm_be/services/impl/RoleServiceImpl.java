@@ -1,6 +1,5 @@
 package com.example.hrm_be.services.impl;
 
-
 import com.example.hrm_be.commons.constants.HrmConstant.ERROR.ROLE;
 import com.example.hrm_be.commons.enums.RoleType;
 import com.example.hrm_be.components.RoleMapper;
@@ -74,14 +73,28 @@ public class RoleServiceImpl implements RoleService {
   }
 
   @Override
-  public Role getUserRole() {
-    return roleRepository.findByType(RoleType.USER).map(r -> roleMapper.toDTO(r)).orElse(null);
+  public Role createManagerRole() {
+    return Optional.of(
+            RoleEntity.builder().type(RoleType.MANAGER).name(RoleType.MANAGER.getValue()).build())
+        .map(r -> roleRepository.save(r))
+        .map(re -> roleMapper.toDTO(re))
+        .orElse(null);
   }
 
   @Override
-  public Role createUserRole() {
+  public Role getStaffRole() {
+    return roleRepository.findByType(RoleType.STAFF).map(r -> roleMapper.toDTO(r)).orElse(null);
+  }
+
+  @Override
+  public Role getManagerRole() {
+    return roleRepository.findByType(RoleType.MANAGER).map(r -> roleMapper.toDTO(r)).orElse(null);
+  }
+
+  @Override
+  public Role createStaffRole() {
     return Optional.of(
-            RoleEntity.builder().type(RoleType.USER).name(RoleType.USER.getValue()).build())
+            RoleEntity.builder().type(RoleType.STAFF).name(RoleType.STAFF.getValue()).build())
         .map(r -> roleRepository.save(r))
         .map(re -> roleMapper.toDTO(re))
         .orElse(null);
@@ -99,5 +112,10 @@ public class RoleServiceImpl implements RoleService {
         .map(r -> roleRepository.save(r))
         .map(re -> roleMapper.toDTO(re))
         .orElse(null);
+  }
+
+  @Override
+  public Role getRoleByType(RoleType roleType) {
+    return roleRepository.findByType(roleType).map(roleMapper::toDTO).orElse(null);
   }
 }

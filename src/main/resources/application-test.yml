@@ -1,0 +1,52 @@
+# App custom configs
+hrm-config:
+  jwt:
+    secret: soUicqC3yUtp0lq1st57RVt5g36048StY291PwPIMyI=
+    expiration: 86400000
+  minio:
+    endpoint: http://localhost:9000
+    username: lpdev
+    password: Abcd1234
+    bucket: dsd
+    access-key: hum4ag5K2Lq5dzF3T3nc
+    secret-key: pVSiNZ11N7hnnMSJPwNHT7jMMkKYTJiJhqAW0Ww8
+  mail:
+    subject: "OTP for authentication in GoldenView"
+    content: "Do not send this OTP to anyone for security protection. Your otp is: "
+  s3:
+    key: "test"
+    secret: "test"
+    endpoint: "test"
+    region: "test"
+    bucket: "test"
+
+spring:
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: tiendat288966@gmail.com
+    password: hfqcaubtteeyrmef
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+  datasource:
+    url: jdbc:postgresql://${embedded.postgresql.host}:${embedded.postgresql.port}/${embedded.postgresql.schema}?TC_REUSABLE=true
+    username: ${embedded.postgresql.user}
+    password: ${embedded.postgresql.password}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+#    hibernate.ddl-auto: none
+#    show-sql: true
+    properties:
+      hibernate:
+#        boot:
+#          allow_jdbc_metadata_access: false
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    hibernate.ddl-auto: update
+    show-sql: true
+embedded:
+  postgresql:
+    reuse-container: true

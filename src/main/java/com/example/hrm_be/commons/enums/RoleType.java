@@ -8,7 +8,8 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public enum RoleType {
   ADMIN("ROLE_ADMIN"),
-  USER("ROLE_USER"),
+  STAFF("ROLE_STAFF"),
+  MANAGER("ROLE_MANAGER"),
   UNDEFINED("UNDEFINED");
 
   private final String value;
@@ -24,8 +25,12 @@ public enum RoleType {
     return this == ADMIN;
   }
 
-  public boolean isUser() {
-    return this == USER;
+  public boolean isManager() {
+    return this == MANAGER;
+  }
+
+  public boolean isStaff() {
+    return this == STAFF;
   }
 
   public boolean isValid() {

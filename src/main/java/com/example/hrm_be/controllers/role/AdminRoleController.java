@@ -1,11 +1,12 @@
 package com.example.hrm_be.controllers.role;
 
-
 import com.example.hrm_be.commons.constants.HrmConstant.ERROR.REQUEST;
 import com.example.hrm_be.commons.enums.ResponseStatus;
 import com.example.hrm_be.models.dtos.Role;
 import com.example.hrm_be.models.responses.BaseOutput;
 import com.example.hrm_be.services.RoleService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
@@ -28,14 +29,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/admin/role")
-
+@Tag(name = "Admin-Roles API")
+@SecurityRequirement(name = "Authorization")
 public class AdminRoleController {
   private final RoleService roleService;
 
-
   @GetMapping("")
   protected ResponseEntity<BaseOutput<List<Role>>> getByPaging(
-      @RequestParam(defaultValue = "1") int page,
+      @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "5") int size,
       @RequestParam(required = false, defaultValue = "id") String sortBy) {
     Page<Role> rolesPage = roleService.getByPaging(page, size, sortBy);
@@ -52,7 +53,6 @@ public class AdminRoleController {
             .build();
     return ResponseEntity.ok(response);
   }
-
 
   @GetMapping("/{id}")
   protected ResponseEntity<BaseOutput<Role>> getById(
@@ -75,7 +75,6 @@ public class AdminRoleController {
             .build();
     return ResponseEntity.ok(response);
   }
-
 
   @PostMapping
   protected ResponseEntity<BaseOutput<Role>> create(
@@ -100,7 +99,6 @@ public class AdminRoleController {
     return ResponseEntity.ok(response);
   }
 
-
   @PutMapping("/{id}")
   protected ResponseEntity<BaseOutput<Role>> update(
       @PathVariable("id") @NotBlank(message = "error.id.invalid") Long id,
@@ -123,7 +121,6 @@ public class AdminRoleController {
             .build();
     return ResponseEntity.ok(response);
   }
-
 
   @DeleteMapping("/{id}")
   protected ResponseEntity<BaseOutput<String>> delete(
