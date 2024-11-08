@@ -116,10 +116,9 @@ public class OutboundDetailServiceImpl implements OutboundDetailService {
 
   @Override
   public List<OutboundDetail> saveAll(List<OutboundDetailEntity> outboundDetailEntities) {
-    return outboundDetailRepository.saveAll(outboundDetailEntities)
-            .stream()
-            .map(outboundDetailMapper::toDTOWithProductAndCategory)
-            .collect(Collectors.toList());
+    return outboundDetailRepository.saveAll(outboundDetailEntities).stream()
+        .map(outboundDetailMapper::toDTOWithProductAndCategory)
+        .collect(Collectors.toList());
   }
 
   @Override

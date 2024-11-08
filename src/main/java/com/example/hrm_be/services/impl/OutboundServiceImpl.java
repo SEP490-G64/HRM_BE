@@ -10,7 +10,6 @@ import com.example.hrm_be.components.*;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.*;
 import com.example.hrm_be.models.entities.BatchEntity;
-import com.example.hrm_be.models.entities.BranchBatchEntity;
 import com.example.hrm_be.models.entities.BranchEntity;
 import com.example.hrm_be.models.entities.BranchProductEntity;
 import com.example.hrm_be.models.entities.OutboundDetailEntity;
@@ -72,7 +71,6 @@ public class OutboundServiceImpl implements OutboundService {
             .findById(id)
             .orElseThrow(() -> new HrmCommonException("Outbound not found with id: " + id));
 
-
     // Map basic OutboundEntity details to OutboundDetailDTO
     Outbound outboundDetailDTO = outboundMapper.convertToDtoBasicInfo(outboundEntity);
 
@@ -94,7 +92,8 @@ public class OutboundServiceImpl implements OutboundService {
                   // Set outbound quantity and price
                   productDetailDTO.setOutboundQuantity(outboundProductDetail.getOutboundQuantity());
                   productDetailDTO.setPrice(outboundProductDetail.getPrice());
-                  productDetailDTO.setTargetUnit(unitOfMeasurementMapper.toDTO(outboundProductDetail.getUnitOfMeasurement()));
+                  productDetailDTO.setTargetUnit(
+                      unitOfMeasurementMapper.toDTO(outboundProductDetail.getUnitOfMeasurement()));
 
                   return productDetailDTO;
                 })
@@ -125,7 +124,8 @@ public class OutboundServiceImpl implements OutboundService {
                   // Set outbound quantity and price
                   productWithBatchDetailDTO.setOutboundQuantity(outboundDetail.getQuantity());
                   productWithBatchDetailDTO.setPrice(outboundDetail.getPrice());
-                  productWithBatchDetailDTO.setTargetUnit(unitOfMeasurementMapper.toDTO(outboundDetail.getUnitOfMeasurement()));
+                  productWithBatchDetailDTO.setTargetUnit(
+                      unitOfMeasurementMapper.toDTO(outboundDetail.getUnitOfMeasurement()));
 
                   return productWithBatchDetailDTO;
                 })
@@ -457,12 +457,12 @@ public class OutboundServiceImpl implements OutboundService {
     }
 
     // Save all outbound details to the repositories
-    List<OutboundProductDetailEntity> finalOutboundProductDetailEntities
-            = outboundProductDetailService.saveAll(outboundProductDetailEntities).stream()
+    List<OutboundProductDetailEntity> finalOutboundProductDetailEntities =
+        outboundProductDetailService.saveAll(outboundProductDetailEntities).stream()
             .map(outboundProductDetailMapper::toEntity)
             .collect(Collectors.toList());
-    List<OutboundDetailEntity> finalOutboundDetailEntities
-            = outboundDetailService.saveAll(outboundDetailEntities).stream()
+    List<OutboundDetailEntity> finalOutboundDetailEntities =
+        outboundDetailService.saveAll(outboundDetailEntities).stream()
             .map(outboundDetailMapper::toEntity)
             .collect(Collectors.toList());
     outboundProductDetailService.saveAll(outboundProductDetailEntities);
@@ -544,7 +544,8 @@ public class OutboundServiceImpl implements OutboundService {
       outboundProductDetailEntities.add(outboundProductDetailMapper.toEntity(productDetail));
     }
 
-    List<OutboundDetail> outboundDetails = outboundDetailService.findByOutboundWithCategory(outboundId);
+    List<OutboundDetail> outboundDetails =
+        outboundDetailService.findByOutboundWithCategory(outboundId);
 
     // Process each OutboundDetail (for batches)
     for (OutboundDetail batchDetail : outboundDetails) {

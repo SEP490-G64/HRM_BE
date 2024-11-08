@@ -43,9 +43,10 @@ public class OutboundProductDetailServiceImpl implements OutboundProductDetailSe
   }
 
   @Override
-  public List<OutboundProductDetail> saveAll(List<OutboundProductDetailEntity> outboundProductDetailEntities) {
-    return  outboundProductDetailRepository.saveAll(outboundProductDetailEntities).stream()
-            .map(outboundProductDetailMapper::toDTO)
-            .collect(Collectors.toList());
+  public List<OutboundProductDetail> saveAll(
+      List<OutboundProductDetailEntity> outboundProductDetailEntities) {
+    return outboundProductDetailRepository.saveAll(outboundProductDetailEntities).stream()
+        .map(outboundProductDetailMapper::toDTO)
+        .collect(Collectors.toList());
   }
 }
