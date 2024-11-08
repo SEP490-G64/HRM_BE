@@ -13,6 +13,8 @@ import com.example.hrm_be.services.BranchBatchService;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -96,7 +98,10 @@ public class BranchBatchServiceImpl implements BranchBatchService {
   }
 
   @Override
-  public List<BranchBatchEntity> findByProductAndBranch(Long productId, Long branchId) {
-    return branchBatchRepository.findByProductIdAndBranchId(productId, branchId);
+  public List<BranchBatch> findByProductAndBranchForSell(Long productId, Long branchId) {
+    return branchBatchRepository.findByProductIdAndBranchIdOrderByExpireDate(productId, branchId)
+            .stream()
+            .map(branchBatchMapper::toDTO)
+            .collect(Collectors.toList());
   }
 }

@@ -29,6 +29,7 @@ public interface BranchBatchRepository extends JpaRepository<BranchBatchEntity, 
                   "JOIN b.batch batch " +
                   "WHERE batch.product.id = :productId " +
                   "AND b.branch.id = :branchId " +
-                  "ORDER BY batch.expireDate ASC")
-  List<BranchBatchEntity> findByProductIdAndBranchId(Long productId, Long branchId);
+                  "AND (batch.expireDate > CURRENT_TIMESTAMP OR batch.expireDate IS NULL) " +
+                  "ORDER BY CASE WHEN batch.expireDate IS NULL THEN 1 ELSE 0 END, batch.expireDate ASC")
+  List<BranchBatchEntity> findByProductIdAndBranchIdOrderByExpireDate(Long productId, Long branchId);
 }

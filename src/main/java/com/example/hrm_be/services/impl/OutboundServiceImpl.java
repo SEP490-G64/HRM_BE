@@ -362,21 +362,24 @@ public class OutboundServiceImpl implements OutboundService {
                         productDetail.getTargetUnit(), true);
 
         // Get all batches of product then check quantity to see which batch will be out
-        List<BranchBatchEntity> productBranchBatches = branchBatchService.
-                findByProductAndBranch(product.getId(), fromBranch.getId());
-
-        // Compare outbound quantity to product quantity in branch
-        if (branchProduct.getQuantity().compareTo(convertedQuantity) < 0) {
-          throw new HrmCommonException(
-                  "Insufficient stock for product: " + productEntity.getProductName());
-        }
+        List<BranchBatch> productBranchBatches = branchBatchService.
+                findByProductAndBranchForSell(product.getId(), fromBranch.getId());
 
         if (!productBranchBatches.isEmpty()) {
+          BigDecimal availableForSell = productBranchBatches.stream()
+                  .map(BranchBatch::getQuantity)
+                  .reduce(BigDecimal.ZERO, BigDecimal::add);
+          // Compare outbound quantity to product quantity in branch
+          if (availableForSell.compareTo(convertedQuantity) < 0) {
+            throw new HrmCommonException(
+                    "Insufficient stock for product: " + productEntity.getProductName());
+          }
+
           BigDecimal remainingQuantity = convertedQuantity;
 
           // For product have batch
           // Iterate through each batch to issue stock in order of earliest expiry date
-          for (BranchBatchEntity branchBatch : productBranchBatches) {
+          for (BranchBatch branchBatch : productBranchBatches) {
             Batch batchDTO = batchService.getById(branchBatch.getBatch().getId());
 
             // Check if the current batch has enough quantity to meet the remaining requirement
@@ -391,7 +394,7 @@ public class OutboundServiceImpl implements OutboundService {
               totalPrice = totalPrice.add(priceOutboundDetail);
               remainingQuantity = remainingQuantity.subtract(branchBatch.getQuantity());
               branchBatch.setQuantity(BigDecimal.ZERO);
-              branchBatchService.save(branchBatchMapper.toDTO(branchBatch));
+              branchBatchService.save(branchBatch);
             } else {
               BigDecimal priceOutboundDetail = remainingQuantity.multiply(pricePreUnit);
               // Issue only the required quantity and deduct it from the batch
@@ -403,12 +406,18 @@ public class OutboundServiceImpl implements OutboundService {
               totalPrice = totalPrice.add(priceOutboundDetail);
               branchBatch.setQuantity(branchBatch.getQuantity().subtract(remainingQuantity));
               remainingQuantity = BigDecimal.ZERO;
-              branchBatchService.save(branchBatchMapper.toDTO(branchBatch));
+              branchBatchService.save(branchBatch);
               break;
             }
           }
         }
         else {
+          // Compare outbound quantity to product quantity in branch
+          if (branchProduct.getQuantity().compareTo(convertedQuantity) < 0) {
+            throw new HrmCommonException(
+                    "Insufficient stock for product: " + productEntity.getProductName());
+          }
+
           BigDecimal priceOutboundProductDetail = outboundQuantity.multiply(pricePreUnit);
           OutboundProductDetailEntity outboundProductDetail =
                   OutboundProductDetailEntity.builder()
@@ -478,7 +487,7 @@ public class OutboundServiceImpl implements OutboundService {
 
       // Convert the outbound quantity to the product's base unit if a different target unit is
       // specified
-      BigDecimal convertedQuantity = BigDecimal.ONE;
+      BigDecimal convertedQuantity =
           unitConversionService.convertToUnit(
                   productEntity.getId(), productEntity.getBaseUnit().getId(),
                   productDetail.getOutboundQuantity(),

@@ -109,7 +109,7 @@ public class UnitConversionImpl implements UnitConversionService {
     if (conversion != null) {
       if (toBaseUnit) {
         return quantity.divide(
-                BigDecimal.valueOf(conversion.getFactorConversion()), RoundingMode.HALF_UP);
+                BigDecimal.valueOf(conversion.getFactorConversion()));
       }
       else {
         return quantity.multiply(BigDecimal.valueOf(conversion.getFactorConversion()));
