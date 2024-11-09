@@ -1,14 +1,14 @@
 package com.example.hrm_be.components;
 
-import com.example.hrm_be.models.dtos.BranchProduct;
-import com.example.hrm_be.models.dtos.Product;
-import com.example.hrm_be.models.dtos.ProductBaseDTO;
-import com.example.hrm_be.models.dtos.ProductSupplierDTO;
+import com.example.hrm_be.models.dtos.*;
 import com.example.hrm_be.models.entities.ProductEntity;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -330,6 +330,38 @@ public class ProductMapper {
             entity.getBaseUnit() != null
                 ? unitOfMeasurementMapper.toDTO(entity.getBaseUnit())
                 : null)
+        .build();
+  }
+
+  public ProductBaseDTO convertToProductForSearchInNotes(ProductEntity entity) {
+    List<UnitOfMeasurement> unitOfMeasurementList = new ArrayList<>();
+    if (entity.getUnitConversions() != null) {
+      unitOfMeasurementList =
+          entity.getUnitConversions().stream()
+              .map(unitConversionMapper::toDTO)
+              .map(UnitConversion::getSmallerUnit)
+              .collect(Collectors.toList());
+    }
+    if (entity.getBaseUnit() != null) {
+      unitOfMeasurementList.add(unitOfMeasurementMapper.toDTO(entity.getBaseUnit()));
+    }
+
+    return ProductBaseDTO.builder()
+        .id(entity.getId())
+        .productName(entity.getProductName())
+        .registrationCode(entity.getRegistrationCode())
+        .urlImage(entity.getUrlImage())
+        .productBaseUnit(
+            entity.getBaseUnit() != null
+                ? unitOfMeasurementMapper.toDTO(entity.getBaseUnit())
+                : null)
+        .batches(
+            entity.getBatches() != null
+                ? entity.getBatches().stream()
+                    .map(batchMapper::convertToDtoWithOnlyCodeAndExpireDate)
+                    .collect(Collectors.toList())
+                : null)
+        .productUnits(unitOfMeasurementList)
         .build();
   }
 }
