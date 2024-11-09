@@ -7,7 +7,6 @@ on:
       - "main"
 jobs:
   Push-To-Image-Repo:
-    if: github.ref_name == 'main'
     runs-on: ubuntu-latest
     env:
       IMAGE_NAME: hrm-be
@@ -38,17 +37,23 @@ jobs:
     env:
       DROPLET_NAME: hrm-droplet
       SERVICE: springboot
+      SSH_KEY_PATH: ~/.ssh/id_rsa
     steps:
       - name: Install doctl
         uses: digitalocean/action-doctl@v2
         with:
           token: ${{ secrets.DO_TOKEN }}
 
-      - name: Pull latest iamge
-        run: doctl compute ssh ${{ env.DROPLET_NAME }} --ssh-command docker compose pull ${{ env.SERVICE }}
+      - name: Setup SSH key
+        run:
+          cat ${{ secrets.SSH_PRIVATE_KEY }} > ${{ env.SSH_KEY_PATH }}
+          chmod 600 ${{ env.SSH_KEY_PATH }}
+
+      - name: Pull latest image
+        run: doctl compute ssh ${{ env.DROPLET_NAME }} --ssh-key-path ${{ env.SSH_KEY_PATH }} --ssh-command docker compose pull ${{ env.SERVICE }}
 
       - name: Redeploy with latest image
-        run: doctl compute ssh ${{ env.DROPLET_NAME }} --ssh-command docker compose -f docker-compose.yml up --build --force-recreate -d --no-deps ${{ env.SERVICE }}
+        run: doctl compute ssh ${{ env.DROPLET_NAME }} --ssh-key-path ${{ env.SSH_KEY_PATH }} --ssh-command docker compose -f docker-compose.yml up --build --force-recreate -d --no-deps ${{ env.SERVICE }}
 
       - name: Clean up old image
-        run: doctl compute ssh ${{ env.DROPLET_NAME }} --ssh-command docker image prune -f
+        run: doctl compute ssh ${{ env.DROPLET_NAME }} --ssh-key-path ${{ env.SSH_KEY_PATH }} --ssh-command docker image prune -f
