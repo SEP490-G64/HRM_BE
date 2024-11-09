@@ -39,6 +39,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       DROPLET_NAME: hrm-droplet
+      DROPLET_IP: 209.38.56.58
       SERVICE: springboot
       SSH_KEY_PATH: ~/id_rsa
     steps:
@@ -51,6 +52,12 @@ jobs:
         run: |
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ${{ env.SSH_KEY_PATH }}
           chmod 600 ${{ env.SSH_KEY_PATH }}
+
+      - name: Setup Known host
+        run: |
+          mkdir ~/.ssh
+          echo $(ssh-keyscan -t rsa ${{ env.DROPLET_IP }}) > known_hosts
+          chmod 600 ~/.ssh/known_hosts
 
       - name: Pull latest image
         run: doctl compute ssh ${{ env.DROPLET_NAME }} --ssh-key-path ${{ env.SSH_KEY_PATH }} --ssh-command docker compose pull ${{ env.SERVICE }}
