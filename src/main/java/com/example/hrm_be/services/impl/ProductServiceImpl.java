@@ -82,6 +82,7 @@ public class ProductServiceImpl implements ProductService {
   @Autowired private StorageLocationMapper storageLocationMapper;
   @Autowired private UnitConversionMapper unitConversionMapper;
   @Autowired private AllowedProductService allowedProductService;
+  @Autowired private BatchRepository batchRepository;
 
   @Override
   public Product getById(Long id) {
@@ -728,9 +729,12 @@ public class ProductServiceImpl implements ProductService {
   }
 
   @Override
-  public List<ProductBaseDTO> getProductInBranch(Long branchId) {
-    return productRepository.findProductByBranchId(branchId).stream()
-        .map(productMapper::convertToProductBaseDTO)
+  public List<ProductBaseDTO> getProductInBranch(
+      Long branchId, String keyword, Boolean checkValid, Long supplierId) {
+    return productRepository
+        .searchProductByBranchId(branchId, keyword, checkValid, supplierId)
+        .stream()
+        .map(productMapper::convertToProductForSearchInNotes)
         .collect(Collectors.toList());
   }
 }
