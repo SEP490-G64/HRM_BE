@@ -178,46 +178,46 @@ public class ProductMapper {
   // Helper method to convert ProductEntity to ProductDTO
   public Product convertToDTOWithoutProductInBranchProduct(ProductEntity entity) {
     return Product.builder()
-            .id(entity.getId())
-            .productName(entity.getProductName())
-            .registrationCode(entity.getRegistrationCode())
-            .urlImage(entity.getUrlImage())
-            .activeIngredient(entity.getActiveIngredient())
-            .excipient(entity.getExcipient())
-            .formulation(entity.getFormulation())
-            .inboundPrice(entity.getInboundPrice())
-            .sellPrice(entity.getSellPrice())
-            .status(entity.getStatus())
-            .unitConversions(
-                    entity.getUnitConversions() != null
-                            ? entity.getUnitConversions().stream()
-                            .map(unitConversionMapper::toDTO)
-                            .collect(Collectors.toList())
-                            : null)
-            .specialConditions(
-                    entity.getSpecialConditions() != null
-                            ? entity.getSpecialConditions().stream()
-                            .map(specialConditionMapper::toDTO)
-                            .collect(Collectors.toList())
-                            : null)
-            .baseUnit(
-                    entity.getBaseUnit() != null
-                            ? unitOfMeasurementMapper.toDTO(entity.getBaseUnit())
-                            : null)
-            .branchProducts(
-                    entity.getBranchProducs() != null
-                            ? entity.getBranchProducs().stream()
-                            .map(branchProductMapper::convertToDTOWithoutProduct)
-                            .collect(Collectors.toList())
-                            : null)
-            .category(
-                    entity.getCategory() != null ? productCategoryMapper.toDTO(entity.getCategory()) : null)
-            .type(entity.getType() != null ? productTypeMapper.toDTO(entity.getType()) : null)
-            .manufacturer(
-                    entity.getManufacturer() != null
-                            ? manufacturerMapper.toDTO(entity.getManufacturer())
-                            : null)
-            .build();
+        .id(entity.getId())
+        .productName(entity.getProductName())
+        .registrationCode(entity.getRegistrationCode())
+        .urlImage(entity.getUrlImage())
+        .activeIngredient(entity.getActiveIngredient())
+        .excipient(entity.getExcipient())
+        .formulation(entity.getFormulation())
+        .inboundPrice(entity.getInboundPrice())
+        .sellPrice(entity.getSellPrice())
+        .status(entity.getStatus())
+        .unitConversions(
+            entity.getUnitConversions() != null
+                ? entity.getUnitConversions().stream()
+                    .map(unitConversionMapper::toDTO)
+                    .collect(Collectors.toList())
+                : null)
+        .specialConditions(
+            entity.getSpecialConditions() != null
+                ? entity.getSpecialConditions().stream()
+                    .map(specialConditionMapper::toDTO)
+                    .collect(Collectors.toList())
+                : null)
+        .baseUnit(
+            entity.getBaseUnit() != null
+                ? unitOfMeasurementMapper.toDTO(entity.getBaseUnit())
+                : null)
+        .branchProducts(
+            entity.getBranchProducs() != null
+                ? entity.getBranchProducs().stream()
+                    .map(branchProductMapper::convertToDTOWithoutProduct)
+                    .collect(Collectors.toList())
+                : null)
+        .category(
+            entity.getCategory() != null ? productCategoryMapper.toDTO(entity.getCategory()) : null)
+        .type(entity.getType() != null ? productTypeMapper.toDTO(entity.getType()) : null)
+        .manufacturer(
+            entity.getManufacturer() != null
+                ? manufacturerMapper.toDTO(entity.getManufacturer())
+                : null)
+        .build();
   }
 
   // Helper method to convert ProductEntity to ProductDTO
