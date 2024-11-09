@@ -59,8 +59,8 @@ jobs:
           host: ${{ env.DROPLET_IP }}
           username: root
           port: 22
-          key_path: ${{ env.SSH_KEY_PATH }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
           script:
-            doctl compute ssh ${{ env.DROPLET_NAME }} --ssh-key-path ${{ env.SSH_KEY_PATH }} --ssh-command docker compose pull ${{ env.SERVICE }}
-            doctl compute ssh ${{ env.DROPLET_NAME }} --ssh-key-path ${{ env.SSH_KEY_PATH }} --ssh-command docker compose -f docker-compose.yml up --build --force-recreate -d --no-deps ${{ env.SERVICE }}
-            doctl compute ssh ${{ env.DROPLET_NAME }} --ssh-key-path ${{ env.SSH_KEY_PATH }} --ssh-command docker image prune -f
+            docker compose pull ${{ env.SERVICE }}
+            docker compose -f docker-compose.yml up --build --force-recreate -d --no-deps ${{ env.SERVICE }}
+            docker image prune -f
