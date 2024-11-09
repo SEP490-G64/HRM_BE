@@ -32,7 +32,7 @@ jobs:
         run: docker push registry.digitalocean.com/capstone-registry/${{ env.IMAGE_NAME }}:latest
 
       - name: Trigger garbage collection
-        run: doctl registry garbage-collection start
+        run: doctl registry garbage-collection start -f
 
   Trigger-Redeploy:
     needs: Push-To-Image-Repo
