@@ -29,9 +29,18 @@ public interface ProductRepository
   boolean existsByRegistrationCode(String code);
 
   @Query(
-      "SELECT p FROM ProductEntity p JOIN FETCH p.branchProducs bp WHERE bp.branch.id = :branchId"
-          + " AND bp.quantity > 0")
-  List<ProductEntity> findProductByBranchId(@Param("branchId") Long branchId);
+          "SELECT DISTINCT p FROM ProductEntity p " +
+                  "JOIN p.branchProducs bp " +
+                  "LEFT JOIN FETCH p.batches b " +
+                  "LEFT JOIN BranchBatchEntity bb ON bb.batch = b AND bb.branch.id = :branchId " +
+                  "LEFT JOIN p.productSuppliers ps " +
+                  "WHERE LOWER(p.productName) LIKE LOWER(CONCAT('%', :searchStr, '%')) " +
+                  "AND bp.branch.id = :branchId " +
+                  "AND (:checkValid IS NULL OR :checkValid = FALSE " +
+                  "     OR (b IS NOT NULL AND b.expireDate >= CURRENT_TIMESTAMP AND bb.quantity > 0 AND bp.quantity > 0)) " +
+                  "AND (:supplierId IS NULL OR ps.supplier.id = :supplierId)"
+  )
+  List<ProductEntity> searchProductByBranchId(Long branchId, String searchStr, Boolean checkValid, Long supplierId);
 
   List<ProductEntity> findByRegistrationCodeIn(List<String> productName);
 

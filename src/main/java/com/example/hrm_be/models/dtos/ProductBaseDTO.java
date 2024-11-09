@@ -45,6 +45,9 @@ public class ProductBaseDTO {
   private BigDecimal quantity;
 
   private List<UnitConversion> unitConversions;
+  private List<Batch> batches;
+  private List<UnitOfMeasurement> productUnits;
+  private UnitOfMeasurement productBaseUnit;
 
   private BranchProduct branchProduct;
 }

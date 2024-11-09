@@ -49,6 +49,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -82,6 +83,7 @@ public class ProductServiceImpl implements ProductService {
   @Autowired private StorageLocationMapper storageLocationMapper;
   @Autowired private UnitConversionMapper unitConversionMapper;
   @Autowired private AllowedProductService allowedProductService;
+  @Autowired private BatchRepository batchRepository;
 
   @Override
   public Product getById(Long id) {
@@ -724,9 +726,9 @@ public class ProductServiceImpl implements ProductService {
   }
 
   @Override
-  public List<ProductBaseDTO> getProductInBranch(Long branchId) {
-    return productRepository.findProductByBranchId(branchId).stream()
-        .map(productMapper::convertToProductBaseDTO)
-        .collect(Collectors.toList());
+  public List<ProductBaseDTO> getProductInBranch(Long branchId, String keyword, Boolean checkValid, Long supplierId) {
+    return productRepository.searchProductByBranchId(branchId, keyword, checkValid, supplierId).stream()
+              .map(productMapper::convertToProductForSearchInNotes)
+              .collect(Collectors.toList());
   }
 }
