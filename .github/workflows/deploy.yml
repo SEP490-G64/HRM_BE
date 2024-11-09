@@ -56,7 +56,7 @@ jobs:
       - name: Setup Known host
         run: |
           mkdir ~/.ssh
-          echo $(ssh-keyscan -t rsa ${{ env.DROPLET_IP }}) > known_hosts
+          echo $(ssh-keyscan -t rsa ${{ env.DROPLET_IP }}) > ~/.ssh/known_hosts
           chmod 600 ~/.ssh/known_hosts
 
       - name: Pull latest image
