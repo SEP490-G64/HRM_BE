@@ -46,7 +46,7 @@ jobs:
 
       - name: Setup SSH key
         run:
-          cat ${{ secrets.SSH_PRIVATE_KEY }} > ${{ env.SSH_KEY_PATH }}
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ${{ env.SSH_KEY_PATH }}
           chmod 600 ${{ env.SSH_KEY_PATH }}
 
       - name: Pull latest image
