@@ -49,5 +49,6 @@ public interface ProductService {
 
   List<ProductSupplierDTO> getAllProductsBySupplier(Long id, String ProductName);
 
-  List<ProductBaseDTO> getProductInBranch(Long branchId, String keyword, Boolean checkValid, Long supplierId);
+  List<ProductBaseDTO> getProductInBranch(
+      Long branchId, String keyword, Boolean checkValid, Long supplierId);
 }

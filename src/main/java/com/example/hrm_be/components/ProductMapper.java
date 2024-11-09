@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.example.hrm_be.repositories.UnitConversionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -337,7 +336,8 @@ public class ProductMapper {
   public ProductBaseDTO convertToProductForSearchInNotes(ProductEntity entity) {
     List<UnitOfMeasurement> unitOfMeasurementList = new ArrayList<>();
     if (entity.getUnitConversions() != null) {
-      unitOfMeasurementList = entity.getUnitConversions().stream()
+      unitOfMeasurementList =
+          entity.getUnitConversions().stream()
               .map(unitConversionMapper::toDTO)
               .map(UnitConversion::getSmallerUnit)
               .collect(Collectors.toList());
@@ -347,18 +347,21 @@ public class ProductMapper {
     }
 
     return ProductBaseDTO.builder()
-            .id(entity.getId())
-            .productName(entity.getProductName())
-            .registrationCode(entity.getRegistrationCode())
-            .urlImage(entity.getUrlImage())
-            .productBaseUnit(entity.getBaseUnit() != null ? unitOfMeasurementMapper.toDTO(entity.getBaseUnit()) : null)
-            .batches(
-                    entity.getBatches() != null
-                            ? entity.getBatches().stream()
-                            .map(batchMapper::convertToDtoWithOnlyCodeAndExpireDate)
-                            .collect(Collectors.toList())
-                            : null)
-            .productUnits(unitOfMeasurementList)
-            .build();
+        .id(entity.getId())
+        .productName(entity.getProductName())
+        .registrationCode(entity.getRegistrationCode())
+        .urlImage(entity.getUrlImage())
+        .productBaseUnit(
+            entity.getBaseUnit() != null
+                ? unitOfMeasurementMapper.toDTO(entity.getBaseUnit())
+                : null)
+        .batches(
+            entity.getBatches() != null
+                ? entity.getBatches().stream()
+                    .map(batchMapper::convertToDtoWithOnlyCodeAndExpireDate)
+                    .collect(Collectors.toList())
+                : null)
+        .productUnits(unitOfMeasurementList)
+        .build();
   }
 }

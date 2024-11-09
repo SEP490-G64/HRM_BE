@@ -125,13 +125,13 @@ public class BatchMapper {
   // Helper method to map BatchEntity to BatchDTO
   public Batch convertToDtoWithOnlyCodeAndExpireDate(BatchEntity entity) {
     return Optional.ofNullable(entity)
-            .map(
-                    e ->
-                            Batch.builder()
-                                    .id(e.getId())
-                                    .batchCode(e.getBatchCode())
-                                    .expireDate(e.getExpireDate())
-                                    .build())
-            .orElse(null);
+        .map(
+            e ->
+                Batch.builder()
+                    .id(e.getId())
+                    .batchCode(e.getBatchCode())
+                    .expireDate(e.getExpireDate())
+                    .build())
+        .orElse(null);
   }
 }
