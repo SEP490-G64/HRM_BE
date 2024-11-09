@@ -32,7 +32,7 @@ jobs:
         run: docker push registry.digitalocean.com/capstone-registry/${{ env.IMAGE_NAME }}:latest
 
       - name: Trigger garbage collection
-        run: doctl registry garbage-collection start -f
+        run: doctl registry garbage-collection start -f --include-untagged-manifests
 
   Trigger-Redeploy:
     needs: Push-To-Image-Repo
@@ -40,7 +40,7 @@ jobs:
     env:
       DROPLET_NAME: hrm-droplet
       SERVICE: springboot
-      SSH_KEY_PATH: ~/.ssh/id_rsa
+      SSH_KEY_PATH: ~/id_rsa
     steps:
       - name: Install doctl
         uses: digitalocean/action-doctl@v2
