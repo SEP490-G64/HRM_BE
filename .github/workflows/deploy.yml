@@ -49,6 +49,7 @@ jobs:
           port: 22
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
+            cd app
             docker compose pull ${{ env.SERVICE }}
             docker compose -f docker-compose.yml up --build --force-recreate -d --no-deps ${{ env.SERVICE }}
             docker image prune -f
