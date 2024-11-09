@@ -48,10 +48,9 @@ jobs:
           token: ${{ secrets.DO_TOKEN }}
 
       - name: Setup SSH key
-        run:
+        run: |
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ${{ env.SSH_KEY_PATH }}
           chmod 600 ${{ env.SSH_KEY_PATH }}
-          cat ${{ env.SSH_KEY_PATH }}
 
       - name: Pull latest image
         run: doctl compute ssh ${{ env.DROPLET_NAME }} --ssh-key-path ${{ env.SSH_KEY_PATH }} --ssh-command docker compose pull ${{ env.SERVICE }}
