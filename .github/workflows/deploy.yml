@@ -1,0 +1,54 @@
+name: GitHub Actions CD
+run-name: Deploy Spring Boot
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "main"
+jobs:
+  Push-To-Image-Repo:
+    if: github.ref_name == 'main'
+    runs-on: ubuntu-latest
+    env:
+      IMAGE_NAME: hrm-be
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DO_TOKEN }}
+
+      - name: Authen DO registry
+        run: doctl registry login
+
+      - name: Build docker image
+        run: docker build . -t ${{ env.IMAGE_NAME }}:latest
+
+      - name: Tag image with DO
+        run: docker tag ${{ env.IMAGE_NAME }}:latest registry.digitalocean.com/capstone-registry/${{ env.IMAGE_NAME }}:latest
+
+      - name: Push image to registry
+        run: docker push registry.digitalocean.com/capstone-registry/${{ env.IMAGE_NAME }}:latest
+
+  Trigger-Redeploy:
+    needs: Push-To-Image-Repo
+    runs-on: ubuntu-latest
+    env:
+      DROPLET_NAME: hrm-droplet
+      SERVICE: springboot
+    steps:
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DO_TOKEN }}
+
+      - name: Pull latest iamge
+        run: doctl compute ssh ${{ env.DROPLET_NAME }} --ssh-command docker compose pull ${{ env.SERVICE }}
+
+      - name: Redeploy with latest image
+        run: doctl compute ssh ${{ env.DROPLET_NAME }} --ssh-command docker compose -f docker-compose.yml up --build --force-recreate -d --no-deps ${{ env.SERVICE }}
+
+      - name: Clean up old image
+        run: doctl compute ssh ${{ env.DROPLET_NAME }} --ssh-command docker image prune -f
