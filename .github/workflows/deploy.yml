@@ -38,21 +38,9 @@ jobs:
     needs: Push-To-Image-Repo
     runs-on: ubuntu-latest
     env:
-      DROPLET_NAME: hrm-droplet
       DROPLET_IP: 209.38.56.58
       SERVICE: springboot
-      SSH_KEY_PATH: ~/id_rsa
     steps:
-      - name: Install doctl
-        uses: digitalocean/action-doctl@v2
-        with:
-          token: ${{ secrets.DO_TOKEN }}
-
-      - name: Setup SSH key
-        run: |
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ${{ env.SSH_KEY_PATH }}
-          chmod 600 ${{ env.SSH_KEY_PATH }}
-
       - name: Redeploy and clean up
         uses: appleboy/ssh-action@v1.1.0
         with:
