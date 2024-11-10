@@ -23,12 +23,13 @@ jobs:
         run: doctl registry login
 
       - name: Build docker image
-        run: docker build . -t ${{ env.IMAGE_NAME }}:latest \
-          --build-arg ARG_DO_S3_KEY=${{ secrets.DO_S3_KEY }} \
-          --build-arg ARG_DO_S3_SECRET=${{ secrets.DO_S3_SECRET }} \
-          --build-arg ARG_DO_S3_ENDPOINT=${{ secrets.DO_S3_ENDPOINT }} \
-          --build-arg ARG_DO_S3_REGION=${{ secrets.DO_S3_REGION }} \
-          --build-arg ARG_DO_S3_BUCKET=${{ secrets.DO_S3_BUCKET }}
+        run: | 
+          docker build . -t ${{ env.IMAGE_NAME }}:latest \
+            --build-arg ARG_DO_S3_KEY=${{ secrets.DO_S3_KEY }} \
+            --build-arg ARG_DO_S3_SECRET=${{ secrets.DO_S3_SECRET }} \
+            --build-arg ARG_DO_S3_ENDPOINT=${{ secrets.DO_S3_ENDPOINT }} \
+            --build-arg ARG_DO_S3_REGION=${{ secrets.DO_S3_REGION }} \
+            --build-arg ARG_DO_S3_BUCKET=${{ secrets.DO_S3_BUCKET }}
 
       - name: Tag image with DO
         run: docker tag ${{ env.IMAGE_NAME }}:latest registry.digitalocean.com/capstone-registry/${{ env.IMAGE_NAME }}:latest
