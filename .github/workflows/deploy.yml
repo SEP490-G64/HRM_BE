@@ -27,7 +27,7 @@ jobs:
              --build-arg ARG_DO_S3_KEY=${{ secrets.DO_S3_KEY }} \ 
              --build-arg ARG_DO_S3_SECRET=${{ secrets.DO_S3_SECRET }}
              --build-arg ARG_DO_S3_ENDPOINT=${{ secrets.DO_S3_ENDPOINT }} \
-             --build-arg ARG_DO_S3_REGION=${{ secrets.DO_S3_REGION }}
+             --build-arg ARG_DO_S3_REGION=${{ secrets.DO_S3_REGION }} \
              --build-arg ARG_DO_S3_BUCKET=${{ secrets.DO_S3_BUCKET }}
 
       - name: Tag image with DO
