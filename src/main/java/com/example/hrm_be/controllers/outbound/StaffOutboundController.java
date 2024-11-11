@@ -1,7 +1,6 @@
 package com.example.hrm_be.controllers.outbound;
 
 import com.example.hrm_be.commons.constants.HrmConstant;
-import com.example.hrm_be.commons.enums.InboundStatus;
 import com.example.hrm_be.commons.enums.OutboundStatus;
 import com.example.hrm_be.commons.enums.OutboundType;
 import com.example.hrm_be.commons.enums.ResponseStatus;
