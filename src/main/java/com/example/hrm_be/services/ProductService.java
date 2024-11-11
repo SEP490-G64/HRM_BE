@@ -5,13 +5,11 @@ import com.example.hrm_be.models.dtos.ProductBaseDTO;
 import com.example.hrm_be.models.dtos.ProductInbound;
 import com.example.hrm_be.models.dtos.ProductSupplierDTO;
 import com.example.hrm_be.models.entities.AllowedProductEntity;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
 import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 

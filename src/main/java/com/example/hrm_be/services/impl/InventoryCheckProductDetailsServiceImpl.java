@@ -4,7 +4,6 @@ import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.components.InventoryCheckProductDetailsMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.InventoryCheckProductDetails;
-import com.example.hrm_be.models.dtos.InventoryCheckProductDetails;
 import com.example.hrm_be.models.entities.InventoryCheckProductDetailsEntity;
 import com.example.hrm_be.repositories.InventoryCheckProductDetailsRepository;
 import com.example.hrm_be.services.InventoryCheckProductDetailsService;

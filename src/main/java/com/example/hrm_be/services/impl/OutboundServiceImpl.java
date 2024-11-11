@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -189,7 +188,7 @@ public class OutboundServiceImpl implements OutboundService {
             .status(OutboundStatus.BAN_NHAP)
             .outboundType(request.getOutboundType())
             .createdBy(request.getCreatedBy())
-            .toBranch(branchMapper.convertToDTOBasicInfo(outboundEntity.getToBranch()))
+            .toBranch(request.getToBranch())
             .supplier(request.getSupplier())
             .fromBranch(request.getFromBranch())
             .note(request.getNote())
@@ -675,5 +674,14 @@ public class OutboundServiceImpl implements OutboundService {
                 unitOfMeasurementMapper.toEntity(targetUnit)) // Use product's base unit for batch
             .build();
     outboundDetailEntities.add(outboundDetail);
+  }
+
+  @Override
+  public void updateOutboundStatus(OutboundStatus status, Long id) {
+    Optional<OutboundEntity> inbound = outboundRepository.findById(id);
+    if (inbound.isEmpty()) {
+      throw new HrmCommonException(INBOUND.NOT_EXIST);
+    }
+    outboundRepository.updateOutboundStatus(status, id);
   }
 }

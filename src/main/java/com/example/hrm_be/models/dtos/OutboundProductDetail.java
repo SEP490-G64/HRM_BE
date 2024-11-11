@@ -1,7 +1,6 @@
 package com.example.hrm_be.models.dtos;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-
 import java.math.BigDecimal;
 import java.util.List;
 import lombok.AccessLevel;

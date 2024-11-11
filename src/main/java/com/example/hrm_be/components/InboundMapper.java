@@ -3,11 +3,10 @@ package com.example.hrm_be.components;
 import com.example.hrm_be.commons.enums.InboundStatus;
 import com.example.hrm_be.models.dtos.Inbound;
 import com.example.hrm_be.models.entities.InboundEntity;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
 import com.example.hrm_be.models.requests.CreateInboundRequest;
 import com.example.hrm_be.models.responses.InboundDetail;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;

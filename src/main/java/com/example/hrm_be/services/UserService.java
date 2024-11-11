@@ -5,13 +5,11 @@ import com.example.hrm_be.models.dtos.Role;
 import com.example.hrm_be.models.dtos.User;
 import com.example.hrm_be.models.requests.ChangePasswordRequest;
 import com.example.hrm_be.models.requests.RegisterRequest;
-
+import io.micrometer.common.lang.Nullable;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
-
-import io.micrometer.common.lang.Nullable;
 import lombok.NonNull;
 import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;

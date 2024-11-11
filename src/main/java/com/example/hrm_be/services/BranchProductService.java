@@ -4,10 +4,9 @@ import com.example.hrm_be.models.dtos.BranchProduct;
 import com.example.hrm_be.models.entities.BranchEntity;
 import com.example.hrm_be.models.entities.BranchProductEntity;
 import com.example.hrm_be.models.entities.ProductEntity;
-import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
 import java.util.List;
+import org.springframework.stereotype.Service;
 
 @Service
 public interface BranchProductService {

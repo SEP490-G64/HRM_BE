@@ -2,10 +2,9 @@ package com.example.hrm_be.services;
 
 import com.example.hrm_be.models.dtos.InboundDetails;
 import com.example.hrm_be.models.entities.InboundEntity;
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public interface InboundDetailsService {

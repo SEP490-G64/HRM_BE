@@ -57,5 +57,5 @@ jobs:
           script: |
             cd app
             docker compose pull ${{ env.SERVICE }}
-            docker compose -f docker-compose.yml up --build --force-recreate -d --no-deps ${{ env.SERVICE }}
+            docker compose --env-file .env --env-file .env.prod -f docker-compose.yml up --build --force-recreate -d --no-deps ${{ env.SERVICE }}
             docker image prune -f

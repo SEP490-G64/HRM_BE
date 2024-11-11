@@ -14,7 +14,6 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
