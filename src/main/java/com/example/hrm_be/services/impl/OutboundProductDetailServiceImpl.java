@@ -5,12 +5,11 @@ import com.example.hrm_be.models.dtos.OutboundProductDetail;
 import com.example.hrm_be.models.entities.OutboundProductDetailEntity;
 import com.example.hrm_be.repositories.OutboundProductDetailRepository;
 import com.example.hrm_be.services.OutboundProductDetailService;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional

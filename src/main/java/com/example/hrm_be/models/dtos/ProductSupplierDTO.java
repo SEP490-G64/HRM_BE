@@ -1,14 +1,13 @@
 package com.example.hrm_be.models.dtos;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import java.io.Serial;
+import java.io.Serializable;
 import lombok.*;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
-
-import java.io.Serial;
-import java.io.Serializable;
 
 @Data
 @NoArgsConstructor

@@ -1,9 +1,8 @@
 package com.example.hrm_be.services;
 
 import com.example.hrm_be.models.dtos.SpecialCondition;
-import java.util.List;
-
 import com.example.hrm_be.models.entities.SpecialConditionEntity;
+import java.util.List;
 import lombok.NonNull;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;

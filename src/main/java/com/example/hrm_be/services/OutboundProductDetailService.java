@@ -2,9 +2,8 @@ package com.example.hrm_be.services;
 
 import com.example.hrm_be.models.dtos.OutboundProductDetail;
 import com.example.hrm_be.models.entities.OutboundProductDetailEntity;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
+import org.springframework.stereotype.Service;
 
 @Service
 public interface OutboundProductDetailService {

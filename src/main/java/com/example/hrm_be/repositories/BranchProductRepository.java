@@ -1,7 +1,6 @@
 package com.example.hrm_be.repositories;
 
 import com.example.hrm_be.models.entities.*;
-
 import java.math.BigDecimal;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;

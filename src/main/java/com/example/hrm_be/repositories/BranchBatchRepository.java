@@ -1,7 +1,6 @@
 package com.example.hrm_be.repositories;
 
 import com.example.hrm_be.models.entities.BranchBatchEntity;
-
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;

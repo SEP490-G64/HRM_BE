@@ -4,10 +4,9 @@ import com.example.hrm_be.models.dtos.BranchBatch;
 import com.example.hrm_be.models.entities.BatchEntity;
 import com.example.hrm_be.models.entities.BranchBatchEntity;
 import com.example.hrm_be.models.entities.BranchEntity;
-import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
 import java.util.List;
+import org.springframework.stereotype.Service;
 
 @Service
 public interface BranchBatchService {

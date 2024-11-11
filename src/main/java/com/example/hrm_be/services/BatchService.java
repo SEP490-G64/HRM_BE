@@ -1,12 +1,10 @@
 package com.example.hrm_be.services;
 
 import com.example.hrm_be.models.dtos.Batch;
-
 import com.example.hrm_be.models.dtos.Product;
+import com.example.hrm_be.models.entities.BatchEntity;
 import java.time.LocalDateTime;
 import java.util.List;
-
-import com.example.hrm_be.models.entities.BatchEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
