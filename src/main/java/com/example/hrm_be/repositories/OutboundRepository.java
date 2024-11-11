@@ -1,6 +1,5 @@
 package com.example.hrm_be.repositories;
 
-import com.example.hrm_be.commons.enums.InboundStatus;
 import com.example.hrm_be.commons.enums.OutboundStatus;
 import com.example.hrm_be.models.entities.OutboundEntity;
 import java.util.Optional;
