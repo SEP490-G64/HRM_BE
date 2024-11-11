@@ -4,6 +4,7 @@ import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.commons.constants.HrmConstant.ERROR.BRANCH;
 import com.example.hrm_be.commons.constants.HrmConstant.ERROR.INBOUND;
 import com.example.hrm_be.commons.constants.HrmConstant.ERROR.OUTBOUND;
+import com.example.hrm_be.commons.enums.InboundStatus;
 import com.example.hrm_be.commons.enums.OutboundStatus;
 import com.example.hrm_be.commons.enums.OutboundType;
 import com.example.hrm_be.components.*;
@@ -12,6 +13,7 @@ import com.example.hrm_be.models.dtos.*;
 import com.example.hrm_be.models.entities.BatchEntity;
 import com.example.hrm_be.models.entities.BranchEntity;
 import com.example.hrm_be.models.entities.BranchProductEntity;
+import com.example.hrm_be.models.entities.InboundEntity;
 import com.example.hrm_be.models.entities.OutboundDetailEntity;
 import com.example.hrm_be.models.entities.OutboundEntity;
 import com.example.hrm_be.models.entities.OutboundProductDetailEntity;
@@ -675,5 +677,14 @@ public class OutboundServiceImpl implements OutboundService {
                 unitOfMeasurementMapper.toEntity(targetUnit)) // Use product's base unit for batch
             .build();
     outboundDetailEntities.add(outboundDetail);
+  }
+
+  @Override
+  public void updateOutboundStatus(OutboundStatus status, Long id) {
+    Optional<OutboundEntity> inbound = outboundRepository.findById(id);
+    if (inbound.isEmpty()) {
+      throw new HrmCommonException(INBOUND.NOT_EXIST);
+    }
+    outboundRepository.updateOutboundStatus(status, id);
   }
 }

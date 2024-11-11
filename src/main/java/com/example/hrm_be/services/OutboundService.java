@@ -1,5 +1,6 @@
 package com.example.hrm_be.services;
 
+import com.example.hrm_be.commons.enums.OutboundStatus;
 import com.example.hrm_be.commons.enums.OutboundType;
 import com.example.hrm_be.models.dtos.Outbound;
 import com.example.hrm_be.models.requests.CreateOutboundRequest;
@@ -21,6 +22,8 @@ public interface OutboundService {
   Outbound submitOutboundToSystem(Long outboundId);
 
   Outbound createInnitOutbound(OutboundType type);
+
+  void updateOutboundStatus(OutboundStatus status, Long id);
 
   void delete(Long id);
 }
