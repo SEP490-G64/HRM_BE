@@ -26,6 +26,7 @@ public class BranchBatchMapper {
             e ->
                 BranchBatchEntity.builder()
                     .id(e.getId())
+                    .batchStatus(e.getBatchStatus())
                     .batch(e.getBatch() != null ? batchMapper.toEntity(e.getBatch()) : null)
                     .branch(e.getBranch() != null ? branchMapper.toEntity(e.getBranch()) : null)
                     .quantity(e.getQuantity())
@@ -46,6 +47,7 @@ public class BranchBatchMapper {
             e ->
                 BranchBatch.builder()
                     .id(e.getId())
+                    .batchStatus(e.getBatchStatus())
                     .batch(e.getBatch() != null ? batchMapper.toDTO(e.getBatch()) : null)
                     .branch(e.getBranch() != null ? branchMapper.toDTO(e.getBranch()) : null)
                     .quantity(e.getQuantity())

@@ -1,13 +1,16 @@
 package com.example.hrm_be.repositories;
 
+import com.example.hrm_be.commons.enums.BatchStatus;
 import com.example.hrm_be.models.entities.BranchBatchEntity;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public interface BranchBatchRepository extends JpaRepository<BranchBatchEntity, Long> {
@@ -30,4 +33,9 @@ public interface BranchBatchRepository extends JpaRepository<BranchBatchEntity, 
           + "ORDER BY CASE WHEN batch.expireDate IS NULL THEN 1 ELSE 0 END, batch.expireDate ASC")
   List<BranchBatchEntity> findByProductIdAndBranchIdOrderByExpireDate(
       Long productId, Long branchId);
+
+  @Modifying
+  @Transactional
+  @Query("UPDATE BranchBatchEntity i SET i.batchStatus = :status WHERE i.id = :id")
+  void updateBranchBatchStatus(@Param("status") BatchStatus status, @Param("id") Long id);
 }

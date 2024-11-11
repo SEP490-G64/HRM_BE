@@ -1,6 +1,7 @@
 package com.example.hrm_be.services.impl;
 
 import com.example.hrm_be.commons.constants.HrmConstant;
+import com.example.hrm_be.commons.enums.ProductStatus;
 import com.example.hrm_be.components.BranchProductMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.BranchProduct;
@@ -52,7 +53,10 @@ public class BranchProductServiceImpl implements BranchProductService {
           HrmConstant.ERROR.BRANCHPRODUCT.NOT_EXIST); // Error if inbound entity is not found
     }
 
-    branchProductRepository.deleteById(id); // Delete the inbound entity by ID
+    branchProductRepository.updateBranchProductStatus(
+        ProductStatus.NGUNG_KINH_DOANH, id); // Delete the inbound
+    // entity
+    // by ID
   }
 
   @Override

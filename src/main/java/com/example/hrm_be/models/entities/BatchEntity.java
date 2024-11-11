@@ -1,5 +1,6 @@
 package com.example.hrm_be.models.entities;
 
+import com.example.hrm_be.commons.enums.BatchStatus;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.Column;
@@ -46,6 +47,9 @@ public class BatchEntity extends CommonEntity {
 
   @Column(name = "inbound_price")
   BigDecimal inboundPrice;
+
+  @Column(name = "status")
+  BatchStatus batchStatus;
 
   @ToString.Exclude
   @OneToMany(mappedBy = "batch")

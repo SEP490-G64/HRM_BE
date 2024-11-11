@@ -31,6 +31,7 @@ public class BatchMapper {
                     .id(e.getId())
                     .batchCode(e.getBatchCode())
                     .produceDate(e.getProduceDate())
+                    .batchStatus(e.getBatchStatus())
                     .expireDate(e.getExpireDate())
                     .inboundPrice(e.getInboundPrice())
                     .outboundDetails(
@@ -65,6 +66,7 @@ public class BatchMapper {
                     .id(e.getId())
                     .batchCode(e.getBatchCode())
                     .produceDate(e.getProduceDate())
+                    .batchStatus(e.getBatchStatus())
                     .expireDate(e.getExpireDate())
                     .inboundPrice(e.getInboundPrice())
                     .outboundDetails(
@@ -92,6 +94,7 @@ public class BatchMapper {
                 Batch.builder()
                     .id(e.getId())
                     .batchCode(e.getBatchCode())
+                    .batchStatus(e.getBatchStatus())
                     .produceDate(e.getProduceDate())
                     .expireDate(e.getExpireDate())
                     .inboundPrice(e.getInboundPrice())
@@ -110,6 +113,7 @@ public class BatchMapper {
             e ->
                 Batch.builder()
                     .id(e.getId())
+                    .batchStatus(e.getBatchStatus())
                     .batchCode(e.getBatchCode())
                     .produceDate(e.getProduceDate())
                     .expireDate(e.getExpireDate())
@@ -129,6 +133,7 @@ public class BatchMapper {
             e ->
                 Batch.builder()
                     .id(e.getId())
+                    .batchStatus(e.getBatchStatus())
                     .batchCode(e.getBatchCode())
                     .expireDate(e.getExpireDate())
                     .build())

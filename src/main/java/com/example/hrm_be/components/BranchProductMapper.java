@@ -42,6 +42,7 @@ public class BranchProductMapper {
                     .id(d.getId())
                     .product(d.getProduct() != null ? productMapper.toEntity(d.getProduct()) : null)
                     .branch(d.getBranch() != null ? branchMapper.toEntity(d.getBranch()) : null)
+                    .productStatus(d.getProductStatus())
                     .storageLocation(
                         d.getStorageLocation() != null
                             ? storageLocationMapper.toEntity(d.getStorageLocation())
@@ -60,6 +61,7 @@ public class BranchProductMapper {
         .minQuantity(entity.getMinQuantity())
         .maxQuantity(entity.getMaxQuantity())
         .quantity(entity.getQuantity())
+        .productStatus(entity.getProductStatus())
         .storageLocation(
             entity.getStorageLocation() != null
                 ? storageLocationMapper.toDTO(entity.getStorageLocation())
@@ -80,6 +82,7 @@ public class BranchProductMapper {
     return BranchProduct.builder()
         .id(entity.getId())
         .minQuantity(entity.getMinQuantity())
+        .productStatus(entity.getProductStatus())
         .maxQuantity(entity.getMaxQuantity())
         .quantity(entity.getQuantity())
         .storageLocation(
