@@ -5,12 +5,11 @@ import com.example.hrm_be.models.dtos.Role;
 import com.example.hrm_be.models.dtos.User;
 import com.example.hrm_be.models.requests.ChangePasswordRequest;
 import com.example.hrm_be.models.requests.RegisterRequest;
-
+import io.micrometer.common.lang.Nullable;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.List;
-
-import io.micrometer.common.lang.Nullable;
+import java.util.Optional;
 import lombok.NonNull;
 import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
@@ -64,4 +63,6 @@ public interface UserService {
   void resetPassword(User user, String newPassword);
 
   void changePassword(User user, ChangePasswordRequest request);
+
+  Optional<Long> findBranchIdByUserEmail(String loggedEmail);
 }

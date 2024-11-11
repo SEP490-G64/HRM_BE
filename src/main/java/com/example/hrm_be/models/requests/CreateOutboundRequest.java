@@ -37,5 +37,6 @@ public class CreateOutboundRequest {
   Branch toBranch;
   Branch fromBranch;
   Supplier supplier;
+  Boolean taxable;
   List<OutboundProductDetail> outboundProductDetails;
 }

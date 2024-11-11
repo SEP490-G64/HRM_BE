@@ -14,11 +14,19 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface OutboundDetailRepository extends JpaRepository<OutboundDetailEntity, Long> {
 
-  Optional<OutboundDetailEntity> findByOutboundAndBatch(OutboundEntity outbound, BatchEntity batch);
+  Optional<OutboundDetailEntity> findByOutboundIdAndBatchId(Long outboundId, Long batchId);
 
   List<OutboundDetailEntity> findByBatchAndOutbound(BatchEntity batch, OutboundEntity outbound);
 
   @Modifying
   @Query("DELETE FROM OutboundDetailEntity opd WHERE opd.outbound.id = :outboundId")
   void deleteByOutboundId(@Param("outboundId") Long outboundId);
+
+  @Query(
+      "SELECT od FROM OutboundDetailEntity od "
+          + "JOIN FETCH od.batch b "
+          + "JOIN FETCH b.product p "
+          + "LEFT JOIN FETCH p.category c "
+          + "WHERE od.outbound.id = :outboundId")
+  List<OutboundDetailEntity> findAllWithBatchAndProductAndCategoryByOutboundId(Long outboundId);
 }

@@ -178,22 +178,22 @@ public class BranchServiceImpl implements BranchService {
   // This method will validate branch name, simple location, contact person, phone number, capacity
   private boolean commonValidate(Branch branch) {
     if (branch.getBranchName() == null
-        || branch.getBranchName().isEmpty()
+        || branch.getBranchName().trim().isEmpty()
         || branch.getBranchName().length() > 100) {
       return false;
     }
     if (branch.getLocation() == null
-        || branch.getLocation().isEmpty()
-        || branch.getLocation().length() > 256) {
+        || branch.getLocation().trim().isEmpty()
+        || branch.getLocation().length() > 255) {
       return false;
     }
     if (branch.getContactPerson() != null
-        && !branch.getContactPerson().isEmpty()
+        && !branch.getContactPerson().trim().isEmpty()
         && branch.getContactPerson().length() > 100) {
       return false;
     }
     if (branch.getPhoneNumber() == null
-        || branch.getPhoneNumber().isEmpty()
+        || branch.getPhoneNumber().trim().isEmpty()
         || !branch.getPhoneNumber().matches(HrmConstant.REGEX.PHONE_NUMBER)) {
       return false;
     }
@@ -204,10 +204,14 @@ public class BranchServiceImpl implements BranchService {
       return false;
     }
 
+    if (branch.getBranchType() == null) {
+      return false;
+    }
+
     if (branch.getActiveStatus() == null) {
       return false;
     }
 
-    return branch.getBranchType() != null;
+    return true;
   }
 }

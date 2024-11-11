@@ -740,4 +740,9 @@ public class UserServiceImpl implements UserService {
         && (user.getStatus() == UserStatusType.ACTIVATE
             || user.getStatus() == UserStatusType.DEACTIVATE);
   }
+
+  @Override
+  public Optional<Long> findBranchIdByUserEmail(String loggedEmail) {
+    return userRepository.findBranchIdByUserEmail(loggedEmail);
+  }
 }

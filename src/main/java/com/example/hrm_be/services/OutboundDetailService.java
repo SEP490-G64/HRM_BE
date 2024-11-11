@@ -1,6 +1,8 @@
 package com.example.hrm_be.services;
 
 import com.example.hrm_be.models.dtos.OutboundDetail;
+import com.example.hrm_be.models.entities.OutboundDetailEntity;
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
@@ -15,4 +17,12 @@ public interface OutboundDetailService {
   OutboundDetail update(OutboundDetail outboundDetail);
 
   void delete(Long id);
+
+  void deleteByOutboundId(Long outboundId);
+
+  OutboundDetail findByOutboundAndBatch(Long outboundId, Long batchId);
+
+  List<OutboundDetail> saveAll(List<OutboundDetailEntity> outboundDetailEntities);
+
+  List<OutboundDetail> findByOutboundWithCategory(Long outboundId);
 }

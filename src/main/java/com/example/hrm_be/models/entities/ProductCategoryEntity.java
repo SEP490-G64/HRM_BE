@@ -29,7 +29,7 @@ public class ProductCategoryEntity extends CommonEntity {
   @Column(name = "category_name")
   String categoryName;
 
-  @Column(name = "category_description")
+  @Column(name = "category_description", length = 1000)
   String categoryDescription;
 
   @Column(name = "tax_rate")

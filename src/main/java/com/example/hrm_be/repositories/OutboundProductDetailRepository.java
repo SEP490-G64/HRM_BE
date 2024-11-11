@@ -1,8 +1,6 @@
 package com.example.hrm_be.repositories;
 
-import com.example.hrm_be.models.entities.OutboundEntity;
 import com.example.hrm_be.models.entities.OutboundProductDetailEntity;
-import com.example.hrm_be.models.entities.ProductEntity;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,8 +13,8 @@ import org.springframework.stereotype.Repository;
 public interface OutboundProductDetailRepository
     extends JpaRepository<OutboundProductDetailEntity, Long> {
 
-  Optional<OutboundProductDetailEntity> findByOutboundAndProduct(
-      OutboundEntity outbound, ProductEntity product);
+  Optional<OutboundProductDetailEntity> findByOutboundIdAndProductId(
+      Long outboundId, Long productId);
 
   @Modifying
   @Query("DELETE FROM OutboundProductDetailEntity opd WHERE opd.outbound.id = :outboundId")
@@ -25,8 +23,7 @@ public interface OutboundProductDetailRepository
   @Query(
       "SELECT opd FROM OutboundProductDetailEntity opd "
           + "JOIN FETCH opd.product p "
-          + "LEFT JOIN FETCH p.batches b "
+          + "LEFT JOIN FETCH p.category c "
           + "WHERE opd.outbound.id = :outboundId")
-  List<OutboundProductDetailEntity> findOutboundProductDetailsWithProductsAndBatches(
-      @Param("outboundId") Long outboundId);
+  List<OutboundProductDetailEntity> findAllWithProductAndCategoryByOutboundId(Long outboundId);
 }

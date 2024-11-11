@@ -50,8 +50,3 @@ spring:
 embedded:
   postgresql:
     reuse-container: true
-
-aws:
-  java:
-    v1:
-      disableDeprecationAnnouncement: true

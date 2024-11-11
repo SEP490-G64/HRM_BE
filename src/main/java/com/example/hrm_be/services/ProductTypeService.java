@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface ProductTypeService {
+  Boolean existById(Long id);
+
   List<ProductType> getAll();
 
   // Retrieves a ProductType by its ID
@@ -23,4 +25,7 @@ public interface ProductTypeService {
 
   // Deletes a ProductType by its ID
   void delete(Long id);
+
+  //// Retrieves a ProductType by its typename
+  ProductType getByName(String productTypeName);
 }

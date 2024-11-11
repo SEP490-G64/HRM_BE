@@ -1,38 +1,32 @@
 package com.example.hrm_be.services;
 
-import com.example.hrm_be.models.dtos.BranchProduct;
 import com.example.hrm_be.models.dtos.Product;
 import com.example.hrm_be.models.dtos.ProductBaseDTO;
+import com.example.hrm_be.models.dtos.ProductInbound;
+import com.example.hrm_be.models.dtos.ProductSupplierDTO;
 import com.example.hrm_be.models.entities.AllowedProductEntity;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface ProductService {
   Product getById(Long id);
-
-  Page<ProductBaseDTO> getByPaging(
-      int pageNo,
-      int pageSize,
-      String sortBy,
-      String sortDirection,
-      String searchType,
-      String searchValue);
 
   Product create(Product product);
 
   Product update(Product product);
 
+  Product updateInboundPrice(Product product);
+
   void delete(Long id);
-
-  Page<Product> getByPagingAndCateId(int pageNo, int pageSize, String sortBy, Long cateId);
-
-  Page<Product> getByPagingAndTypeId(int pageNo, int pageSize, String sortBy, Long typeId);
 
   List<AllowedProductEntity> addProductFromJson(List<Map<String, Object>> productJsonList);
 
-  Page<BranchProduct> searchProducts(
+  Page<ProductBaseDTO> searchProducts(
       int pageNo,
       int pageSize,
       String sortBy,
@@ -41,10 +35,18 @@ public interface ProductService {
       Optional<Long> manufacturerId,
       Optional<Long> categoryId,
       Optional<Long> typeId,
-      Optional<String> status,
-      Optional<Long> branchId);
+      Optional<String> status);
+
+  List<String> importFile(MultipartFile file);
+
+  ByteArrayInputStream exportFile() throws IOException;
 
   List<AllowedProductEntity> getAllowProducts(String searchStr);
 
-  List<Product> getAllProductsBySupplier(Long id, String ProductName);
+  Product addProductInInbound(ProductInbound productInbound);
+
+  List<ProductSupplierDTO> getAllProductsBySupplier(Long id, String ProductName);
+
+  List<ProductBaseDTO> getProductInBranch(
+      Long branchId, String keyword, Boolean checkValid, Long supplierId);
 }

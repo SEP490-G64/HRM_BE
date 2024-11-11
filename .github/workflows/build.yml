@@ -3,15 +3,12 @@ run-name: CI for Spring Boot
 on:
   pull_request:
   workflow_dispatch:
-  push:
-    branches:
-      - "develop"
-      - "main"
+
 jobs:
   Spring-Boot-Build:
     env:
       DOCKER_CACHE_PATH: postgres-image.tar
-      IMAGE_VERSION: postgres:16.4-alpine3.20
+      IMAGE_VERSION: postgres:16-alpine
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository code in base branch
@@ -30,12 +27,12 @@ jobs:
           java-version: "21"
           distribution: "temurin"
           cache: maven
-      
+
       - name: Linting for Java - Using Google
         uses: axel-op/googlejavaformat-action@v3
         with:
           args: "--skip-sorting-imports --replace"
-      
+
       - name: Print diffs
         run: git --no-pager diff
 
@@ -71,26 +68,3 @@ jobs:
         with:
           path: ${{ env.DOCKER_CACHE_PATH }}
           key: "${{ runner.os }}-Postgres-Image"
-
-  Push-To-Image-Repo:
-    if: github.ref_name == 'main'
-    runs-on: ubuntu-latest
-    env:
-      IMAGE_NAME: hrm-be
-    steps:
-      - name: Install doctl
-        uses: digitalocean/action-doctl@v2
-        with:
-          token: ${{ secrets.DO_TOKEN }}
-
-      - name: Authen DO registry
-        run: doctl registry login
-
-      - name: Build docker image
-        run: docker build . -t ${{ env.IMAGE_NAME }}:latest
-
-      - name: Tag image with DO
-        run: docker tag hrm-fe:latest registry.digitalocean.com/capstone-registry/${{ env.IMAGE_NAME }}:latest
-
-      - name: Push image to registry
-        run: docker push registry.digitalocean.com/capstone-registry/${{ env.IMAGE_NAME }}:latest

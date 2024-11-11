@@ -14,16 +14,13 @@ hrm-config:
     subject: "OTP for authentication in GoldenView"
     content: "Do not send this OTP to anyone for security protection. Your otp is: "
   s3:
-    key: "test"
-    secret: "test"
-    endpoint: "test"
-    region: "test"
-    bucket: "test"
+    key: test
+    secret: test
+    endpoint: test
+    region: test
+    bucket: test
 
 spring:
-  session:
-    redis:
-      repository-type: indexed
   mail:
     host: smtp.gmail.com
     port: 587
@@ -43,10 +40,6 @@ spring:
   jpa:
     hibernate.ddl-auto: update
     show-sql: true
-  data:
-    redis:
-      port: 6379
-      host: localhost
 server:
   servlet:
     session:

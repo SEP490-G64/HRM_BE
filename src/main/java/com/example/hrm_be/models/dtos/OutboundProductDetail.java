@@ -1,6 +1,7 @@
 package com.example.hrm_be.models.dtos;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import java.math.BigDecimal;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -29,9 +30,12 @@ public class OutboundProductDetail {
   Product product;
 
   Batch batch;
+
   List<Batch> batches;
 
-  Integer outboundQuantity;
+  BigDecimal outboundQuantity;
+
+  BigDecimal price;
 
   UnitOfMeasurement targetUnit;
 }

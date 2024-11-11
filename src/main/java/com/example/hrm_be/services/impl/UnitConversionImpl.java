@@ -2,14 +2,14 @@ package com.example.hrm_be.services.impl;
 
 import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.commons.constants.HrmConstant.ERROR.UNIT_CONVERSION;
-import com.example.hrm_be.components.BatchMapper;
 import com.example.hrm_be.components.UnitConversionMapper;
-import com.example.hrm_be.components.UnitOfMeasurementMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.UnitConversion;
+import com.example.hrm_be.models.dtos.UnitOfMeasurement;
 import com.example.hrm_be.models.entities.UnitConversionEntity;
 import com.example.hrm_be.repositories.UnitConversionRepository;
 import com.example.hrm_be.services.UnitConversionService;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -23,8 +23,6 @@ public class UnitConversionImpl implements UnitConversionService {
   @Autowired private UnitConversionRepository unitConversionRepository;
 
   @Autowired private UnitConversionMapper unitConversionMapper;
-  @Autowired private UnitOfMeasurementMapper unitOfMeasurementMapper;
-  @Autowired private BatchMapper batchMapper;
 
   @Override
   public UnitConversion getById(Long id) {
@@ -75,5 +73,50 @@ public class UnitConversionImpl implements UnitConversionService {
       throw new HrmCommonException(HrmConstant.ERROR.UNIT_CONVERSION.NOT_EXIST);
     }
     unitConversionRepository.deleteById(id);
+  }
+
+  @Override
+  public List<UnitConversionEntity> saveAll(List<UnitConversionEntity> unitConversionEntities) {
+    return unitConversionRepository.saveAll(unitConversionEntities);
+  }
+
+  @Override
+  public void deleteAll(List<UnitConversionEntity> unitConversionEntities) {
+    unitConversionRepository.deleteAll(unitConversionEntities);
+  }
+
+  @Override
+  public List<UnitConversionEntity> getByProductId(Long productId) {
+    return unitConversionRepository.getByProductId(productId);
+  }
+
+  @Override
+  public BigDecimal convertToUnit(
+      Long productId,
+      Long baseUnitId,
+      BigDecimal quantity,
+      UnitOfMeasurement targetUnit,
+      Boolean toBaseUnit) {
+    // If the target unit is the same as the base unit, no conversion is needed
+    if (targetUnit == null || targetUnit.getId().equals(baseUnitId)) {
+      return quantity;
+    }
+
+    // Check if conversion is from smaller to larger or larger to smaller
+    UnitConversionEntity conversion =
+        unitConversionRepository
+            .findByProductIdAndLargerUnitIdAndSmallerUnitId(
+                productId, baseUnitId, targetUnit.getId())
+            .orElse(null);
+
+    if (conversion != null) {
+      if (toBaseUnit) {
+        return quantity.divide(BigDecimal.valueOf(conversion.getFactorConversion()));
+      } else {
+        return quantity.multiply(BigDecimal.valueOf(conversion.getFactorConversion()));
+      }
+    } else {
+      return BigDecimal.ZERO;
+    }
   }
 }

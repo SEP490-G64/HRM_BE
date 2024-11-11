@@ -1,8 +1,6 @@
 package com.example.hrm_be.services.impl;
 
 import com.example.hrm_be.commons.constants.HrmConstant;
-import com.example.hrm_be.commons.constants.HrmConstant.ERROR.STORAGE_LOCATION;
-import com.example.hrm_be.components.BranchProductMapper;
 import com.example.hrm_be.components.StorageLocationMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.StorageLocation;
@@ -24,7 +22,6 @@ public class StorageLocationServiceImpl implements StorageLocationService {
   @Autowired private StorageLocationRepository storageLocationRepository;
 
   @Autowired private StorageLocationMapper storageLocationMapper;
-  @Autowired private BranchProductMapper branchProductMapper;
 
   @Override
   public StorageLocation getById(Long id) {
@@ -45,28 +42,11 @@ public class StorageLocationServiceImpl implements StorageLocationService {
   }
 
   @Override
-  public StorageLocation create(StorageLocation storageLocation) {
-    if (storageLocation == null) {
-      throw new HrmCommonException(STORAGE_LOCATION.NOT_EXIST);
-    }
+  public StorageLocation save(StorageLocation storageLocation) {
     return Optional.ofNullable(storageLocation)
         .map(e -> storageLocationMapper.toEntity(e))
         .map(e -> storageLocationRepository.save(e))
         .map(e -> storageLocationMapper.toDTO(e))
-        .orElse(null);
-  }
-
-  @Override
-  public StorageLocation update(StorageLocation storageLocation) {
-    StorageLocationEntity oldStorageLocationEntity =
-        storageLocationRepository.findById(storageLocation.getId()).orElse(null);
-    if (oldStorageLocationEntity == null) {
-      throw new HrmCommonException(HrmConstant.ERROR.STORAGE_LOCATION.NOT_EXIST);
-    }
-    return Optional.ofNullable(oldStorageLocationEntity)
-        .map(op -> op.toBuilder().shelfName(storageLocation.getShelfName()).build())
-        .map(storageLocationRepository::save)
-        .map(storageLocationMapper::toDTO)
         .orElse(null);
   }
 

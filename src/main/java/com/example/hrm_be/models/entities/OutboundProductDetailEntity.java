@@ -10,6 +10,7 @@ import jakarta.persistence.ForeignKey;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.math.BigDecimal;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -39,7 +40,10 @@ public class OutboundProductDetailEntity extends CommonEntity {
   ProductEntity product;
 
   @Column(name = "outbound_quantity")
-  Integer outboundQuantity;
+  BigDecimal outboundQuantity;
+
+  @Column(name = "price")
+  BigDecimal price;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(

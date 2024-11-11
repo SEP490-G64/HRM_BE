@@ -54,6 +54,10 @@ public class InboundDetailsMapper {
         .map(
             e ->
                 e.toBuilder()
+                    .product(
+                        entity.getProduct() != null
+                            ? productMapper.convertToDTOWithBatch(entity.getProduct())
+                            : null)
                     .inbound(
                         entity.getInbound() != null
                             ? inboundMapper.toDTO(entity.getInbound())

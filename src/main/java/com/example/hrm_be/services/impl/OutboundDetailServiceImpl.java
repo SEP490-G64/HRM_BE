@@ -8,6 +8,9 @@ import com.example.hrm_be.models.entities.OutboundDetailEntity;
 import com.example.hrm_be.repositories.OutboundDetailRepository;
 import com.example.hrm_be.services.OutboundDetailService;
 import io.micrometer.common.util.StringUtils;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -15,8 +18,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -98,5 +99,33 @@ public class OutboundDetailServiceImpl implements OutboundDetailService {
 
     // Delete the entity from the repository
     outboundDetailRepository.deleteById(id);
+  }
+
+  @Override
+  public void deleteByOutboundId(Long outboundId) {
+    outboundDetailRepository.deleteByOutboundId(outboundId);
+  }
+
+  @Override
+  public OutboundDetail findByOutboundAndBatch(Long outboundId, Long batchId) {
+    OutboundDetailEntity entity =
+        outboundDetailRepository.findByOutboundIdAndBatchId(outboundId, batchId).orElse(null);
+    return outboundDetailMapper.toDTO(entity);
+  }
+
+  @Override
+  public List<OutboundDetail> saveAll(List<OutboundDetailEntity> outboundDetailEntities) {
+    return outboundDetailRepository.saveAll(outboundDetailEntities).stream()
+        .map(outboundDetailMapper::toDTOWithProductAndCategory)
+        .collect(Collectors.toList());
+  }
+
+  @Override
+  public List<OutboundDetail> findByOutboundWithCategory(Long outboundId) {
+    List<OutboundDetailEntity> outboundDetailEntities =
+        outboundDetailRepository.findAllWithBatchAndProductAndCategoryByOutboundId(outboundId);
+    return outboundDetailEntities.stream()
+        .map(outboundDetailMapper::toDTOWithProductAndCategory)
+        .collect(Collectors.toList());
   }
 }

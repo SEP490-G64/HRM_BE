@@ -6,13 +6,17 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface UnitOfMeasurementService {
+  Boolean existById(Long id);
+
   UnitOfMeasurement getById(Long id);
 
-  Page<UnitOfMeasurement> getByPaging(int pageNo, int pageSize, String sortBy, String name);
+  Page<UnitOfMeasurement> getByPaging(int pageNo, int pageSize, String sortBy, String keyword);
 
   UnitOfMeasurement create(UnitOfMeasurement unitOfMeasurement);
 
   UnitOfMeasurement update(UnitOfMeasurement unitOfMeasurement);
 
   void delete(Long id);
+
+  UnitOfMeasurement getByName(String name);
 }

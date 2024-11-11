@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -32,4 +33,8 @@ public interface InboundDetailsRepository extends JpaRepository<InboundDetailsEn
   List<InboundDetailsEntity> findInboundDetailsWithCategoryByInboundId(Long inboundId);
 
   List<InboundDetailsEntity> findByInbound_Id(Long id);
+
+  @Modifying
+  @Query("DELETE FROM InboundDetailsEntity opd WHERE opd.id in :outboundId")
+  void deleteByIds(@Param("outboundId") List<Long> outboundId);
 }

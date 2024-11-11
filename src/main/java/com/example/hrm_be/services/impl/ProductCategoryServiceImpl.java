@@ -30,6 +30,16 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
   @Autowired private ProductCategoryMapper categoryMapper;
 
   @Override
+  public Boolean existById(Long id) {
+    // Validation: Check if the ID is null
+    if (id == null) {
+      throw new HrmCommonException(HrmConstant.ERROR.TYPE.INVALID);
+    }
+
+    return categoryRepository.existsById(id);
+  }
+
+  @Override
   public List<ProductCategory> getAll() {
     List<ProductCategoryEntity> productCategoryEntities = categoryRepository.findAll();
     return productCategoryEntities.stream()
@@ -140,9 +150,7 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
       throw new HrmCommonException(HrmConstant.ERROR.CATEGORY.INVALID);
     }
 
-    // Retrieve the existing category entity by ID
-    ProductCategoryEntity oldCategoryEntity = categoryRepository.findById(id).orElse(null);
-    if (oldCategoryEntity == null) {
+    if (!this.existById(id)) {
       throw new HrmCommonException(HrmConstant.ERROR.CATEGORY.NOT_EXIST);
     }
 
@@ -150,10 +158,17 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
     categoryRepository.deleteById(id);
   }
 
+  @Override
+  public ProductCategory findByCategoryName(String categoryName) {
+    return Optional.of(categoryName)
+        .flatMap(e -> categoryRepository.findByCategoryName(e).map(b -> categoryMapper.toDTO(b)))
+        .orElse(null);
+  }
+
   // This method will validate category field input values
   private boolean commonValidate(ProductCategory category) {
     if (category.getCategoryName() == null
-        || category.getCategoryName().isEmpty()
+        || category.getCategoryName().trim().isEmpty()
         || category.getCategoryName().length() > 100) {
       return false;
     }

@@ -9,6 +9,7 @@ import com.example.hrm_be.repositories.SpecialConditionRepository;
 import com.example.hrm_be.services.SpecialConditionService;
 import io.micrometer.common.util.StringUtils;
 import java.util.List;
+import java.util.Optional;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,8 +18,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -111,5 +110,15 @@ public class SpecialConditionServiceImpl implements SpecialConditionService {
 
     specialConditionRepository.assignToProductByProductIdAndIds(productId, ids);
   }
-  ;
+
+  @Override
+  public List<SpecialConditionEntity> saveAll(
+      List<SpecialConditionEntity> specialConditionEntities) {
+    return specialConditionRepository.saveAll(specialConditionEntities);
+  }
+
+  @Override
+  public void deleteAll(List<SpecialConditionEntity> specialConditionEntities) {
+    specialConditionRepository.deleteAll(specialConditionEntities);
+  }
 }

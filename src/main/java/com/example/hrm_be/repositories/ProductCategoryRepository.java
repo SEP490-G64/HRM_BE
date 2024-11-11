@@ -1,6 +1,7 @@
 package com.example.hrm_be.repositories;
 
 import com.example.hrm_be.models.entities.ProductCategoryEntity;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,4 +16,6 @@ public interface ProductCategoryRepository extends JpaRepository<ProductCategory
   // (case-insensitive)
   Page<ProductCategoryEntity> findByCategoryNameContainingIgnoreCase(
       String categoryName, Pageable pageable);
+
+  Optional<ProductCategoryEntity> findByCategoryName(String name);
 }

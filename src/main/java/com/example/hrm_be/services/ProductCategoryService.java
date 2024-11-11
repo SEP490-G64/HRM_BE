@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface ProductCategoryService {
+  Boolean existById(Long id);
+
   List<ProductCategory> getAll();
 
   // Retrieves a ProductCategory by its ID
@@ -24,4 +26,6 @@ public interface ProductCategoryService {
 
   // Deletes a ProductCategory by its ID
   void delete(Long id);
+
+  ProductCategory findByCategoryName(String categoryName);
 }

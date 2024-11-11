@@ -3,6 +3,7 @@ package com.example.hrm_be.models.dtos;
 import com.example.hrm_be.commons.enums.ProductStatus;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.math.BigDecimal;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -40,7 +41,12 @@ public class ProductBaseDTO {
   private String categoryName;
   private String typeName;
   private String manufacturerName;
-  private Integer quantity;
+  private BigDecimal quantity;
+
+  private List<UnitConversion> unitConversions;
+  private List<Batch> batches;
+  private List<UnitOfMeasurement> productUnits;
+  private UnitOfMeasurement productBaseUnit;
 
   private BranchProduct branchProduct;
 }

@@ -27,6 +27,10 @@ public class HrmConstant {
       public static final String INVALID = "error.request.invalid";
     }
 
+    public static class RESPONSE {
+      public static final String NOT_FOUND = "error.response.not_found";
+    }
+
     public static class FILE {
       public static final String DELETE = "error.file.delete";
       public static final String CREATE = "error.file.create";
@@ -97,6 +101,7 @@ public class HrmConstant {
       public static final String EXIST = "error.unit_of_measurement.exist";
       public static final String NOT_CHILD = "error.unit_of_measurement.not_child";
       public static final String NOT_EXIST = "error.unit_of_measurement.not_exist";
+      public static final String INVALID = "error.unit_of_measurement.invalid";
     }
 
     public static class USER {
@@ -148,6 +153,7 @@ public class HrmConstant {
       public static final String EXIST = "error.batch.exist";
       public static final String NOT_CHILD = "error.batch.not_child";
       public static final String NOT_EXIST = "error.batch.not_exist";
+      public static final String INVALID = "error.batch.invalid";
     }
 
     public static class MANUFACTURER {
@@ -157,7 +163,8 @@ public class HrmConstant {
       public static final String EXIST = "error.manufacturer.exist";
       public static final String NOT_CHILD = "error.manufacturer.not_child";
       public static final String NOT_EXIST = "error.manufacturer.not_exist";
-      public static final String TAXCODE_NOT_EXIST = "error.manufacturer.taxcode_not_exist";
+      public static final String INVALID = "error.manufacturer.invalid";
+      public static final String TAXCODE_EXIST = "error.manufacturer.taxcode_exist";
     }
 
     public static class INVENTORY_CHECK {
@@ -275,11 +282,16 @@ public class HrmConstant {
       public static final String EXIST = "error.supplier.exist";
       public static final String NOT_CHILD = "error.supplier.not_child";
       public static final String NOT_EXIST = "error.supplier.not_exist";
-      public static final String TAXCODE_NOT_EXIST = "error.supplier.taxcode_not_exist";
+      public static final String INVALID = "error.supplier.invalid";
+      public static final String TAXCODE_EXIST = "error.supplier.taxcode_exist";
     }
 
     public static class PAGE {
       public static final String INVALID = "error.page.invalid";
+    }
+
+    public static class DATE {
+      public static final String INVALID_RANGE = "error.date.invalid_range";
     }
   }
 
@@ -287,10 +299,10 @@ public class HrmConstant {
 
   public static class REGEX {
     public static String PHONE_NUMBER =
-        "^(0(1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9]|6[0-9]|7[0-9]|8[0-9]|9[0-9])\\d{7}|(0[2-9]\\d{7,8}))$";
+        "^(0(1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9]|6[0-9]|7[0-9]|8[0-9]|9[0-9])\\d{7,8}|(0[2-9]\\d{7,8}))$";
     public static String TAX_CODE = "^(0[0-9]{9}|[1-9][0-9]{9}|[1-9][0-9]{13})$";
     public static String FAX_NUMBER =
         "^(0[1-9]{1}[0-9]{0,2}-[0-9]{7,8}|\\+84-[1-9]{1}[0-9]{0,2}-[0-9]{7,8})$";
-    public static String EMAIL = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$";
+    public static final String EMAIL = "^(?=.{1,255}$)[\\w.-]+@([\\w-]+\\.)+[\\w-]{2,4}$";
   }
 }

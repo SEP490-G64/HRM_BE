@@ -100,4 +100,8 @@ public class ProductEntity extends CommonEntity {
   @ToString.Exclude
   @OneToMany(mappedBy = "product")
   List<ProductSuppliersEntity> productSuppliers; // 1-N with ProductSuppliers
+
+  @ToString.Exclude
+  @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
+  List<InventoryCheckProductDetailsEntity> inventoryCheckProductDetails;
 }

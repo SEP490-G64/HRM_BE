@@ -1,0 +1,61 @@
+name: GitHub Actions CD
+run-name: Deploy Spring Boot
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "main"
+jobs:
+  Push-To-Image-Repo:
+    runs-on: ubuntu-latest
+    env:
+      IMAGE_NAME: hrm-be
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DO_TOKEN }}
+
+      - name: Authen DO registry
+        run: doctl registry login
+
+      - name: Build docker image
+        run: | 
+          docker build . -t ${{ env.IMAGE_NAME }}:latest \
+            --build-arg ARG_DO_S3_KEY=${{ secrets.DO_S3_KEY }} \
+            --build-arg ARG_DO_S3_SECRET=${{ secrets.DO_S3_SECRET }} \
+            --build-arg ARG_DO_S3_ENDPOINT=${{ secrets.DO_S3_ENDPOINT }} \
+            --build-arg ARG_DO_S3_REGION=${{ secrets.DO_S3_REGION }} \
+            --build-arg ARG_DO_S3_BUCKET=${{ secrets.DO_S3_BUCKET }}
+
+      - name: Tag image with DO
+        run: docker tag ${{ env.IMAGE_NAME }}:latest registry.digitalocean.com/capstone-registry/${{ env.IMAGE_NAME }}:latest
+
+      - name: Push image to registry
+        run: docker push registry.digitalocean.com/capstone-registry/${{ env.IMAGE_NAME }}:latest
+
+      - name: Trigger garbage collection
+        run: doctl registry garbage-collection start -f --include-untagged-manifests
+
+  Trigger-Redeploy:
+    needs: Push-To-Image-Repo
+    runs-on: ubuntu-latest
+    env:
+      DROPLET_IP: 209.38.56.58
+      SERVICE: springboot
+    steps:
+      - name: Redeploy and clean up
+        uses: appleboy/ssh-action@v1.1.0
+        with:
+          host: ${{ env.DROPLET_IP }}
+          username: root
+          port: 22
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd app
+            docker compose pull ${{ env.SERVICE }}
+            docker compose -f docker-compose.yml up --build --force-recreate -d --no-deps ${{ env.SERVICE }}
+            docker image prune -f
