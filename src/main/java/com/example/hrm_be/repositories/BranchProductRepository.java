@@ -1,6 +1,5 @@
 package com.example.hrm_be.repositories;
 
-import com.example.hrm_be.commons.enums.BatchStatus;
 import com.example.hrm_be.commons.enums.ProductStatus;
 import com.example.hrm_be.models.entities.*;
 

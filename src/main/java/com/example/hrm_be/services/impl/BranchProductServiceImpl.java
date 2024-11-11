@@ -54,7 +54,8 @@ public class BranchProductServiceImpl implements BranchProductService {
           HrmConstant.ERROR.BRANCHPRODUCT.NOT_EXIST); // Error if inbound entity is not found
     }
 
-    branchProductRepository.updateBranchProductStatus(ProductStatus.NGUNG_KINH_DOANH,id); // Delete the inbound
+    branchProductRepository.updateBranchProductStatus(
+        ProductStatus.NGUNG_KINH_DOANH, id); // Delete the inbound
     // entity
     // by ID
   }

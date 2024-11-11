@@ -54,7 +54,8 @@ public class BranchBatchServiceImpl implements BranchBatchService {
           HrmConstant.ERROR.BRANCHBATCH.NOT_EXIST); // Error if inbound entity is not found
     }
 
-    branchBatchRepository.updateBranchBatchStatus(BatchStatus.NGUNG_KINH_DOANH,id); // Delete the inbound entity
+    branchBatchRepository.updateBranchBatchStatus(
+        BatchStatus.NGUNG_KINH_DOANH, id); // Delete the inbound entity
     // by ID
   }
 
