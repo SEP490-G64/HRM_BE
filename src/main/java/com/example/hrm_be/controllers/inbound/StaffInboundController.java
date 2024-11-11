@@ -184,14 +184,15 @@ public class StaffInboundController {
   }
 
   @GetMapping("/generate-receipt/{id}")
-  public ResponseEntity<BaseOutput<String>> generateReceipt(@PathVariable("id") Long id, HttpServletResponse response) {
+  public ResponseEntity<BaseOutput<String>> generateReceipt(
+      @PathVariable("id") Long id, HttpServletResponse response) {
     // Validate the path variable ID
     if (id == null || id <= 0) {
       BaseOutput<String> responseOutput =
-              BaseOutput.<String>builder()
-                      .status(ResponseStatus.FAILED)
-                      .errors(List.of("Invalid path variable"))
-                      .build();
+          BaseOutput.<String>builder()
+              .status(ResponseStatus.FAILED)
+              .errors(List.of("Invalid path variable"))
+              .build();
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseOutput);
     }
 
@@ -201,7 +202,7 @@ public class StaffInboundController {
     response.setHeader("Content-Disposition", "attachment; filename=receipt.pdf");
 
     try (ByteArrayOutputStream pdfStream = inboundService.generateInboundPdf(id);
-         ServletOutputStream outputStream = response.getOutputStream()) {
+        ServletOutputStream outputStream = response.getOutputStream()) {
 
       // Write the content of pdfStream to the response's OutputStream
       pdfStream.writeTo(outputStream);
@@ -210,21 +211,20 @@ public class StaffInboundController {
 
       // Build the success response
       BaseOutput<String> responseOutput =
-              BaseOutput.<String>builder()
-                      .status(ResponseStatus.SUCCESS)
-                      .data("PDF generated successfully")
-                      .build();
+          BaseOutput.<String>builder()
+              .status(ResponseStatus.SUCCESS)
+              .data("PDF generated successfully")
+              .build();
       return ResponseEntity.ok(responseOutput);
 
     } catch (IOException | DocumentException e) {
       // Handle exceptions if an error occurs during PDF generation
       BaseOutput<String> responseOutput =
-              BaseOutput.<String>builder()
-                      .status(ResponseStatus.FAILED)
-                      .errors(List.of("Error generating PDF: " + e.getMessage()))
-                      .build();
+          BaseOutput.<String>builder()
+              .status(ResponseStatus.FAILED)
+              .errors(List.of("Error generating PDF: " + e.getMessage()))
+              .build();
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseOutput);
     }
   }
-
 }

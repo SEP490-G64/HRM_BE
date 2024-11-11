@@ -485,7 +485,7 @@ public class PDFUtil {
   }
 
   public static ByteArrayOutputStream createOutboundInternalPdf(Outbound outbound)
-          throws DocumentException, IOException {
+      throws DocumentException, IOException {
     LocalDateTime dateNow = LocalDateTime.now();
 
     // Initialize PDF document and output stream
@@ -497,7 +497,8 @@ public class PDFUtil {
       document.open();
 
       // Load font
-      String fontPath = Objects.requireNonNull(PDFUtil.class.getResource("/fonts/Arial.ttf")).getPath();
+      String fontPath =
+          Objects.requireNonNull(PDFUtil.class.getResource("/fonts/Arial.ttf")).getPath();
       Font fontTitle = createFontFromPath(fontPath, 18, Font.BOLD, BaseColor.BLACK);
       Font fontSubTitle = createFontFromPath(fontPath, 12, Font.NORMAL, BaseColor.BLACK);
       Font fontTableHeader = createFontFromPath(fontPath, 12, Font.BOLD, BaseColor.BLACK);
@@ -510,41 +511,53 @@ public class PDFUtil {
       // Create a table with one cell as a blank row spacer
       PdfPTable table = new PdfPTable(1);
       table.setWidthPercentage(100);
-      table.setSpacingBefore(10f);  // Sets space before
-      table.setSpacingAfter(10f);   // Sets space after
+      table.setSpacingBefore(10f); // Sets space before
+      table.setSpacingAfter(10f); // Sets space after
       // Add an empty cell to make sure the table renders
       PdfPCell emptyCell = new PdfPCell(new Phrase(" "));
-      emptyCell.setBorder(PdfPCell.NO_BORDER);  // No border for the cell
+      emptyCell.setBorder(PdfPCell.NO_BORDER); // No border for the cell
       table.addCell(emptyCell);
       document.add(table);
-
 
       // Title and Date
       PdfPTable titleTable = new PdfPTable(3);
       titleTable.setWidthPercentage(100);
-      titleTable.setWidths(new float[]{1, 4, 1});
+      titleTable.setWidths(new float[] {1, 4, 1});
       titleTable.getDefaultCell().setBorderWidth(0);
 
-// Add first row: Title and Outbound ID
+      // Add first row: Title and Outbound ID
       titleTable.addCell(createEmptyCell());
-      titleTable.addCell(getCenteredParagraphWithBorder("PHIẾU CHUYỂN KHO", fontTitle));  // Add border to the title cell
+      titleTable.addCell(
+          getCenteredParagraphWithBorder(
+              "PHIẾU CHUYỂN KHO", fontTitle)); // Add border to the title cell
       titleTable.addCell(createEmptyCell());
 
-// Add second row: Date
+      // Add second row: Date
       titleTable.addCell(createEmptyCell());
-      titleTable.addCell(getCenteredParagraphWithBorder(formatInboundDate(dateNow), fontTableHeader));  // Add border to the date cell
+      titleTable.addCell(
+          getCenteredParagraphWithBorder(
+              formatInboundDate(dateNow), fontTableHeader)); // Add border to the date cell
       PdfPCell cell = new PdfPCell(getCenteredParagraph("Số: " + outbound.getId(), fontSubTitle));
-      cell.setBorder(0);  // Remove the border
-      titleTable.addCell(cell);  // Add the cell to the table
+      cell.setBorder(0); // Remove the border
+      titleTable.addCell(cell); // Add the cell to the table
       titleTable.addCell(cell);
-// Add the table to the document
+      // Add the table to the document
       document.add(titleTable);
       document.add(Chunk.NEWLINE);
 
       // Receiver and warehouse info
       document.add(new Paragraph("Người Nhận Hàng:", fontSubTitle));
-      document.add(new Paragraph("Phân xưởng: " + outbound.getToBranch().getBranchName() + "(A)", fontSubTitle));
-      document.add(new Paragraph("Diễn giải: Chuyển từ kho " + outbound.getFromBranch().getBranchName() + " đến " + outbound.getToBranch().getBranchName() + "(B->A)", fontSubTitle));
+      document.add(
+          new Paragraph(
+              "Phân xưởng: " + outbound.getToBranch().getBranchName() + "(A)", fontSubTitle));
+      document.add(
+          new Paragraph(
+              "Diễn giải: Chuyển từ kho "
+                  + outbound.getFromBranch().getBranchName()
+                  + " đến "
+                  + outbound.getToBranch().getBranchName()
+                  + "(B->A)",
+              fontSubTitle));
       document.add(Chunk.NEWLINE);
 
       // Product details
@@ -569,7 +582,8 @@ public class PDFUtil {
     return cell;
   }
 
-  private static PdfPTable createCompanyInfoTable(Outbound outbound, Font fontSubTitle) throws DocumentException {
+  private static PdfPTable createCompanyInfoTable(Outbound outbound, Font fontSubTitle)
+      throws DocumentException {
     PdfPTable infoTable = new PdfPTable(1);
     infoTable.setWidthPercentage(100);
     PdfPCell companyInfo = new PdfPCell();
@@ -581,12 +595,15 @@ public class PDFUtil {
     return infoTable;
   }
 
-  private static PdfPTable createTransferTable(Outbound outbound, Font fontTableHeader, Font fontSubTitle) throws DocumentException {
+  private static PdfPTable createTransferTable(
+      Outbound outbound, Font fontTableHeader, Font fontSubTitle) throws DocumentException {
     PdfPTable table = new PdfPTable(9);
     table.setWidthPercentage(100);
-    table.setWidths(new int[]{1, 1, 1, 2, 3, 1, 2, 2, 2});
+    table.setWidths(new int[] {1, 1, 1, 2, 3, 1, 2, 2, 2});
 
-    String[] headers = {"STT", "Từ Kho", "Đến Kho", "Mã số", "Tên Hàng", "Đơn Vị", "Số Lượng", "Giá", "Thành Tiền"};
+    String[] headers = {
+      "STT", "Từ Kho", "Đến Kho", "Mã số", "Tên Hàng", "Đơn Vị", "Số Lượng", "Giá", "Thành Tiền"
+    };
     for (String header : headers) {
       PdfPCell cell = new PdfPCell(new Phrase(header, fontTableHeader));
       cell.setHorizontalAlignment(Element.ALIGN_CENTER);
@@ -599,10 +616,12 @@ public class PDFUtil {
       table.addCell(new PdfPCell(new Phrase(String.valueOf(index++), fontSubTitle)));
       table.addCell(new PdfPCell(new Phrase("B", fontSubTitle)));
       table.addCell(new PdfPCell(new Phrase("A", fontSubTitle)));
-      table.addCell(new PdfPCell(new Phrase(detail.getProduct().getRegistrationCode(), fontSubTitle)));
+      table.addCell(
+          new PdfPCell(new Phrase(detail.getProduct().getRegistrationCode(), fontSubTitle)));
       table.addCell(new PdfPCell(new Phrase(detail.getProduct().getProductName(), fontSubTitle)));
       table.addCell(new PdfPCell(new Phrase(detail.getTargetUnit().getUnitName(), fontSubTitle)));
-      table.addCell(new PdfPCell(new Phrase(String.valueOf(detail.getOutboundQuantity()), fontSubTitle)));
+      table.addCell(
+          new PdfPCell(new Phrase(String.valueOf(detail.getOutboundQuantity()), fontSubTitle)));
       table.addCell(new PdfPCell(new Phrase("", fontSubTitle)));
       table.addCell(new PdfPCell(new Phrase("", fontSubTitle)));
       countQuantity = countQuantity.add(detail.getOutboundQuantity());
@@ -616,14 +635,15 @@ public class PDFUtil {
     table.addCell(new PdfPCell(new Phrase(String.valueOf(countQuantity), fontSubTitle)));
     table.addCell(new PdfPCell(new Phrase("", fontSubTitle)));
 
-    table.addCell(new PdfPCell(new Phrase("", fontSubTitle)));  // "Grand Total"
+    table.addCell(new PdfPCell(new Phrase("", fontSubTitle))); // "Grand Total"
     return table;
   }
 
-  private static PdfPTable createFooterTransferTable(LocalDateTime dateNow, Font fontFooter, Font fontTableHeader) throws DocumentException {
+  private static PdfPTable createFooterTransferTable(
+      LocalDateTime dateNow, Font fontFooter, Font fontTableHeader) throws DocumentException {
     PdfPTable footerTable = new PdfPTable(5);
     footerTable.setWidthPercentage(100);
-    footerTable.setWidths(new float[]{1, 1, 1, 1, 1.8f});
+    footerTable.setWidths(new float[] {1, 1, 1, 1, 1.8f});
 
     footerTable.addCell(createCenteredCell("", fontTableHeader));
     footerTable.addCell(createCenteredCell("", fontTableHeader));
@@ -646,14 +666,14 @@ public class PDFUtil {
   private static PdfPCell getCenteredParagraphWithBorder(String text, Font font) {
     Paragraph paragraph = new Paragraph(text, font);
     PdfPCell cell = new PdfPCell(paragraph);
-    cell.setHorizontalAlignment(Element.ALIGN_CENTER);  // Center align the text
-    cell.setVerticalAlignment(Element.ALIGN_MIDDLE);    // Vertical align in the middle
-    cell.setBorderWidth(0);                             // Set border width (1 is a thin border)
+    cell.setHorizontalAlignment(Element.ALIGN_CENTER); // Center align the text
+    cell.setVerticalAlignment(Element.ALIGN_MIDDLE); // Vertical align in the middle
+    cell.setBorderWidth(0); // Set border width (1 is a thin border)
     return cell;
   }
 
   public static ByteArrayOutputStream createOutboundPdf(Outbound outbound)
-          throws DocumentException, IOException {
+      throws DocumentException, IOException {
     LocalDateTime dateNow = LocalDateTime.now(); // Initializes with the current date and time
     // Create a new PDF document
     com.itextpdf.text.Document document = new com.itextpdf.text.Document();
@@ -666,7 +686,7 @@ public class PDFUtil {
 
       // Load font file from resources
       String fontPath =
-              Objects.requireNonNull(PDFUtil.class.getResource("/fonts/Arial.ttf")).getPath();
+          Objects.requireNonNull(PDFUtil.class.getResource("/fonts/Arial.ttf")).getPath();
 
       // Create fonts
       Font fontTitle = createFontFromPath(fontPath, 18, Font.BOLD, BaseColor.BLACK);
@@ -691,7 +711,7 @@ public class PDFUtil {
       // Add title
       PdfPTable titleTable = new PdfPTable(2);
       titleTable.setWidthPercentage(100);
-      titleTable.setWidths(new float[]{10, 2});
+      titleTable.setWidths(new float[] {10, 2});
 
       // Add title "PHIẾU XUẤT KHO"
       PdfPCell titleCell = new PdfPCell(getCenteredParagraph("PHIẾU XUẤT KHO", fontTitle));
@@ -706,10 +726,10 @@ public class PDFUtil {
 
       // Add date row
       PdfPCell dateCell =
-              new PdfPCell(
-                      // getCenteredParagraph(formatInboundDate(inbound.getInboundDate()),
-                      // fontTableHeader));
-                      getCenteredParagraph(formatInboundDate(dateNow), fontTableHeader));
+          new PdfPCell(
+              // getCenteredParagraph(formatInboundDate(inbound.getInboundDate()),
+              // fontTableHeader));
+              getCenteredParagraph(formatInboundDate(dateNow), fontTableHeader));
       dateCell.setBorder(PdfPCell.NO_BORDER); // Remove border
       dateCell.setHorizontalAlignment(Element.ALIGN_CENTER);
       titleTable.addCell(dateCell);
@@ -722,7 +742,7 @@ public class PDFUtil {
 
       // Add number row
       PdfPCell numberCell =
-              new PdfPCell(getCenteredParagraph("Số: " + outbound.getId(), fontSubTitle));
+          new PdfPCell(getCenteredParagraph("Số: " + outbound.getId(), fontSubTitle));
       numberCell.setBorder(PdfPCell.NO_BORDER); // Remove border
       numberCell.setHorizontalAlignment(Element.ALIGN_CENTER);
       titleTable.addCell(numberCell);
@@ -739,17 +759,12 @@ public class PDFUtil {
 
       // Supplier and invoice details
       document.add(
-              new Paragraph(
-                      "Khách Hàng: " + outbound.getSupplier().getSupplierName(), fontSubTitle));
+          new Paragraph("Khách Hàng: " + outbound.getSupplier().getSupplierName(), fontSubTitle));
       document.add(
-              new Paragraph(
-                      "Địa chỉ: " + outbound.getSupplier().getPhoneNumber(), fontSubTitle));
+          new Paragraph("Địa chỉ: " + outbound.getSupplier().getPhoneNumber(), fontSubTitle));
+      document.add(new Paragraph("Lý do: " + outbound.getNote(), fontSubTitle));
       document.add(
-              new Paragraph(
-                      "Lý do: " + outbound.getNote(), fontSubTitle));
-      document.add(
-              new Paragraph(
-                      "Xuất Tại: " + outbound.getFromBranch().getBranchName(), fontSubTitle));
+          new Paragraph("Xuất Tại: " + outbound.getFromBranch().getBranchName(), fontSubTitle));
       document.add(Chunk.NEWLINE);
 
       // Product details table
@@ -766,7 +781,7 @@ public class PDFUtil {
       }
 
       // Convert the total amount to words for display or documentation
-      String  amountInWords = NumberToWordsConverter.convert(total);
+      String amountInWords = NumberToWordsConverter.convert(total);
 
       Paragraph totalAmountParagraph = new Paragraph();
       totalAmountParagraph.add(new Phrase("- Tổng số tiền (Viết bằng chữ): ", fontFooter));
@@ -785,18 +800,19 @@ public class PDFUtil {
 
   // Create a company information table
   private static PdfPTable createCompanyInfoOutboundTable(
-          Outbound outbound, Font fontSubTitle, Font fontHeader) throws DocumentException {
+      Outbound outbound, Font fontSubTitle, Font fontHeader) throws DocumentException {
     // Create a new table with 2 columns
     PdfPTable infoTable = new PdfPTable(2);
     infoTable.setWidthPercentage(100);
-    infoTable.setWidths(new int[]{4, 2}); // Set column ratios
+    infoTable.setWidths(new int[] {4, 2}); // Set column ratios
 
     // Create a cell for company information (left side)
     PdfPCell companyInfo = new PdfPCell();
     companyInfo.addElement(new Paragraph("Hệ Thống Nhà Thuốc Long Tâm", fontSubTitle));
     companyInfo.addElement(new Paragraph(outbound.getFromBranch().getBranchName(), fontSubTitle));
     companyInfo.addElement(new Paragraph(outbound.getFromBranch().getLocation(), fontSubTitle));
-    companyInfo.addElement(new Paragraph("Số điện thoại: " + outbound.getFromBranch().getPhoneNumber(), fontSubTitle));
+    companyInfo.addElement(
+        new Paragraph("Số điện thoại: " + outbound.getFromBranch().getPhoneNumber(), fontSubTitle));
     companyInfo.setBorder(Rectangle.NO_BORDER); // Remove cell border
     infoTable.addCell(companyInfo); // Add company info cell to the table
 
@@ -806,9 +822,8 @@ public class PDFUtil {
     // Add text paragraphs to the receipt info cell
     receiptInfo.addElement(new Paragraph("Mẫu số: 02 - VT", fontHeader));
     receiptInfo.addElement(
-            new Paragraph(
-                    "(Ban hành theo TT số 133/2016/TT-BTC Ngày 26/08/2016 của BTC)",
-                    fontSubTitle));
+        new Paragraph(
+            "(Ban hành theo TT số 133/2016/TT-BTC Ngày 26/08/2016 của BTC)", fontSubTitle));
 
     // Center align content within the cell
     receiptInfo.setHorizontalAlignment(Element.ALIGN_CENTER);
@@ -826,13 +841,16 @@ public class PDFUtil {
     return infoTable; // Return the completed table
   }
 
-  private static PdfPTable createOutboundTable(Outbound outbound, Font fontTableHeader, Font fontSubTitle) throws DocumentException {
+  private static PdfPTable createOutboundTable(
+      Outbound outbound, Font fontTableHeader, Font fontSubTitle) throws DocumentException {
     PdfPTable table = new PdfPTable(6);
     table.setWidthPercentage(100);
-    table.setWidths(new int[]{1, 5, 2, 2, 2, 2});
+    table.setWidths(new int[] {1, 5, 2, 2, 2, 2});
 
     // Header row
-    String[] headers = {"STT", "Tên hàng hóa - Qui Cách", "Đơn vị", "Số lượng", "Giá", "Thành Tiền"};
+    String[] headers = {
+      "STT", "Tên hàng hóa - Qui Cách", "Đơn vị", "Số lượng", "Giá", "Thành Tiền"
+    };
     for (String header : headers) {
       PdfPCell cell = new PdfPCell(new Phrase(header, fontTableHeader));
       cell.setHorizontalAlignment(Element.ALIGN_CENTER);
@@ -848,29 +866,57 @@ public class PDFUtil {
       table.addCell(new PdfPCell(new Phrase(String.valueOf(index++), fontSubTitle)));
       table.addCell(new PdfPCell(new Phrase(detail.getProduct().getProductName(), fontSubTitle)));
       table.addCell(new PdfPCell(new Phrase(detail.getTargetUnit().getUnitName(), fontSubTitle)));
-      table.addCell(new PdfPCell(new Phrase(String.valueOf(detail.getOutboundQuantity().setScale(0, BigDecimal.ROUND_HALF_UP)), fontSubTitle)));
-      table.addCell(new PdfPCell(new Phrase(String.valueOf(detail.getPrice()), fontSubTitle)));  // Placeholder for price
+      table.addCell(
+          new PdfPCell(
+              new Phrase(
+                  String.valueOf(
+                      detail.getOutboundQuantity().setScale(0, BigDecimal.ROUND_HALF_UP)),
+                  fontSubTitle)));
+      table.addCell(
+          new PdfPCell(
+              new Phrase(
+                  String.valueOf(detail.getPrice()), fontSubTitle))); // Placeholder for price
       // Calculate totalDetail for the current row
       BigDecimal totalDetail = detail.getOutboundQuantity().multiply(detail.getPrice());
-      table.addCell(new PdfPCell(new Phrase(String.valueOf(totalDetail.setScale(2, BigDecimal.ROUND_HALF_UP)), fontSubTitle)));  // Placeholder for total price
+      table.addCell(
+          new PdfPCell(
+              new Phrase(
+                  String.valueOf(totalDetail.setScale(2, BigDecimal.ROUND_HALF_UP)),
+                  fontSubTitle))); // Placeholder for total price
       // Accumulate total quantities and prices
       countQuantity = countQuantity.add(detail.getOutboundQuantity());
       total = total.add(totalDetail);
     }
 
     // Total rows
-    addTotalRow(table, "Tiền hàng:", String.valueOf(countQuantity.setScale(0, BigDecimal.ROUND_HALF_UP)),
-            String.valueOf(total.setScale(2, BigDecimal.ROUND_HALF_UP)), fontTableHeader, fontSubTitle);
+    addTotalRow(
+        table,
+        "Tiền hàng:",
+        String.valueOf(countQuantity.setScale(0, BigDecimal.ROUND_HALF_UP)),
+        String.valueOf(total.setScale(2, BigDecimal.ROUND_HALF_UP)),
+        fontTableHeader,
+        fontSubTitle);
     addTotalRow(table, "Tiền chiết khấu:", "", "", fontTableHeader, fontSubTitle);
-    addTotalRow(table, "Tiền thuế GTGT:", "","", fontTableHeader, fontSubTitle);
-    addTotalRow(table, "Tổng tiền thanh toán:", "", String.valueOf(total.setScale(2,
-            BigDecimal.ROUND_HALF_UP)), fontTableHeader, fontTableHeader);
+    addTotalRow(table, "Tiền thuế GTGT:", "", "", fontTableHeader, fontSubTitle);
+    addTotalRow(
+        table,
+        "Tổng tiền thanh toán:",
+        "",
+        String.valueOf(total.setScale(2, BigDecimal.ROUND_HALF_UP)),
+        fontTableHeader,
+        fontTableHeader);
 
     return table;
   }
 
   // Helper method to add a total row with left-aligned label and right-aligned values
-  private static void addTotalRow(PdfPTable table, String label, String count,String totalPrice, Font fontLabel, Font fontValue) {
+  private static void addTotalRow(
+      PdfPTable table,
+      String label,
+      String count,
+      String totalPrice,
+      Font fontLabel,
+      Font fontValue) {
     PdfPCell labelCell = new PdfPCell(new Phrase(label, fontLabel));
     labelCell.setColspan(3); // Span across first three columns
     labelCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
@@ -891,11 +937,11 @@ public class PDFUtil {
     table.addCell(valueCell2);
   }
 
-
-  private static PdfPTable createFooterOutboundTable(LocalDateTime dateNow, Font fontFooter, Font fontTableHeader) throws DocumentException {
+  private static PdfPTable createFooterOutboundTable(
+      LocalDateTime dateNow, Font fontFooter, Font fontTableHeader) throws DocumentException {
     PdfPTable footerTable = new PdfPTable(5);
     footerTable.setWidthPercentage(100);
-    footerTable.setWidths(new float[]{1, 1, 1, 1, 1.8f});
+    footerTable.setWidths(new float[] {1, 1, 1, 1, 1.8f});
 
     footerTable.addCell(createCenteredCell("", fontTableHeader));
     footerTable.addCell(createCenteredCell("", fontTableHeader));
@@ -903,7 +949,7 @@ public class PDFUtil {
     footerTable.addCell(createCenteredCell("", fontTableHeader));
     footerTable.addCell(createCenteredCell(formatInboundDate(dateNow), fontFooter));
 
-    String[] roles = {"Thủ trưởng", "Người lập phiếu", "Kế toán trưởng","Người nhận", "Thủ kho"};
+    String[] roles = {"Thủ trưởng", "Người lập phiếu", "Kế toán trưởng", "Người nhận", "Thủ kho"};
     for (String role : roles) {
       footerTable.addCell(createCenteredCell(role, fontTableHeader));
     }
@@ -913,5 +959,4 @@ public class PDFUtil {
     }
     return footerTable;
   }
-
 }

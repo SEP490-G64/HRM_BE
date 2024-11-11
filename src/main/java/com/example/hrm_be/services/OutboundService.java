@@ -27,5 +27,6 @@ public interface OutboundService {
   Outbound createInnitOutbound(OutboundType type);
 
   void delete(Long id);
+
   ByteArrayOutputStream generateOutboundPdf(Long outboundId) throws DocumentException, IOException;
 }

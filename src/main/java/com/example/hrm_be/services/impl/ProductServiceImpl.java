@@ -561,7 +561,8 @@ public class ProductServiceImpl implements ProductService {
 
             if (row.getCell(2) != null) {
               String categoryName = row.getCell(2).getStringCellValue();
-              product.setCategory(categoryName != null
+              product.setCategory(
+                  categoryName != null
                       ? productCategoryService.findByCategoryName(categoryName)
                       : null);
             }
@@ -575,7 +576,8 @@ public class ProductServiceImpl implements ProductService {
             // Set base unit if found
             if (row.getCell(4) != null) {
               String measurementName = row.getCell(4).getStringCellValue();
-              product.setBaseUnit(measurementName != null
+              product.setBaseUnit(
+                  measurementName != null
                       ? unitOfMeasurementService.getByName(measurementName)
                       : null);
             }
@@ -583,13 +585,14 @@ public class ProductServiceImpl implements ProductService {
             // Set manufacturer if found
             if (row.getCell(5) != null) {
               String manufacturerName = row.getCell(5).getStringCellValue();
-              product.setManufacturer(manufacturerName != null
+              product.setManufacturer(
+                  manufacturerName != null
                       ? manufacturerService.getByName(manufacturerName)
                       : null);
             }
             BranchProduct branchProduct = new BranchProduct();
 
-// Set minimum quantity if found
+            // Set minimum quantity if found
             if (row.getCell(6) != null) {
               Cell cell = row.getCell(6);
               if (cell.getCellType() == CellType.NUMERIC) {
@@ -601,7 +604,7 @@ public class ProductServiceImpl implements ProductService {
               }
             }
 
-// Set maximum quantity if found
+            // Set maximum quantity if found
             if (row.getCell(7) != null) {
               Cell cell = row.getCell(7);
               if (cell.getCellType() == CellType.NUMERIC) {
@@ -613,7 +616,7 @@ public class ProductServiceImpl implements ProductService {
               }
             }
 
-// Set storage location if found
+            // Set storage location if found
             StorageLocation storageLocation = new StorageLocation();
             if (row.getCell(8) != null) {
               Cell cell = row.getCell(8);
@@ -624,10 +627,8 @@ public class ProductServiceImpl implements ProductService {
               }
             }
 
-// Set the branch product for the product
+            // Set the branch product for the product
             product.setBranchProducts(Collections.singletonList(branchProduct));
-
-
 
           } catch (Exception e) {
             throw new RuntimeException("Error parsing row: " + e.getMessage(), e);
@@ -677,7 +678,6 @@ public class ProductServiceImpl implements ProductService {
     try {
       for (Product product : productsToSave) {
         create(product);
-
       }
 
     } catch (Exception e) {
@@ -774,5 +774,4 @@ public class ProductServiceImpl implements ProductService {
         .map(productMapper::convertToProductForSearchInNotes)
         .collect(Collectors.toList());
   }
-
 }

@@ -677,7 +677,8 @@ public class OutboundServiceImpl implements OutboundService {
   }
 
   @Override
-  public ByteArrayOutputStream generateOutboundPdf(Long outboundId) throws DocumentException, IOException {
+  public ByteArrayOutputStream generateOutboundPdf(Long outboundId)
+      throws DocumentException, IOException {
     // Fetch Inbound and associated details
     Outbound outbound = getById(outboundId);
     if (outbound == null) {
