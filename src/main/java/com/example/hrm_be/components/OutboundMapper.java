@@ -39,6 +39,7 @@ public class OutboundMapper {
                 OutboundEntity.builder()
                     .id(d.getId())
                     .outboundType(d.getOutboundType())
+                    .outboundCode(d.getOutboundCode())
                     .fromBranch(
                         d.getFromBranch() != null ? branchMapper.toEntity(d.getFromBranch()) : null)
                     .supplier(

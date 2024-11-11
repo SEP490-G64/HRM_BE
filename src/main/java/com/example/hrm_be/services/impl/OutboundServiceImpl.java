@@ -188,7 +188,7 @@ public class OutboundServiceImpl implements OutboundService {
             .status(OutboundStatus.BAN_NHAP)
             .outboundType(request.getOutboundType())
             .createdBy(request.getCreatedBy())
-            .toBranch(branchMapper.convertToDTOBasicInfo(outboundEntity.getToBranch()))
+            .toBranch(request.getToBranch())
             .supplier(request.getSupplier())
             .fromBranch(request.getFromBranch())
             .note(request.getNote())
