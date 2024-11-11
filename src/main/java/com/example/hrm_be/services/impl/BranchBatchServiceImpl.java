@@ -9,12 +9,10 @@ import com.example.hrm_be.models.entities.BranchBatchEntity;
 import com.example.hrm_be.models.entities.BranchEntity;
 import com.example.hrm_be.repositories.BranchBatchRepository;
 import com.example.hrm_be.services.BranchBatchService;
-
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

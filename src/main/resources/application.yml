@@ -9,7 +9,6 @@ spring:
   profiles:
     active:
       - "@spring.profiles.active@"
-      - "local"
     include:
       - "common"
 

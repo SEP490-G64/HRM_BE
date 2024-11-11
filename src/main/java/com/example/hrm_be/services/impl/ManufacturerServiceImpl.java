@@ -7,7 +7,6 @@ import com.example.hrm_be.models.dtos.Manufacturer;
 import com.example.hrm_be.models.entities.ManufacturerEntity;
 import com.example.hrm_be.repositories.ManufacturerRepository;
 import com.example.hrm_be.services.ManufacturerService;
-
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;

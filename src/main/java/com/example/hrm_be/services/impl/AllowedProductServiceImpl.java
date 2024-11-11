@@ -3,13 +3,12 @@ package com.example.hrm_be.services.impl;
 import com.example.hrm_be.models.entities.AllowedProductEntity;
 import com.example.hrm_be.repositories.AllowedProductRepository;
 import com.example.hrm_be.services.AllowedProductService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional

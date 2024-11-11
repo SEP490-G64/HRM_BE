@@ -7,7 +7,6 @@ import com.example.hrm_be.models.dtos.BranchProduct;
 import com.example.hrm_be.models.entities.*;
 import com.example.hrm_be.repositories.BranchProductRepository;
 import com.example.hrm_be.services.BranchProductService;
-
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
