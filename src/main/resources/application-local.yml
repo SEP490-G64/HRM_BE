@@ -14,11 +14,11 @@ hrm-config:
     subject: "OTP for authentication in GoldenView"
     content: "Do not send this OTP to anyone for security protection. Your otp is: "
   s3:
-    key: ${DO_S3_KEY}
-    secret: ${DO_S3_SECRET}
-    endpoint: ${DO_S3_ENDPOINT}
-    region: ${DO_S3_REGION}
-    bucket: ${DO_S3_BUCKET}
+    key: test
+    secret: test
+    endpoint: test
+    region: test
+    bucket: test
 
 spring:
   mail:
