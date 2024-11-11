@@ -7,6 +7,7 @@ import com.example.hrm_be.commons.constants.HrmConstant.ERROR.MANUFACTURER;
 import com.example.hrm_be.commons.constants.HrmConstant.ERROR.REQUEST;
 import com.example.hrm_be.commons.constants.HrmConstant.ERROR.TYPE;
 import com.example.hrm_be.commons.constants.HrmConstant.ERROR.UNIT_OF_MEASUREMENT;
+import com.example.hrm_be.commons.enums.ProductStatus;
 import com.example.hrm_be.components.*;
 import com.example.hrm_be.components.BranchMapper;
 import com.example.hrm_be.components.ProductMapper;
@@ -417,11 +418,11 @@ public class ProductServiceImpl implements ProductService {
 
   @Override
   public void delete(Long id) {
-    ProductEntity productEntity = productRepository.findById(id).orElse(null);
+    Product productEntity = getById(id);
     if (productEntity == null) {
       throw new HrmCommonException(HrmConstant.ERROR.PRODUCT.NOT_EXIST);
     }
-    productRepository.deleteById(id);
+    productRepository.updateProductStatus(ProductStatus.NGUNG_KINH_DOANH,id);
   }
 
   @Override

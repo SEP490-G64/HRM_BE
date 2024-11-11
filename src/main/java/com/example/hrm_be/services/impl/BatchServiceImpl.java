@@ -1,6 +1,7 @@
 package com.example.hrm_be.services.impl;
 
 import com.example.hrm_be.commons.constants.HrmConstant;
+import com.example.hrm_be.commons.enums.BatchStatus;
 import com.example.hrm_be.components.BatchMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.Batch;
@@ -197,11 +198,11 @@ public class BatchServiceImpl implements BatchService {
   public void delete(Long id) {
     // Validation: Check if the ID is null
     if (id == null) {
-      throw new HrmCommonException(HrmConstant.ERROR.TYPE.INVALID);
+      throw new HrmCommonException(HrmConstant.ERROR.REQUEST.INVALID);
     }
 
     // Delete the batch by ID
-    batchRepository.deleteById(id);
+    batchRepository.updateBatchStatus(BatchStatus.NGUNG_KINH_DOANH,id);
   }
 
   @Override

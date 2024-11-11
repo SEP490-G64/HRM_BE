@@ -1,5 +1,7 @@
 package com.example.hrm_be.models.entities;
 
+import com.example.hrm_be.commons.enums.BatchStatus;
+import com.example.hrm_be.commons.enums.ProductStatus;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.Column;
@@ -51,4 +53,7 @@ public class BranchProductEntity extends CommonEntity {
 
   @Column(name = "quantity")
   BigDecimal quantity;
+
+  @Column(name = "status")
+  ProductStatus productStatus;
 }
