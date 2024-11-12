@@ -10,6 +10,7 @@ import com.example.hrm_be.models.entities.UnitConversionEntity;
 import com.example.hrm_be.repositories.UnitConversionRepository;
 import com.example.hrm_be.services.UnitConversionService;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -111,9 +112,11 @@ public class UnitConversionImpl implements UnitConversionService {
 
     if (conversion != null) {
       if (toBaseUnit) {
-        return quantity.divide(BigDecimal.valueOf(conversion.getFactorConversion()));
+        return quantity.divide(BigDecimal.valueOf(conversion.getFactorConversion()).setScale(2,
+            RoundingMode.HALF_UP));
       } else {
-        return quantity.multiply(BigDecimal.valueOf(conversion.getFactorConversion()));
+        return quantity.multiply(BigDecimal.valueOf(conversion.getFactorConversion()).setScale(2,
+            RoundingMode.HALF_UP));
       }
     } else {
       return BigDecimal.ZERO;
