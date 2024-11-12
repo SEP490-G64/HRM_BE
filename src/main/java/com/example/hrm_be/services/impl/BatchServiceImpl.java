@@ -150,6 +150,8 @@ public class BatchServiceImpl implements BatchService {
       throw new HrmCommonException(HrmConstant.ERROR.BATCH.EXIST);
     }
 
+    batch.setId(null);
+
     // Convert DTO to entity, save it, and convert back to DTO
     return Optional.ofNullable(batch)
         .map(e -> batchMapper.toEntity(e))
@@ -172,7 +174,7 @@ public class BatchServiceImpl implements BatchService {
     }
 
     if (batchRepository.existsByBatchCode(batch.getBatchCode())
-        && !Objects.equals(batch.getBatchCode(), oldBatchEntity.getBatchCode())) {
+        && !Objects.equals(batch.getId(), oldBatchEntity.getId())) {
       throw new HrmCommonException(HrmConstant.ERROR.BATCH.EXIST);
     }
 

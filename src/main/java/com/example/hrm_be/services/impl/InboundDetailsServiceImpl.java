@@ -205,4 +205,9 @@ public class InboundDetailsServiceImpl implements InboundDetailsService {
 
     return inbound;
   }
+
+  @Override
+  public void deleteAllByInboundId(Long inboundId) {
+    inboundDetailsRepository.deleteAllByInbound_Id(inboundId);
+  }
 }

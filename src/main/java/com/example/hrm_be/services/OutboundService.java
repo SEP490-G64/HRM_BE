@@ -11,11 +11,22 @@ import org.springframework.stereotype.Service;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+import java.time.LocalDateTime;
+
 @Service
 public interface OutboundService {
   Outbound getById(Long id);
 
-  Page<Outbound> getByPaging(int pageNo, int pageSize, String sortBy);
+  Page<Outbound> getByPaging(
+      int pageNo,
+      int pageSize,
+      String sortBy,
+      String direction,
+      String keyword,
+      LocalDateTime startDate,
+      LocalDateTime endDate,
+      OutboundStatus status,
+      OutboundType type);
 
   Outbound approve(Long id, boolean accept);
 

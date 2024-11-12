@@ -33,7 +33,7 @@ public class StaffBatchController {
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "20") int size,
       @RequestParam(required = false, defaultValue = "id") String sortBy,
-      @RequestParam(required = false, defaultValue = "") Long productId,
+      @RequestParam(required = true) Long productId,
       @RequestParam(required = false, defaultValue = "") String keyword,
       @RequestParam(required = false) LocalDateTime produceStartDate,
       @RequestParam(required = false) LocalDateTime produceEndDate,

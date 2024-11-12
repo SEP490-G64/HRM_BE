@@ -40,4 +40,6 @@ public interface InboundBatchDetailRepository
   @Modifying
   @Query("DELETE FROM InboundBatchDetailEntity opd WHERE opd.id in :outboundId")
   void deleteByIds(@Param("outboundId") List<Long> outboundId);
+
+  void deleteAllByInbound_Id(Long id);
 }

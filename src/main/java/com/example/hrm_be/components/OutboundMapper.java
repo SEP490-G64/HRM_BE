@@ -225,22 +225,17 @@ public class OutboundMapper {
                 ? branchMapper.convertToDTOBasicInfo(entity.getToBranch())
                 : null)
         .createdDate(entity.getCreatedDate())
-        .outboundCode(entity.getOutboundCode())
         .outboundDate(entity.getOutboundDate())
-        .totalPrice(entity.getTotalPrice())
-        .isApproved(entity.getIsApproved())
         .approvedBy(
             entity.getApprovedBy() != null
                 ? userMapper.convertToDtoBasicInfo(entity.getApprovedBy())
                 : null)
-        .status(entity.getStatus())
         .taxable(entity.getTaxable())
         .note(entity.getNote())
         .createdBy(
             entity.getCreatedBy() != null
                 ? userMapper.convertToDtoBasicInfo(entity.getCreatedBy())
                 : null)
-        .outboundDate(entity.getOutboundDate())
         .build();
   }
 }

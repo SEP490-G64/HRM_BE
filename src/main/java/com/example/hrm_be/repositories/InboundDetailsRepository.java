@@ -37,4 +37,6 @@ public interface InboundDetailsRepository extends JpaRepository<InboundDetailsEn
   @Modifying
   @Query("DELETE FROM InboundDetailsEntity opd WHERE opd.id in :outboundId")
   void deleteByIds(@Param("outboundId") List<Long> outboundId);
+
+  void deleteAllByInbound_Id(Long id);
 }
