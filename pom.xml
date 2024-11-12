@@ -241,6 +241,13 @@
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
         <version>0.8.12</version>
+        <configuration>
+          <excludes>
+            <exclude>com/example/hrm_be/configs/**/*</exclude>
+            <exclude>com/example/hrm_be/controllers/**/*</exclude>
+            <exclude>com/example/hrm_be/commons/**/*</exclude>
+          </excludes>
+        </configuration>
         <executions>
           <execution>
             <goals>
