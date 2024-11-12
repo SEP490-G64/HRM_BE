@@ -95,7 +95,6 @@ public class BatchMapper {
                     .id(e.getId())
                     .batchCode(e.getBatchCode())
                     .batchStatus(e.getBatchStatus())
-
                     .produceDate(e.getProduceDate())
                     .expireDate(e.getExpireDate())
                     .inboundPrice(e.getInboundPrice())
