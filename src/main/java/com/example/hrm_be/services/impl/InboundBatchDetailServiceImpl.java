@@ -47,7 +47,7 @@ public class InboundBatchDetailServiceImpl implements InboundBatchDetailService 
 
   @Override
   public List<InboundBatchDetail> findByInboundId(Long inboundId) {
-    if (inboundId == null || inboundBatchDetailRepository.findById(inboundId).isPresent()) {
+    if (inboundId == null || inboundBatchDetailRepository.findById(inboundId).isEmpty()) {
       throw new HrmCommonException(HrmConstant.ERROR.INBOUND.NOT_EXIST);
     }
 
