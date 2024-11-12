@@ -9,8 +9,10 @@ import com.example.hrm_be.models.entities.BatchEntity;
 import com.example.hrm_be.models.entities.InboundBatchDetailEntity;
 import com.example.hrm_be.models.entities.ProductEntity;
 import com.example.hrm_be.repositories.InboundBatchDetailRepository;
+import com.example.hrm_be.repositories.InboundRepository;
 import com.example.hrm_be.services.BatchService;
 import com.example.hrm_be.services.InboundBatchDetailService;
+import com.example.hrm_be.services.InboundService;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
@@ -27,6 +29,7 @@ public class InboundBatchDetailServiceImpl implements InboundBatchDetailService 
 
   @Autowired private InboundBatchDetailMapper inboundBatchDetailMapper;
   @Autowired private BatchService batchService;
+  @Autowired private InboundRepository inboundRepository;
   @Autowired private BatchMapper batchMapper;
 
   @Override
@@ -47,7 +50,7 @@ public class InboundBatchDetailServiceImpl implements InboundBatchDetailService 
 
   @Override
   public List<InboundBatchDetail> findByInboundId(Long inboundId) {
-    if (inboundId == null || inboundBatchDetailRepository.findById(inboundId).isEmpty()) {
+    if (inboundId == null || inboundRepository.findById(inboundId).isEmpty()) {
       throw new HrmCommonException(HrmConstant.ERROR.INBOUND.NOT_EXIST);
     }
 
