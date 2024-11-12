@@ -18,7 +18,6 @@ import com.example.hrm_be.models.dtos.*;
 import com.example.hrm_be.models.requests.CreateInboundRequest;
 import com.example.hrm_be.models.responses.InboundDetail;
 import com.example.hrm_be.repositories.InboundRepository;
-import com.example.hrm_be.repositories.ProductSuppliersRepository;
 import com.example.hrm_be.services.*;
 import com.example.hrm_be.services.InboundService;
 import com.example.hrm_be.services.UserService;
@@ -39,7 +38,6 @@ import java.util.stream.Collectors;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.criteria.Predicate;
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -166,11 +164,19 @@ public class InboundServiceImpl implements InboundService {
   }
 
   @Override
-  public Page<Inbound> getByPaging(int pageNo, int pageSize, String sortBy, String direction,
-                                   String keyword, LocalDateTime startDate, LocalDateTime endDate,
-                                   InboundStatus status, InboundType type) {
+  public Page<Inbound> getByPaging(
+      int pageNo,
+      int pageSize,
+      String sortBy,
+      String direction,
+      String keyword,
+      LocalDateTime startDate,
+      LocalDateTime endDate,
+      InboundStatus status,
+      InboundType type) {
     // Check direction and set value for sort
-    Sort sort = direction != null && direction.equalsIgnoreCase("ASC")
+    Sort sort =
+        direction != null && direction.equalsIgnoreCase("ASC")
             ? Sort.by(sortBy).ascending()
             : Sort.by(sortBy).descending(); // Default is descending
 
@@ -179,17 +185,18 @@ public class InboundServiceImpl implements InboundService {
 
     Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
 
-    Specification<InboundEntity> specification = getSpecification(userEntity.getBranch().getId(), keyword, startDate, endDate, status, type);
+    Specification<InboundEntity> specification =
+        getSpecification(userEntity.getBranch().getId(), keyword, startDate, endDate, status, type);
     return inboundRepository.findAll(specification, pageable).map(dao -> inboundMapper.toDTO(dao));
   }
 
   private Specification<InboundEntity> getSpecification(
-          Long branchId,
-          String keyword,
-          LocalDateTime startDate,
-          LocalDateTime endDate,
-          InboundStatus status,
-          InboundType type) {
+      Long branchId,
+      String keyword,
+      LocalDateTime startDate,
+      LocalDateTime endDate,
+      InboundStatus status,
+      InboundType type) {
     return (root, query, criteriaBuilder) -> {
       List<Predicate> predicates = new ArrayList<>();
 

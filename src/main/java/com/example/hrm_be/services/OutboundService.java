@@ -17,9 +17,16 @@ import java.time.LocalDateTime;
 public interface OutboundService {
   Outbound getById(Long id);
 
-  Page<Outbound> getByPaging(int pageNo, int pageSize, String sortBy, String direction,
-                             String keyword, LocalDateTime startDate, LocalDateTime endDate,
-                             OutboundStatus status, OutboundType type);
+  Page<Outbound> getByPaging(
+      int pageNo,
+      int pageSize,
+      String sortBy,
+      String direction,
+      String keyword,
+      LocalDateTime startDate,
+      LocalDateTime endDate,
+      OutboundStatus status,
+      OutboundType type);
 
   Outbound approve(Long id, boolean accept);
 

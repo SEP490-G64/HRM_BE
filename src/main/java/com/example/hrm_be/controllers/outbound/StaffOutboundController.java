@@ -4,7 +4,6 @@ import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.commons.enums.OutboundStatus;
 import com.example.hrm_be.commons.enums.*;
 import com.example.hrm_be.commons.enums.ResponseStatus;
-import com.example.hrm_be.models.dtos.Inbound;
 import com.example.hrm_be.models.dtos.Outbound;
 import com.example.hrm_be.models.requests.CreateOutboundRequest;
 import com.example.hrm_be.models.responses.BaseOutput;
@@ -51,8 +50,9 @@ public class StaffOutboundController {
       @RequestParam(required = false) LocalDateTime endDate,
       @RequestParam(required = false) OutboundStatus status,
       @RequestParam(required = false) OutboundType type) {
-    Page<Outbound> OutboundPage = outboundService.getByPaging(page, size, sortBy, direction, keyword,
-            startDate, endDate, status, type);
+    Page<Outbound> OutboundPage =
+        outboundService.getByPaging(
+            page, size, sortBy, direction, keyword, startDate, endDate, status, type);
 
     // Build the response with pagination details
     BaseOutput<List<Outbound>> response =

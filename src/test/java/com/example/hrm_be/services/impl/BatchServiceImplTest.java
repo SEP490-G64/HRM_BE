@@ -1,42 +1,42 @@
-//package com.example.hrm_be.services.impl;
+// package com.example.hrm_be.services.impl;
 //
-//import com.example.hrm_be.HrmBeApplication;
-//import com.example.hrm_be.commons.constants.HrmConstant;
-//import com.example.hrm_be.components.ProductMapper;
-//import com.example.hrm_be.configs.exceptions.HrmCommonException;
-//import com.example.hrm_be.models.dtos.Batch;
-//import com.example.hrm_be.models.dtos.Product;
-//import com.example.hrm_be.models.entities.ProductEntity;
-//import com.example.hrm_be.repositories.BatchRepository;
-//import com.example.hrm_be.repositories.ProductRepository;
-//import com.example.hrm_be.services.BatchService;
-//import com.example.hrm_be.services.ProductService;
-//import org.junit.jupiter.api.BeforeEach;
-//import org.junit.jupiter.api.Test;
-//import org.junit.jupiter.api.extension.ExtendWith;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.boot.test.context.SpringBootTest;
-//import org.springframework.context.annotation.Import;
-//import org.springframework.data.domain.Page;
-//import org.springframework.test.context.ActiveProfiles;
-//import org.springframework.test.context.junit.jupiter.SpringExtension;
-//import org.springframework.transaction.annotation.Transactional;
-//import org.testcontainers.junit.jupiter.Testcontainers;
+// import com.example.hrm_be.HrmBeApplication;
+// import com.example.hrm_be.commons.constants.HrmConstant;
+// import com.example.hrm_be.components.ProductMapper;
+// import com.example.hrm_be.configs.exceptions.HrmCommonException;
+// import com.example.hrm_be.models.dtos.Batch;
+// import com.example.hrm_be.models.dtos.Product;
+// import com.example.hrm_be.models.entities.ProductEntity;
+// import com.example.hrm_be.repositories.BatchRepository;
+// import com.example.hrm_be.repositories.ProductRepository;
+// import com.example.hrm_be.services.BatchService;
+// import com.example.hrm_be.services.ProductService;
+// import org.junit.jupiter.api.BeforeEach;
+// import org.junit.jupiter.api.Test;
+// import org.junit.jupiter.api.extension.ExtendWith;
+// import org.springframework.beans.factory.annotation.Autowired;
+// import org.springframework.boot.test.context.SpringBootTest;
+// import org.springframework.context.annotation.Import;
+// import org.springframework.data.domain.Page;
+// import org.springframework.test.context.ActiveProfiles;
+// import org.springframework.test.context.junit.jupiter.SpringExtension;
+// import org.springframework.transaction.annotation.Transactional;
+// import org.testcontainers.junit.jupiter.Testcontainers;
 //
-//import java.math.BigDecimal;
-//import java.time.LocalDateTime;
+// import java.math.BigDecimal;
+// import java.time.LocalDateTime;
 //
-//import static org.assertj.core.api.Assertions.assertThat;
-//import static org.junit.Assert.assertEquals;
-//import static org.junit.jupiter.api.Assertions.assertThrows;
+// import static org.assertj.core.api.Assertions.assertThat;
+// import static org.junit.Assert.assertEquals;
+// import static org.junit.jupiter.api.Assertions.assertThrows;
 //
-//@Testcontainers
-//@ExtendWith(SpringExtension.class)
-//@SpringBootTest(classes = HrmBeApplication.class)
-//@ActiveProfiles("test")
-//@Import({BatchServiceImpl.class, ProductMapper.class})
-//@Transactional
-//public class BatchServiceImplTest {
+// @Testcontainers
+// @ExtendWith(SpringExtension.class)
+// @SpringBootTest(classes = HrmBeApplication.class)
+// @ActiveProfiles("test")
+// @Import({BatchServiceImpl.class, ProductMapper.class})
+// @Transactional
+// public class BatchServiceImplTest {
 //
 //  @Autowired private BatchService batchService;
 //  @Autowired private BatchRepository batchRepository;
@@ -566,4 +566,4 @@
 //    Long nonExistingId = 2L;
 //    assertThrows(HrmCommonException.class, () -> batchService.delete(nonExistingId));
 //  }
-//}
+// }
