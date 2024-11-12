@@ -12,7 +12,6 @@ import com.example.hrm_be.repositories.InboundBatchDetailRepository;
 import com.example.hrm_be.repositories.InboundRepository;
 import com.example.hrm_be.services.BatchService;
 import com.example.hrm_be.services.InboundBatchDetailService;
-import com.example.hrm_be.services.InboundService;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
