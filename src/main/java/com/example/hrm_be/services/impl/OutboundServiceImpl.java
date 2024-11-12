@@ -20,14 +20,21 @@ import com.example.hrm_be.models.entities.UserEntity;
 import com.example.hrm_be.models.requests.CreateOutboundRequest;
 import com.example.hrm_be.repositories.OutboundRepository;
 import com.example.hrm_be.services.*;
+import com.example.hrm_be.utils.PDFUtil;
 import com.example.hrm_be.utils.WplUtil;
+import com.itextpdf.text.DocumentException;
 import io.micrometer.common.util.StringUtils;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -685,5 +692,20 @@ public class OutboundServiceImpl implements OutboundService {
       throw new HrmCommonException(INBOUND.NOT_EXIST);
     }
     outboundRepository.updateOutboundStatus(status, id);
+  }
+
+  @Override
+  public ByteArrayOutputStream generateOutboundPdf(Long outboundId)
+      throws DocumentException, IOException {
+    // Fetch Inbound and associated details
+    Outbound outbound = getById(outboundId);
+    if (outbound == null) {
+      throw new EntityNotFoundException("Outbound record not found with ID: " + outboundId);
+    }
+    if (OutboundType.CHUYEN_KHO_NOI_BO.equals(outbound.getOutboundType())) {
+      return PDFUtil.createOutboundInternalPdf(outbound);
+    } else {
+      return PDFUtil.createOutboundPdf(outbound);
+    }
   }
 }

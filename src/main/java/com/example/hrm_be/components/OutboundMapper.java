@@ -210,6 +210,7 @@ public class OutboundMapper {
     return Outbound.builder()
         .id(entity.getId())
         .outboundCode(entity.getOutboundCode())
+        .outboundType(entity.getOutboundType())
         .outboundDate(entity.getOutboundDate())
         .totalPrice(entity.getTotalPrice())
         .isApproved(entity.getIsApproved())

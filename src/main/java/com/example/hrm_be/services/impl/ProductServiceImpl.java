@@ -41,9 +41,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -558,7 +556,6 @@ public class ProductServiceImpl implements ProductService {
               }
             }
 
-            // Set category if found
             if (row.getCell(2) != null) {
               String categoryName = row.getCell(2).getStringCellValue();
               product.setCategory(
@@ -590,6 +587,45 @@ public class ProductServiceImpl implements ProductService {
                       ? manufacturerService.getByName(manufacturerName)
                       : null);
             }
+            BranchProduct branchProduct = new BranchProduct();
+
+            // Set minimum quantity if found
+            if (row.getCell(6) != null) {
+              Cell cell = row.getCell(6);
+              if (cell.getCellType() == CellType.NUMERIC) {
+                int minQuantity = (int) cell.getNumericCellValue(); // Lấy giá trị kiểu số
+                branchProduct.setMinQuantity(minQuantity);
+              } else {
+                int minQuantity = Integer.parseInt(cell.getStringCellValue());
+                branchProduct.setMinQuantity(minQuantity);
+              }
+            }
+
+            // Set maximum quantity if found
+            if (row.getCell(7) != null) {
+              Cell cell = row.getCell(7);
+              if (cell.getCellType() == CellType.NUMERIC) {
+                int maxQuantity = (int) cell.getNumericCellValue();
+                branchProduct.setMaxQuantity(maxQuantity);
+              } else {
+                int maxQuantity = Integer.parseInt(cell.getStringCellValue());
+                branchProduct.setMaxQuantity(maxQuantity);
+              }
+            }
+
+            // Set storage location if found
+            StorageLocation storageLocation = new StorageLocation();
+            if (row.getCell(8) != null) {
+              Cell cell = row.getCell(8);
+              if (cell.getCellType() == CellType.STRING) {
+                String storage = cell.getStringCellValue();
+                storageLocation.setShelfName(storage);
+                branchProduct.setStorageLocation(storageLocation);
+              }
+            }
+
+            // Set the branch product for the product
+            product.setBranchProducts(Collections.singletonList(branchProduct));
 
           } catch (Exception e) {
             throw new RuntimeException("Error parsing row: " + e.getMessage(), e);
@@ -638,8 +674,9 @@ public class ProductServiceImpl implements ProductService {
     // Save all valid products to the database if no errors occurred
     try {
       for (Product product : productsToSave) {
-        create(product); // Persist each Product entity
+        create(product);
       }
+
     } catch (Exception e) {
       errors.add("Error saving products: " + e.getMessage());
       throw new RuntimeException(
