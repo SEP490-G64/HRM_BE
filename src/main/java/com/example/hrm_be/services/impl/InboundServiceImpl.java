@@ -13,13 +13,8 @@ import com.example.hrm_be.components.UnitOfMeasurementMapper;
 import com.example.hrm_be.components.UserMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.*;
-import com.example.hrm_be.models.entities.BatchEntity;
-import com.example.hrm_be.models.entities.BranchEntity;
-import com.example.hrm_be.models.entities.InboundEntity;
-import com.example.hrm_be.models.entities.ProductEntity;
-import com.example.hrm_be.models.entities.ProductSuppliersEntity;
-import com.example.hrm_be.models.entities.SupplierEntity;
-import com.example.hrm_be.models.entities.UserEntity;
+import com.example.hrm_be.models.entities.*;
+import com.example.hrm_be.models.dtos.*;
 import com.example.hrm_be.models.requests.CreateInboundRequest;
 import com.example.hrm_be.models.responses.InboundDetail;
 import com.example.hrm_be.repositories.InboundRepository;
@@ -40,12 +35,17 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.criteria.Predicate;
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,12 +53,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class InboundServiceImpl implements InboundService {
   @Autowired private InboundRepository inboundRepository;
-  @Autowired private ProductSuppliersRepository productSuppliersRepository;
 
   @Autowired private InboundMapper inboundMapper;
   @Autowired private BranchMapper branchMapper;
-  @Autowired private ProductMapper productMapper;
-  @Autowired private SupplierMapper supplierMapper;
   @Autowired private UnitOfMeasurementMapper unitOfMeasurementMapper;
   @Autowired private UserMapper userMapper;
 
@@ -169,9 +166,59 @@ public class InboundServiceImpl implements InboundService {
   }
 
   @Override
-  public Page<Inbound> getByPaging(int pageNo, int pageSize, String sortBy) {
-    Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(sortBy).ascending());
-    return inboundRepository.findAll(pageable).map(dao -> inboundMapper.toDTO(dao));
+  public Page<Inbound> getByPaging(int pageNo, int pageSize, String sortBy, String direction,
+                                   String keyword, LocalDateTime startDate, LocalDateTime endDate,
+                                   InboundStatus status, InboundType type) {
+    // Check direction and set value for sort
+    Sort sort = direction != null && direction.equalsIgnoreCase("ASC")
+            ? Sort.by(sortBy).ascending()
+            : Sort.by(sortBy).descending(); // Default is descending
+
+    String email = userService.getAuthenticatedUserEmail();
+    UserEntity userEntity = userMapper.toEntity(userService.findLoggedInfoByEmail(email));
+
+    Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+
+    Specification<InboundEntity> specification = getSpecification(userEntity.getBranch().getId(), keyword, startDate, endDate, status, type);
+    return inboundRepository.findAll(specification, pageable).map(dao -> inboundMapper.toDTO(dao));
+  }
+
+  private Specification<InboundEntity> getSpecification(
+          Long branchId,
+          String keyword,
+          LocalDateTime startDate,
+          LocalDateTime endDate,
+          InboundStatus status,
+          InboundType type) {
+    return (root, query, criteriaBuilder) -> {
+      List<Predicate> predicates = new ArrayList<>();
+
+      // Get inbound in registered user's branch
+      predicates.add(criteriaBuilder.equal(root.get("toBranch").get("id"), branchId));
+
+      // Get inbound have code containing keyword
+      if (keyword != null && !keyword.isEmpty()) {
+        predicates.add(criteriaBuilder.like(root.get("inboundCode"), "%" + keyword + "%"));
+      }
+
+      // Get inbound in time range
+      if (startDate != null) {
+        predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("createdDate"), startDate));
+      }
+      if (endDate != null) {
+        predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("createdDate"), endDate));
+      }
+
+      if (status != null) {
+        predicates.add(criteriaBuilder.equal(root.get("status"), status));
+      }
+
+      if (type != null) {
+        predicates.add(criteriaBuilder.equal(root.get("inboundType"), type));
+      }
+
+      return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+    };
   }
 
   // Method to approve an inbound record
@@ -206,6 +253,8 @@ public class InboundServiceImpl implements InboundService {
           HrmConstant.ERROR.INBOUND.NOT_EXIST); // Error if inbound entity is not found
     }
 
+    inboundDetailsService.deleteAllByInboundId(id);
+    inboundBatchDetailService.deleteAllByInboundId(id);
     inboundRepository.deleteById(id); // Delete the inbound entity by ID
   }
 

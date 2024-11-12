@@ -16,10 +16,12 @@ import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -41,8 +43,14 @@ public class StaffInboundController {
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "20") int size,
       @RequestParam(required = false, defaultValue = "id") String sortBy,
-      @RequestParam(required = false, defaultValue = "") String keyword) {
-    Page<Inbound> InboundPage = inboundService.getByPaging(page, size, sortBy);
+      @RequestParam(required = false, defaultValue = "") String keyword,
+      @RequestParam(required = false, defaultValue = "DESC") String direction,
+      @RequestParam(required = false) LocalDateTime startDate,
+      @RequestParam(required = false) LocalDateTime endDate,
+      @RequestParam(required = false) InboundStatus status,
+      @RequestParam(required = false) InboundType type) {
+    Page<Inbound> InboundPage = inboundService.getByPaging(page, size, sortBy, direction, keyword,
+            startDate, endDate, status, type);
 
     // Build the response with pagination details
     BaseOutput<List<Inbound>> response =

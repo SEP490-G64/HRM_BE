@@ -19,12 +19,9 @@ public class ProductMapper {
   @Autowired @Lazy private ProductTypeMapper productTypeMapper;
   @Autowired @Lazy private UnitOfMeasurementMapper unitOfMeasurementMapper;
   @Autowired @Lazy private UnitConversionMapper unitConversionMapper;
-  @Autowired @Lazy private InboundDetailsMapper inboundDetailsMapper;
   @Autowired @Lazy private SpecialConditionMapper specialConditionMapper;
   @Autowired @Lazy private BatchMapper batchMapper;
   @Autowired @Lazy private BranchProductMapper branchProductMapper;
-  @Autowired @Lazy private InventoryCheckDetailsMapper inventoryCheckDetailsMapper;
-  @Autowired @Lazy private ProductSuppliersMapper productSuppliersMapper;
 
   // Convert ProductEntity to ProductDTO
   public Product toDTO(ProductEntity entity) {
@@ -345,21 +342,20 @@ public class ProductMapper {
     }
 
     return ProductBaseDTO.builder()
-        .id(entity.getId())
-        .productName(entity.getProductName())
-        .registrationCode(entity.getRegistrationCode())
-        .urlImage(entity.getUrlImage())
-        .productBaseUnit(
-            entity.getBaseUnit() != null
-                ? unitOfMeasurementMapper.toDTO(entity.getBaseUnit())
-                : null)
-        .batches(
-            entity.getBatches() != null
-                ? entity.getBatches().stream()
-                    .map(batchMapper::convertToDtoWithOnlyCodeAndExpireDate)
-                    .collect(Collectors.toList())
-                : null)
-        .productUnits(unitOfMeasurementList)
-        .build();
+            .id(entity.getId())
+            .productName(entity.getProductName())
+            .registrationCode(entity.getRegistrationCode())
+            .urlImage(entity.getUrlImage())
+            .inboundPrice(entity.getInboundPrice())
+            .sellPrice(entity.getSellPrice())
+            .productBaseUnit(entity.getBaseUnit() != null ? unitOfMeasurementMapper.toDTO(entity.getBaseUnit()) : null)
+            .batches(
+                    entity.getBatches() != null
+                            ? entity.getBatches().stream()
+                            .map(batchMapper::convertToDtoForGetProductInBranch)
+                            .collect(Collectors.toList())
+                            : null)
+            .productUnits(unitOfMeasurementList)
+            .build();
   }
 }

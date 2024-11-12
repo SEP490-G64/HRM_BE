@@ -4,7 +4,7 @@ public enum OutboundStatus {
   CHUA_LUU("Chưa lưu"),
   BAN_NHAP("Bản nháp"),
   CHO_DUYET("Chờ duyệt"),
-  CHO_HANG("Chờ hàng"),
+  DANG_XU_LI("Đang xử lí"),
   KIEM_HANG("Kiểm hàng"),
   DANG_THANH_TOAN("Đang thanh toán"),
   HOAN_THANH("Hoàn thành"),

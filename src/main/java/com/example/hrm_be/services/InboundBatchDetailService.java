@@ -22,4 +22,6 @@ public interface InboundBatchDetailService {
   Integer findTotalQuantityByInboundAndProduct(Long inboundId, ProductEntity product);
 
   InboundBatchDetailEntity findByBatchIdAndAndInboundId(Long batchId, Long inboundId);
+
+  void deleteAllByInboundId(Long inboundId);
 }

@@ -2,14 +2,17 @@ package com.example.hrm_be.controllers.outbound;
 
 import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.commons.enums.OutboundStatus;
-import com.example.hrm_be.commons.enums.OutboundType;
+import com.example.hrm_be.commons.enums.*;
 import com.example.hrm_be.commons.enums.ResponseStatus;
+import com.example.hrm_be.models.dtos.Inbound;
 import com.example.hrm_be.models.dtos.Outbound;
 import com.example.hrm_be.models.requests.CreateOutboundRequest;
 import com.example.hrm_be.models.responses.BaseOutput;
 import com.example.hrm_be.services.OutboundService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,8 +38,14 @@ public class StaffOutboundController {
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "20") int size,
       @RequestParam(required = false, defaultValue = "id") String sortBy,
-      @RequestParam(required = false, defaultValue = "") String keyword) {
-    Page<Outbound> OutboundPage = outboundService.getByPaging(page, size, sortBy);
+      @RequestParam(required = false, defaultValue = "") String keyword,
+      @RequestParam(required = false, defaultValue = "DESC") String direction,
+      @RequestParam(required = false) LocalDateTime startDate,
+      @RequestParam(required = false) LocalDateTime endDate,
+      @RequestParam(required = false) OutboundStatus status,
+      @RequestParam(required = false) OutboundType type) {
+    Page<Outbound> OutboundPage = outboundService.getByPaging(page, size, sortBy, direction, keyword,
+            startDate, endDate, status, type);
 
     // Build the response with pagination details
     BaseOutput<List<Outbound>> response =

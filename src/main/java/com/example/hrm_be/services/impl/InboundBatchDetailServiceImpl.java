@@ -112,4 +112,9 @@ public class InboundBatchDetailServiceImpl implements InboundBatchDetailService 
         .findByBatch_IdAndAndInbound_Id(batchId, inboundId)
         .orElse(null);
   }
+
+  @Override
+  public void deleteAllByInboundId(Long inboundId) {
+    inboundBatchDetailRepository.deleteAllByInbound_Id(inboundId);
+  }
 }
