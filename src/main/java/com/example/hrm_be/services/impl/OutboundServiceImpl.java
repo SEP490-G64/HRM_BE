@@ -94,8 +94,9 @@ public class OutboundServiceImpl implements OutboundService {
                   // Set outbound quantity and price
                   productDetailDTO.setOutboundQuantity(outboundProductDetail.getOutboundQuantity());
                   productDetailDTO.setPrice(outboundProductDetail.getPrice());
-                  productDetailDTO.setTargetUnit(
-                      unitOfMeasurementMapper.toDTO(outboundProductDetail.getUnitOfMeasurement()));
+                  productDetailDTO.setTargetUnit(outboundProductDetail.getUnitOfMeasurement()!=null ?
+                      unitOfMeasurementMapper.toDTO(outboundProductDetail.getUnitOfMeasurement())
+                      :unitOfMeasurementMapper.toDTO(outboundProductDetail.getProduct().getBaseUnit()) );
 
                   return productDetailDTO;
                 })
@@ -128,7 +129,9 @@ public class OutboundServiceImpl implements OutboundService {
                   productWithBatchDetailDTO.setOutboundQuantity(outboundDetail.getQuantity());
                   productWithBatchDetailDTO.setPrice(outboundDetail.getPrice());
                   productWithBatchDetailDTO.setTargetUnit(
-                      unitOfMeasurementMapper.toDTO(outboundDetail.getUnitOfMeasurement()));
+                      outboundDetail.getUnitOfMeasurement()!=null ?
+                          unitOfMeasurementMapper.toDTO(outboundDetail.getUnitOfMeasurement())
+                          :unitOfMeasurementMapper.toDTO(outboundDetail.getBatch().getProduct().getBaseUnit()));
 
                   return productWithBatchDetailDTO;
                 })
