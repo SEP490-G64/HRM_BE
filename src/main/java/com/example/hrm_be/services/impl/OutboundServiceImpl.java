@@ -409,11 +409,13 @@ public class OutboundServiceImpl implements OutboundService {
       if (branchProduct != null) {
         BigDecimal pricePreUnit =
                 unitConversionService.convertToUnit(
-                        product.getId(),
-                        productEntity.getBaseUnit().getId(),
-                        productEntity.getSellPrice(),
-                        productDetail.getTargetUnit(),
-                        true);
+                product.getId(),
+                productEntity.getBaseUnit().getId(),
+                productEntity.getSellPrice() != null
+                    ? productEntity.getSellPrice()
+                    : BigDecimal.ZERO,
+                productDetail.getTargetUnit(),
+                true);
 
         BigDecimal outboundQuantity = productDetail.getOutboundQuantity();
         BigDecimal convertedQuantity =
