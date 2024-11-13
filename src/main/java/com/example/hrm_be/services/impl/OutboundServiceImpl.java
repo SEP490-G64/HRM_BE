@@ -419,7 +419,7 @@ public class OutboundServiceImpl implements OutboundService {
             unitConversionService.convertToUnit(
                 product.getId(),
                 productEntity.getBaseUnit().getId(),
-                productEntity.getSellPrice(),
+                productEntity.getSellPrice()!=null? productEntity.getSellPrice(): BigDecimal.ZERO,
                 productDetail.getTargetUnit(),
                 true);
 
