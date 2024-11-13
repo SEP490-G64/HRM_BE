@@ -17,9 +17,17 @@ import java.time.LocalDateTime;
 public interface InboundService {
   InboundDetail getById(Long id);
 
-  Page<Inbound> getByPaging(int pageNo, int pageSize, String sortBy, String direction,
-                            Long branchId, String keyword, LocalDateTime startDate,
-                            LocalDateTime endDate, InboundStatus status, InboundType type);
+  Page<Inbound> getByPaging(
+      int pageNo,
+      int pageSize,
+      String sortBy,
+      String direction,
+      Long branchId,
+      String keyword,
+      LocalDateTime startDate,
+      LocalDateTime endDate,
+      InboundStatus status,
+      InboundType type);
 
   Inbound approve(Long id, boolean accept);
 

@@ -200,7 +200,7 @@ public class ManufacturerServiceImpl implements ManufacturerService {
     }
     if (manufacturer.getEmail() != null && !manufacturer.getEmail().isEmpty()) {
       if (!manufacturer.getEmail().matches(HrmConstant.REGEX.EMAIL)
-              || manufacturer.getEmail().length() > 255) {
+          || manufacturer.getEmail().length() > 255) {
         return false;
       }
     }
