@@ -38,4 +38,8 @@ public class OutboundProductDetail {
   BigDecimal price;
 
   UnitOfMeasurement targetUnit;
+
+  UnitOfMeasurement productBaseUnit;
+
+
 }
