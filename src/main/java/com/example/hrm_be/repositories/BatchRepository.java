@@ -1,14 +1,17 @@
 package com.example.hrm_be.repositories;
 
+import com.example.hrm_be.commons.enums.BatchStatus;
 import com.example.hrm_be.models.entities.BatchEntity;
 import com.example.hrm_be.models.entities.ProductEntity;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public interface BatchRepository
@@ -28,4 +31,9 @@ public interface BatchRepository
   List<BatchEntity> findAllByProductId(Long productId);
 
   Optional<BatchEntity> findByBatchCodeAndProduct_Id(String code, Long id);
+
+  @Modifying
+  @Transactional
+  @Query("UPDATE BatchEntity i SET i.batchStatus = :status WHERE i.id = :id")
+  void updateBatchStatus(@Param("status") BatchStatus status, @Param("id") Long id);
 }

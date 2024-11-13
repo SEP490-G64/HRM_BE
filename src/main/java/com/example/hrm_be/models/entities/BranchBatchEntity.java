@@ -1,5 +1,6 @@
 package com.example.hrm_be.models.entities;
 
+import com.example.hrm_be.commons.enums.BatchStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
@@ -41,6 +42,9 @@ public class BranchBatchEntity extends CommonEntity {
 
   @Column(name = "quantity")
   BigDecimal quantity;
+
+  @Column(name = "status")
+  BatchStatus batchStatus;
 
   @ToString.Exclude
   @OneToMany(mappedBy = "branchBatch")

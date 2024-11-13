@@ -1,5 +1,6 @@
 package com.example.hrm_be.models.dtos;
 
+import com.example.hrm_be.commons.enums.BatchStatus;
 import com.example.hrm_be.models.entities.CommonEntity;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.math.BigDecimal;
@@ -31,6 +32,8 @@ public class Batch extends CommonEntity {
   LocalDateTime produceDate;
 
   LocalDateTime expireDate;
+
+  BatchStatus batchStatus;
 
   BigDecimal inboundPrice;
 

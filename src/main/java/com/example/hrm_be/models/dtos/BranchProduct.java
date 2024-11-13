@@ -1,5 +1,6 @@
 package com.example.hrm_be.models.dtos;
 
+import com.example.hrm_be.commons.enums.ProductStatus;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.math.BigDecimal;
 import lombok.AccessLevel;
@@ -36,4 +37,5 @@ public class BranchProduct {
   Integer maxQuantity;
 
   BigDecimal quantity;
+  ProductStatus productStatus;
 }

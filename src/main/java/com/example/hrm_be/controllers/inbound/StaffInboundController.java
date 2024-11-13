@@ -16,6 +16,7 @@ import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,8 +42,15 @@ public class StaffInboundController {
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "20") int size,
       @RequestParam(required = false, defaultValue = "id") String sortBy,
-      @RequestParam(required = false, defaultValue = "") String keyword) {
-    Page<Inbound> InboundPage = inboundService.getByPaging(page, size, sortBy);
+      @RequestParam(required = false, defaultValue = "") String keyword,
+      @RequestParam(required = false, defaultValue = "DESC") String direction,
+      @RequestParam(required = false) LocalDateTime startDate,
+      @RequestParam(required = false) LocalDateTime endDate,
+      @RequestParam(required = false) InboundStatus status,
+      @RequestParam(required = false) InboundType type) {
+    Page<Inbound> InboundPage =
+        inboundService.getByPaging(
+            page, size, sortBy, direction, keyword, startDate, endDate, status, type);
 
     // Build the response with pagination details
     BaseOutput<List<Inbound>> response =
@@ -183,13 +191,23 @@ public class StaffInboundController {
   }
 
   @GetMapping("/generate-receipt/{id}")
-  public void generateReceipt(@PathVariable("id") Long id, HttpServletResponse response) {
+  public ResponseEntity<BaseOutput<String>> generateReceipt(
+      @PathVariable("id") Long id, HttpServletResponse response) {
+    // Validate the path variable ID
+    if (id == null || id <= 0) {
+      BaseOutput<String> responseOutput =
+          BaseOutput.<String>builder()
+              .status(ResponseStatus.FAILED)
+              .errors(List.of("Invalid path variable"))
+              .build();
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseOutput);
+    }
+
     // Set the content type of the response to PDF
     response.setContentType("application/pdf");
     // Set the header to inform the browser that this is a downloadable file named receipt.pdf
     response.setHeader("Content-Disposition", "attachment; filename=receipt.pdf");
 
-    // Use try-with-resources to automatically close resources
     try (ByteArrayOutputStream pdfStream = inboundService.generateInboundPdf(id);
         ServletOutputStream outputStream = response.getOutputStream()) {
 
@@ -198,17 +216,22 @@ public class StaffInboundController {
       // Ensure that the data is sent
       outputStream.flush();
 
+      // Build the success response
+      BaseOutput<String> responseOutput =
+          BaseOutput.<String>builder()
+              .status(ResponseStatus.SUCCESS)
+              .data("PDF generated successfully")
+              .build();
+      return ResponseEntity.ok(responseOutput);
+
     } catch (IOException | DocumentException e) {
       // Handle exceptions if an error occurs during PDF generation
-      response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR); // Set the status to 500
-      response.setContentType("text/plain"); // Set the content type to plain text
-      try {
-        // Write the error message to the response
-        response.getWriter().write("Error generating PDF receipt: " + e.getMessage());
-      } catch (IOException ioException) {
-        // Print the error if unable to write to the response
-        ioException.printStackTrace();
-      }
+      BaseOutput<String> responseOutput =
+          BaseOutput.<String>builder()
+              .status(ResponseStatus.FAILED)
+              .errors(List.of("Error generating PDF: " + e.getMessage()))
+              .build();
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseOutput);
     }
   }
 }

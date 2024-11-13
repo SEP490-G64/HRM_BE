@@ -2,15 +2,24 @@ package com.example.hrm_be.controllers.outbound;
 
 import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.commons.enums.OutboundStatus;
-import com.example.hrm_be.commons.enums.OutboundType;
+import com.example.hrm_be.commons.enums.*;
 import com.example.hrm_be.commons.enums.ResponseStatus;
 import com.example.hrm_be.models.dtos.Outbound;
 import com.example.hrm_be.models.requests.CreateOutboundRequest;
 import com.example.hrm_be.models.responses.BaseOutput;
 import com.example.hrm_be.services.OutboundService;
+import com.itextpdf.text.DocumentException;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+
+import java.time.LocalDateTime;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.List;
+
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -35,8 +44,15 @@ public class StaffOutboundController {
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "20") int size,
       @RequestParam(required = false, defaultValue = "id") String sortBy,
-      @RequestParam(required = false, defaultValue = "") String keyword) {
-    Page<Outbound> OutboundPage = outboundService.getByPaging(page, size, sortBy);
+      @RequestParam(required = false, defaultValue = "") String keyword,
+      @RequestParam(required = false, defaultValue = "DESC") String direction,
+      @RequestParam(required = false) LocalDateTime startDate,
+      @RequestParam(required = false) LocalDateTime endDate,
+      @RequestParam(required = false) OutboundStatus status,
+      @RequestParam(required = false) OutboundType type) {
+    Page<Outbound> OutboundPage =
+        outboundService.getByPaging(
+            page, size, sortBy, direction, keyword, startDate, endDate, status, type);
 
     // Build the response with pagination details
     BaseOutput<List<Outbound>> response =
@@ -182,5 +198,44 @@ public class StaffOutboundController {
       @RequestParam String type, @PathVariable(name = "id") Long id) {
     outboundService.updateOutboundStatus(OutboundStatus.valueOf(type), id);
     return ResponseEntity.ok(BaseOutput.<String>builder().status(ResponseStatus.SUCCESS).build());
+  }
+
+  @GetMapping("/generate-outbound/{id}")
+  public ResponseEntity<BaseOutput<String>> generateOutbound(
+      @PathVariable("id") Long id, HttpServletResponse response) {
+    // Validate the path variable ID
+    if (id == null || id <= 0) {
+      BaseOutput<String> responseOutput =
+          BaseOutput.<String>builder()
+              .status(ResponseStatus.FAILED)
+              .errors(List.of("Invalid path variable"))
+              .build();
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseOutput);
+    }
+
+    response.setContentType("application/pdf");
+    response.setHeader("Content-Disposition", "attachment; filename=outBound.pdf");
+
+    try (ByteArrayOutputStream pdfStream = outboundService.generateOutboundPdf(id);
+        ServletOutputStream outputStream = response.getOutputStream()) {
+
+      pdfStream.writeTo(outputStream);
+      outputStream.flush();
+
+      BaseOutput<String> responseOutput =
+          BaseOutput.<String>builder()
+              .status(ResponseStatus.SUCCESS)
+              .data("PDF generated successfully")
+              .build();
+      return ResponseEntity.ok(responseOutput);
+
+    } catch (IOException | DocumentException e) {
+      BaseOutput<String> responseOutput =
+          BaseOutput.<String>builder()
+              .status(ResponseStatus.FAILED)
+              .errors(List.of("Error generating PDF: " + e.getMessage()))
+              .build();
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseOutput);
+    }
   }
 }

@@ -1,6 +1,7 @@
 package com.example.hrm_be.services.impl;
 
 import com.example.hrm_be.commons.constants.HrmConstant;
+import com.example.hrm_be.commons.enums.BatchStatus;
 import com.example.hrm_be.components.BranchBatchMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.BranchBatch;
@@ -51,7 +52,9 @@ public class BranchBatchServiceImpl implements BranchBatchService {
           HrmConstant.ERROR.BRANCHBATCH.NOT_EXIST); // Error if inbound entity is not found
     }
 
-    branchBatchRepository.deleteById(id); // Delete the inbound entity by ID
+    branchBatchRepository.updateBranchBatchStatus(
+        BatchStatus.NGUNG_KINH_DOANH, id); // Delete the inbound entity
+    // by ID
   }
 
   @Override

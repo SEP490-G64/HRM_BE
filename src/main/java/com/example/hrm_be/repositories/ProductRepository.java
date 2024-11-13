@@ -1,5 +1,6 @@
 package com.example.hrm_be.repositories;
 
+import com.example.hrm_be.commons.enums.ProductStatus;
 import com.example.hrm_be.models.entities.ProductEntity;
 import java.util.List;
 import java.util.Optional;
@@ -7,9 +8,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public interface ProductRepository
@@ -47,4 +50,9 @@ public interface ProductRepository
           + " AND LOWER(p.productName) LIKE LOWER(CONCAT('%', :productName, '%'))")
   List<ProductEntity> findProductBySupplierAndName(
       @Param("supplierId") Long supplierId, @Param("productName") String productName);
+
+  @Modifying
+  @Transactional
+  @Query("UPDATE ProductEntity i SET i.status = :status WHERE i.id = :id")
+  void updateProductStatus(@Param("status") ProductStatus status, @Param("id") Long id);
 }

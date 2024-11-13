@@ -1,5 +1,6 @@
 package com.example.hrm_be.models.dtos;
 
+import com.example.hrm_be.commons.enums.BatchStatus;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.math.BigDecimal;
 import java.util.List;
@@ -31,4 +32,6 @@ public class BranchBatch {
   BigDecimal quantity;
 
   List<Notification> notifications;
+
+  BatchStatus batchStatus;
 }
