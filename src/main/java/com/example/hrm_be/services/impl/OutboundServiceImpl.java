@@ -100,11 +100,9 @@ public class OutboundServiceImpl implements OutboundService {
                               outboundProductDetail.getUnitOfMeasurement())
                           : unitOfMeasurementMapper.toDTO(
                               outboundProductDetail.getProduct().getBaseUnit()));
-
                   productDetailDTO.setProductBaseUnit(
                       unitOfMeasurementMapper.toDTO(
                           outboundProductDetail.getProduct().getBaseUnit()));
-
                   return productDetailDTO;
                 })
             .collect(Collectors.toList());
