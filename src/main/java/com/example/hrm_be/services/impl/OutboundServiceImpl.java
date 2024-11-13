@@ -95,8 +95,14 @@ public class OutboundServiceImpl implements OutboundService {
                   productDetailDTO.setOutboundQuantity(outboundProductDetail.getOutboundQuantity());
                   productDetailDTO.setPrice(outboundProductDetail.getPrice());
                   productDetailDTO.setTargetUnit(
-                      unitOfMeasurementMapper.toDTO(outboundProductDetail.getUnitOfMeasurement()));
-
+                      outboundProductDetail.getUnitOfMeasurement() != null
+                          ? unitOfMeasurementMapper.toDTO(
+                              outboundProductDetail.getUnitOfMeasurement())
+                          : unitOfMeasurementMapper.toDTO(
+                              outboundProductDetail.getProduct().getBaseUnit()));
+                  productDetailDTO.setProductBaseUnit(
+                      unitOfMeasurementMapper.toDTO(
+                          outboundProductDetail.getProduct().getBaseUnit()));
                   return productDetailDTO;
                 })
             .collect(Collectors.toList());
@@ -128,8 +134,13 @@ public class OutboundServiceImpl implements OutboundService {
                   productWithBatchDetailDTO.setOutboundQuantity(outboundDetail.getQuantity());
                   productWithBatchDetailDTO.setPrice(outboundDetail.getPrice());
                   productWithBatchDetailDTO.setTargetUnit(
-                      unitOfMeasurementMapper.toDTO(outboundDetail.getUnitOfMeasurement()));
-
+                      outboundDetail.getUnitOfMeasurement() != null
+                          ? unitOfMeasurementMapper.toDTO(outboundDetail.getUnitOfMeasurement())
+                          : unitOfMeasurementMapper.toDTO(
+                              outboundDetail.getBatch().getProduct().getBaseUnit()));
+                  productWithBatchDetailDTO.setProductBaseUnit(
+                      unitOfMeasurementMapper.toDTO(
+                          outboundDetail.getBatch().getProduct().getBaseUnit()));
                   return productWithBatchDetailDTO;
                 })
             .collect(Collectors.toList());
@@ -411,7 +422,9 @@ public class OutboundServiceImpl implements OutboundService {
             unitConversionService.convertToUnit(
                 product.getId(),
                 productEntity.getBaseUnit().getId(),
-                productEntity.getSellPrice(),
+                productEntity.getSellPrice() != null
+                    ? productEntity.getSellPrice()
+                    : BigDecimal.ZERO,
                 productDetail.getTargetUnit(),
                 true);
 

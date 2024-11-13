@@ -112,11 +112,11 @@ public class UnitConversionImpl implements UnitConversionService {
 
     if (conversion != null) {
       if (toBaseUnit) {
-        return quantity.divide(BigDecimal.valueOf(conversion.getFactorConversion()).setScale(2,
-            RoundingMode.HALF_UP));
+        return quantity.divide(
+            BigDecimal.valueOf(conversion.getFactorConversion()).setScale(2, RoundingMode.HALF_UP));
       } else {
-        return quantity.multiply(BigDecimal.valueOf(conversion.getFactorConversion()).setScale(2,
-            RoundingMode.HALF_UP));
+        return quantity.multiply(
+            BigDecimal.valueOf(conversion.getFactorConversion()).setScale(2, RoundingMode.HALF_UP));
       }
     } else {
       return BigDecimal.ZERO;
