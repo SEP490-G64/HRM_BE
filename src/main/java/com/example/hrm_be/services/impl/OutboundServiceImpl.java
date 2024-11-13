@@ -272,13 +272,7 @@ public class OutboundServiceImpl implements OutboundService {
       Batch batch = productDetail.getBatch();
       Product productEntity = productService.getById(product.getId());
 
-      BigDecimal convertedQuantity =
-          unitConversionService.convertToUnit(
-              product.getId(),
-              productEntity.getBaseUnit().getId(),
-              productDetail.getOutboundQuantity(),
-              productDetail.getTargetUnit(),
-              true);
+      BigDecimal outboundQuantity = productDetail.getOutboundQuantity();
 
       // If batch information is provided, process as a batch detail
       if (batch != null) {
@@ -286,12 +280,12 @@ public class OutboundServiceImpl implements OutboundService {
         BigDecimal realityQuantity =
             branchBatchService.findQuantityByBatchIdAndBranchId(batch.getId(), fromBranch.getId());
 
-        if (realityQuantity.compareTo(convertedQuantity) < 0) {
+        if (realityQuantity.compareTo(outboundQuantity) < 0) {
           throw new HrmCommonException(
               "Số lượng hiện tại trong kho của lô "
                   + batchEntity.getBatchCode()
                   + " chỉ còn "
-                  + convertedQuantity
+                  + outboundQuantity
                   + "Vui lòng nhập số lượng nhỏ hơn.");
         }
 
@@ -326,12 +320,12 @@ public class OutboundServiceImpl implements OutboundService {
                 branchProductService.getByBranchIdAndProductId(
                     fromBranch.getId(), productEntity.getId()));
 
-        if (branchProduct.getQuantity().compareTo(convertedQuantity) < 0) {
+        if (branchProduct.getQuantity().compareTo(outboundQuantity) < 0) {
           throw new HrmCommonException(
               "Số lượng hiện tại trong kho của sản phẩm "
                   + productEntity.getProductName()
                   + " chỉ còn "
-                  + convertedQuantity
+                  + outboundQuantity
                   + "Vui lòng nhập số lượng nhỏ hơn.");
         }
 
@@ -591,32 +585,24 @@ public class OutboundServiceImpl implements OutboundService {
       BranchProduct branchProduct =
           branchProductService.getByBranchIdAndProductId(fromBranch.getId(), productEntity.getId());
 
-      // Convert the outbound quantity to the product's base unit if a different target unit is
-      // specified
-      BigDecimal convertedQuantity =
-          unitConversionService.convertToUnit(
-              productEntity.getId(),
-              productEntity.getBaseUnit().getId(),
-              productDetail.getOutboundQuantity(),
-              productDetail.getTargetUnit(),
-              true);
+      BigDecimal outboundQuantity = productDetail.getOutboundQuantity();
 
       // Check if sufficient quantity is available
-      if (branchProduct.getQuantity().compareTo(convertedQuantity) < 0) {
+      if (branchProduct.getQuantity().compareTo(outboundQuantity) < 0) {
         throw new HrmCommonException(
             "Số lượng hiện tại trong kho của sản phẩm "
                 + productEntity.getProductName()
                 + " chỉ còn "
-                + convertedQuantity
+                + outboundQuantity
                 + "Vui lòng nhập số lượng nhỏ hơn.");
       }
 
       // Subtract the converted quantity
-      branchProduct.setQuantity(branchProduct.getQuantity().subtract(convertedQuantity));
+      branchProduct.setQuantity(branchProduct.getQuantity().subtract(outboundQuantity));
       branchProductService.save(branchProduct);
 
       BigDecimal outboundProductDetailPrice =
-          productEntity.getInboundPrice().multiply(convertedQuantity);
+          productEntity.getInboundPrice().multiply(outboundQuantity);
       BigDecimal updateOutboundProductDetailPrice = outboundProductDetailPrice;
       if (taxable) {
         if (productEntity.getCategory() != null) {
@@ -650,31 +636,26 @@ public class OutboundServiceImpl implements OutboundService {
               fromBranch.getId(), branchBatch.getBatch().getProduct().getId());
       // Convert the outbound quantity to the product's base unit if a different target unit is
       // specified
-      BigDecimal convertedQuantity =
-          unitConversionService.convertToUnit(
-              batch.getProduct().getId(),
-              batch.getProduct().getBaseUnit().getId(),
-              batchDetail.getQuantity(),
-              batchDetail.getUnitOfMeasurement(),
-              true);
+
+      BigDecimal batchQuantity = batchDetail.getQuantity();
 
       // Check if sufficient quantity is available
-      if (branchBatch.getQuantity().compareTo(convertedQuantity) < 0) {
+      if (branchBatch.getQuantity().compareTo(batchQuantity) < 0) {
         throw new HrmCommonException(
             "Số lượng hiện tại trong kho của lô "
                 + batch.getBatchCode()
                 + " chỉ còn "
-                + convertedQuantity
+                + batchQuantity
                 + "Vui lòng nhập số lượng nhỏ hơn.");
       }
 
       // Subtract the converted quantity
-      branchBatch.setQuantity(branchBatch.getQuantity().subtract(convertedQuantity));
-      branchProduct.setQuantity(branchProduct.getQuantity().subtract(convertedQuantity));
+      branchBatch.setQuantity(branchBatch.getQuantity().subtract(batchQuantity));
+      branchProduct.setQuantity(branchProduct.getQuantity().subtract(batchQuantity));
       branchBatchService.save(branchBatch);
       branchProductService.save(branchProduct);
 
-      BigDecimal outboundDetailPrice = batch.getInboundPrice().multiply(convertedQuantity);
+      BigDecimal outboundDetailPrice = batch.getInboundPrice().multiply(batchQuantity);
       BigDecimal updateOutboundDetailPrice = outboundDetailPrice;
       if (taxable) {
         if (batch.getProduct().getCategory() != null) {
