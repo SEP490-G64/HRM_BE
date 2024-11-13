@@ -308,6 +308,7 @@ public class OutboundServiceImpl implements OutboundService {
                   .outbound(updatedOutboundEntity)
                   .quantity(productDetail.getOutboundQuantity())
                   .batch(batchEntity)
+                  .unitOfMeasurement(unitOfMeasurementMapper.toEntity(productEntity.getBaseUnit()))
                   .build();
         }
         outboundDetailEntities.add(outboundDetail);
@@ -347,6 +348,7 @@ public class OutboundServiceImpl implements OutboundService {
                   .price(productDetail.getPrice())
                   .product(productMapper.toEntity(productEntity))
                   .outboundQuantity(productDetail.getOutboundQuantity())
+                  .unitOfMeasurement(unitOfMeasurementMapper.toEntity(productEntity.getBaseUnit()))
                   .build();
         }
         outboundProductDetailEntities.add(outboundProductDetail);
