@@ -26,6 +26,7 @@ public class InboundDetailsMapper {
                 InboundDetailsEntity.builder()
                     .id(d.getId())
                     .inbound(d.getInbound() != null ? inboundMapper.toEntity(d.getInbound()) : null)
+                    .discount(d.getDiscount())
                     .product(d.getProduct() != null ? productMapper.toEntity(d.getProduct()) : null)
                     .requestQuantity(d.getRequestQuantity())
                     .receiveQuantity(d.getReceiveQuantity())
