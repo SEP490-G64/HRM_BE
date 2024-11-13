@@ -725,20 +725,10 @@ public class UserServiceImpl implements UserService {
     if (user.getEmail() == null || !user.getEmail().matches(HrmConstant.REGEX.EMAIL)) {
       return false;
     }
-    if (user.getPassword() == null
-        || user.getPassword().isEmpty()
-        || user.getPassword().length() < 8) {
-      return false;
-    }
     if (user.getBranch() == null || branchService.getById(user.getBranch().getId()) == null) {
       return false;
     }
-    if (user.getRoles() == null || user.getRoles().isEmpty()) {
-      return false;
-    }
-    return user.getStatus() != null
-        && (user.getStatus() == UserStatusType.ACTIVATE
-            || user.getStatus() == UserStatusType.DEACTIVATE);
+    return user.getRoles() != null && !user.getRoles().isEmpty();
   }
 
   @Override
