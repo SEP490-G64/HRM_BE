@@ -40,6 +40,4 @@ public class OutboundProductDetail {
   UnitOfMeasurement targetUnit;
 
   UnitOfMeasurement productBaseUnit;
-
-
 }
