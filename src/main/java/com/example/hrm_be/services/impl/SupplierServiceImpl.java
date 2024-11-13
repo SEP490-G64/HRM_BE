@@ -209,7 +209,8 @@ public class SupplierServiceImpl implements SupplierService {
 
     // Validate faxNumber (optional, if provided must match regex)
     if (supplier.getFaxNumber() != null && !supplier.getFaxNumber().isEmpty()) {
-      if (!supplier.getFaxNumber().matches(HrmConstant.REGEX.FAX_NUMBER)) {
+      if (!supplier.getFaxNumber().matches(HrmConstant.REGEX.FAX_NUMBER)
+              || !supplier.getFaxNumber().matches(HrmConstant.REGEX.PHONE_NUMBER)) {
         return false;
       }
     }

@@ -253,7 +253,7 @@ public class BatchServiceImpl implements BatchService {
 
     BigDecimal inboundPrice = batch.getInboundPrice();
     if (inboundPrice != null) {
-      if (inboundPrice.compareTo(BigDecimal.ZERO) <= 0
+      if (inboundPrice.compareTo(BigDecimal.ZERO) < 0
           || inboundPrice.compareTo(new BigDecimal("10000000")) >= 0) {
         return false;
       }

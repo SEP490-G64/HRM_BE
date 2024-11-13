@@ -165,28 +165,19 @@ public class InboundServiceImpl implements InboundService {
 
   @Override
   public Page<Inbound> getByPaging(
-      int pageNo,
-      int pageSize,
-      String sortBy,
-      String direction,
-      String keyword,
-      LocalDateTime startDate,
-      LocalDateTime endDate,
-      InboundStatus status,
-      InboundType type) {
+      int pageNo, int pageSize, String sortBy, String direction,
+      Long branchId, String keyword, LocalDateTime startDate,
+      LocalDateTime endDate, InboundStatus status, InboundType type) {
     // Check direction and set value for sort
     Sort sort =
         direction != null && direction.equalsIgnoreCase("ASC")
             ? Sort.by(sortBy).ascending()
             : Sort.by(sortBy).descending(); // Default is descending
 
-    String email = userService.getAuthenticatedUserEmail();
-    UserEntity userEntity = userMapper.toEntity(userService.findLoggedInfoByEmail(email));
-
     Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
 
     Specification<InboundEntity> specification =
-        getSpecification(userEntity.getBranch().getId(), keyword, startDate, endDate, status, type);
+        getSpecification(branchId, keyword, startDate, endDate, status, type);
     return inboundRepository.findAll(specification, pageable).map(dao -> inboundMapper.toDTO(dao));
   }
 
@@ -200,8 +191,11 @@ public class InboundServiceImpl implements InboundService {
     return (root, query, criteriaBuilder) -> {
       List<Predicate> predicates = new ArrayList<>();
 
-      // Get inbound in registered user's branch
-      predicates.add(criteriaBuilder.equal(root.get("toBranch").get("id"), branchId));
+      // Get inbound have code containing keyword
+      if (branchId != null) {
+        // Get inbound in registered user's branch
+        predicates.add(criteriaBuilder.equal(root.get("toBranch").get("id"), branchId));
+      }
 
       // Get inbound have code containing keyword
       if (keyword != null && !keyword.isEmpty()) {
