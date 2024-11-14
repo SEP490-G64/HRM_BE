@@ -487,14 +487,11 @@ public class ProductServiceImpl implements ProductService {
               (root, query, criteriaBuilder) ->
                   criteriaBuilder.or(
                       criteriaBuilder.like(
-                          criteriaBuilder.lower(root.get("productName")),
-                          searchPattern),
+                          criteriaBuilder.lower(root.get("productName")), searchPattern),
                       criteriaBuilder.like(
-                          criteriaBuilder.lower(root.get("registrationCode")),
-                          searchPattern),
+                          criteriaBuilder.lower(root.get("registrationCode")), searchPattern),
                       criteriaBuilder.like(
-                          criteriaBuilder.lower(root.get("activeIngredient")),
-                          searchPattern)));
+                          criteriaBuilder.lower(root.get("activeIngredient")), searchPattern)));
     }
 
     if (manufacturerId.isPresent()) {
