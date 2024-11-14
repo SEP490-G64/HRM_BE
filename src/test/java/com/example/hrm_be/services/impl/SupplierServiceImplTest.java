@@ -35,13 +35,13 @@ public class SupplierServiceImplTest {
   // Helper to create a valid Supplier entity
   private Supplier createValidSupplier() {
     return new Supplier()
-        .setSupplierName("Valid Supplier Name")
-        .setAddress("Valid Supplier Address")
-        .setPhoneNumber("0912345678")
-        .setTaxCode("1234567890")
-        .setPhoneNumber("0912345678")
-        .setFaxNumber("012-1234567")
-        .setStatus(true);
+            .setSupplierName("Valid Supplier Name")
+            .setAddress("Valid Supplier Address")
+            .setPhoneNumber("0912345678")
+            .setTaxCode("1234567890")
+            .setPhoneNumber("0912345678")
+            .setFaxNumber("012-1234567")
+            .setStatus(true);
   }
 
   // GET
@@ -86,11 +86,11 @@ public class SupplierServiceImplTest {
   @Test
   void testUTCID02_GetByPaging_pageNoInvalid() {
     Exception exception =
-        assertThrows(
-            HrmCommonException.class,
-            () -> {
-              supplierService.getByPaging(-1, 1, "supplierName", "a", true);
-            });
+            assertThrows(
+                    HrmCommonException.class,
+                    () -> {
+                      supplierService.getByPaging(-1, 1, "supplierName", "a", true);
+                    });
     assertEquals(HrmConstant.ERROR.PAGE.INVALID, exception.getMessage());
   }
 
@@ -98,11 +98,11 @@ public class SupplierServiceImplTest {
   @Test
   void testUTCID03_GetByPaging_pageSizeInvalid() {
     Exception exception =
-        assertThrows(
-            HrmCommonException.class,
-            () -> {
-              supplierService.getByPaging(0, 0, "supplierName", "a", true);
-            });
+            assertThrows(
+                    HrmCommonException.class,
+                    () -> {
+                      supplierService.getByPaging(0, 0, "supplierName", "a", true);
+                    });
     assertEquals(HrmConstant.ERROR.PAGE.INVALID, exception.getMessage());
   }
 
@@ -110,11 +110,11 @@ public class SupplierServiceImplTest {
   @Test
   void testUTCID04_GetByPaging_sortByInvalid() {
     Exception exception =
-        assertThrows(
-            HrmCommonException.class,
-            () -> {
-              supplierService.getByPaging(0, 1, "a", "a", true);
-            });
+            assertThrows(
+                    HrmCommonException.class,
+                    () -> {
+                      supplierService.getByPaging(0, 1, "a", "a", true);
+                    });
     assertEquals(HrmConstant.ERROR.PAGE.INVALID, exception.getMessage());
   }
 
@@ -162,14 +162,14 @@ public class SupplierServiceImplTest {
     Supplier Supplier = createValidSupplier();
     supplierService.create(Supplier);
     Supplier duplicateSupplierName =
-        new Supplier()
-            .setSupplierName("Valid Supplier Name")
-            .setAddress("Valid Supplier Address")
-            .setPhoneNumber("0912345678")
-            .setTaxCode("1234567891")
-            .setPhoneNumber("0912345678")
-            .setFaxNumber("012-1234567")
-            .setStatus(true);
+            new Supplier()
+                    .setSupplierName("Valid Supplier Name")
+                    .setAddress("Valid Supplier Address")
+                    .setPhoneNumber("0912345678")
+                    .setTaxCode("1234567891")
+                    .setPhoneNumber("0912345678")
+                    .setFaxNumber("012-1234567")
+                    .setStatus(true);
 
     assertThrows(HrmCommonException.class, () -> supplierService.create(duplicateSupplierName));
   }
@@ -252,14 +252,14 @@ public class SupplierServiceImplTest {
     Supplier Supplier = createValidSupplier();
     supplierService.create(Supplier);
     Supplier duplicateAddressSupplier =
-        new Supplier()
-            .setSupplierName("Valid Supplier Name 1")
-            .setAddress("Valid Supplier Address 1")
-            .setPhoneNumber("0912345678")
-            .setTaxCode("1234567890")
-            .setPhoneNumber("0912345678")
-            .setFaxNumber("012-1234567")
-            .setStatus(true);
+            new Supplier()
+                    .setSupplierName("Valid Supplier Name 1")
+                    .setAddress("Valid Supplier Address 1")
+                    .setPhoneNumber("0912345678")
+                    .setTaxCode("1234567890")
+                    .setPhoneNumber("0912345678")
+                    .setFaxNumber("012-1234567")
+                    .setStatus(true);
     assertThrows(HrmCommonException.class, () -> supplierService.create(duplicateAddressSupplier));
   }
 
@@ -332,14 +332,14 @@ public class SupplierServiceImplTest {
     Supplier Supplier = createValidSupplier();
     supplierService.create(Supplier);
     Supplier secondSupplier =
-        new Supplier()
-            .setSupplierName("Valid Supplier Name 1")
-            .setAddress("Valid Supplier Address 1")
-            .setPhoneNumber("0912345678")
-            .setTaxCode("1234567891")
-            .setPhoneNumber("0912345678")
-            .setFaxNumber("012-1234567")
-            .setStatus(true);
+            new Supplier()
+                    .setSupplierName("Valid Supplier Name 1")
+                    .setAddress("Valid Supplier Address 1")
+                    .setPhoneNumber("0912345678")
+                    .setTaxCode("1234567891")
+                    .setPhoneNumber("0912345678")
+                    .setFaxNumber("012-1234567")
+                    .setStatus(true);
     Supplier returnValue = supplierService.create(secondSupplier);
     returnValue.setSupplierName("Valid Supplier Name");
     returnValue.setAddress("Valid Supplier Address");
@@ -442,14 +442,14 @@ public class SupplierServiceImplTest {
     Supplier Supplier = createValidSupplier();
     supplierService.create(Supplier);
     Supplier secondSupplier =
-        new Supplier()
-            .setSupplierName("Valid Supplier Name 1")
-            .setAddress("Valid Supplier Address 1")
-            .setPhoneNumber("0912345678")
-            .setTaxCode("1234567891")
-            .setPhoneNumber("0912345678")
-            .setFaxNumber("012-1234567")
-            .setStatus(true);
+            new Supplier()
+                    .setSupplierName("Valid Supplier Name 1")
+                    .setAddress("Valid Supplier Address 1")
+                    .setPhoneNumber("0912345678")
+                    .setTaxCode("1234567891")
+                    .setPhoneNumber("0912345678")
+                    .setFaxNumber("012-1234567")
+                    .setStatus(true);
     Supplier returnValue = supplierService.create(secondSupplier);
     returnValue.setTaxCode("1234567890");
 

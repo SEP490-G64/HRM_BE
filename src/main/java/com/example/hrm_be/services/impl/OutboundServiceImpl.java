@@ -297,7 +297,7 @@ public class OutboundServiceImpl implements OutboundService {
                   + batchEntity.getBatchCode()
                   + " chỉ còn "
                   + outboundQuantity
-                  + "Vui lòng nhập số lượng nhỏ hơn.");
+                  + ", vui lòng nhập số lượng nhỏ hơn.");
         }
 
         OutboundDetailEntity existingBatchDetail =
@@ -336,7 +336,7 @@ public class OutboundServiceImpl implements OutboundService {
                   + productEntity.getProductName()
                   + " chỉ còn "
                   + outboundQuantity
-                  + "Vui lòng nhập số lượng nhỏ hơn.");
+                  + ", vui lòng nhập số lượng nhỏ hơn.");
         }
 
         OutboundProductDetailEntity existingProductDetail =
@@ -418,12 +418,13 @@ public class OutboundServiceImpl implements OutboundService {
           branchProductService.getByBranchIdAndProductId(fromBranch.getId(), product.getId());
 
       if (branchProduct != null) {
-        BigDecimal pricePreUnit =
+          BigDecimal productPrice = productEntity.getSellPrice();
+          BigDecimal pricePerUnit =
             unitConversionService.convertToUnit(
                 product.getId(),
                 productEntity.getBaseUnit().getId(),
-                productEntity.getSellPrice() != null
-                    ? productEntity.getSellPrice()
+                    productPrice != null
+                    ? productPrice
                     : BigDecimal.ZERO,
                 productDetail.getTargetUnit(),
                 true);
@@ -453,7 +454,7 @@ public class OutboundServiceImpl implements OutboundService {
                     + productEntity.getProductName()
                     + " chỉ còn "
                     + convertedQuantity
-                    + "Vui lòng nhập số lượng nhỏ hơn.");
+                    + ", vui lòng nhập số lượng nhỏ hơn.");
           }
 
           BigDecimal remainingQuantity = convertedQuantity;
@@ -467,7 +468,7 @@ public class OutboundServiceImpl implements OutboundService {
             if (branchBatch.getQuantity().compareTo(remainingQuantity) < 0) {
               // If the current batch is insufficient, issue all of it and update the remaining
               // quantity
-              BigDecimal priceOutboundDetail = branchBatch.getQuantity().multiply(pricePreUnit);
+              BigDecimal priceOutboundDetail = branchBatch.getQuantity().multiply(productPrice);
               this.addOutboundDetailForSell(
                   updatedOutboundEntity,
                   batchDTO,
@@ -477,7 +478,7 @@ public class OutboundServiceImpl implements OutboundService {
                       branchBatch.getQuantity(),
                       productDetail.getTargetUnit(),
                       false),
-                  priceOutboundDetail,
+                      pricePerUnit,
                   productDetail.getTargetUnit(),
                   outboundDetailEntities);
 
@@ -486,7 +487,7 @@ public class OutboundServiceImpl implements OutboundService {
               branchBatch.setQuantity(BigDecimal.ZERO);
               branchBatchService.save(branchBatch);
             } else {
-              BigDecimal priceOutboundDetail = remainingQuantity.multiply(pricePreUnit);
+              BigDecimal priceOutboundDetail = remainingQuantity.multiply(productPrice);
               // Issue only the required quantity and deduct it from the batch
               this.addOutboundDetailForSell(
                   updatedOutboundEntity,
@@ -497,7 +498,7 @@ public class OutboundServiceImpl implements OutboundService {
                       remainingQuantity,
                       productDetail.getTargetUnit(),
                       false),
-                  priceOutboundDetail,
+                      pricePerUnit,
                   productDetail.getTargetUnit(),
                   outboundDetailEntities);
 
@@ -516,16 +517,16 @@ public class OutboundServiceImpl implements OutboundService {
                     + productEntity.getProductName()
                     + " chỉ còn "
                     + convertedQuantity
-                    + "Vui lòng nhập số lượng nhỏ hơn.");
+                    + ", vui lòng nhập số lượng nhỏ hơn.");
           }
 
-          BigDecimal priceOutboundProductDetail = outboundQuantity.multiply(pricePreUnit);
+          BigDecimal priceOutboundProductDetail = convertedQuantity.multiply(productPrice);
           OutboundProductDetailEntity outboundProductDetail =
               OutboundProductDetailEntity.builder()
                   .outbound(updatedOutboundEntity)
                   .product(productEntity)
                   .outboundQuantity(outboundQuantity)
-                  .price(priceOutboundProductDetail)
+                  .price(pricePerUnit)
                   .unitOfMeasurement(
                       productDetail.getTargetUnit() != null
                           ? unitOfMeasurementMapper.toEntity(productDetail.getTargetUnit())
@@ -603,7 +604,7 @@ public class OutboundServiceImpl implements OutboundService {
                 + productEntity.getProductName()
                 + " chỉ còn "
                 + outboundQuantity
-                + "Vui lòng nhập số lượng nhỏ hơn.");
+                + ", vui lòng nhập số lượng nhỏ hơn.");
       }
 
       // Subtract the converted quantity
@@ -655,7 +656,7 @@ public class OutboundServiceImpl implements OutboundService {
                 + batch.getBatchCode()
                 + " chỉ còn "
                 + batchQuantity
-                + "Vui lòng nhập số lượng nhỏ hơn.");
+                + ", vui lòng nhập số lượng nhỏ hơn.");
       }
 
       // Subtract the converted quantity
