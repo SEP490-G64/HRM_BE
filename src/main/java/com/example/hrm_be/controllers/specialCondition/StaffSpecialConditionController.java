@@ -162,17 +162,7 @@ public class StaffSpecialConditionController {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
-    // Delete the SpecialCondition by ID
-    try {
-      specialConditionService.delete(id);
-    } catch (Exception e) {
-      BaseOutput<String> response =
-          BaseOutput.<String>builder()
-              .status(com.example.hrm_be.commons.enums.ResponseStatus.FAILED)
-              .errors(List.of(e.getMessage()))
-              .build();
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-    }
+    specialConditionService.delete(id);
 
     // Build the response indicating success
     return ResponseEntity.ok(
