@@ -416,7 +416,7 @@ public class ProductServiceImpl implements ProductService {
     if (productEntity == null) {
       throw new HrmCommonException(HrmConstant.ERROR.PRODUCT.NOT_EXIST);
     }
-    productRepository.updateProductStatus(ProductStatus.NGUNG_KINH_DOANH, id);
+    productRepository.updateProductStatus(ProductStatus.DA_XOA, id);
   }
 
   @Override
