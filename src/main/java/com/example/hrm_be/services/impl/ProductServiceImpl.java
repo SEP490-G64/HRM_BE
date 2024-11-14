@@ -480,9 +480,9 @@ public class ProductServiceImpl implements ProductService {
     Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(direction, sortBy));
 
     specification =
-            specification.and(
-                    (root, query, criteriaBuilder) ->
-                            criteriaBuilder.notEqual(root.get("status"), "DA_XOA"));
+        specification.and(
+            (root, query, criteriaBuilder) ->
+                criteriaBuilder.notEqual(root.get("status"), "DA_XOA"));
 
     // Keyword search for product name, registration code, and active ingredient
     if (keyword.isPresent()) {
@@ -721,7 +721,8 @@ public class ProductServiceImpl implements ProductService {
           cellValues.add(product.getBaseUnit() != null ? product.getBaseUnit() : "");
           cellValues.add(
               product.getManufacturerName() != null ? product.getManufacturerName() : "");
-          cellValues.add(product.getInboundPrice() != null ? product.getInboundPrice().toString() : "");
+          cellValues.add(
+              product.getInboundPrice() != null ? product.getInboundPrice().toString() : "");
           cellValues.add(product.getSellPrice() != null ? product.getSellPrice().toString() : "");
 
           return cellValues;
@@ -729,11 +730,18 @@ public class ProductServiceImpl implements ProductService {
 
     // Fetch product data
     List<ProductBaseDTO> products =
-        searchProducts(0, Integer.MAX_VALUE, "id", "ASC",
-                Optional.ofNullable(null), Optional.ofNullable(null),
-                Optional.ofNullable(null), Optional.ofNullable(null),
+        searchProducts(
+                0,
+                Integer.MAX_VALUE,
+                "id",
+                "ASC",
+                Optional.ofNullable(null),
+                Optional.ofNullable(null),
+                Optional.ofNullable(null),
+                Optional.ofNullable(null),
                 Optional.ofNullable(null))
-                .stream().toList();
+            .stream()
+            .toList();
 
     // Export data using utility
     try {

@@ -418,14 +418,12 @@ public class OutboundServiceImpl implements OutboundService {
           branchProductService.getByBranchIdAndProductId(fromBranch.getId(), product.getId());
 
       if (branchProduct != null) {
-          BigDecimal productPrice = productEntity.getSellPrice();
-          BigDecimal pricePerUnit =
+        BigDecimal productPrice = productEntity.getSellPrice();
+        BigDecimal pricePerUnit =
             unitConversionService.convertToUnit(
                 product.getId(),
                 productEntity.getBaseUnit().getId(),
-                    productPrice != null
-                    ? productPrice
-                    : BigDecimal.ZERO,
+                productPrice != null ? productPrice : BigDecimal.ZERO,
                 productDetail.getTargetUnit(),
                 true);
 
@@ -478,7 +476,7 @@ public class OutboundServiceImpl implements OutboundService {
                       branchBatch.getQuantity(),
                       productDetail.getTargetUnit(),
                       false),
-                      pricePerUnit,
+                  pricePerUnit,
                   productDetail.getTargetUnit(),
                   outboundDetailEntities);
 
@@ -498,7 +496,7 @@ public class OutboundServiceImpl implements OutboundService {
                       remainingQuantity,
                       productDetail.getTargetUnit(),
                       false),
-                      pricePerUnit,
+                  pricePerUnit,
                   productDetail.getTargetUnit(),
                   outboundDetailEntities);
 

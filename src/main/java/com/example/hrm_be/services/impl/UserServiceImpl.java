@@ -7,7 +7,6 @@ import com.example.hrm_be.commons.enums.UserStatusType;
 import com.example.hrm_be.components.BranchMapper;
 import com.example.hrm_be.components.RoleMapper;
 import com.example.hrm_be.components.UserMapper;
-import com.example.hrm_be.components.UserRoleMapMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.Branch;
 import com.example.hrm_be.models.dtos.Role;
@@ -16,7 +15,6 @@ import com.example.hrm_be.models.entities.UserEntity;
 import com.example.hrm_be.models.entities.UserRoleMapEntity;
 import com.example.hrm_be.models.requests.ChangePasswordRequest;
 import com.example.hrm_be.models.requests.RegisterRequest;
-import com.example.hrm_be.repositories.RoleRepository;
 import com.example.hrm_be.repositories.UserRepository;
 import com.example.hrm_be.repositories.UserRoleMapRepository;
 import com.example.hrm_be.services.*;
@@ -36,7 +34,6 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.hibernate.validator.internal.constraintvalidators.bv.time.futureorpresent.FutureOrPresentValidatorForReadableInstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
@@ -125,9 +122,7 @@ public class UserServiceImpl implements UserService {
     Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(convertDirection, sortBy));
 
     // Fetch users by keyword and map to DTO
-    return userRepository
-        .searchUsers(keyword, status, pageable)
-        .map(userMapper::toDTO);
+    return userRepository.searchUsers(keyword, status, pageable).map(userMapper::toDTO);
   }
 
   @Override
@@ -360,9 +355,8 @@ public class UserServiceImpl implements UserService {
     }
 
     Optional.ofNullable(user)
-            .map(
-                    e -> e.setStatus(UserStatusType.DELETED))
-            .map(userRepository::save);// Delete the user
+        .map(e -> e.setStatus(UserStatusType.DELETED))
+        .map(userRepository::save); // Delete the user
   }
 
   @Deprecated
@@ -683,8 +677,7 @@ public class UserServiceImpl implements UserService {
         };
 
     // Fetch user data (this would typically come from your database/repository)
-    List<User> users =
-            getByPaging(0, Integer.MAX_VALUE, "id", "ASC", "", null).stream().toList();
+    List<User> users = getByPaging(0, Integer.MAX_VALUE, "id", "ASC", "", null).stream().toList();
 
     // Call the utility to export data
     try {

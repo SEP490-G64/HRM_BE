@@ -33,15 +33,15 @@ public class SupplierServiceImpl implements SupplierService {
 
     // Use Optional to handle potential null values for the supplier ID
     return Optional.ofNullable(id)
-            // Attempt to find the supplier by ID and map to DTO
-            .flatMap(e -> supplierRepository.findById(e).map(b -> supplierMapper.toDTO(b)))
-            // Return null if ID is null or supplier not found
-            .orElse(null);
+        // Attempt to find the supplier by ID and map to DTO
+        .flatMap(e -> supplierRepository.findById(e).map(b -> supplierMapper.toDTO(b)))
+        // Return null if ID is null or supplier not found
+        .orElse(null);
   }
 
   @Override
   public Page<Supplier> getByPaging(
-          int pageNo, int pageSize, String sortBy, String keyword, Boolean status) {
+      int pageNo, int pageSize, String sortBy, String keyword, Boolean status) {
     if (pageNo < 0 || pageSize < 1) {
       throw new HrmCommonException(HrmConstant.ERROR.PAGE.INVALID);
     }
@@ -50,13 +50,13 @@ public class SupplierServiceImpl implements SupplierService {
       sortBy = "id";
     }
     if (!Objects.equals(sortBy, "id")
-            && !Objects.equals(sortBy, "supplierName")
-            && !Objects.equals(sortBy, "address")
-            && !Objects.equals(sortBy, "email")
-            && !Objects.equals(sortBy, "phoneNumber")
-            && !Objects.equals(sortBy, "taxCode")
-            && !Objects.equals(sortBy, "faxNumber")
-            && !Objects.equals(sortBy, "status")) {
+        && !Objects.equals(sortBy, "supplierName")
+        && !Objects.equals(sortBy, "address")
+        && !Objects.equals(sortBy, "email")
+        && !Objects.equals(sortBy, "phoneNumber")
+        && !Objects.equals(sortBy, "taxCode")
+        && !Objects.equals(sortBy, "faxNumber")
+        && !Objects.equals(sortBy, "status")) {
       throw new HrmCommonException(HrmConstant.ERROR.PAGE.INVALID);
     }
 
@@ -69,8 +69,8 @@ public class SupplierServiceImpl implements SupplierService {
 
     // Search for suppliers by name or address (case-insensitive)
     return supplierRepository
-            .searchSuppliers(keyword, status, pageable)
-            .map(dao -> supplierMapper.toDTO(dao)); // Map found entities to DTOs
+        .searchSuppliers(keyword, status, pageable)
+        .map(dao -> supplierMapper.toDTO(dao)); // Map found entities to DTOs
   }
 
   @Override
@@ -81,7 +81,7 @@ public class SupplierServiceImpl implements SupplierService {
 
     // Validate that supplier is not null and does not already exist
     if (supplierRepository.existsBySupplierNameAndAddress(
-            supplier.getSupplierName(), supplier.getAddress())) {
+        supplier.getSupplierName(), supplier.getAddress())) {
       // Throw exception if supplier already exists
       throw new HrmCommonException(HrmConstant.ERROR.SUPPLIER.EXIST);
     }
@@ -96,10 +96,10 @@ public class SupplierServiceImpl implements SupplierService {
 
     // Map supplier DTO to entity and save it to the repository
     return Optional.ofNullable(supplier)
-            .map(e -> supplierMapper.toEntity(e)) // Convert DTO to entity
-            .map(e -> supplierRepository.save(e)) // Save entity to the repository
-            .map(e -> supplierMapper.toDTO(e)) // Map saved entity back to DTO
-            .orElse(null); // Return null if the supplier creation fails
+        .map(e -> supplierMapper.toEntity(e)) // Convert DTO to entity
+        .map(e -> supplierRepository.save(e)) // Save entity to the repository
+        .map(e -> supplierMapper.toDTO(e)) // Map saved entity back to DTO
+        .orElse(null); // Return null if the supplier creation fails
   }
 
   @Override
@@ -113,13 +113,13 @@ public class SupplierServiceImpl implements SupplierService {
     // Check if the supplier to be updated exists
     if (oldSupplierEntity == null) {
       throw new HrmCommonException(
-              HrmConstant.ERROR.SUPPLIER.NOT_EXIST); // Throw exception if supplier does not exist
+          HrmConstant.ERROR.SUPPLIER.NOT_EXIST); // Throw exception if supplier does not exist
     }
 
     // Check if supplier name and address exist except current supplier
     if (supplierRepository.existsBySupplierNameAndAddress(
             supplier.getSupplierName(), supplier.getAddress())
-            && (!Objects.equals(supplier.getSupplierName(), oldSupplierEntity.getSupplierName())
+        && (!Objects.equals(supplier.getSupplierName(), oldSupplierEntity.getSupplierName())
             && !Objects.equals(supplier.getAddress(), oldSupplierEntity.getAddress()))) {
       throw new HrmCommonException(HrmConstant.ERROR.SUPPLIER.EXIST);
     }
@@ -128,27 +128,27 @@ public class SupplierServiceImpl implements SupplierService {
     // entity data)
     if (supplier.getTaxCode() != null && !supplier.getTaxCode().trim().isEmpty()) {
       if (!supplier.getTaxCode().equals(oldSupplierEntity.getTaxCode())
-              && supplierRepository.existsByTaxCode(supplier.getTaxCode())) {
+          && supplierRepository.existsByTaxCode(supplier.getTaxCode())) {
         throw new HrmCommonException(HrmConstant.ERROR.SUPPLIER.TAXCODE_EXIST);
       }
     }
 
     // Use Optional to map the existing supplier entity to a new one with updated fields
     return Optional.ofNullable(oldSupplierEntity)
-            .map(
-                    op ->
-                            op.toBuilder() // Use builder pattern for immutability
-                                    .supplierName(supplier.getSupplierName())
-                                    .phoneNumber(supplier.getPhoneNumber())
-                                    .email(supplier.getEmail())
-                                    .address(supplier.getAddress())
-                                    .taxCode(supplier.getTaxCode())
-                                    .faxNumber(supplier.getFaxNumber())
-                                    .status(supplier.getStatus())
-                                    .build()) // Build updated supplier entity
-            .map(supplierRepository::save) // Save the updated supplier entity
-            .map(supplierMapper::toDTO) // Convert saved entity back to DTO
-            .orElse(null); // Return null if the update fails
+        .map(
+            op ->
+                op.toBuilder() // Use builder pattern for immutability
+                    .supplierName(supplier.getSupplierName())
+                    .phoneNumber(supplier.getPhoneNumber())
+                    .email(supplier.getEmail())
+                    .address(supplier.getAddress())
+                    .taxCode(supplier.getTaxCode())
+                    .faxNumber(supplier.getFaxNumber())
+                    .status(supplier.getStatus())
+                    .build()) // Build updated supplier entity
+        .map(supplierRepository::save) // Save the updated supplier entity
+        .map(supplierMapper::toDTO) // Convert saved entity back to DTO
+        .orElse(null); // Return null if the update fails
   }
 
   @Override
@@ -163,7 +163,7 @@ public class SupplierServiceImpl implements SupplierService {
     // Check if the supplier to be updated exists
     if (oldSupplierEntity == null) {
       throw new HrmCommonException(
-              HrmConstant.ERROR.SUPPLIER.NOT_EXIST); // Throw exception if supplier does not exist
+          HrmConstant.ERROR.SUPPLIER.NOT_EXIST); // Throw exception if supplier does not exist
     }
 
     // Delete the supplier by ID
@@ -174,29 +174,29 @@ public class SupplierServiceImpl implements SupplierService {
   private boolean commonValidate(Supplier supplier) {
     // Validate supplierName (required, non-empty, max length 100)
     if (supplier.getSupplierName() == null
-            || supplier.getSupplierName().trim().isEmpty()
-            || supplier.getSupplierName().length() > 100) {
+        || supplier.getSupplierName().trim().isEmpty()
+        || supplier.getSupplierName().length() > 100) {
       return false;
     }
 
     // Validate address (required, non-empty, max length 255)
     if (supplier.getAddress() == null
-            || supplier.getAddress().trim().isEmpty()
-            || supplier.getAddress().length() > 255) {
+        || supplier.getAddress().trim().isEmpty()
+        || supplier.getAddress().length() > 255) {
       return false;
     }
 
     // Validate email (optional, if provided must match regex and max length 255)
     if (supplier.getEmail() != null && !supplier.getEmail().isEmpty()) {
       if (!supplier.getEmail().matches(HrmConstant.REGEX.EMAIL)
-              || supplier.getEmail().length() > 255) {
+          || supplier.getEmail().length() > 255) {
         return false;
       }
     }
 
     // Validate phoneNumber (required, must match regex)
     if (supplier.getPhoneNumber() == null
-            || !supplier.getPhoneNumber().matches(HrmConstant.REGEX.PHONE_NUMBER)) {
+        || !supplier.getPhoneNumber().matches(HrmConstant.REGEX.PHONE_NUMBER)) {
       return false;
     }
 
