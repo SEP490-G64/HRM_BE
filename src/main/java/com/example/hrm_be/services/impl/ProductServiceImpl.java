@@ -81,12 +81,15 @@ public class ProductServiceImpl implements ProductService {
   @Override
   public Product getById(Long id) {
     return Optional.ofNullable(id)
-            .flatMap(e ->
-                    productRepository.findById(e)
-                            .filter(product -> !product.getStatus().equals(ProductStatus.DA_XOA)) // Kiểm tra status
-                            .map(b -> productMapper.convertToDTOWithoutProductInBranchProduct(b))
-            )
-            .orElse(null);
+        .flatMap(
+            e ->
+                productRepository
+                    .findById(e)
+                    .filter(
+                        product ->
+                            !product.getStatus().equals(ProductStatus.DA_XOA)) // Kiểm tra status
+                    .map(b -> productMapper.convertToDTOWithoutProductInBranchProduct(b)))
+        .orElse(null);
   }
 
   @Override
