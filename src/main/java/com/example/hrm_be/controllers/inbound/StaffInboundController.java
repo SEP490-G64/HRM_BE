@@ -49,8 +49,9 @@ public class StaffInboundController {
       @RequestParam(required = false) LocalDateTime endDate,
       @RequestParam(required = false) InboundStatus status,
       @RequestParam(required = false) InboundType type) {
-    Page<Inbound> InboundPage = inboundService.getByPaging(page, size, sortBy, direction, branchId, keyword,
-            startDate, endDate, status, type);
+    Page<Inbound> InboundPage =
+        inboundService.getByPaging(
+            page, size, sortBy, direction, branchId, keyword, startDate, endDate, status, type);
 
     // Build the response with pagination details
     BaseOutput<List<Inbound>> response =

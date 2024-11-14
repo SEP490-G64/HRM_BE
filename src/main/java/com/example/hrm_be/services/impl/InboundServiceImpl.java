@@ -165,9 +165,16 @@ public class InboundServiceImpl implements InboundService {
 
   @Override
   public Page<Inbound> getByPaging(
-      int pageNo, int pageSize, String sortBy, String direction,
-      Long branchId, String keyword, LocalDateTime startDate,
-      LocalDateTime endDate, InboundStatus status, InboundType type) {
+      int pageNo,
+      int pageSize,
+      String sortBy,
+      String direction,
+      Long branchId,
+      String keyword,
+      LocalDateTime startDate,
+      LocalDateTime endDate,
+      InboundStatus status,
+      InboundType type) {
     // Check direction and set value for sort
     Sort sort =
         direction != null && direction.equalsIgnoreCase("ASC")
