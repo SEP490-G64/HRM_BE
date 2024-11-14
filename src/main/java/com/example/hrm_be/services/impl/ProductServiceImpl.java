@@ -487,13 +487,13 @@ public class ProductServiceImpl implements ProductService {
               (root, query, criteriaBuilder) ->
                   criteriaBuilder.or(
                       criteriaBuilder.like(
-                          criteriaBuilder.lower(root.get("product").get("productName")),
+                          criteriaBuilder.lower(root.get("productName")),
                           searchPattern),
                       criteriaBuilder.like(
-                          criteriaBuilder.lower(root.get("product").get("registrationCode")),
+                          criteriaBuilder.lower(root.get("registrationCode")),
                           searchPattern),
                       criteriaBuilder.like(
-                          criteriaBuilder.lower(root.get("product").get("activeIngredient")),
+                          criteriaBuilder.lower(root.get("activeIngredient")),
                           searchPattern)));
     }
 
@@ -517,7 +517,7 @@ public class ProductServiceImpl implements ProductService {
       specification =
           specification.and(
               (root, query, criteriaBuilder) ->
-                  criteriaBuilder.equal(root.get("product").get("type").get("id"), typeId.get()));
+                  criteriaBuilder.equal(root.get("type").get("id"), typeId.get()));
     }
 
     // Filter by status
@@ -525,7 +525,7 @@ public class ProductServiceImpl implements ProductService {
       specification =
           specification.and(
               (root, query, criteriaBuilder) ->
-                  criteriaBuilder.equal(root.get("product").get("status"), status.get()));
+                  criteriaBuilder.equal(root.get("status"), status.get()));
     }
     return productRepository
         .findAll(specification, pageable)
