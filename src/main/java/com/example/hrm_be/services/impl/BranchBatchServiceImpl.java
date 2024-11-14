@@ -53,7 +53,7 @@ public class BranchBatchServiceImpl implements BranchBatchService {
     }
 
     branchBatchRepository.updateBranchBatchStatus(
-        BatchStatus.NGUNG_KINH_DOANH, id); // Delete the inbound entity
+        BatchStatus.DA_XOA, id); // Delete the inbound entity
     // by ID
   }
 

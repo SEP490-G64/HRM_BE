@@ -3,7 +3,8 @@ package com.example.hrm_be.commons.enums;
 public enum ProductStatus {
   CON_HANG("Còn hàng"),
   HET_HANG("Hết hàng"),
-  NGUNG_KINH_DOANH("Ngừng kinh doanh");
+  NGUNG_KINH_DOANH("Ngừng kinh doanh"),
+  DA_XOA("Đã xóa");
 
   private final String displayName;
 
