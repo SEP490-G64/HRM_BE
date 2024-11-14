@@ -202,7 +202,7 @@ public class BatchServiceImpl implements BatchService {
     }
 
     // Delete the batch by ID
-    batchRepository.updateBatchStatus(BatchStatus.NGUNG_KINH_DOANH, id);
+    batchRepository.updateBatchStatus(BatchStatus.DA_XOA, id);
   }
 
   @Override
