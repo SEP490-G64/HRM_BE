@@ -20,10 +20,14 @@ import org.springframework.transaction.annotation.Transactional;
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
   Optional<UserEntity> findByEmail(String email);
 
-  @Query("SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END FROM UserEntity u WHERE u.email = :email AND u.status <> 'DELETED'")
+  @Query(
+      "SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END FROM UserEntity u WHERE u.email ="
+          + " :email AND u.status <> 'DELETED'")
   boolean existsByEmail(@Param("email") String email);
 
-  @Query("SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END FROM UserEntity u WHERE u.userName = :userName AND u.status <> 'DELETED'")
+  @Query(
+      "SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END FROM UserEntity u WHERE u.userName ="
+          + " :userName AND u.status <> 'DELETED'")
   boolean existsByUserName(@Param("userName") String username);
 
   @Query(
@@ -32,12 +36,10 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
           + "OR LOWER(u.email) LIKE LOWER(CONCAT('%', :searchKeyword, '%')) "
           + "OR LOWER(u.firstName) LIKE LOWER(CONCAT('%', :searchKeyword, '%')) "
           + "OR LOWER(u.lastName) LIKE LOWER(CONCAT('%', :searchKeyword, '%'))) "
-          + "AND (u.status <> 'PENDING') AND (u.status <> 'DELETED') " +
-              "AND (:status IS NULL OR u.status = :status)")
+          + "AND (u.status <> 'PENDING') AND (u.status <> 'DELETED') "
+          + "AND (:status IS NULL OR u.status = :status)")
   Page<UserEntity> searchUsers(
-      String searchKeyword,
-      @Nullable UserStatusType status,
-      Pageable pageable);
+      String searchKeyword, @Nullable UserStatusType status, Pageable pageable);
 
   Page<UserEntity> findByStatus(UserStatusType status, Pageable pageable);
 
