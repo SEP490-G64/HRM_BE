@@ -1,8 +1,6 @@
 package com.example.hrm_be.services.impl;
 
-import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.components.StorageLocationMapper;
-import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.StorageLocation;
 import com.example.hrm_be.models.entities.StorageLocationEntity;
 import com.example.hrm_be.repositories.StorageLocationRepository;
@@ -54,7 +52,8 @@ public class StorageLocationServiceImpl implements StorageLocationService {
   public void delete(Long id) {
     StorageLocationEntity storageLocation = storageLocationRepository.findById(id).orElse(null);
     if (storageLocation == null) {
-      throw new HrmCommonException(HrmConstant.ERROR.UNIT_CONVERSION.NOT_EXIST);
+      return;
+      // throw new HrmCommonException(HrmConstant.ERROR.STORAGE_LOCATION.NOT_EXIST);
     }
     storageLocationRepository.deleteById(id);
   }
