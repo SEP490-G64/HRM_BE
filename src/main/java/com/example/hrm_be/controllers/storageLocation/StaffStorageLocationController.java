@@ -117,17 +117,7 @@ public class StaffStorageLocationController {
     }
 
     // Call service to delete the storageLocation by ID
-    try {
-      storageLocationService.delete(id);
-    } catch (Exception e) {
-      BaseOutput<String> response =
-          BaseOutput.<String>builder()
-              .status(ResponseStatus.FAILED)
-              .errors(List.of(e.getMessage()))
-              .build();
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-          .body(response); // Return BAD_REQUEST response
-    }
+    storageLocationService.delete(id);
 
     // Construct response object indicating successful deletion
     return ResponseEntity.ok(
