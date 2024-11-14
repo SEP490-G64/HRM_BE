@@ -77,17 +77,16 @@ public class ProductServiceImpl implements ProductService {
   @Autowired private StorageLocationMapper storageLocationMapper;
   @Autowired private UnitConversionMapper unitConversionMapper;
   @Autowired private AllowedProductService allowedProductService;
-  @Autowired private BatchRepository batchRepository;
 
   @Override
   public Product getById(Long id) {
     return Optional.ofNullable(id)
-        .flatMap(
-            e ->
-                productRepository
-                    .findById(e)
-                    .map(b -> productMapper.convertToDTOWithoutProductInBranchProduct(b)))
-        .orElse(null);
+            .flatMap(e ->
+                    productRepository.findById(e)
+                            .filter(product -> !product.getStatus().equals(ProductStatus.DA_XOA)) // Kiểm tra status
+                            .map(b -> productMapper.convertToDTOWithoutProductInBranchProduct(b))
+            )
+            .orElse(null);
   }
 
   @Override

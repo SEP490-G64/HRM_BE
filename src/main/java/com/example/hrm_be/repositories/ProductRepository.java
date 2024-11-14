@@ -29,6 +29,7 @@ public interface ProductRepository
   @Query("SELECT p FROM ProductEntity p WHERE p.category.id=:typeId")
   Page<ProductEntity> findProductByPagingAndTypeId(Long typeId, Pageable pageable);
 
+  @Query("SELECT COUNT(p) > 0 FROM ProductEntity p WHERE p.registrationCode = :code AND p.status != 'DA_XOA'")
   boolean existsByRegistrationCode(String code);
 
   @Query(
@@ -40,8 +41,6 @@ public interface ProductRepository
           + " bp.quantity > 0)) AND (:supplierId IS NULL OR ps.supplier.id = :supplierId)")
   List<ProductEntity> searchProductByBranchId(
       Long branchId, String searchStr, Boolean checkValid, Long supplierId);
-
-  List<ProductEntity> findByRegistrationCodeIn(List<String> productName);
 
   Optional<ProductEntity> findByRegistrationCode(String registrationCode);
 
