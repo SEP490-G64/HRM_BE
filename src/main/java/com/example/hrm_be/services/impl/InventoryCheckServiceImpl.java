@@ -19,7 +19,6 @@ import com.example.hrm_be.models.dtos.BranchProduct;
 import com.example.hrm_be.models.dtos.InventoryCheck;
 import com.example.hrm_be.models.dtos.InventoryCheckDetails;
 import com.example.hrm_be.models.dtos.InventoryCheckProductDetails;
-import com.example.hrm_be.models.dtos.OutboundProductDetail;
 import com.example.hrm_be.models.dtos.Product;
 import com.example.hrm_be.models.entities.BranchEntity;
 import com.example.hrm_be.models.entities.InventoryCheckEntity;
@@ -163,7 +162,6 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
     combinedProducts.addAll(batchDetails);
     // Set details in the InventoryCheckDTO
     inventoryCheckDTO.setInventoryCheckProductDetails(combinedProducts);
-
 
     return inventoryCheckDTO;
   }
