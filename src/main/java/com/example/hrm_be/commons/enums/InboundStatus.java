@@ -18,6 +18,11 @@ public enum InboundStatus {
     return this == KIEM_HANG;
   }
 
+
+  public boolean isWaitingForApprove() {
+    return this == CHO_DUYET;
+  }
+
   InboundStatus(String displayName) {
     this.displayName = displayName;
   }

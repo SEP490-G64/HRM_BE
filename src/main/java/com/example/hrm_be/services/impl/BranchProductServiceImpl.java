@@ -11,6 +11,7 @@ import com.example.hrm_be.services.BranchProductService;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -96,5 +97,35 @@ public class BranchProductServiceImpl implements BranchProductService {
   @Override
   public void saveAll(List<BranchProductEntity> branchProducts) {
     branchProductRepository.saveAll(branchProducts);
+  }
+
+  // Method to get BranchProduct with quantity below minQuantity
+  @Override
+  public List<BranchProduct> findBranchProductsWithQuantityBelowMin(Long branchId) {
+    return branchProductRepository
+        .findBranchProductsWithQuantityBelowMin(branchId)
+        .stream()
+        .map(branchProductMapper::toDTO)
+        .collect(Collectors.toList());
+  }
+
+  // Method to get BranchProduct with quantity above maxQuantity
+  @Override
+  public List<BranchProduct> findBranchProductsWithQuantityAboveMax(Long branchId) {
+    return branchProductRepository
+        .findBranchProductsWithQuantityAboveMax(branchId)
+        .stream()
+        .map(branchProductMapper::toDTO)
+        .collect(Collectors.toList());
+  }
+
+  // Method to get BranchProduct with quantity equal to 0
+  @Override
+  public List<BranchProduct> findBranchProductsWithQuantityIsZero(Long branchId) {
+    return branchProductRepository
+        .findBranchProductsWithQuantityIsZero(branchId)
+        .stream()
+        .map(branchProductMapper::toDTO)
+        .collect(Collectors.toList());
   }
 }

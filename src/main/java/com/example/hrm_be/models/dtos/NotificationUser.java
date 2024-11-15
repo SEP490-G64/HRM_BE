@@ -1,9 +1,6 @@
 package com.example.hrm_be.models.dtos;
 
-import com.example.hrm_be.commons.enums.NotificationType;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import java.time.LocalDateTime;
-import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,7 +10,6 @@ import lombok.experimental.Accessors;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
-import org.apache.poi.ss.formula.functions.T;
 
 @Data
 @NoArgsConstructor
@@ -24,21 +20,12 @@ import org.apache.poi.ss.formula.functions.T;
 @EqualsAndHashCode
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Notification {
-  Long id;
-  NotificationType notiType; // Enum for notification types like "Gần hết hạn", "Hết hạn", etc.
+public class NotificationUser {
+  Long id ;
 
-  String notiName;
+  User user;
 
-  LocalDateTime createdDate;
+  Notification notification;
 
-  String message;
-
-  BranchBatch branchBatch;
-
-  Boolean isRead;
-
-  List<NotificationUser> notificationUser;
-
-  List<Long> userIds;
+  Boolean read;
 }

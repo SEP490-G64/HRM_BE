@@ -60,6 +60,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class ProductServiceImpl implements ProductService {
   @Autowired private ProductRepository productRepository;
   @Autowired private AllowedProductRepository allowedProductRepository;
+  @Autowired private BranchProductRepository branchProductRepository;
 
   @Autowired private UserService userService;
   @Autowired private ProductCategoryService productCategoryService;
@@ -78,6 +79,7 @@ public class ProductServiceImpl implements ProductService {
   @Autowired private UnitConversionMapper unitConversionMapper;
   @Autowired private AllowedProductService allowedProductService;
   @Autowired private BatchRepository batchRepository;
+  @Autowired private NotificationService notificationService;
 
   @Override
   public Product getById(Long id) {
@@ -767,5 +769,40 @@ public class ProductServiceImpl implements ProductService {
         .stream()
         .map(productMapper::convertToProductForSearchInNotes)
         .collect(Collectors.toList());
+  }
+
+  public List<ProductBaseDTO> filterProducts(
+      Boolean lessThanOrEqual, Integer quantity, Boolean warning, Boolean outOfStock) {
+    Set<ProductBaseDTO> resultSet = new HashSet<>();
+
+    // Apply "less than or equal" filter if selected
+    if (lessThanOrEqual != null && lessThanOrEqual && quantity != null) {
+      List<ProductBaseDTO> lessThanEqualProducts =
+          productRepository.findByQuantityLessThanEqual(quantity).stream()
+              .map(productMapper::convertToProductBaseDTO)
+              .toList();
+      resultSet.addAll(lessThanEqualProducts);
+    }
+
+    // Apply "warning threshold" filter if selected
+    if (warning != null && warning) {
+      List<ProductBaseDTO> warningProducts =
+          productRepository.findByQuantityLessThanMinQuantity().stream()
+              .map(productMapper::convertToProductBaseDTO)
+              .toList();
+      resultSet.addAll(warningProducts);
+    }
+
+    // Apply "out of stock" filter if selected
+    if (outOfStock != null && outOfStock) {
+      List<ProductBaseDTO> outOfStockProducts =
+          productRepository.findByQuantity(0).stream()
+              .map(productMapper::convertToProductBaseDTO)
+              .toList();
+      resultSet.addAll(outOfStockProducts);
+    }
+
+    // Convert the Set to List to remove duplicates
+    return new ArrayList<>(resultSet);
   }
 }

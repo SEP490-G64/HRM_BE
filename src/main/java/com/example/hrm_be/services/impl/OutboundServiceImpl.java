@@ -4,12 +4,22 @@ import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.commons.constants.HrmConstant.ERROR.BRANCH;
 import com.example.hrm_be.commons.constants.HrmConstant.ERROR.INBOUND;
 import com.example.hrm_be.commons.constants.HrmConstant.ERROR.OUTBOUND;
+import com.example.hrm_be.commons.enums.NotificationType;
 import com.example.hrm_be.commons.enums.OutboundStatus;
 import com.example.hrm_be.commons.enums.OutboundType;
 import com.example.hrm_be.components.*;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.*;
 import com.example.hrm_be.models.entities.*;
+import com.example.hrm_be.models.entities.BatchEntity;
+import com.example.hrm_be.models.entities.BranchEntity;
+import com.example.hrm_be.models.entities.BranchProductEntity;
+import com.example.hrm_be.models.entities.InboundEntity;
+import com.example.hrm_be.models.entities.OutboundDetailEntity;
+import com.example.hrm_be.models.entities.OutboundEntity;
+import com.example.hrm_be.models.entities.OutboundProductDetailEntity;
+import com.example.hrm_be.models.entities.ProductEntity;
+import com.example.hrm_be.models.entities.UserEntity;
 import com.example.hrm_be.models.requests.CreateOutboundRequest;
 import com.example.hrm_be.repositories.OutboundRepository;
 import com.example.hrm_be.services.*;
@@ -63,6 +73,7 @@ public class OutboundServiceImpl implements OutboundService {
   @Autowired private BranchBatchService branchBatchService;
   @Autowired private BranchProductService branchProductService;
   @Autowired private ProductService productService;
+  @Autowired private NotificationService notificationService;
   @Autowired private UnitConversionService unitConversionService;
 
   @Override
@@ -692,7 +703,20 @@ public class OutboundServiceImpl implements OutboundService {
     outboundEntity.setTotalPrice(totalPrice);
     OutboundEntity updatedOutboundEntity =
         outboundRepository.save(outboundMapper.toEntity(outboundEntity));
+    // Notification for Manager
+    String message =
+        "🔔 Thông báo: Phiều xuất " + outbound.getOutboundCode() + " đã được cập nhật vào hệ" + " "
+            + "thống "
+            + "bởi " + outbound.getCreatedBy().getUserName();
 
+    Notification notification = new Notification();
+    notification.setMessage(message);
+    notification.setNotiName("Nhập phiếu vào kho");
+    notification.setNotiType(NotificationType.NHAP_PHIEU_VAO_HE_THONG);
+    notification.setCreatedDate(LocalDateTime.now());
+
+    notificationService.sendNotification(
+        notification, userService.findAllManagerByBranchId(outbound.getFromBranch().getId()));
     // Convert and return the Outbound object
     return outboundMapper.toDTO(updatedOutboundEntity);
   }
@@ -723,6 +747,34 @@ public class OutboundServiceImpl implements OutboundService {
         .map(outboundRepository::save)
         .map(outboundMapper::toDTO)
         .orElse(null);
+  }
+
+  @Override
+  public void updateOutboundStatus(OutboundStatus status, Long id) {
+    OutboundEntity outbound = outboundRepository.findById(id).orElse(null);
+    if (outbound == null) {
+      throw new HrmCommonException(INBOUND.NOT_EXIST);
+    }
+    if (status.isWaitingForApprove()) {
+      // Notification for Manager
+
+      String message =
+          "🔔 Thông báo: Phiều nhập "
+              + outbound.getOutboundCode()
+              + "đang chờ duyệt "
+              + "bởi "
+              + outbound.getCreatedBy().getUserName();
+
+      Notification notification = new Notification();
+      notification.setMessage(message);
+      notification.setNotiName(NotificationType.YEU_CAU_DUYET.getDisplayName());
+      notification.setNotiType(NotificationType.YEU_CAU_DUYET);
+      notification.setCreatedDate(LocalDateTime.now());
+
+      notificationService.sendNotification(
+          notification, userService.findAllManagerByBranchId(outbound.getFromBranch().getId()));
+    }
+    outboundRepository.updateOutboundStatus(status, id);
   }
 
   // Method to delete an outbound record
@@ -761,16 +813,6 @@ public class OutboundServiceImpl implements OutboundService {
             .build();
     outboundDetailEntities.add(outboundDetail);
   }
-
-  @Override
-  public void updateOutboundStatus(OutboundStatus status, Long id) {
-    Optional<OutboundEntity> inbound = outboundRepository.findById(id);
-    if (inbound.isEmpty()) {
-      throw new HrmCommonException(INBOUND.NOT_EXIST);
-    }
-    outboundRepository.updateOutboundStatus(status, id);
-  }
-
   @Override
   public ByteArrayOutputStream generateOutboundPdf(Long outboundId)
       throws DocumentException, IOException {

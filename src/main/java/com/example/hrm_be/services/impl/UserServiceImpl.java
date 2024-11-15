@@ -712,6 +712,28 @@ public class UserServiceImpl implements UserService {
     this.resetPassword(user, request.getNewPassword());
   }
 
+  @Override
+  public List<User> findAllByIds(List<Long> ids) {
+    return userRepository.findByIds(ids).stream()
+        .map(userMapper::toDTO)
+        .collect(Collectors.toList());
+  }
+
+  @Override
+  public List<User> findAllManagerByBranchId(Long branchId) {
+    return userRepository.findAllByBranchIdAndRoleType(branchId, RoleType.MANAGER).stream()
+        .map(userMapper::toDTO)
+        .collect(Collectors.toList());
+  }
+
+  @Override
+  public List<User> getUserByBranchId(Long branchId) {
+    List<UserEntity> users = userRepository.findByBranch_Id(branchId);
+    return users.stream()
+        .map(userMapper::toDTO)
+        .collect(Collectors.toList());
+  }
+
   private boolean validateUser(User user) {
     if (user == null) {
       return false;

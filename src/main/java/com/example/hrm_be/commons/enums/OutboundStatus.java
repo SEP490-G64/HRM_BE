@@ -20,6 +20,13 @@ public enum OutboundStatus {
     return displayName;
   }
 
+  public boolean isCheck() {
+    return this == KIEM_HANG;
+  }
+  public boolean isWaitingForApprove() {
+    return this == CHO_DUYET;
+  }
+
   @Override
   public String toString() {
     return displayName;

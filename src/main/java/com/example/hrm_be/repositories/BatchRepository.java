@@ -3,8 +3,10 @@ package com.example.hrm_be.repositories;
 import com.example.hrm_be.commons.enums.BatchStatus;
 import com.example.hrm_be.models.entities.BatchEntity;
 import com.example.hrm_be.models.entities.ProductEntity;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
@@ -36,4 +38,11 @@ public interface BatchRepository
   @Transactional
   @Query("UPDATE BatchEntity i SET i.batchStatus = :status WHERE i.id = :id")
   void updateBatchStatus(@Param("status") BatchStatus status, @Param("id") Long id);
+
+  @Query("SELECT b FROM BatchEntity b WHERE b.expireDate < :today")
+  List<BatchEntity> findExpiredBatches(@Param("today") LocalDateTime today);
+
+  @Query("SELECT b FROM BatchEntity b WHERE b.expireDate BETWEEN :today AND :inDays")
+  List<BatchEntity> findBatchesExpiringInDays(
+      @Param("today") LocalDateTime today, @Param("inDays") LocalDateTime inDays);
 }

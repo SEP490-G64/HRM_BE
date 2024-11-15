@@ -45,6 +45,15 @@ import org.springframework.web.multipart.MultipartFile;
 public class StaffProductController {
   private final ProductService productService;
 
+  @GetMapping("/filter")
+  public List<ProductBaseDTO> filterProducts(
+      @RequestParam(required = false) Boolean lessThanOrEqual,
+      @RequestParam(required = false) Integer quantity,
+      @RequestParam(required = false) Boolean warning,
+      @RequestParam(required = false) Boolean outOfStock) {
+    return productService.filterProducts(lessThanOrEqual, quantity, warning, outOfStock);
+  }
+
   @GetMapping("/allow-products")
   protected ResponseEntity<BaseOutput<List<AllowedProductEntity>>> getAllowProducts(
       @RequestParam(defaultValue = "") String keyword) {
