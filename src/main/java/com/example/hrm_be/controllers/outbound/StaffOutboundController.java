@@ -3,6 +3,8 @@ package com.example.hrm_be.controllers.outbound;
 import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.commons.enums.OutboundStatus;
 import com.example.hrm_be.commons.enums.*;
+import com.example.hrm_be.commons.enums.OutboundStatus;
+import com.example.hrm_be.commons.enums.OutboundType;
 import com.example.hrm_be.commons.enums.ResponseStatus;
 import com.example.hrm_be.models.dtos.Outbound;
 import com.example.hrm_be.models.requests.CreateOutboundRequest;
@@ -181,6 +183,13 @@ public class StaffOutboundController {
         BaseOutput.<Outbound>builder().data(outbound).status(ResponseStatus.SUCCESS).build());
   }
 
+  @PutMapping("/{id}/update-status")
+  public ResponseEntity<BaseOutput<String>> updateStatus(
+      @RequestParam String type, @PathVariable(name = "id") Long id) {
+    outboundService.updateOutboundStatus(OutboundStatus.valueOf(type), id);
+    return ResponseEntity.ok(BaseOutput.<String>builder().status(ResponseStatus.SUCCESS).build());
+  }
+
   @PutMapping("/{id}/submit")
   public ResponseEntity<BaseOutput<Outbound>> submitToSystem(@PathVariable(name = "id") Long id) {
     Outbound outbound = outboundService.submitOutboundToSystem(id);
@@ -191,13 +200,6 @@ public class StaffOutboundController {
             .status(ResponseStatus.SUCCESS)
             .build();
     return ResponseEntity.ok(response);
-  }
-
-  @PutMapping("/{id}/update-status")
-  public ResponseEntity<BaseOutput<String>> updateStatus(
-      @RequestParam String type, @PathVariable(name = "id") Long id) {
-    outboundService.updateOutboundStatus(OutboundStatus.valueOf(type), id);
-    return ResponseEntity.ok(BaseOutput.<String>builder().status(ResponseStatus.SUCCESS).build());
   }
 
   @GetMapping("/generate-outbound/{id}")

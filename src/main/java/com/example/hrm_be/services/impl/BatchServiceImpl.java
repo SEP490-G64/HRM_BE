@@ -13,9 +13,13 @@ import jakarta.persistence.criteria.Predicate;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+
+import jakarta.persistence.criteria.Predicate;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -39,7 +43,7 @@ public class BatchServiceImpl implements BatchService {
   public Batch getById(Long id) {
     // Validation: Check if the ID is null
     if (id == null) {
-      throw new HrmCommonException(HrmConstant.ERROR.TYPE.INVALID);
+      throw new HrmCommonException(HrmConstant.ERROR.REQUEST.INVALID);
     }
 
     return Optional.ofNullable(id)
@@ -206,6 +210,11 @@ public class BatchServiceImpl implements BatchService {
   }
 
   @Override
+  public List<Batch> getBatchesByProductThroughInbound(Long productId) {
+    return null;
+  }
+
+  @Override
   public Batch addBatchInInbound(Batch batch, Product product) {
 
     Optional<BatchEntity> existingBatch =
@@ -260,5 +269,20 @@ public class BatchServiceImpl implements BatchService {
     }
 
     return true;
+  }
+
+  @Override
+  public List<Batch> getExpiredBatches(LocalDateTime now) {
+    return batchRepository.findExpiredBatches(now).stream()
+        .map(batchMapper::toDTO)
+        .collect(Collectors.toList());
+  }
+
+  @Override
+  public List<Batch> getExpiredBatchesInDays(LocalDateTime now, Long days) {
+    LocalDateTime today = LocalDateTime.now();
+    return batchRepository.findBatchesExpiringInDays(now, today.plusDays(days)).stream()
+        .map(batchMapper::toDTO)
+        .collect(Collectors.toList());
   }
 }

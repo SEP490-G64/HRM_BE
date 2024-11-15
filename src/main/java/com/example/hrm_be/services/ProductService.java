@@ -49,4 +49,7 @@ public interface ProductService {
 
   List<ProductBaseDTO> getProductInBranch(
       Long branchId, String keyword, Boolean checkValid, Long supplierId);
+
+  List<ProductBaseDTO> filterProducts(
+      Boolean lessThanOrEqual, Integer quantity, Boolean warning, Boolean outOfStock);
 }

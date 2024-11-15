@@ -3,19 +3,28 @@ package com.example.hrm_be.controllers.notification;
 import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.commons.enums.ResponseStatus;
 import com.example.hrm_be.models.dtos.Notification;
+import com.example.hrm_be.models.dtos.NotificationUser;
+import com.example.hrm_be.models.dtos.User;
 import com.example.hrm_be.models.responses.BaseOutput;
+import com.example.hrm_be.repositories.UserRepository;
 import com.example.hrm_be.services.NotificationService;
+import com.example.hrm_be.services.UserService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import reactor.core.publisher.Flux;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -25,6 +34,8 @@ import java.util.List;
 @SecurityRequirement(name = "Authorization")
 public class StaffNotificationController {
   private final NotificationService notificationService;
+  private final UserService userService;
+  private final UserRepository userRepository;
 
   // GET: /api/v1/staff/notification
   // Retrieves a paginated list of notification entities
@@ -161,5 +172,56 @@ public class StaffNotificationController {
             .data(HttpStatus.OK.toString())
             .status(ResponseStatus.SUCCESS)
             .build());
+  }
+
+  // SSE Endpoint for Real-Time Notifications
+  @GetMapping(value = "/{userId}/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+  public Flux<ServerSentEvent<NotificationUser>> streamNotificationsForUser(
+      @PathVariable Long userId) {
+    return notificationService
+        .streamNotificationsForUser(userId)
+        .map(notification -> ServerSentEvent.builder(notification).build());
+  }
+
+  // Endpoint to Send a Notification to Multiple Users
+  @PostMapping("/notifications")
+  public ResponseEntity<Void> createNotification(@RequestBody Notification notificationDTO) {
+    List<User> recipients = new ArrayList<>(userService.findAllByIds(notificationDTO.getUserIds()));
+    Notification notification = new Notification();
+    notification.setMessage(notificationDTO.getMessage());
+    notificationService.sendNotification(notification, recipients);
+    return ResponseEntity.ok().build();
+  }
+
+  // Endpoint to Retrieve All Notifications
+  @GetMapping("/{userId}/all")
+  public List<NotificationUser> getAllNotifications(@PathVariable Long userId) {
+    return notificationService.getAllNotificationsForUser(userId);
+  }
+
+  // Endpoint to Retrieve Unread Notifications
+  @GetMapping("/{userId}/unread-quantity")
+  public Integer getUnreadQuantityNotification(@PathVariable Long userId) {
+    return notificationService.getUnreadNotificationQuantity(userId);
+  }
+
+  // Endpoint to Retrieve Unread Notifications
+  @GetMapping("/notifications/{userId}/unread")
+  public List<NotificationUser> getUnreadNotifications(@PathVariable Long userId) {
+    return notificationService.getUnreadNotificationsForUser(userId);
+  }
+
+  // Endpoint to Mark a Notification as Read
+  @PutMapping("/notifications/{userId}/{notificationId}/read")
+  public ResponseEntity<Void> markAsRead(
+      @PathVariable Long userId, @PathVariable Long notificationId) {
+    try {
+      notificationService.markNotificationAsRead(userId, notificationId);
+      return ResponseEntity.ok().build();
+    } catch (NoSuchElementException e) {
+      return ResponseEntity.notFound().build();
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
   }
 }

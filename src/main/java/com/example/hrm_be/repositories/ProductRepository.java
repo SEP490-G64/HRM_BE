@@ -51,6 +51,22 @@ public interface ProductRepository
   List<ProductEntity> findProductBySupplierAndName(
       @Param("supplierId") Long supplierId, @Param("productName") String productName);
 
+  // Condition for quantity less than or equal
+  @Query(
+      "SELECT p FROM ProductEntity p left join fetch p.branchProducs bp WHERE :quantity >"
+          + " bp.quantity")
+  List<ProductEntity> findByQuantityLessThanEqual(int quantity);
+
+  @Query(
+      "SELECT p FROM ProductEntity p left join fetch p.branchProducs bp WHERE bp.quantity<"
+          + " bp.minQuantity")
+  List<ProductEntity> findByQuantityLessThanMinQuantity();
+
+  @Query(
+      "SELECT p FROM ProductEntity p left join fetch p.branchProducs bp WHERE bp.quantity= "
+          + ":quantity")
+  List<ProductEntity> findByQuantity(int quantity);
+
   @Modifying
   @Transactional
   @Query("UPDATE ProductEntity i SET i.status = :status WHERE i.id = :id")

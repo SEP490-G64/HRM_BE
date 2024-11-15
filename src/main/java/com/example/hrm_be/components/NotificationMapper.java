@@ -27,10 +27,7 @@ public class NotificationMapper {
                     .notiType(d.getNotiType())
                     .notiName(d.getNotiName())
                     .message(d.getMessage())
-                    .branchBatch(
-                        d.getBranchBatch() != null
-                            ? branchBatchMapper.toEntity(d.getBranchBatch())
-                            : null)
+                    .createdDate(d.getCreatedDate())
                     .build())
         .orElse(null);
   }
@@ -42,10 +39,6 @@ public class NotificationMapper {
         .notiType(entity.getNotiType())
         .notiName(entity.getNotiName())
         .message(entity.getMessage())
-        .branchBatch(
-            entity.getBranchBatch() != null
-                ? branchBatchMapper.toDTO(entity.getBranchBatch())
-                : null)
         .build();
   }
 }
