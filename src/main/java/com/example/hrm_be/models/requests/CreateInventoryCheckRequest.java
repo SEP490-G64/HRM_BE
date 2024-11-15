@@ -26,7 +26,7 @@ import lombok.extern.jackson.Jacksonized;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CreateInventoryCheckRequest {
   Long inventoryCheckId;
-  String inventoryCheckCode;
+  String code;
   String note;
   LocalDateTime createdDate;
   User createdBy;
