@@ -29,7 +29,9 @@ public interface ProductRepository
   @Query("SELECT p FROM ProductEntity p WHERE p.category.id=:typeId")
   Page<ProductEntity> findProductByPagingAndTypeId(Long typeId, Pageable pageable);
 
-  @Query("SELECT COUNT(p) > 0 FROM ProductEntity p WHERE p.registrationCode = :code AND p.status != 'DA_XOA'")
+  @Query(
+      "SELECT COUNT(p) > 0 FROM ProductEntity p WHERE p.registrationCode = :code AND p.status !="
+          + " 'DA_XOA'")
   boolean existsByRegistrationCode(String code);
 
   @Query(
