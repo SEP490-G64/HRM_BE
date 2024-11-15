@@ -3,7 +3,6 @@ package com.example.hrm_be.models.entities;
 import com.example.hrm_be.commons.enums.NotificationType;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
@@ -50,8 +49,10 @@ public class NotificationEntity extends CommonEntity {
 
   @Column(name = "message", columnDefinition = "TEXT", nullable = true)
   String message;
+
   @OneToMany(mappedBy = "notification")
-   List<NotificationUserEntity> recipients ;
+  List<NotificationUserEntity> recipients;
+
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(
       name = "branchbatch_id",

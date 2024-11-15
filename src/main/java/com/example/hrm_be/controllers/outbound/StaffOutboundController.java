@@ -3,11 +3,9 @@ package com.example.hrm_be.controllers.outbound;
 import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.commons.enums.OutboundStatus;
 import com.example.hrm_be.commons.enums.*;
-import com.example.hrm_be.commons.enums.InboundStatus;
 import com.example.hrm_be.commons.enums.OutboundStatus;
 import com.example.hrm_be.commons.enums.OutboundType;
 import com.example.hrm_be.commons.enums.ResponseStatus;
-import com.example.hrm_be.models.dtos.Inbound;
 import com.example.hrm_be.models.dtos.Outbound;
 import com.example.hrm_be.models.requests.CreateOutboundRequest;
 import com.example.hrm_be.models.responses.BaseOutput;
@@ -184,6 +182,7 @@ public class StaffOutboundController {
     return ResponseEntity.ok(
         BaseOutput.<Outbound>builder().data(outbound).status(ResponseStatus.SUCCESS).build());
   }
+
   @PutMapping("/{id}/update-status")
   public ResponseEntity<BaseOutput<String>> updateStatus(
       @RequestParam String type, @PathVariable(name = "id") Long id) {

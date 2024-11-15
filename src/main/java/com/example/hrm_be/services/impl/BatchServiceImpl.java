@@ -13,7 +13,6 @@ import jakarta.persistence.criteria.Predicate;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import io.micrometer.common.util.StringUtils;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -277,12 +276,12 @@ public class BatchServiceImpl implements BatchService {
     return batchRepository.findExpiredBatches(now).stream()
         .map(batchMapper::toDTO)
         .collect(Collectors.toList());
-
   }
+
   @Override
   public List<Batch> getExpiredBatchesInDays(LocalDateTime now, Long days) {
     LocalDateTime today = LocalDateTime.now();
-    return batchRepository.findBatchesExpiringInDays(now,today.plusDays(days)).stream()
+    return batchRepository.findBatchesExpiringInDays(now, today.plusDays(days)).stream()
         .map(batchMapper::toDTO)
         .collect(Collectors.toList());
   }

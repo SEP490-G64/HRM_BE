@@ -39,6 +39,7 @@ public interface BatchService {
   List<Batch> getBatchesByProductThroughInbound(Long productId);
 
   List<Batch> getExpiredBatches(LocalDateTime now);
+
   Batch addBatchInInbound(Batch batch, Product product);
 
   List<BatchEntity> findAllByProductId(Long inboundId);

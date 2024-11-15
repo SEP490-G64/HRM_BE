@@ -1,2 +1,3 @@
-package com.example.hrm_be.commons.enums;public class NotificationStatus {
-}
+package com.example.hrm_be.commons.enums;
+
+public class NotificationStatus {}

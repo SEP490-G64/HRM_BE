@@ -23,6 +23,7 @@ public enum OutboundStatus {
   public boolean isCheck() {
     return this == KIEM_HANG;
   }
+
   public boolean isWaitingForApprove() {
     return this == CHO_DUYET;
   }

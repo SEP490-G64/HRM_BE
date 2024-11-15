@@ -1,6 +1,5 @@
 package com.example.hrm_be.services;
 
-import com.example.hrm_be.components.NotificationUserMapper;
 import com.example.hrm_be.models.dtos.Branch;
 import com.example.hrm_be.models.dtos.Notification;
 import com.example.hrm_be.models.dtos.NotificationUser;
@@ -37,6 +36,7 @@ public interface NotificationService {
   Flux<NotificationUser> streamNotificationsForUser(Long userId);
 
   void sendExpirationNotification(Branch branch, Product product);
+
   void sendQuantityNotification(Branch branch, Product product, int quantity, String type);
 
   NotificationAlertResponse createAlertProductNotification(Long branchId);

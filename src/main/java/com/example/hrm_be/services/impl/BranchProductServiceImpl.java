@@ -102,9 +102,7 @@ public class BranchProductServiceImpl implements BranchProductService {
   // Method to get BranchProduct with quantity below minQuantity
   @Override
   public List<BranchProduct> findBranchProductsWithQuantityBelowMin(Long branchId) {
-    return branchProductRepository
-        .findBranchProductsWithQuantityBelowMin(branchId)
-        .stream()
+    return branchProductRepository.findBranchProductsWithQuantityBelowMin(branchId).stream()
         .map(branchProductMapper::toDTO)
         .collect(Collectors.toList());
   }
@@ -112,9 +110,7 @@ public class BranchProductServiceImpl implements BranchProductService {
   // Method to get BranchProduct with quantity above maxQuantity
   @Override
   public List<BranchProduct> findBranchProductsWithQuantityAboveMax(Long branchId) {
-    return branchProductRepository
-        .findBranchProductsWithQuantityAboveMax(branchId)
-        .stream()
+    return branchProductRepository.findBranchProductsWithQuantityAboveMax(branchId).stream()
         .map(branchProductMapper::toDTO)
         .collect(Collectors.toList());
   }
@@ -122,9 +118,7 @@ public class BranchProductServiceImpl implements BranchProductService {
   // Method to get BranchProduct with quantity equal to 0
   @Override
   public List<BranchProduct> findBranchProductsWithQuantityIsZero(Long branchId) {
-    return branchProductRepository
-        .findBranchProductsWithQuantityIsZero(branchId)
-        .stream()
+    return branchProductRepository.findBranchProductsWithQuantityIsZero(branchId).stream()
         .map(branchProductMapper::toDTO)
         .collect(Collectors.toList());
   }

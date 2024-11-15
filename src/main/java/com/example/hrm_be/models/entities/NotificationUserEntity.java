@@ -1,6 +1,5 @@
 package com.example.hrm_be.models.entities;
 
-import com.example.hrm_be.models.dtos.Notification;
 import jakarta.persistence.Column;
 import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
@@ -27,18 +26,15 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "notification_user")
-public class NotificationUserEntity extends  CommonEntity{
+public class NotificationUserEntity extends CommonEntity {
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "notification_id",
-      foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-   NotificationEntity notification;
+  @JoinColumn(name = "notification_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+  NotificationEntity notification;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "user_id",
-      foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-   UserEntity user;
+  @JoinColumn(name = "user_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+  UserEntity user;
 
-   @Column(name = "read")
-   Boolean isRead;
-
+  @Column(name = "read")
+  Boolean isRead;
 }
