@@ -19,6 +19,7 @@ import com.example.hrm_be.models.dtos.BranchProduct;
 import com.example.hrm_be.models.dtos.InventoryCheck;
 import com.example.hrm_be.models.dtos.InventoryCheckDetails;
 import com.example.hrm_be.models.dtos.InventoryCheckProductDetails;
+import com.example.hrm_be.models.dtos.OutboundProductDetail;
 import com.example.hrm_be.models.dtos.Product;
 import com.example.hrm_be.models.entities.BranchEntity;
 import com.example.hrm_be.models.entities.InventoryCheckEntity;
@@ -38,6 +39,7 @@ import com.example.hrm_be.utils.WplUtil;
 import io.micrometer.common.util.StringUtils;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -127,11 +129,11 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
             .collect(Collectors.toList());
 
     // Populate inventoryCheckDetails (for batches)
-    List<InventoryCheckDetails> batchDetails =
+    List<InventoryCheckProductDetails> batchDetails =
         inventoryCheckEntity.getInventoryCheckDetails().stream()
             .map(
                 batchDetail -> {
-                  InventoryCheckDetails batchDetailDTO = new InventoryCheckDetails();
+                  InventoryCheckProductDetails batchDetailDTO = new InventoryCheckProductDetails();
 
                   // Set batch and product details
                   Batch batchDTO = new Batch();
@@ -155,9 +157,13 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
                 })
             .collect(Collectors.toList());
 
+    // Combine the two lists
+    List<InventoryCheckProductDetails> combinedProducts = new ArrayList<>();
+    combinedProducts.addAll(productDetails);
+    combinedProducts.addAll(batchDetails);
     // Set details in the InventoryCheckDTO
-    inventoryCheckDTO.setInventoryCheckProductDetails(productDetails);
-    inventoryCheckDTO.setInventoryCheckDetails(batchDetails);
+    inventoryCheckDTO.setInventoryCheckProductDetails(combinedProducts);
+
 
     return inventoryCheckDTO;
   }
