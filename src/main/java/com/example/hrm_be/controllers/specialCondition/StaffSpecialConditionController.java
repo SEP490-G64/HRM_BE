@@ -8,14 +8,13 @@ import com.example.hrm_be.services.SpecialConditionService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotNull;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -67,13 +66,21 @@ public class StaffSpecialConditionController {
     }
 
     // Fetch SpecialCondition by ID
-    SpecialCondition SpecialCondition = specialConditionService.getById(id);
+    SpecialCondition specialCondition = specialConditionService.getById(id);
+    if (specialCondition == null) {
+      BaseOutput<SpecialCondition> response =
+          BaseOutput.<SpecialCondition>builder()
+              .status(com.example.hrm_be.commons.enums.ResponseStatus.FAILED)
+              .errors(List.of(HrmConstant.ERROR.RESPONSE.NOT_FOUND))
+              .build();
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
 
     // Build the response with the found SpecialCondition data
     BaseOutput<SpecialCondition> response =
         BaseOutput.<SpecialCondition>builder()
             .message(HttpStatus.OK.toString())
-            .data(SpecialCondition)
+            .data(specialCondition)
             .status(com.example.hrm_be.commons.enums.ResponseStatus.SUCCESS)
             .build();
     return ResponseEntity.ok(response);
@@ -155,7 +162,6 @@ public class StaffSpecialConditionController {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
-    // Delete the SpecialCondition by ID
     specialConditionService.delete(id);
 
     // Build the response indicating success

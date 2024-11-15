@@ -78,6 +78,16 @@ public class StaffStorageLocationController {
     // Retrieve storageLocation by ID
     StorageLocation storageLocation = storageLocationService.getById(id);
 
+    if (storageLocation == null) {
+      BaseOutput<StorageLocation> response =
+          BaseOutput.<StorageLocation>builder()
+              .status(ResponseStatus.FAILED)
+              .errors(List.of(HrmConstant.ERROR.RESPONSE.NOT_FOUND))
+              .build();
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body(response); // Return BAD_REQUEST response
+    }
+
     // Construct response object with storageLocation data
     BaseOutput<StorageLocation> response =
         BaseOutput.<StorageLocation>builder()

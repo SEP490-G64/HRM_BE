@@ -7,7 +7,6 @@ import com.example.hrm_be.models.dtos.SpecialCondition;
 import com.example.hrm_be.models.entities.SpecialConditionEntity;
 import com.example.hrm_be.repositories.SpecialConditionRepository;
 import com.example.hrm_be.services.SpecialConditionService;
-import io.micrometer.common.util.StringUtils;
 import java.util.List;
 import java.util.Optional;
 import lombok.NonNull;
@@ -89,15 +88,8 @@ public class SpecialConditionServiceImpl implements SpecialConditionService {
 
   @Override
   public void delete(Long id) {
-    // If the ID is blank, return without performing any action
-    if (StringUtils.isBlank(id.toString())) {
-      return;
-    }
-
     // Find the existing entity by ID, throw an exception if it doesn't exist
-    SpecialConditionEntity oldSpecialConditionEntity =
-        specialConditionRepository.findById(id).orElse(null);
-    if (oldSpecialConditionEntity == null) {
+    if (id == null || !specialConditionRepository.existsById(id)) {
       throw new HrmCommonException(HrmConstant.ERROR.SPECIAL_CONDITION.NOT_EXIST);
     }
 
