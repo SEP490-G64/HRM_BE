@@ -208,13 +208,13 @@ public class StaffNotificationController {
   }
 
   // Endpoint to Retrieve Unread Notifications
-  @GetMapping("/notifications/{userId}/unread")
+  @GetMapping("/{userId}/unread")
   public List<NotificationUser> getUnreadNotifications(@PathVariable Long userId) {
     return notificationService.getUnreadNotificationsForUser(userId);
   }
 
   // Endpoint to Mark a Notification as Read
-  @PutMapping("/notifications/{userId}/{notificationId}/read")
+  @PutMapping("/{userId}/{notificationId}/read")
   public ResponseEntity<Void> markAsRead(@PathVariable Long userId, @PathVariable Long notificationId) {
     try {
       notificationService.markNotificationAsRead(userId, notificationId);
