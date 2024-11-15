@@ -18,7 +18,6 @@ public enum InboundStatus {
     return this == KIEM_HANG;
   }
 
-
   public boolean isWaitingForApprove() {
     return this == CHO_DUYET;
   }

@@ -1,9 +1,7 @@
 package com.example.hrm_be.components;
 
 import com.example.hrm_be.models.dtos.NotificationUser;
-import com.example.hrm_be.models.dtos.UserRoleMap;
 import com.example.hrm_be.models.entities.NotificationUserEntity;
-import com.example.hrm_be.models.entities.UserRoleMapEntity;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -11,9 +9,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class NotificationUserMapper {
-  @Lazy
-  @Autowired
-  private UserMapper userMapper;
+  @Lazy @Autowired private UserMapper userMapper;
   @Lazy @Autowired private NotificationMapper notificationMapper;
 
   public NotificationUser toDTO(NotificationUserEntity entity) {
@@ -24,7 +20,8 @@ public class NotificationUserMapper {
                     .id(e.getId())
                     .user(userMapper.convertToDtoBasicInfo(e.getUser()))
                     .notification(notificationMapper.toDTO(e.getNotification()))
-                    .read(e.getIsRead()).build())
+                    .read(e.getIsRead())
+                    .build())
         .orElse(null);
   }
 
@@ -36,7 +33,8 @@ public class NotificationUserMapper {
                     .id(e.getId())
                     .user(userMapper.toEntity(e.getUser()))
                     .notification(notificationMapper.toEntity(e.getNotification()))
-                    .isRead(e.getRead()).build())
+                    .isRead(e.getRead())
+                    .build())
         .orElse(null);
   }
 }

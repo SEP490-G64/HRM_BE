@@ -2,7 +2,6 @@ package com.example.hrm_be.repositories;
 
 import com.example.hrm_be.commons.enums.RoleType;
 import com.example.hrm_be.commons.enums.UserStatusType;
-import com.example.hrm_be.models.dtos.User;
 import com.example.hrm_be.models.entities.RoleEntity;
 import com.example.hrm_be.models.entities.UserEntity;
 import java.util.List;
@@ -72,5 +71,5 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
           + "JOIN user.userRoleMap urm "
           + "JOIN urm.role role "
           + "WHERE user.branch.id = :branchId AND role.type= :roleType")
-   List<UserEntity> findAllByBranchIdAndRoleType(Long branchId, RoleType roleType);
+  List<UserEntity> findAllByBranchIdAndRoleType(Long branchId, RoleType roleType);
 }

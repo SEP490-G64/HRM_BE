@@ -5,7 +5,6 @@ import com.example.hrm_be.commons.enums.ResponseStatus;
 import com.example.hrm_be.models.dtos.Notification;
 import com.example.hrm_be.models.dtos.NotificationUser;
 import com.example.hrm_be.models.dtos.User;
-import com.example.hrm_be.models.entities.UserEntity;
 import com.example.hrm_be.models.responses.BaseOutput;
 import com.example.hrm_be.repositories.UserRepository;
 import com.example.hrm_be.services.NotificationService;
@@ -14,9 +13,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotNull;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -28,7 +25,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -180,8 +176,10 @@ public class StaffNotificationController {
 
   // SSE Endpoint for Real-Time Notifications
   @GetMapping(value = "/{userId}/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-  public Flux<ServerSentEvent<NotificationUser>> streamNotificationsForUser(@PathVariable Long userId) {
-    return notificationService.streamNotificationsForUser(userId)
+  public Flux<ServerSentEvent<NotificationUser>> streamNotificationsForUser(
+      @PathVariable Long userId) {
+    return notificationService
+        .streamNotificationsForUser(userId)
         .map(notification -> ServerSentEvent.builder(notification).build());
   }
 
@@ -225,6 +223,4 @@ public class StaffNotificationController {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
   }
-
-
 }

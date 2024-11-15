@@ -14,7 +14,6 @@ import com.example.hrm_be.models.entities.*;
 import com.example.hrm_be.models.entities.BatchEntity;
 import com.example.hrm_be.models.entities.BranchEntity;
 import com.example.hrm_be.models.entities.BranchProductEntity;
-import com.example.hrm_be.models.entities.InboundEntity;
 import com.example.hrm_be.models.entities.OutboundDetailEntity;
 import com.example.hrm_be.models.entities.OutboundEntity;
 import com.example.hrm_be.models.entities.OutboundProductDetailEntity;
@@ -705,9 +704,13 @@ public class OutboundServiceImpl implements OutboundService {
         outboundRepository.save(outboundMapper.toEntity(outboundEntity));
     // Notification for Manager
     String message =
-        "🔔 Thông báo: Phiều xuất " + outbound.getOutboundCode() + " đã được cập nhật vào hệ" + " "
+        "🔔 Thông báo: Phiều xuất "
+            + outbound.getOutboundCode()
+            + " đã được cập nhật vào hệ"
+            + " "
             + "thống "
-            + "bởi " + outbound.getCreatedBy().getUserName();
+            + "bởi "
+            + outbound.getCreatedBy().getUserName();
 
     Notification notification = new Notification();
     notification.setMessage(message);
@@ -813,6 +816,7 @@ public class OutboundServiceImpl implements OutboundService {
             .build();
     outboundDetailEntities.add(outboundDetail);
   }
+
   @Override
   public ByteArrayOutputStream generateOutboundPdf(Long outboundId)
       throws DocumentException, IOException {

@@ -26,7 +26,7 @@ public interface ProductService {
 
   List<AllowedProductEntity> addProductFromJson(List<Map<String, Object>> productJsonList);
 
-  Page<ProductBaseDTO>  searchProducts(
+  Page<ProductBaseDTO> searchProducts(
       int pageNo,
       int pageSize,
       String sortBy,
@@ -50,8 +50,6 @@ public interface ProductService {
   List<ProductBaseDTO> getProductInBranch(
       Long branchId, String keyword, Boolean checkValid, Long supplierId);
 
-  List<ProductBaseDTO> filterProducts(Boolean lessThanOrEqual, Integer quantity, Boolean warning,
-      Boolean outOfStock);
-
-
+  List<ProductBaseDTO> filterProducts(
+      Boolean lessThanOrEqual, Integer quantity, Boolean warning, Boolean outOfStock);
 }

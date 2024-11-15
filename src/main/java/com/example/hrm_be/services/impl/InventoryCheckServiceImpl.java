@@ -20,7 +20,6 @@ import com.example.hrm_be.models.dtos.BranchProduct;
 import com.example.hrm_be.models.dtos.InventoryCheck;
 import com.example.hrm_be.models.dtos.InventoryCheckDetails;
 import com.example.hrm_be.models.dtos.InventoryCheckProductDetails;
-import com.example.hrm_be.models.dtos.OutboundProductDetail;
 import com.example.hrm_be.models.dtos.Notification;
 import com.example.hrm_be.models.dtos.Product;
 import com.example.hrm_be.models.entities.BranchEntity;
@@ -167,7 +166,6 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
     combinedProducts.addAll(batchDetails);
     // Set details in the InventoryCheckDTO
     inventoryCheckDTO.setInventoryCheckProductDetails(combinedProducts);
-
 
     return inventoryCheckDTO;
   }
@@ -446,9 +444,13 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
     // Notification for Manager
 
     String message =
-        "🔔 Thông báo: Phiều kiểm " + unsavedInventoryCheck.getCode() + " đã được thêm vào hệ" + " "
+        "🔔 Thông báo: Phiều kiểm "
+            + unsavedInventoryCheck.getCode()
+            + " đã được thêm vào hệ"
+            + " "
             + "thống "
-            + "bởi " + unsavedInventoryCheck.getCreatedBy().getUserName();
+            + "bởi "
+            + unsavedInventoryCheck.getCreatedBy().getUserName();
 
     Notification notification = new Notification();
     notification.setMessage(message);
@@ -457,7 +459,8 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
     notification.setCreatedDate(LocalDateTime.now());
 
     notificationService.sendNotification(
-        notification, userService.findAllManagerByBranchId(unsavedInventoryCheck.getBranch().getId()));
+        notification,
+        userService.findAllManagerByBranchId(unsavedInventoryCheck.getBranch().getId()));
     return null;
   }
 

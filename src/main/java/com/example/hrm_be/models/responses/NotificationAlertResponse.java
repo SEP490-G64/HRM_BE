@@ -1,15 +1,11 @@
 package com.example.hrm_be.models.responses;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import io.swagger.v3.oas.models.security.SecurityScheme.In;
-import java.math.BigDecimal;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;

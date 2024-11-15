@@ -729,9 +729,7 @@ public class UserServiceImpl implements UserService {
   @Override
   public List<User> getUserByBranchId(Long branchId) {
     List<UserEntity> users = userRepository.findByBranch_Id(branchId);
-    return users.stream()
-        .map(userMapper::toDTO)
-        .collect(Collectors.toList());
+    return users.stream().map(userMapper::toDTO).collect(Collectors.toList());
   }
 
   private boolean validateUser(User user) {
