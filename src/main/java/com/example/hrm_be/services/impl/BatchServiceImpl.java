@@ -3,12 +3,15 @@ package com.example.hrm_be.services.impl;
 import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.commons.enums.BatchStatus;
 import com.example.hrm_be.components.BatchMapper;
+import com.example.hrm_be.components.ProductMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.Batch;
 import com.example.hrm_be.models.dtos.Product;
+import com.example.hrm_be.models.dtos.ProductBaseDTO;
 import com.example.hrm_be.models.entities.BatchEntity;
 import com.example.hrm_be.repositories.BatchRepository;
 import com.example.hrm_be.services.BatchService;
+import com.example.hrm_be.services.UserService;
 import jakarta.persistence.criteria.Predicate;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -37,6 +40,9 @@ public class BatchServiceImpl implements BatchService {
 
   // Injects the mapper to convert between DTO and Entity objects for batches
   @Autowired private BatchMapper batchMapper;
+
+  @Autowired private ProductMapper productMapper;
+  @Autowired private UserService userService;
 
   // Retrieves a Batch by its ID
   @Override
@@ -280,9 +286,16 @@ public class BatchServiceImpl implements BatchService {
 
   @Override
   public List<Batch> getExpiredBatchesInDays(LocalDateTime now, Long days) {
-    LocalDateTime today = LocalDateTime.now();
-    return batchRepository.findBatchesExpiringInDays(now, today.plusDays(days)).stream()
-        .map(batchMapper::toDTO)
+    // Calculate the end date for the expiry range
+    LocalDateTime expiryDate = now.plusDays(days);
+    String userEmail = userService.getAuthenticatedUserEmail();
+    Long branchId = userService.findBranchIdByUserEmail(userEmail).orElse(null);
+    // Query the repository to find batches that expire within the specified range
+    return batchRepository.findBatchesExpiringInDays(now, expiryDate,branchId).stream()
+        // Map each BatchEntity to the corresponding Product object
+        // Convert the Product to the ProductBaseDTO using the mapper
+        .map(batchMapper::convertToDtoBasicInfo)
+        // Collect the results into a List
         .collect(Collectors.toList());
   }
 }

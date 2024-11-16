@@ -3,6 +3,7 @@ package com.example.hrm_be.controllers.batch;
 import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.commons.enums.ResponseStatus;
 import com.example.hrm_be.models.dtos.Batch;
+import com.example.hrm_be.models.dtos.ProductBaseDTO;
 import com.example.hrm_be.models.responses.BaseOutput;
 import com.example.hrm_be.services.BatchService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -86,6 +87,26 @@ public class StaffBatchController {
         BaseOutput.<Batch>builder()
             .message(HttpStatus.OK.toString())
             .data(batch)
+            .status(com.example.hrm_be.commons.enums.ResponseStatus.SUCCESS)
+            .build();
+    return ResponseEntity.ok(response);
+  }
+
+
+  // Handles GET requests to retrieve a single Batch by ID
+  @GetMapping("/expired-batch")
+  protected ResponseEntity<BaseOutput<List<Batch>>> getByExpiredBatch(
+      @RequestParam(defaultValue = "0") Long days) {
+
+    LocalDateTime now = LocalDateTime.now();
+    // Retrieve Batch by ID
+    List<Batch> list = batchService.getExpiredBatchesInDays(now, days);
+
+    // Building success response
+    BaseOutput<List<Batch>> response =
+        BaseOutput.<List<Batch>>builder()
+            .message(HttpStatus.OK.toString())
+            .data(list)
             .status(com.example.hrm_be.commons.enums.ResponseStatus.SUCCESS)
             .build();
     return ResponseEntity.ok(response);
