@@ -3,7 +3,6 @@ package com.example.hrm_be.controllers.batch;
 import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.commons.enums.ResponseStatus;
 import com.example.hrm_be.models.dtos.Batch;
-import com.example.hrm_be.models.dtos.ProductBaseDTO;
 import com.example.hrm_be.models.responses.BaseOutput;
 import com.example.hrm_be.services.BatchService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -91,7 +90,6 @@ public class StaffBatchController {
             .build();
     return ResponseEntity.ok(response);
   }
-
 
   // Handles GET requests to retrieve a single Batch by ID
   @GetMapping("/expired-batch")

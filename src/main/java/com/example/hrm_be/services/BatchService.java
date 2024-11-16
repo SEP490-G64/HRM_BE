@@ -2,7 +2,6 @@ package com.example.hrm_be.services;
 
 import com.example.hrm_be.models.dtos.Batch;
 import com.example.hrm_be.models.dtos.Product;
-import com.example.hrm_be.models.dtos.ProductBaseDTO;
 import com.example.hrm_be.models.entities.BatchEntity;
 import java.time.LocalDateTime;
 import java.time.LocalDateTime;

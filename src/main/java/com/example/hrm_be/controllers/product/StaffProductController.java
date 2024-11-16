@@ -52,8 +52,8 @@ public class StaffProductController {
       @RequestParam(required = false) Integer quantity,
       @RequestParam(required = false) Boolean warning,
       @RequestParam(required = false) Boolean outOfStock) {
-    List<ProductBaseDTO>  products = productService.filterProducts(lessThanOrEqual, quantity,
-        warning, outOfStock);
+    List<ProductBaseDTO> products =
+        productService.filterProducts(lessThanOrEqual, quantity, warning, outOfStock);
 
     BaseOutput<List<ProductBaseDTO>> response =
         BaseOutput.<List<ProductBaseDTO>>builder()
@@ -67,7 +67,7 @@ public class StaffProductController {
 
   @GetMapping("/sell-price-equal-zero")
   public ResponseEntity<BaseOutput<List<ProductBaseDTO>>> getProductsBySellPriceEqualZero() {
-    List<ProductBaseDTO>  products  = productService.getProductsBySellPrice(BigDecimal.ZERO);
+    List<ProductBaseDTO> products = productService.getProductsBySellPrice(BigDecimal.ZERO);
 
     BaseOutput<List<ProductBaseDTO>> response =
         BaseOutput.<List<ProductBaseDTO>>builder()
@@ -80,8 +80,9 @@ public class StaffProductController {
   }
 
   @GetMapping("/loss-price")
-  public ResponseEntity<BaseOutput<List<ProductBaseDTO>>> getProductsWithLossOrNoSellPriceInBranch() {
-    List<ProductBaseDTO>  products  = productService.getProductsWithLossOrNoSellPriceInBranch();
+  public ResponseEntity<BaseOutput<List<ProductBaseDTO>>>
+      getProductsWithLossOrNoSellPriceInBranch() {
+    List<ProductBaseDTO> products = productService.getProductsWithLossOrNoSellPriceInBranch();
 
     BaseOutput<List<ProductBaseDTO>> response =
         BaseOutput.<List<ProductBaseDTO>>builder()
@@ -331,6 +332,4 @@ public class StaffProductController {
             .build();
     return ResponseEntity.ok(response);
   }
-
-
 }

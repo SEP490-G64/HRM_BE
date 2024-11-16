@@ -54,9 +54,7 @@ public interface ProductService {
   List<ProductBaseDTO> filterProducts(
       Boolean lessThanOrEqual, Integer quantity, Boolean warning, Boolean outOfStock);
 
-
   List<ProductBaseDTO> getProductsWithLossOrNoSellPriceInBranch();
 
   List<ProductBaseDTO> getProductsBySellPrice(BigDecimal sellPrice);
-
 }

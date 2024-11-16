@@ -7,7 +7,6 @@ import com.example.hrm_be.components.ProductMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.Batch;
 import com.example.hrm_be.models.dtos.Product;
-import com.example.hrm_be.models.dtos.ProductBaseDTO;
 import com.example.hrm_be.models.entities.BatchEntity;
 import com.example.hrm_be.repositories.BatchRepository;
 import com.example.hrm_be.services.BatchService;
@@ -291,7 +290,7 @@ public class BatchServiceImpl implements BatchService {
     String userEmail = userService.getAuthenticatedUserEmail();
     Long branchId = userService.findBranchIdByUserEmail(userEmail).orElse(null);
     // Query the repository to find batches that expire within the specified range
-    return batchRepository.findBatchesExpiringInDays(now, expiryDate,branchId).stream()
+    return batchRepository.findBatchesExpiringInDays(now, expiryDate, branchId).stream()
         // Map each BatchEntity to the corresponding Product object
         // Convert the Product to the ProductBaseDTO using the mapper
         .map(batchMapper::convertToDtoBasicInfo)

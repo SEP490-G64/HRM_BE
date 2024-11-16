@@ -56,7 +56,8 @@ public interface ProductRepository
   @Query(
       "SELECT p FROM ProductEntity p left join fetch p.branchProducs bp WHERE :quantity >"
           + " bp.quantity AND bp.branch.id = :id")
-  List<ProductEntity> findByQuantityLessThanEqualInBranch(@Param("quantity") Integer quantity,@Param("id") Long id) ;
+  List<ProductEntity> findByQuantityLessThanEqualInBranch(
+      @Param("quantity") Integer quantity, @Param("id") Long id);
 
   @Query(
       "SELECT p FROM ProductEntity p left join fetch p.branchProducs bp WHERE bp.quantity<"
@@ -66,7 +67,8 @@ public interface ProductRepository
   @Query(
       "SELECT p FROM ProductEntity p left join fetch p.branchProducs bp WHERE bp.quantity= "
           + ":quantity AND bp.branch.id = :id")
-  List<ProductEntity> findByQuantityInBranch(@Param("quantity") Integer quantity,@Param("id") Long id);
+  List<ProductEntity> findByQuantityInBranch(
+      @Param("quantity") Integer quantity, @Param("id") Long id);
 
   @Modifying
   @Transactional
@@ -74,18 +76,16 @@ public interface ProductRepository
   void updateProductStatus(@Param("status") ProductStatus status, @Param("id") Long id);
 
   @Query(
-      "SELECT p FROM ProductEntity p " +
-          "LEFT JOIN FETCH p.branchProducs bp " +
-          "WHERE (p.sellPrice < p.inboundPrice OR p.sellPrice IS NULL OR p.sellPrice = 0) " +
-          "AND bp.branch.id = :id"
-  )
+      "SELECT p FROM ProductEntity p "
+          + "LEFT JOIN FETCH p.branchProducs bp "
+          + "WHERE (p.sellPrice < p.inboundPrice OR p.sellPrice IS NULL OR p.sellPrice = 0) "
+          + "AND bp.branch.id = :id")
   List<ProductEntity> findProductsWithLossOrNoSellPriceInBranch(@Param("id") Long id);
 
   @Query(
-      "SELECT p FROM ProductEntity p " +
-          "LEFT JOIN FETCH p.branchProducs bp " +
-          "WHERE (p.sellPrice = :sellPrice) AND bp.branch.id = :id"
-  )
-  List<ProductEntity> findProductsBySellPrice(@Param("sellPrice") BigDecimal sellPrice,@Param("id") Long id);
-
+      "SELECT p FROM ProductEntity p "
+          + "LEFT JOIN FETCH p.branchProducs bp "
+          + "WHERE (p.sellPrice = :sellPrice) AND bp.branch.id = :id")
+  List<ProductEntity> findProductsBySellPrice(
+      @Param("sellPrice") BigDecimal sellPrice, @Param("id") Long id);
 }
