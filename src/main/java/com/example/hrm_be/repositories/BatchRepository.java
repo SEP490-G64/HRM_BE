@@ -42,7 +42,12 @@ public interface BatchRepository
   @Query("SELECT b FROM BatchEntity b WHERE b.expireDate < :today")
   List<BatchEntity> findExpiredBatches(@Param("today") LocalDateTime today);
 
-  @Query("SELECT b FROM BatchEntity b WHERE b.expireDate BETWEEN :today AND :inDays")
+  @Query(
+      "SELECT b FROM BatchEntity b LEFT JOIN FETCH b.branchBatches brb WHERE b.expireDate  "
+          + "BETWEEN :today "
+          + "AND :inDays AND brb.branch.id = :id")
   List<BatchEntity> findBatchesExpiringInDays(
-      @Param("today") LocalDateTime today, @Param("inDays") LocalDateTime inDays);
+      @Param("today") LocalDateTime today,
+      @Param("inDays") LocalDateTime inDays,
+      @Param("id") Long id);
 }

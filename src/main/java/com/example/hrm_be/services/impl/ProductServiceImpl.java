@@ -32,6 +32,7 @@ import com.example.hrm_be.services.UserService;
 import com.example.hrm_be.utils.ExcelUtility;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -774,11 +775,12 @@ public class ProductServiceImpl implements ProductService {
   public List<ProductBaseDTO> filterProducts(
       Boolean lessThanOrEqual, Integer quantity, Boolean warning, Boolean outOfStock) {
     Set<ProductBaseDTO> resultSet = new HashSet<>();
-
+    String userEmail = userService.getAuthenticatedUserEmail();
+    Long branchId = userService.findBranchIdByUserEmail(userEmail).orElse(null);
     // Apply "less than or equal" filter if selected
     if (lessThanOrEqual != null && lessThanOrEqual && quantity != null) {
       List<ProductBaseDTO> lessThanEqualProducts =
-          productRepository.findByQuantityLessThanEqual(quantity).stream()
+          productRepository.findByQuantityLessThanEqualInBranch(quantity, branchId).stream()
               .map(productMapper::convertToProductBaseDTO)
               .toList();
       resultSet.addAll(lessThanEqualProducts);
@@ -787,7 +789,7 @@ public class ProductServiceImpl implements ProductService {
     // Apply "warning threshold" filter if selected
     if (warning != null && warning) {
       List<ProductBaseDTO> warningProducts =
-          productRepository.findByQuantityLessThanMinQuantity().stream()
+          productRepository.findByQuantityLessThanMinQuantityInBranch(branchId).stream()
               .map(productMapper::convertToProductBaseDTO)
               .toList();
       resultSet.addAll(warningProducts);
@@ -796,7 +798,7 @@ public class ProductServiceImpl implements ProductService {
     // Apply "out of stock" filter if selected
     if (outOfStock != null && outOfStock) {
       List<ProductBaseDTO> outOfStockProducts =
-          productRepository.findByQuantity(0).stream()
+          productRepository.findByQuantityInBranch(0, branchId).stream()
               .map(productMapper::convertToProductBaseDTO)
               .toList();
       resultSet.addAll(outOfStockProducts);
@@ -804,5 +806,25 @@ public class ProductServiceImpl implements ProductService {
 
     // Convert the Set to List to remove duplicates
     return new ArrayList<>(resultSet);
+  }
+
+  @Override
+  public List<ProductBaseDTO> getProductsWithLossOrNoSellPriceInBranch() {
+    String userEmail = userService.getAuthenticatedUserEmail();
+    Long branchId = userService.findBranchIdByUserEmail(userEmail).orElse(null);
+
+    return productRepository.findProductsWithLossOrNoSellPriceInBranch(branchId).stream()
+        .map(productMapper::convertToProductBaseDTO)
+        .collect(Collectors.toList());
+  }
+
+  @Override
+  public List<ProductBaseDTO> getProductsBySellPrice(BigDecimal sellPrice) {
+    String userEmail = userService.getAuthenticatedUserEmail();
+    Long branchId = userService.findBranchIdByUserEmail(userEmail).orElse(null);
+
+    return productRepository.findProductsBySellPrice(sellPrice, branchId).stream()
+        .map(productMapper::convertToProductBaseDTO)
+        .collect(Collectors.toList());
   }
 }

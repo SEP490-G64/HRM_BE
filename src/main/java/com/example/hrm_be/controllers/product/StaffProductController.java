@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotNull;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -46,12 +47,50 @@ public class StaffProductController {
   private final ProductService productService;
 
   @GetMapping("/filter")
-  public List<ProductBaseDTO> filterProducts(
+  public ResponseEntity<BaseOutput<List<ProductBaseDTO>>> filterProducts(
       @RequestParam(required = false) Boolean lessThanOrEqual,
       @RequestParam(required = false) Integer quantity,
       @RequestParam(required = false) Boolean warning,
       @RequestParam(required = false) Boolean outOfStock) {
-    return productService.filterProducts(lessThanOrEqual, quantity, warning, outOfStock);
+    List<ProductBaseDTO> products =
+        productService.filterProducts(lessThanOrEqual, quantity, warning, outOfStock);
+
+    BaseOutput<List<ProductBaseDTO>> response =
+        BaseOutput.<List<ProductBaseDTO>>builder()
+            .message(HttpStatus.OK.toString())
+            .total((long) products.size())
+            .data(products)
+            .status(ResponseStatus.SUCCESS)
+            .build();
+    return ResponseEntity.ok(response);
+  }
+
+  @GetMapping("/sell-price-equal-zero")
+  public ResponseEntity<BaseOutput<List<ProductBaseDTO>>> getProductsBySellPriceEqualZero() {
+    List<ProductBaseDTO> products = productService.getProductsBySellPrice(BigDecimal.ZERO);
+
+    BaseOutput<List<ProductBaseDTO>> response =
+        BaseOutput.<List<ProductBaseDTO>>builder()
+            .message(HttpStatus.OK.toString())
+            .total((long) products.size())
+            .data(products)
+            .status(ResponseStatus.SUCCESS)
+            .build();
+    return ResponseEntity.ok(response);
+  }
+
+  @GetMapping("/loss-price")
+  public ResponseEntity<BaseOutput<List<ProductBaseDTO>>>
+      getProductsWithLossOrNoSellPriceInBranch() {
+    List<ProductBaseDTO> products = productService.getProductsWithLossOrNoSellPriceInBranch();
+
+    BaseOutput<List<ProductBaseDTO>> response =
+        BaseOutput.<List<ProductBaseDTO>>builder()
+            .message(HttpStatus.OK.toString())
+            .data(products)
+            .status(ResponseStatus.SUCCESS)
+            .build();
+    return ResponseEntity.ok(response);
   }
 
   @GetMapping("/allow-products")
