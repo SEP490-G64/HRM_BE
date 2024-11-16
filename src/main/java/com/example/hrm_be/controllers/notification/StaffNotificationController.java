@@ -213,7 +213,8 @@ public class StaffNotificationController {
 
   // Endpoint to Mark a Notification as Read
   @PutMapping("/{userId}/{notificationId}/read")
-  public ResponseEntity<Void> markAsRead(@PathVariable Long userId, @PathVariable Long notificationId) {
+  public ResponseEntity<Void> markAsRead(
+      @PathVariable Long userId, @PathVariable Long notificationId) {
     try {
       notificationService.markNotificationAsRead(userId, notificationId);
       return ResponseEntity.ok().build();
