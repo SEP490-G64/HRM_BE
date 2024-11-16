@@ -32,6 +32,7 @@ import com.example.hrm_be.services.UserService;
 import com.example.hrm_be.utils.ExcelUtility;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -60,6 +61,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class ProductServiceImpl implements ProductService {
   @Autowired private ProductRepository productRepository;
   @Autowired private AllowedProductRepository allowedProductRepository;
+  @Autowired private BranchProductRepository branchProductRepository;
 
   @Autowired private UserService userService;
   @Autowired private ProductCategoryService productCategoryService;
@@ -78,6 +80,7 @@ public class ProductServiceImpl implements ProductService {
   @Autowired private UnitConversionMapper unitConversionMapper;
   @Autowired private AllowedProductService allowedProductService;
   @Autowired private BatchRepository batchRepository;
+  @Autowired private NotificationService notificationService;
 
   @Override
   public Product getById(Long id) {
@@ -766,6 +769,62 @@ public class ProductServiceImpl implements ProductService {
         .searchProductByBranchId(branchId, keyword, checkValid, supplierId)
         .stream()
         .map(productMapper::convertToProductForSearchInNotes)
+        .collect(Collectors.toList());
+  }
+
+  public List<ProductBaseDTO> filterProducts(
+      Boolean lessThanOrEqual, Integer quantity, Boolean warning, Boolean outOfStock) {
+    Set<ProductBaseDTO> resultSet = new HashSet<>();
+    String userEmail = userService.getAuthenticatedUserEmail();
+    Long branchId = userService.findBranchIdByUserEmail(userEmail).orElse(null);
+    // Apply "less than or equal" filter if selected
+    if (lessThanOrEqual != null && lessThanOrEqual && quantity != null) {
+      List<ProductBaseDTO> lessThanEqualProducts =
+          productRepository.findByQuantityLessThanEqualInBranch(quantity, branchId).stream()
+              .map(productMapper::convertToProductBaseDTO)
+              .toList();
+      resultSet.addAll(lessThanEqualProducts);
+    }
+
+    // Apply "warning threshold" filter if selected
+    if (warning != null && warning) {
+      List<ProductBaseDTO> warningProducts =
+          productRepository.findByQuantityLessThanMinQuantityInBranch(branchId).stream()
+              .map(productMapper::convertToProductBaseDTO)
+              .toList();
+      resultSet.addAll(warningProducts);
+    }
+
+    // Apply "out of stock" filter if selected
+    if (outOfStock != null && outOfStock) {
+      List<ProductBaseDTO> outOfStockProducts =
+          productRepository.findByQuantityInBranch(0, branchId).stream()
+              .map(productMapper::convertToProductBaseDTO)
+              .toList();
+      resultSet.addAll(outOfStockProducts);
+    }
+
+    // Convert the Set to List to remove duplicates
+    return new ArrayList<>(resultSet);
+  }
+
+  @Override
+  public List<ProductBaseDTO> getProductsWithLossOrNoSellPriceInBranch() {
+    String userEmail = userService.getAuthenticatedUserEmail();
+    Long branchId = userService.findBranchIdByUserEmail(userEmail).orElse(null);
+
+    return productRepository.findProductsWithLossOrNoSellPriceInBranch(branchId).stream()
+        .map(productMapper::convertToProductBaseDTO)
+        .collect(Collectors.toList());
+  }
+
+  @Override
+  public List<ProductBaseDTO> getProductsBySellPrice(BigDecimal sellPrice) {
+    String userEmail = userService.getAuthenticatedUserEmail();
+    Long branchId = userService.findBranchIdByUserEmail(userEmail).orElse(null);
+
+    return productRepository.findProductsBySellPrice(sellPrice, branchId).stream()
+        .map(productMapper::convertToProductBaseDTO)
         .collect(Collectors.toList());
   }
 }

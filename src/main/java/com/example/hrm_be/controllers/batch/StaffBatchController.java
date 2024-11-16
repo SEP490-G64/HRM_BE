@@ -91,6 +91,25 @@ public class StaffBatchController {
     return ResponseEntity.ok(response);
   }
 
+  // Handles GET requests to retrieve a single Batch by ID
+  @GetMapping("/expired-batch")
+  protected ResponseEntity<BaseOutput<List<Batch>>> getByExpiredBatch(
+      @RequestParam(defaultValue = "0") Long days) {
+
+    LocalDateTime now = LocalDateTime.now();
+    // Retrieve Batch by ID
+    List<Batch> list = batchService.getExpiredBatchesInDays(now, days);
+
+    // Building success response
+    BaseOutput<List<Batch>> response =
+        BaseOutput.<List<Batch>>builder()
+            .message(HttpStatus.OK.toString())
+            .data(list)
+            .status(com.example.hrm_be.commons.enums.ResponseStatus.SUCCESS)
+            .build();
+    return ResponseEntity.ok(response);
+  }
+
   // Handles POST requests to create a new Batch
   @PostMapping()
   protected ResponseEntity<BaseOutput<Batch>> create(

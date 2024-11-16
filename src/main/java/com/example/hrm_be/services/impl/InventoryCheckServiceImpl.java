@@ -7,6 +7,7 @@ import com.example.hrm_be.commons.constants.HrmConstant.ERROR.BRANCHPRODUCT;
 import com.example.hrm_be.commons.constants.HrmConstant.ERROR.INVENTORY_CHECK;
 import com.example.hrm_be.commons.constants.HrmConstant.ERROR.PRODUCT;
 import com.example.hrm_be.commons.enums.InventoryCheckStatus;
+import com.example.hrm_be.commons.enums.NotificationType;
 import com.example.hrm_be.components.BranchBatchMapper;
 import com.example.hrm_be.components.BranchMapper;
 import com.example.hrm_be.components.InventoryCheckMapper;
@@ -19,6 +20,7 @@ import com.example.hrm_be.models.dtos.BranchProduct;
 import com.example.hrm_be.models.dtos.InventoryCheck;
 import com.example.hrm_be.models.dtos.InventoryCheckDetails;
 import com.example.hrm_be.models.dtos.InventoryCheckProductDetails;
+import com.example.hrm_be.models.dtos.Notification;
 import com.example.hrm_be.models.dtos.Product;
 import com.example.hrm_be.models.entities.BranchEntity;
 import com.example.hrm_be.models.entities.InventoryCheckEntity;
@@ -32,6 +34,7 @@ import com.example.hrm_be.services.BranchService;
 import com.example.hrm_be.services.InventoryCheckDetailsService;
 import com.example.hrm_be.services.InventoryCheckProductDetailsService;
 import com.example.hrm_be.services.InventoryCheckService;
+import com.example.hrm_be.services.NotificationService;
 import com.example.hrm_be.services.ProductService;
 import com.example.hrm_be.services.UserService;
 import com.example.hrm_be.utils.WplUtil;
@@ -64,6 +67,7 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
   @Autowired private BranchBatchService branchBatchService;
   @Autowired private BranchProductService branchProductService;
   @Autowired private ProductService productService;
+  @Autowired private NotificationService notificationService;
   @Autowired private BatchService batchService;
   @Autowired private InventoryCheckDetailsService inventoryCheckDetailsService;
   @Autowired private InventoryCheckProductDetailsService inventoryCheckProductDetailsService;
@@ -437,6 +441,26 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
           branchProduct.getQuantity().subtract(BigDecimal.valueOf(batchDetail.getDifference())));
       branchProductService.save(branchProduct);
     }
+    // Notification for Manager
+
+    String message =
+        "🔔 Thông báo: Phiều kiểm "
+            + unsavedInventoryCheck.getCode()
+            + " đã được thêm vào hệ"
+            + " "
+            + "thống "
+            + "bởi "
+            + unsavedInventoryCheck.getCreatedBy().getUserName();
+
+    Notification notification = new Notification();
+    notification.setMessage(message);
+    notification.setNotiName("Nhập phiếu vào kho");
+    notification.setNotiType(NotificationType.NHAP_PHIEU_VAO_HE_THONG);
+    notification.setCreatedDate(LocalDateTime.now());
+
+    notificationService.sendNotification(
+        notification,
+        userService.findAllManagerByBranchId(unsavedInventoryCheck.getBranch().getId()));
     return null;
   }
 
@@ -463,6 +487,25 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
     InventoryCheck inventoryCheck = getById(id);
     if (inventoryCheck == null) {
       throw new HrmCommonException(INVENTORY_CHECK.NOT_EXIST);
+    }
+    if (status.isWaitingForApprove()) {
+      // Notification for Manager
+
+      String message =
+          "🔔 Thông báo: Phiều kiểm "
+              + inventoryCheck.getCode()
+              + "đang chờ duyệt "
+              + "bởi "
+              + inventoryCheck.getCreatedBy().getUserName();
+
+      Notification notification = new Notification();
+      notification.setMessage(message);
+      notification.setNotiName(NotificationType.YEU_CAU_DUYET.getDisplayName());
+      notification.setNotiType(NotificationType.YEU_CAU_DUYET);
+      notification.setCreatedDate(LocalDateTime.now());
+
+      notificationService.sendNotification(
+          notification, userService.findAllManagerByBranchId(inventoryCheck.getBranch().getId()));
     }
     inventoryCheckRepository.updateInboundStatus(status, id);
   }

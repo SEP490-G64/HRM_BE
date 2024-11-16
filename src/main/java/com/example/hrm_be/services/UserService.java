@@ -65,4 +65,10 @@ public interface UserService {
   void changePassword(User user, ChangePasswordRequest request);
 
   Optional<Long> findBranchIdByUserEmail(String loggedEmail);
+
+  List<User> findAllByIds(List<Long> id);
+
+  List<User> findAllManagerByBranchId(Long branchId);
+
+  List<User> getUserByBranchId(Long branchId);
 }

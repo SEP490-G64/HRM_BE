@@ -7,6 +7,7 @@ import com.example.hrm_be.models.dtos.ProductSupplierDTO;
 import com.example.hrm_be.models.entities.AllowedProductEntity;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -49,4 +50,11 @@ public interface ProductService {
 
   List<ProductBaseDTO> getProductInBranch(
       Long branchId, String keyword, Boolean checkValid, Long supplierId);
+
+  List<ProductBaseDTO> filterProducts(
+      Boolean lessThanOrEqual, Integer quantity, Boolean warning, Boolean outOfStock);
+
+  List<ProductBaseDTO> getProductsWithLossOrNoSellPriceInBranch();
+
+  List<ProductBaseDTO> getProductsBySellPrice(BigDecimal sellPrice);
 }
