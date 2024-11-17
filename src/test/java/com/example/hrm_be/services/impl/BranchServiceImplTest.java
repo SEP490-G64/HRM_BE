@@ -1,5 +1,4 @@
 package com.example.hrm_be.services.impl;
-
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import com.example.hrm_be.commons.enums.BranchType;
@@ -26,19 +25,21 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class BranchServiceImplTest {
 
-  @Mock private BranchMapper branchMapper;
+  @Mock
+  private BranchMapper branchMapper;
 
-  @Mock private BranchRepository branchRepository;
+  @Mock
+  private BranchRepository branchRepository;
 
-  @InjectMocks private BranchServiceImpl branchService;
+  @InjectMocks
+  private BranchServiceImpl branchService;
 
   private Branch branch;
   private BranchEntity branchEntity;
 
   @BeforeEach
   public void setup() {
-    branch =
-        Branch.builder()
+    branch = Branch.builder()
             .branchName("Valid Branch Name")
             .branchType(BranchType.MAIN)
             .location("Valid Location")
@@ -48,8 +49,7 @@ public class BranchServiceImplTest {
             .activeStatus(true)
             .build();
 
-    branchEntity =
-        BranchEntity.builder()
+    branchEntity = BranchEntity.builder()
             .branchName("Valid Branch Name")
             .branchType(BranchType.MAIN)
             .location("Valid Location")
@@ -70,23 +70,19 @@ public class BranchServiceImplTest {
     // Create a Page object using the list of BranchEntity and the Pageable
     Page<BranchEntity> page = new PageImpl<>(branches, pageable, branches.size());
 
-    // Mock the repository method findByBranchNameOrLocationAndBranchType to return the Page of
-    // BranchEntity
+    // Mock the repository method findByBranchNameOrLocationAndBranchType to return the Page of BranchEntity
     when(branchRepository.findByBranchNameOrLocationAndBranchType(
-            "a", BranchType.MAIN, true, pageable))
-        .thenReturn(page);
+            "a", BranchType.MAIN, true, pageable)).thenReturn(page);
 
     // Mock the branchMapper's toDTO method to return the Branch DTO
     when(branchMapper.toDTO(Mockito.any(BranchEntity.class))).thenReturn(branch);
 
     // Call the method to be tested
-    Page<Branch> result =
-        branchService.getByPaging(0, 10, "branchName", "a", BranchType.MAIN, Boolean.TRUE);
+    Page<Branch> result = branchService.getByPaging(0, 10, "branchName", "a", BranchType.MAIN, Boolean.TRUE);
 
     // Verify that the result is not null
     Assertions.assertNotNull(result);
   }
-
   @Test
   void testUTCID01_Get_idValid() {
     Long id = 1L;
@@ -100,14 +96,12 @@ public class BranchServiceImplTest {
 
     Assertions.assertNotNull(result);
   }
-
-  // UTCID02 - Get: id null
+  //UTCID02 - Get: id null
   @Test
   void testUTCID02_Get_idNull() {
     // Given: id is null
     Long id = null;
-    // Then: The service method should throw HrmCommonException when trying to get a branch by null
-    // id
+    // Then: The service method should throw HrmCommonException when trying to get a branch by null id
     assertThrows(HrmCommonException.class, () -> branchService.getById(id));
   }
 
@@ -129,16 +123,13 @@ public class BranchServiceImplTest {
     List<BranchEntity> branches = Collections.singletonList(branchEntity);
     // Create a Page object using the list of BranchEntity and the Pageable
     Page<BranchEntity> page = new PageImpl<>(branches, pageable, branches.size());
-    // Mock the repository method findByBranchNameOrLocationAndBranchType to return the Page of
-    // BranchEntity
+    // Mock the repository method findByBranchNameOrLocationAndBranchType to return the Page of BranchEntity
     when(branchRepository.findByBranchNameOrLocationAndBranchType(
-            "a", BranchType.MAIN, true, pageable))
-        .thenReturn(page);
+            "a", BranchType.MAIN, true, pageable)).thenReturn(page);
     // Mock the branchMapper's toDTO method to return the Branch DTO
     when(branchMapper.toDTO(Mockito.any(BranchEntity.class))).thenReturn(branch);
     // Call the method to be tested
-    Page<Branch> result =
-        branchService.getByPaging(0, 10, "branchName", "a", BranchType.MAIN, Boolean.TRUE);
+    Page<Branch> result = branchService.getByPaging(0, 10, "branchName", "a", BranchType.MAIN, Boolean.TRUE);
     // Verify that the result is not null
     Assertions.assertNotNull(result);
   }
@@ -146,50 +137,44 @@ public class BranchServiceImplTest {
   // UTCID02 - getByPaging: pageNo invalid
   @Test
   void testUTCID02_GetByPaging_pageNoInvalid() {
-    assertThrows(
-        HrmCommonException.class,
-        () -> {
-          branchService.getByPaging(-1, 10, "branchName", "a", BranchType.MAIN, Boolean.TRUE);
-        });
+    assertThrows(HrmCommonException.class, () -> {
+      branchService.getByPaging(-1, 10, "branchName", "a", BranchType.MAIN, Boolean.TRUE);
+    });
   }
 
-  // UTCID03 - getByPaging: pageSize invalid
+    // UTCID03 - getByPaging: pageSize invalid
   @Test
   void testUTCID03_GetByPaging_pageSizeInvalid() {
-    assertThrows(
-        HrmCommonException.class,
-        () -> {
-          branchService.getByPaging(0, 0, "branchName", "a", BranchType.MAIN, Boolean.TRUE);
-        });
+    assertThrows(HrmCommonException.class, () -> {
+      branchService.getByPaging(0, 0, "branchName", "a", BranchType.MAIN, Boolean.TRUE);
+    });
   }
 
-  // UTCID04 - getByPaging: sortBy invalid
+    // UTCID04 - getByPaging: sortBy invalid
   @Test
   void testUTCID04_GetByPaging_sortByInvalid() {
-    assertThrows(
-        HrmCommonException.class,
-        () -> {
-          branchService.getByPaging(0, 0, "a", "a", BranchType.MAIN, Boolean.TRUE);
-        });
+    assertThrows(HrmCommonException.class, () -> {
+      branchService.getByPaging(0, 0, "a", "a", BranchType.MAIN, Boolean.TRUE);
+    });
   }
 
-  // CREATE
+    // CREATE
   // UTCID01 - create: all valid
-  @Test
-  void testUTCID01_Create_AllValid() {
-    // Mock the mapper to convert branch DTO to entity
-    when(branchMapper.toEntity(branch)).thenReturn(branchEntity);
+    @Test
+    void testUTCID01_Create_AllValid() {
+      // Mock the mapper to convert branch DTO to entity
+      when(branchMapper.toEntity(branch)).thenReturn(branchEntity);
 
-    // Mock saving the branch entity and returning the same entity
-    when(branchRepository.save(branchEntity)).thenReturn(branchEntity);
+      // Mock saving the branch entity and returning the same entity
+      when(branchRepository.save(branchEntity)).thenReturn(branchEntity);
 
-    // Mock converting the saved entity back to a DTO (if necessary)
-    when(branchMapper.toDTO(branchEntity)).thenReturn(branch);
+      // Mock converting the saved entity back to a DTO (if necessary)
+      when(branchMapper.toDTO(branchEntity)).thenReturn(branch);
 
-    // Call the create method and verify it's not null
-    Branch result = branchService.create(branch);
-    Assertions.assertNotNull(result); // Verify that the returned result is not null
-  }
+      // Call the create method and verify it's not null
+      Branch result = branchService.create(branch);
+      Assertions.assertNotNull(result);  // Verify that the returned result is not null
+    }
 
   // UTCID02 - create: branchName null
   @Test
@@ -236,7 +221,8 @@ public class BranchServiceImplTest {
   // UTCID09 - create: location duplicate
   @Test
   void testUTCID09_Create_locationDuplicate() {
-    branchEntity.setLocation("location already exists");
+    branchEntity.setLocation("location same");
+    branch.setLocation("location same");
     when(branchRepository.existsByLocation(branchEntity.getLocation())).thenReturn(true);
     assertThrows(HrmCommonException.class, () -> branchService.create(branch));
   }
@@ -303,7 +289,7 @@ public class BranchServiceImplTest {
   @Test
   void testUTCID01_Update_AllValid() {
     // Set up the mock branch and branchEntity
-    branch.setId(1L); // Set the ID of the branch you're testing
+    branch.setId(1L);  // Set the ID of the branch you're testing
     branchEntity.setId(1L);
     // Set other properties as needed to match what your `branch` object should contain
 
@@ -321,6 +307,7 @@ public class BranchServiceImplTest {
 
     // Verify the result is not null
     Assertions.assertNotNull(result);
+
   }
 
   // UTCID02 - UPDATE: branchName null
@@ -383,11 +370,9 @@ public class BranchServiceImplTest {
 
     // Simulate the repository returning the existing branch entity
     when(branchRepository.findById(branch.getId())).thenReturn(Optional.of(branchEntity));
-    when(branchRepository.existsByLocation(branch.getLocation()))
-        .thenReturn(true); // Simulate name conflict
+    when(branchRepository.existsByLocation(branch.getLocation())).thenReturn(true); // Simulate name conflict
 
-    // Call the update method and expect an exception (the name is changed and conflicts with an
-    // existing name)
+    // Call the update method and expect an exception (the name is changed and conflicts with an existing name)
     Assertions.assertThrows(HrmCommonException.class, () -> branchService.update(branch));
   }
 
@@ -468,8 +453,7 @@ public class BranchServiceImplTest {
     branch.setId(1L);
     // Simulate the repository returning the existing branch entity
     when(branchRepository.findById(branch.getId())).thenReturn(Optional.empty());
-    // Call the update method and expect an exception (the name is changed and conflicts with an
-    // existing name)
+    // Call the update method and expect an exception (the name is changed and conflicts with an existing name)
     Assertions.assertThrows(HrmCommonException.class, () -> branchService.update(branch));
   }
 
@@ -479,7 +463,7 @@ public class BranchServiceImplTest {
   void testUTCID01_Delete_AllValid() {
     branch.setId(1L);
     when(branchRepository.findById(branch.getId())).thenReturn(Optional.of(branchEntity));
-    branchService.delete(branch.getId());
+      branchService.delete(branch.getId());
   }
 
   // UTCID02 - Delete: id null
