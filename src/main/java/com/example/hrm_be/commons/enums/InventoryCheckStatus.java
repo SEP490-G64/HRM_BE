@@ -7,6 +7,10 @@ public enum InventoryCheckStatus {
   CHO_DUYET("Chờ duyệt"),
   DA_CAN_BANG("Đã cân bằng");
 
+  public boolean isWaitingForApprove() {
+    return this == CHO_DUYET;
+  }
+
   private final String displayName;
 
   InventoryCheckStatus(String displayName) {

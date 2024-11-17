@@ -51,4 +51,7 @@ public class UserEntity extends CommonEntity {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "branch_id", foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
   BranchEntity branch;
+
+  @OneToMany(mappedBy = "user")
+  List<NotificationUserEntity> notifications;
 }

@@ -3,19 +3,25 @@ package com.example.hrm_be.services.impl;
 import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.commons.enums.BatchStatus;
 import com.example.hrm_be.components.BatchMapper;
+import com.example.hrm_be.components.ProductMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.Batch;
 import com.example.hrm_be.models.dtos.Product;
 import com.example.hrm_be.models.entities.BatchEntity;
 import com.example.hrm_be.repositories.BatchRepository;
 import com.example.hrm_be.services.BatchService;
+import com.example.hrm_be.services.UserService;
 import jakarta.persistence.criteria.Predicate;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+
+import jakarta.persistence.criteria.Predicate;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -34,12 +40,15 @@ public class BatchServiceImpl implements BatchService {
   // Injects the mapper to convert between DTO and Entity objects for batches
   @Autowired private BatchMapper batchMapper;
 
+  @Autowired private ProductMapper productMapper;
+  @Autowired private UserService userService;
+
   // Retrieves a Batch by its ID
   @Override
   public Batch getById(Long id) {
     // Validation: Check if the ID is null
     if (id == null) {
-      throw new HrmCommonException(HrmConstant.ERROR.TYPE.INVALID);
+      throw new HrmCommonException(HrmConstant.ERROR.REQUEST.INVALID);
     }
 
     return Optional.ofNullable(id)
@@ -206,6 +215,11 @@ public class BatchServiceImpl implements BatchService {
   }
 
   @Override
+  public List<Batch> getBatchesByProductThroughInbound(Long productId) {
+    return null;
+  }
+
+  @Override
   public Batch addBatchInInbound(Batch batch, Product product) {
 
     Optional<BatchEntity> existingBatch =
@@ -260,5 +274,27 @@ public class BatchServiceImpl implements BatchService {
     }
 
     return true;
+  }
+
+  @Override
+  public List<Batch> getExpiredBatches(LocalDateTime now) {
+    return batchRepository.findExpiredBatches(now).stream()
+        .map(batchMapper::toDTO)
+        .collect(Collectors.toList());
+  }
+
+  @Override
+  public List<Batch> getExpiredBatchesInDays(LocalDateTime now, Long days) {
+    // Calculate the end date for the expiry range
+    LocalDateTime expiryDate = now.plusDays(days);
+    String userEmail = userService.getAuthenticatedUserEmail();
+    Long branchId = userService.findBranchIdByUserEmail(userEmail).orElse(null);
+    // Query the repository to find batches that expire within the specified range
+    return batchRepository.findBatchesExpiringInDays(now, expiryDate, branchId).stream()
+        // Map each BatchEntity to the corresponding Product object
+        // Convert the Product to the ProductBaseDTO using the mapper
+        .map(batchMapper::convertToDtoBasicInfo)
+        // Collect the results into a List
+        .collect(Collectors.toList());
   }
 }

@@ -1,5 +1,6 @@
 package com.example.hrm_be.repositories;
 
+import com.example.hrm_be.commons.enums.RoleType;
 import com.example.hrm_be.commons.enums.UserStatusType;
 import com.example.hrm_be.models.entities.RoleEntity;
 import com.example.hrm_be.models.entities.UserEntity;
@@ -48,6 +49,9 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
   @Query("DELETE FROM UserEntity u WHERE u.id IN :ids")
   void deleteByIds(@Param("ids") List<Long> ids);
 
+  @Query("SELECT  u FROM UserEntity u WHERE u.id IN :ids")
+  List<UserEntity> findByIds(@Param("ids") List<Long> ids);
+
   @Query(
       "SELECT role FROM UserEntity user "
           + "JOIN user.userRoleMap urm "
@@ -63,4 +67,13 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
   @Query("SELECT u.branch.id FROM UserEntity u WHERE u.email = :userEmail")
   Optional<Long> findBranchIdByUserEmail(@Param("userEmail") String userEmail);
+
+  List<UserEntity> findByBranch_Id(Long branchId);
+
+  @Query(
+      "SELECT user FROM UserEntity user "
+          + "JOIN user.userRoleMap urm "
+          + "JOIN urm.role role "
+          + "WHERE user.branch.id = :branchId AND role.type= :roleType")
+  List<UserEntity> findAllByBranchIdAndRoleType(Long branchId, RoleType roleType);
 }

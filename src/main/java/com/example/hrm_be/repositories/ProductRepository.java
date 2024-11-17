@@ -2,6 +2,7 @@ package com.example.hrm_be.repositories;
 
 import com.example.hrm_be.commons.enums.ProductStatus;
 import com.example.hrm_be.models.entities.ProductEntity;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
@@ -52,8 +53,40 @@ public interface ProductRepository
   List<ProductEntity> findProductBySupplierAndName(
       @Param("supplierId") Long supplierId, @Param("productName") String productName);
 
+  // Condition for quantity less than or equal
+  @Query(
+      "SELECT p FROM ProductEntity p left join fetch p.branchProducs bp WHERE :quantity >"
+          + " bp.quantity AND bp.branch.id = :id")
+  List<ProductEntity> findByQuantityLessThanEqualInBranch(
+      @Param("quantity") Integer quantity, @Param("id") Long id);
+
+  @Query(
+      "SELECT p FROM ProductEntity p left join fetch p.branchProducs bp WHERE bp.quantity<"
+          + " bp.minQuantity AND bp.branch.id = :id")
+  List<ProductEntity> findByQuantityLessThanMinQuantityInBranch(@Param("id") Long id);
+
+  @Query(
+      "SELECT p FROM ProductEntity p left join fetch p.branchProducs bp WHERE bp.quantity= "
+          + ":quantity AND bp.branch.id = :id")
+  List<ProductEntity> findByQuantityInBranch(
+      @Param("quantity") Integer quantity, @Param("id") Long id);
+
   @Modifying
   @Transactional
   @Query("UPDATE ProductEntity i SET i.status = :status WHERE i.id = :id")
   void updateProductStatus(@Param("status") ProductStatus status, @Param("id") Long id);
+
+  @Query(
+      "SELECT p FROM ProductEntity p "
+          + "LEFT JOIN FETCH p.branchProducs bp "
+          + "WHERE (p.sellPrice < p.inboundPrice OR p.sellPrice IS NULL OR p.sellPrice = 0) "
+          + "AND bp.branch.id = :id")
+  List<ProductEntity> findProductsWithLossOrNoSellPriceInBranch(@Param("id") Long id);
+
+  @Query(
+      "SELECT p FROM ProductEntity p "
+          + "LEFT JOIN FETCH p.branchProducs bp "
+          + "WHERE (p.sellPrice = :sellPrice) AND bp.branch.id = :id")
+  List<ProductEntity> findProductsBySellPrice(
+      @Param("sellPrice") BigDecimal sellPrice, @Param("id") Long id);
 }

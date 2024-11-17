@@ -6,6 +6,7 @@ import com.example.hrm_be.commons.constants.HrmConstant.ERROR.INBOUND;
 import com.example.hrm_be.commons.constants.HrmConstant.ERROR.SUPPLIER;
 import com.example.hrm_be.commons.enums.InboundStatus;
 import com.example.hrm_be.commons.enums.InboundType;
+import com.example.hrm_be.commons.enums.NotificationType;
 import com.example.hrm_be.components.*;
 import com.example.hrm_be.components.BranchMapper;
 import com.example.hrm_be.components.InboundMapper;
@@ -13,6 +14,13 @@ import com.example.hrm_be.components.UnitOfMeasurementMapper;
 import com.example.hrm_be.components.UserMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.*;
+import com.example.hrm_be.models.entities.BatchEntity;
+import com.example.hrm_be.models.entities.BranchEntity;
+import com.example.hrm_be.models.entities.InboundEntity;
+import com.example.hrm_be.models.entities.ProductEntity;
+import com.example.hrm_be.models.entities.ProductSuppliersEntity;
+import com.example.hrm_be.models.entities.SupplierEntity;
+import com.example.hrm_be.models.entities.UserEntity;
 import com.example.hrm_be.models.entities.*;
 import com.example.hrm_be.models.dtos.*;
 import com.example.hrm_be.models.requests.CreateInboundRequest;
@@ -62,6 +70,7 @@ public class InboundServiceImpl implements InboundService {
   @Autowired private UserService userService;
   @Autowired private ProductService productService;
   @Autowired private BatchService batchService;
+  @Autowired private NotificationService notificationService;
   @Autowired private BranchBatchService branchBatchService;
   @Autowired private BranchProductService branchProductService;
   @Autowired private ProductSupplierService productSupplierService;
@@ -476,7 +485,24 @@ public class InboundServiceImpl implements InboundService {
         inboundDetailsService.updateAverageInboundPricesForProductsAndInboundTotalPrice(
             inboundEntity);
     inboundRepository.save(inbound);
+    // Notification for Manager
 
+    String message =
+        "🔔 Thông báo: Phiều nhập "
+            + inbound.getInboundCode()
+            + " đã được thêm vào hệ"
+            + " thống "
+            + "bởi "
+            + inbound.getCreatedBy().getUserName();
+
+    Notification notification = new Notification();
+    notification.setMessage(message);
+    notification.setNotiName("Nhập phiếu vào kho");
+    notification.setNotiType(NotificationType.NHAP_PHIEU_VAO_HE_THONG);
+    notification.setCreatedDate(LocalDateTime.now());
+
+    notificationService.sendNotification(
+        notification, userService.findAllManagerByBranchId(inbound.getFromBranch().getId()));
     // Return the updated inbound entity (or any other response you need)
     return inboundMapper.convertToBasicInfo(
         inboundEntity); // You can return a DTO or any other object
@@ -516,9 +542,28 @@ public class InboundServiceImpl implements InboundService {
 
   @Override
   public void updateInboundStatus(InboundStatus status, Long id) {
-    Optional<InboundEntity> inbound = inboundRepository.findById(id);
-    if (inbound.isEmpty()) {
+    InboundEntity inbound = inboundRepository.findById(id).orElse(null);
+    if (inbound == null) {
       throw new HrmCommonException(INBOUND.NOT_EXIST);
+    }
+    if (status.isWaitingForApprove()) {
+      // Notification for Manager
+
+      String message =
+          "🔔 Thông báo: Phiều nhập "
+              + inbound.getInboundCode()
+              + "đang chờ duyệt "
+              + "bởi "
+              + inbound.getCreatedBy().getUserName();
+
+      Notification notification = new Notification();
+      notification.setMessage(message);
+      notification.setNotiName(NotificationType.YEU_CAU_DUYET.getDisplayName());
+      notification.setNotiType(NotificationType.YEU_CAU_DUYET);
+      notification.setCreatedDate(LocalDateTime.now());
+
+      notificationService.sendNotification(
+          notification, userService.findAllManagerByBranchId(inbound.getFromBranch().getId()));
     }
     inboundRepository.updateInboundStatus(status, id);
   }
