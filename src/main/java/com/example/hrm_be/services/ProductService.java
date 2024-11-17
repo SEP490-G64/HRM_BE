@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface ProductService {
@@ -57,4 +58,6 @@ public interface ProductService {
   List<ProductBaseDTO> getProductsWithLossOrNoSellPriceInBranch();
 
   List<ProductBaseDTO> getProductsBySellPrice(BigDecimal sellPrice);
+
+  List<ProductBaseDTO> getByKeyword(String keyword);
 }

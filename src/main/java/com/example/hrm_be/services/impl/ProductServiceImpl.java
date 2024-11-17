@@ -61,7 +61,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class ProductServiceImpl implements ProductService {
   @Autowired private ProductRepository productRepository;
   @Autowired private AllowedProductRepository allowedProductRepository;
-  @Autowired private BranchProductRepository branchProductRepository;
 
   @Autowired private UserService userService;
   @Autowired private ProductCategoryService productCategoryService;
@@ -79,8 +78,6 @@ public class ProductServiceImpl implements ProductService {
   @Autowired private StorageLocationMapper storageLocationMapper;
   @Autowired private UnitConversionMapper unitConversionMapper;
   @Autowired private AllowedProductService allowedProductService;
-  @Autowired private BatchRepository batchRepository;
-  @Autowired private NotificationService notificationService;
 
   @Override
   public Product getById(Long id) {
@@ -847,5 +844,14 @@ public class ProductServiceImpl implements ProductService {
     return productRepository.findProductsBySellPrice(sellPrice, branchId).stream()
         .map(productMapper::convertToProductBaseDTO)
         .collect(Collectors.toList());
+  }
+
+  @Override
+  public List<ProductBaseDTO> getByKeyword(String keyword) {
+    return productRepository
+            .findProductEntitiesByProductNameContainingIgnoreCase(keyword, null)
+            .stream()
+            .map(productMapper::convertToProductForSearchInNotes)
+            .collect(Collectors.toList());
   }
 }

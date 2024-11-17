@@ -1,6 +1,8 @@
 package com.example.hrm_be.controllers.inventoryCheck;
 
 import com.example.hrm_be.commons.constants.HrmConstant;
+import com.example.hrm_be.commons.enums.InboundStatus;
+import com.example.hrm_be.commons.enums.InboundType;
 import com.example.hrm_be.commons.enums.InventoryCheckStatus;
 import com.example.hrm_be.commons.enums.ResponseStatus;
 import com.example.hrm_be.models.dtos.InventoryCheck;
@@ -10,6 +12,8 @@ import com.example.hrm_be.services.InventoryCheckService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotNull;
+
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,8 +39,14 @@ public class StaffInventoryCheckController {
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "20") int size,
       @RequestParam(required = false, defaultValue = "id") String sortBy,
-      @RequestParam(required = false, defaultValue = "") String keyword) {
-    Page<InventoryCheck> InventoryCheckPage = inventoryCheckService.getByPaging(page, size, sortBy);
+      @RequestParam(required = false, defaultValue = "") String keyword,
+      @RequestParam(required = false, defaultValue = "DESC") String direction,
+      @RequestParam(required = false) Long branchId,
+      @RequestParam(required = false) LocalDateTime startDate,
+      @RequestParam(required = false) LocalDateTime endDate,
+      @RequestParam(required = false) InventoryCheckStatus status) {
+    Page<InventoryCheck> InventoryCheckPage = inventoryCheckService.getByPaging
+            (page, size, sortBy, direction, branchId, keyword, startDate, endDate, status);
 
     // Build the response with pagination details
     BaseOutput<List<InventoryCheck>> response =

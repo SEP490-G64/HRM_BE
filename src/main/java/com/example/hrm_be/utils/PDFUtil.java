@@ -1,5 +1,6 @@
 package com.example.hrm_be.utils;
 
+import com.example.hrm_be.commons.enums.OutboundType;
 import com.example.hrm_be.models.dtos.*;
 import com.example.hrm_be.models.responses.InboundDetail;
 import com.itextpdf.text.*;
@@ -757,10 +758,21 @@ public class PDFUtil {
       document.add(Chunk.NEWLINE);
 
       // Supplier and invoice details
+      String client = "Khách mua";
+      if (outbound.getOutboundType() == OutboundType.TRA_HANG) {
+        client = outbound.getSupplier().getSupplierName();
+      }
+      else if (outbound.getOutboundType() == OutboundType.HUY_HANG) {
+        client = outbound.getFromBranch().getBranchName();
+      }
       document.add(
-          new Paragraph("Khách Hàng: " + outbound.getSupplier().getSupplierName(), fontSubTitle));
+          new Paragraph("Khách Hàng: " + client, fontSubTitle));
+      String address = "";
+      if (outbound.getOutboundType() == OutboundType.TRA_HANG) {
+        address = outbound.getSupplier().getAddress();
+      }
       document.add(
-          new Paragraph("Địa chỉ: " + outbound.getSupplier().getPhoneNumber(), fontSubTitle));
+          new Paragraph("Địa chỉ: " + address, fontSubTitle));
       document.add(new Paragraph("Lý do: " + outbound.getNote(), fontSubTitle));
       document.add(
           new Paragraph("Xuất Tại: " + outbound.getFromBranch().getBranchName(), fontSubTitle));

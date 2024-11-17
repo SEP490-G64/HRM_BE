@@ -6,13 +6,23 @@ import com.example.hrm_be.models.requests.CreateInventoryCheckRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 @Service
 public interface InventoryCheckService {
   InventoryCheck getById(Long id);
 
   InventoryCheck getInventoryCheckDetailById(Long id);
 
-  Page<InventoryCheck> getByPaging(int pageNo, int pageSize, String sortBy);
+  Page<InventoryCheck> getByPaging(int pageNo,
+                                              int pageSize,
+                                              String sortBy,
+                                              String direction,
+                                              Long branchId,
+                                              String keyword,
+                                              LocalDateTime startDate,
+                                              LocalDateTime endDate,
+                                              InventoryCheckStatus status);
 
   InventoryCheck create(InventoryCheck inventoryCheck);
 

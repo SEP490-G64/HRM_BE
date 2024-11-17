@@ -171,6 +171,7 @@ public class OutboundServiceImpl implements OutboundService {
       int pageSize,
       String sortBy,
       String direction,
+      Long branchId,
       String keyword,
       LocalDateTime startDate,
       LocalDateTime endDate,
@@ -182,13 +183,10 @@ public class OutboundServiceImpl implements OutboundService {
             ? Sort.by(sortBy).ascending()
             : Sort.by(sortBy).descending(); // Default is descending
 
-    String email = userService.getAuthenticatedUserEmail();
-    UserEntity userEntity = userMapper.toEntity(userService.findLoggedInfoByEmail(email));
-
     Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
 
     Specification<OutboundEntity> specification =
-        getSpecification(userEntity.getBranch().getId(), keyword, startDate, endDate, status, type);
+        getSpecification(branchId, keyword, startDate, endDate, status, type);
     return outboundRepository
         .findAll(specification, pageable)
         .map(dao -> outboundMapper.toDTO(dao));
@@ -204,15 +202,15 @@ public class OutboundServiceImpl implements OutboundService {
     return (root, query, criteriaBuilder) -> {
       List<Predicate> predicates = new ArrayList<>();
 
-      // Get inbound in registered user's branch
+      // Get outbound in registered user's branch
       predicates.add(criteriaBuilder.equal(root.get("fromBranch").get("id"), branchId));
 
-      // Get inbound have code containing keyword
+      // Get outbound have code containing keyword
       if (keyword != null && !keyword.isEmpty()) {
         predicates.add(criteriaBuilder.like(root.get("outboundCode"), "%" + keyword + "%"));
       }
 
-      // Get inbound in time range
+      // Get outbound in time range
       if (startDate != null) {
         predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("createdDate"), startDate));
       }
@@ -403,7 +401,7 @@ public class OutboundServiceImpl implements OutboundService {
             .outboundCode(request.getOutboundCode())
             .createdDate(
                 request.getCreatedDate() != null ? request.getCreatedDate() : LocalDateTime.now())
-            .status(OutboundStatus.BAN_NHAP)
+            .status(OutboundStatus.HOAN_THANH)
             .outboundType(OutboundType.BAN_HANG)
             .createdBy(request.getCreatedBy())
             .toBranch(branchMapper.convertToDTOBasicInfo(outboundEntity.getToBranch()))
@@ -632,7 +630,6 @@ public class OutboundServiceImpl implements OutboundService {
           }
         }
       }
-      productDetail.setPrice(updateOutboundProductDetailPrice);
       totalPrice = totalPrice.add(updateOutboundProductDetailPrice);
       outboundProductDetailEntities.add(outboundProductDetailMapper.toEntity(productDetail));
     }
@@ -685,14 +682,9 @@ public class OutboundServiceImpl implements OutboundService {
           }
         }
       }
-      batchDetail.setPrice(updateOutboundDetailPrice);
       totalPrice = totalPrice.add(updateOutboundDetailPrice);
       outboundDetailEntities.add(outboundDetailMapper.toEntity(batchDetail));
     }
-
-    // Save all outbound details to the repositories
-    outboundDetailService.saveAll(outboundDetailEntities);
-    outboundProductDetailService.saveAll(outboundProductDetailEntities);
 
     // Update the Outbound status and save it
     outboundEntity.setStatus(OutboundStatus.KIEM_HANG);

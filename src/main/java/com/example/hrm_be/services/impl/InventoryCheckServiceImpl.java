@@ -6,8 +6,7 @@ import com.example.hrm_be.commons.constants.HrmConstant.ERROR.BRANCHBATCH;
 import com.example.hrm_be.commons.constants.HrmConstant.ERROR.BRANCHPRODUCT;
 import com.example.hrm_be.commons.constants.HrmConstant.ERROR.INVENTORY_CHECK;
 import com.example.hrm_be.commons.constants.HrmConstant.ERROR.PRODUCT;
-import com.example.hrm_be.commons.enums.InventoryCheckStatus;
-import com.example.hrm_be.commons.enums.NotificationType;
+import com.example.hrm_be.commons.enums.*;
 import com.example.hrm_be.components.BranchBatchMapper;
 import com.example.hrm_be.components.BranchMapper;
 import com.example.hrm_be.components.InventoryCheckMapper;
@@ -22,9 +21,7 @@ import com.example.hrm_be.models.dtos.InventoryCheckDetails;
 import com.example.hrm_be.models.dtos.InventoryCheckProductDetails;
 import com.example.hrm_be.models.dtos.Notification;
 import com.example.hrm_be.models.dtos.Product;
-import com.example.hrm_be.models.entities.BranchEntity;
-import com.example.hrm_be.models.entities.InventoryCheckEntity;
-import com.example.hrm_be.models.entities.UserEntity;
+import com.example.hrm_be.models.entities.*;
 import com.example.hrm_be.models.requests.CreateInventoryCheckRequest;
 import com.example.hrm_be.repositories.InventoryCheckRepository;
 import com.example.hrm_be.services.BatchService;
@@ -45,11 +42,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import jakarta.persistence.criteria.Predicate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -63,7 +63,6 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
 
   @Autowired private UserService userService;
 
-  @Autowired private BranchService branchService;
   @Autowired private BranchBatchService branchBatchService;
   @Autowired private BranchProductService branchProductService;
   @Autowired private ProductService productService;
@@ -73,8 +72,6 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
   @Autowired private InventoryCheckProductDetailsService inventoryCheckProductDetailsService;
 
   @Autowired private UserMapper userMapper;
-  @Autowired private BranchMapper branchMapper;
-  @Autowired private BranchBatchMapper branchBatchMapper;
 
   @Override
   public InventoryCheck getById(Long id) {
@@ -171,11 +168,65 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
   }
 
   @Override
-  public Page<InventoryCheck> getByPaging(int pageNo, int pageSize, String sortBy) {
-    // Create a Pageable object for pagination and sorting
-    Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(sortBy).ascending());
-    // Retrieve paginated InventoryChecks and map them to DTOs
-    return inventoryCheckRepository.findAll(pageable).map(dao -> inventoryCheckMapper.toDTO(dao));
+  public Page<InventoryCheck> getByPaging(int pageNo,
+                                          int pageSize,
+                                          String sortBy,
+                                          String direction,
+                                          Long branchId,
+                                          String keyword,
+                                          LocalDateTime startDate,
+                                          LocalDateTime endDate,
+                                          InventoryCheckStatus status) {
+    // Check direction and set value for sort
+    Sort sort =
+            direction != null && direction.equalsIgnoreCase("ASC")
+                    ? Sort.by(sortBy).ascending()
+                    : Sort.by(sortBy).descending(); // Default is descending
+
+    Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+
+    Specification<InventoryCheckEntity> specification =
+            getSpecification(branchId, keyword, startDate, endDate, status);
+
+    return inventoryCheckRepository
+            .findAll(specification, pageable)
+            .map(dao -> inventoryCheckMapper.toDTO(dao));
+  }
+
+  private Specification<InventoryCheckEntity> getSpecification(
+          Long branchId,
+          String keyword,
+          LocalDateTime startDate,
+          LocalDateTime endDate,
+          InventoryCheckStatus status) {
+    return (root, query, criteriaBuilder) -> {
+      List<Predicate> predicates = new ArrayList<>();
+
+      // Get inventory check have code containing keyword
+      if (branchId != null) {
+        // Get inventory check in registered user's branch
+        predicates.add(criteriaBuilder.equal(root.get("branch").get("id"), branchId));
+      }
+
+      // Get inventory check have code containing keyword
+      if (keyword != null && !keyword.isEmpty()) {
+        predicates.add(criteriaBuilder.like(root.get("code"), "%" + keyword + "%"));
+      }
+
+      // Get inventory check in time range
+      if (startDate != null) {
+        predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("createdDate"), startDate));
+      }
+      if (endDate != null) {
+        predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("createdDate"), endDate));
+      }
+
+      if (status != null) {
+        predicates.add(criteriaBuilder.equal(root.get("status"), status));
+      }
+
+      return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+    };
   }
 
   @Override
