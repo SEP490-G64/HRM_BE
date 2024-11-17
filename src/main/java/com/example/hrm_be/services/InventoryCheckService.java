@@ -14,15 +14,16 @@ public interface InventoryCheckService {
 
   InventoryCheck getInventoryCheckDetailById(Long id);
 
-  Page<InventoryCheck> getByPaging(int pageNo,
-                                              int pageSize,
-                                              String sortBy,
-                                              String direction,
-                                              Long branchId,
-                                              String keyword,
-                                              LocalDateTime startDate,
-                                              LocalDateTime endDate,
-                                              InventoryCheckStatus status);
+  Page<InventoryCheck> getByPaging(
+      int pageNo,
+      int pageSize,
+      String sortBy,
+      String direction,
+      Long branchId,
+      String keyword,
+      LocalDateTime startDate,
+      LocalDateTime endDate,
+      InventoryCheckStatus status);
 
   InventoryCheck create(InventoryCheck inventoryCheck);
 

@@ -335,15 +335,15 @@ public class StaffProductController {
 
   @GetMapping("/get-by-keyword")
   public ResponseEntity<BaseOutput<List<ProductBaseDTO>>> getByKeyword(
-          @RequestParam(defaultValue = "") String keyword) {
+      @RequestParam(defaultValue = "") String keyword) {
     List<ProductBaseDTO> products = productService.getByKeyword(keyword);
 
     BaseOutput<List<ProductBaseDTO>> response =
-            BaseOutput.<List<ProductBaseDTO>>builder()
-                    .data(products)
-                    .message(HttpStatus.OK.toString())
-                    .status(ResponseStatus.SUCCESS)
-                    .build();
+        BaseOutput.<List<ProductBaseDTO>>builder()
+            .data(products)
+            .message(HttpStatus.OK.toString())
+            .status(ResponseStatus.SUCCESS)
+            .build();
     return ResponseEntity.ok(response);
   }
 }

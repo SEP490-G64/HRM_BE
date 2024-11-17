@@ -7,8 +7,6 @@ import com.example.hrm_be.commons.constants.HrmConstant.ERROR.BRANCHPRODUCT;
 import com.example.hrm_be.commons.constants.HrmConstant.ERROR.INVENTORY_CHECK;
 import com.example.hrm_be.commons.constants.HrmConstant.ERROR.PRODUCT;
 import com.example.hrm_be.commons.enums.*;
-import com.example.hrm_be.components.BranchBatchMapper;
-import com.example.hrm_be.components.BranchMapper;
 import com.example.hrm_be.components.InventoryCheckMapper;
 import com.example.hrm_be.components.UserMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
@@ -27,7 +25,6 @@ import com.example.hrm_be.repositories.InventoryCheckRepository;
 import com.example.hrm_be.services.BatchService;
 import com.example.hrm_be.services.BranchBatchService;
 import com.example.hrm_be.services.BranchProductService;
-import com.example.hrm_be.services.BranchService;
 import com.example.hrm_be.services.InventoryCheckDetailsService;
 import com.example.hrm_be.services.InventoryCheckProductDetailsService;
 import com.example.hrm_be.services.InventoryCheckService;
@@ -168,37 +165,38 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
   }
 
   @Override
-  public Page<InventoryCheck> getByPaging(int pageNo,
-                                          int pageSize,
-                                          String sortBy,
-                                          String direction,
-                                          Long branchId,
-                                          String keyword,
-                                          LocalDateTime startDate,
-                                          LocalDateTime endDate,
-                                          InventoryCheckStatus status) {
+  public Page<InventoryCheck> getByPaging(
+      int pageNo,
+      int pageSize,
+      String sortBy,
+      String direction,
+      Long branchId,
+      String keyword,
+      LocalDateTime startDate,
+      LocalDateTime endDate,
+      InventoryCheckStatus status) {
     // Check direction and set value for sort
     Sort sort =
-            direction != null && direction.equalsIgnoreCase("ASC")
-                    ? Sort.by(sortBy).ascending()
-                    : Sort.by(sortBy).descending(); // Default is descending
+        direction != null && direction.equalsIgnoreCase("ASC")
+            ? Sort.by(sortBy).ascending()
+            : Sort.by(sortBy).descending(); // Default is descending
 
     Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
 
     Specification<InventoryCheckEntity> specification =
-            getSpecification(branchId, keyword, startDate, endDate, status);
+        getSpecification(branchId, keyword, startDate, endDate, status);
 
     return inventoryCheckRepository
-            .findAll(specification, pageable)
-            .map(dao -> inventoryCheckMapper.toDTO(dao));
+        .findAll(specification, pageable)
+        .map(dao -> inventoryCheckMapper.toDTO(dao));
   }
 
   private Specification<InventoryCheckEntity> getSpecification(
-          Long branchId,
-          String keyword,
-          LocalDateTime startDate,
-          LocalDateTime endDate,
-          InventoryCheckStatus status) {
+      Long branchId,
+      String keyword,
+      LocalDateTime startDate,
+      LocalDateTime endDate,
+      InventoryCheckStatus status) {
     return (root, query, criteriaBuilder) -> {
       List<Predicate> predicates = new ArrayList<>();
 

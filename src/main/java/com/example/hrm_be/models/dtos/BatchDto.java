@@ -22,20 +22,20 @@ import java.util.List;
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class BatchDto {
-    Long id;
-    String batchCode;
+  Long id;
+  String batchCode;
 
-    LocalDateTime produceDate;
+  LocalDateTime produceDate;
 
-    LocalDateTime expireDate;
+  LocalDateTime expireDate;
 
-    BatchStatus batchStatus;
+  BatchStatus batchStatus;
 
-    BigDecimal inboundPrice;
+  BigDecimal inboundPrice;
 
-    BigDecimal quantity;
+  BigDecimal quantity;
 
-    String baseUnit;
+  String baseUnit;
 
-    List<UnitConversion> unitConversions;
+  List<UnitConversion> unitConversions;
 }

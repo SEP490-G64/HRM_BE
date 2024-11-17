@@ -1,8 +1,6 @@
 package com.example.hrm_be.controllers.inventoryCheck;
 
 import com.example.hrm_be.commons.constants.HrmConstant;
-import com.example.hrm_be.commons.enums.InboundStatus;
-import com.example.hrm_be.commons.enums.InboundType;
 import com.example.hrm_be.commons.enums.InventoryCheckStatus;
 import com.example.hrm_be.commons.enums.ResponseStatus;
 import com.example.hrm_be.models.dtos.InventoryCheck;
@@ -45,8 +43,9 @@ public class StaffInventoryCheckController {
       @RequestParam(required = false) LocalDateTime startDate,
       @RequestParam(required = false) LocalDateTime endDate,
       @RequestParam(required = false) InventoryCheckStatus status) {
-    Page<InventoryCheck> InventoryCheckPage = inventoryCheckService.getByPaging
-            (page, size, sortBy, direction, branchId, keyword, startDate, endDate, status);
+    Page<InventoryCheck> InventoryCheckPage =
+        inventoryCheckService.getByPaging(
+            page, size, sortBy, direction, branchId, keyword, startDate, endDate, status);
 
     // Build the response with pagination details
     BaseOutput<List<InventoryCheck>> response =

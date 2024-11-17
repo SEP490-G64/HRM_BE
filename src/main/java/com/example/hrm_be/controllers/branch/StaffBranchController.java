@@ -1,14 +1,11 @@
 package com.example.hrm_be.controllers.branch;
 
-import com.example.hrm_be.commons.constants.HrmConstant;
-import com.example.hrm_be.commons.enums.BranchType;
 import com.example.hrm_be.commons.enums.ResponseStatus;
 import com.example.hrm_be.models.dtos.Branch;
 import com.example.hrm_be.models.responses.BaseOutput;
 import com.example.hrm_be.services.BranchService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -32,8 +29,7 @@ public class StaffBranchController {
   // with optional sorting and searching by name or location and filter type
   @GetMapping("")
   protected ResponseEntity<BaseOutput<List<Branch>>> getByPaging() {
-    Page<Branch> branchPage =
-        branchService.getByPaging(0, Integer.MAX_VALUE, "id", "", null, null);
+    Page<Branch> branchPage = branchService.getByPaging(0, Integer.MAX_VALUE, "id", "", null, null);
 
     // Build the response with pagination details
     BaseOutput<List<Branch>> response =
