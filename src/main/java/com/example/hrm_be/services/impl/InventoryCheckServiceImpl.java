@@ -7,6 +7,7 @@ import com.example.hrm_be.commons.constants.HrmConstant.ERROR.BRANCHPRODUCT;
 import com.example.hrm_be.commons.constants.HrmConstant.ERROR.INVENTORY_CHECK;
 import com.example.hrm_be.commons.constants.HrmConstant.ERROR.PRODUCT;
 import com.example.hrm_be.commons.enums.InventoryCheckStatus;
+import com.example.hrm_be.commons.enums.InventoryCheckType;
 import com.example.hrm_be.commons.enums.NotificationType;
 import com.example.hrm_be.components.BranchBatchMapper;
 import com.example.hrm_be.components.BranchMapper;
@@ -299,6 +300,7 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
         InventoryCheck.builder()
             .id(unsavedInventoryCheck.getId()) // Retain the existing ID
             .code(request.getCode())
+            .inventoryCheckType(request.getInventoryCheckType())
             .createdDate(
                 request.getCreatedDate() != null ? request.getCreatedDate() : LocalDateTime.now())
             .status(InventoryCheckStatus.DANG_KIEM) // Example status
