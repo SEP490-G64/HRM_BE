@@ -89,8 +89,7 @@ public class BranchServiceImpl implements BranchService {
     }
 
     // Validation: Ensure the branch does not already exist at the same location
-    if (branchRepository.existsByBranchName(branch.getBranchName())
-        || branchRepository.existsByLocation(branch.getLocation())) {
+    if (branchRepository.existsByLocation(branch.getLocation())) {
       throw new HrmCommonException(HrmConstant.ERROR.BRANCH.EXIST);
     }
 
@@ -117,12 +116,6 @@ public class BranchServiceImpl implements BranchService {
     BranchEntity oldBranchEntity = branchRepository.findById(branch.getId()).orElse(null);
     if (oldBranchEntity == null) {
       throw new HrmCommonException(HrmConstant.ERROR.BRANCH.NOT_EXIST);
-    }
-
-    // Check if branch name exist except current branch
-    if (branchRepository.existsByBranchName(branch.getBranchName())
-        && !Objects.equals(branch.getBranchName(), oldBranchEntity.getBranchName())) {
-      throw new HrmCommonException(HrmConstant.ERROR.BRANCH.EXIST);
     }
 
     // Check if branch location exist except current branch
