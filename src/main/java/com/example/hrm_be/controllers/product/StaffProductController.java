@@ -335,7 +335,6 @@ public class StaffProductController {
     return ResponseEntity.ok(response);
   }
 
-
   @GetMapping("/get-by-keyword")
   public ResponseEntity<BaseOutput<List<ProductBaseDTO>>> getByKeyword(
       @RequestParam(defaultValue = "") String keyword) {
@@ -349,6 +348,7 @@ public class StaffProductController {
             .build();
     return ResponseEntity.ok(response);
   }
+
   @GetMapping("/{productId}/audit-history")
   public ResponseEntity<BaseOutput<List<AuditHistory>>> getProductDetailsInPeriod(
       @PathVariable Long productId,
