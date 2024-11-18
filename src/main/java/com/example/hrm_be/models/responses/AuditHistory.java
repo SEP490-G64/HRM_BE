@@ -1,6 +1,5 @@
 package com.example.hrm_be.models.responses;
 
-import com.example.hrm_be.models.dtos.Batch;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -20,11 +19,11 @@ import lombok.extern.jackson.Jacksonized;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AuditHistory {
-   String transactionType; // "INBOUND" or "OUTBOUND"
-   Long transactionId;
-   Long productId;
-   String productName;
-   BigDecimal quantity;
-   String batch; // Batch details
-   LocalDateTime createdAt; // Timestamp of the transaction
+  String transactionType; // "INBOUND" or "OUTBOUND"
+  Long transactionId;
+  Long productId;
+  String productName;
+  BigDecimal quantity;
+  String batch; // Batch details
+  LocalDateTime createdAt; // Timestamp of the transaction
 }

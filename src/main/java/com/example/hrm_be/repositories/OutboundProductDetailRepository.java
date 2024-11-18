@@ -28,10 +28,10 @@ public interface OutboundProductDetailRepository
           + "WHERE opd.outbound.id = :outboundId")
   List<OutboundProductDetailEntity> findAllWithProductAndCategoryByOutboundId(Long outboundId);
 
-
-  @Query("SELECT i FROM OutboundProductDetailEntity i " +
-      "WHERE i.product.id = :productId " +
-      "AND i.outbound.createdDate BETWEEN :startDate AND :endDate")
+  @Query(
+      "SELECT i FROM OutboundProductDetailEntity i "
+          + "WHERE i.product.id = :productId "
+          + "AND i.outbound.createdDate BETWEEN :startDate AND :endDate")
   List<OutboundProductDetailEntity> findInboundDetailsByProductIdAndPeriod(
       @Param("productId") Long productId,
       @Param("startDate") LocalDateTime startDate,

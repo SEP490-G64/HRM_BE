@@ -60,7 +60,10 @@ public interface ProductService {
 
   List<ProductBaseDTO> getProductsBySellPrice(BigDecimal sellPrice);
 
+
   List<ProductBaseDTO> getByKeyword(String keyword);
   List<AuditHistory>  getProductDetailsInPeriod(Long productId, LocalDateTime startDate,
       LocalDateTime endDate);
+
+
 }

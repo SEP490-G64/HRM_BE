@@ -25,6 +25,6 @@ public interface InboundDetailsService {
 
   void deleteAllByInboundId(Long inboundId);
 
-  List<InboundDetails> getInboundDetailsByProductIdAndPeriod(Long productId, LocalDateTime startDate,
-      LocalDateTime endDate);
+  List<InboundDetails> getInboundDetailsByProductIdAndPeriod(
+      Long productId, LocalDateTime startDate, LocalDateTime endDate);
 }

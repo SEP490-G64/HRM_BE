@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -336,6 +335,7 @@ public class StaffProductController {
     return ResponseEntity.ok(response);
   }
 
+
   @GetMapping("/get-by-keyword")
   public ResponseEntity<BaseOutput<List<ProductBaseDTO>>> getByKeyword(
       @RequestParam(defaultValue = "") String keyword) {
@@ -350,11 +350,12 @@ public class StaffProductController {
     return ResponseEntity.ok(response);
   }
   @GetMapping("/{productId}/audit-history")
-  public ResponseEntity<BaseOutput<List<AuditHistory>>>  getProductDetailsInPeriod(
+  public ResponseEntity<BaseOutput<List<AuditHistory>>> getProductDetailsInPeriod(
       @PathVariable Long productId,
       @RequestParam("startDate") LocalDateTime startDate,
       @RequestParam("endDate") LocalDateTime endDate) {
-    List<AuditHistory> products = productService.getProductDetailsInPeriod(productId, startDate, endDate);
+    List<AuditHistory> products =
+        productService.getProductDetailsInPeriod(productId, startDate, endDate);
     BaseOutput<List<AuditHistory>> response =
         BaseOutput.<List<AuditHistory>>builder()
             .data(products)

@@ -131,8 +131,8 @@ public class OutboundDetailServiceImpl implements OutboundDetailService {
   }
 
   @Override
-  public List<OutboundDetail> getOutboundDetailsByProductIdAndPeriod(Long productId,
-      LocalDateTime startDate, LocalDateTime endDate) {
+  public List<OutboundDetail> getOutboundDetailsByProductIdAndPeriod(
+      Long productId, LocalDateTime startDate, LocalDateTime endDate) {
     return outboundDetailRepository
         .findOutboundDetailsByProductIdAndPeriod(productId, startDate, endDate)
         .stream()

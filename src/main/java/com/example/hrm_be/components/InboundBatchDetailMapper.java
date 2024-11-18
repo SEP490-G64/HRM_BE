@@ -35,9 +35,12 @@ public class InboundBatchDetailMapper {
 
   // Helper method to convert InboundBatchDetailEntity to InboundBatchDetailDTO
   private InboundBatchDetail convertToDTO(InboundBatchDetailEntity entity) {
-    return InboundBatchDetail.builder().id(entity.getId())
-        .batch(entity.getBatch() != null ? batchMapper.convertToDtoBasicInfo(entity.getBatch()) : null)
-        .quantity(entity.getQuantity()).build();
+    return InboundBatchDetail.builder()
+        .id(entity.getId())
+        .batch(
+            entity.getBatch() != null ? batchMapper.convertToDtoBasicInfo(entity.getBatch()) : null)
+        .quantity(entity.getQuantity())
+        .build();
   }
 
   public InboundBatchDetail convertToDTOWithBatchAndInbound(InboundBatchDetailEntity entity) {

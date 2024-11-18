@@ -26,7 +26,6 @@ public interface InboundBatchDetailService {
 
   void deleteAllByInboundId(Long inboundId);
 
-  List<InboundBatchDetail>  getInboundBatchDetailsByProductIdAndPeriod(Long productId,
-      LocalDateTime startDate,
-      LocalDateTime endDate);
+  List<InboundBatchDetail> getInboundBatchDetailsByProductIdAndPeriod(
+      Long productId, LocalDateTime startDate, LocalDateTime endDate);
 }
