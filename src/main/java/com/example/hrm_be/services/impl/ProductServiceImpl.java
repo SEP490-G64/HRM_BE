@@ -851,9 +851,7 @@ public class ProductServiceImpl implements ProductService {
 
   @Override
   public List<ProductBaseDTO> getByKeyword(String keyword) {
-    return productRepository
-        .findProductEntitiesByProductNameIgnoreCase(keyword)
-        .stream()
+    return productRepository.findProductEntitiesByProductNameIgnoreCase(keyword).stream()
         .map(productMapper::convertToProductDto)
         .collect(Collectors.toList());
   }
