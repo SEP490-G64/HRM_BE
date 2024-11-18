@@ -8,6 +8,7 @@ import com.example.hrm_be.models.entities.OutboundDetailEntity;
 import com.example.hrm_be.repositories.OutboundDetailRepository;
 import com.example.hrm_be.services.OutboundDetailService;
 import io.micrometer.common.util.StringUtils;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -126,6 +127,16 @@ public class OutboundDetailServiceImpl implements OutboundDetailService {
         outboundDetailRepository.findAllWithBatchAndProductAndCategoryByOutboundId(outboundId);
     return outboundDetailEntities.stream()
         .map(outboundDetailMapper::toDTOWithProductAndCategory)
+        .collect(Collectors.toList());
+  }
+
+  @Override
+  public List<OutboundDetail> getOutboundDetailsByProductIdAndPeriod(Long productId,
+      LocalDateTime startDate, LocalDateTime endDate) {
+    return outboundDetailRepository
+        .findOutboundDetailsByProductIdAndPeriod(productId, startDate, endDate)
+        .stream()
+        .map(outboundDetailMapper::toDTOWithBatchAndOutBound)
         .collect(Collectors.toList());
   }
 }

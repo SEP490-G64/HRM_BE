@@ -2,6 +2,7 @@ package com.example.hrm_be.repositories;
 
 import com.example.hrm_be.models.entities.InboundBatchDetailEntity;
 import com.example.hrm_be.models.entities.ProductEntity;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -42,4 +43,13 @@ public interface InboundBatchDetailRepository
   void deleteByIds(@Param("outboundId") List<Long> outboundId);
 
   void deleteAllByInbound_Id(Long id);
+
+  @Query("SELECT i FROM InboundBatchDetailEntity i " +
+      "WHERE i.batch.product.id = :productId " +
+      "AND i.inbound.createdDate BETWEEN :startDate AND :endDate")
+  List<InboundBatchDetailEntity> findInboundDetailsByProductIdAndPeriod(
+      @Param("productId") Long productId,
+      @Param("startDate") LocalDateTime startDate,
+      @Param("endDate") LocalDateTime endDate);
+
 }

@@ -77,6 +77,24 @@ public class OutboundDetailMapper {
         .orElse(null);
   }
 
+  public OutboundDetail toDTOWithBatchAndOutBound(OutboundDetailEntity entity) {
+    return Optional.ofNullable(entity)
+        .map(this::convertToDTO)
+        .map(
+            e ->
+                e.toBuilder()
+                    .outbound(
+                        entity.getOutbound() != null
+                            ? outboundMapper.toDTO(entity.getOutbound())
+                            : null)
+                    .batch(
+                        entity.getBatch() != null
+                            ? batchMapper.convertToDtoBasicInfo(entity.getBatch())
+                            : null)
+                    .build())
+        .orElse(null);
+  }
+
   public OutboundDetail toDTOWithProductAndCategory(OutboundDetailEntity entity) {
     return Optional.ofNullable(entity)
         .map(this::convertToDTO)

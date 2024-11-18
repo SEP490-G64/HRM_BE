@@ -50,4 +50,5 @@ public interface BatchRepository
       @Param("today") LocalDateTime today,
       @Param("inDays") LocalDateTime inDays,
       @Param("id") Long id);
+
 }
