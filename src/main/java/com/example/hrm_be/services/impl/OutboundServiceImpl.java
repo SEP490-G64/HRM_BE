@@ -304,7 +304,7 @@ public class OutboundServiceImpl implements OutboundService {
               "Số lượng hiện tại trong kho của lô "
                   + batchEntity.getBatchCode()
                   + " chỉ còn "
-                  + outboundQuantity
+                  + realityQuantity
                   + ", vui lòng nhập số lượng nhỏ hơn.");
         }
 
@@ -343,7 +343,7 @@ public class OutboundServiceImpl implements OutboundService {
               "Số lượng hiện tại trong kho của sản phẩm "
                   + productEntity.getProductName()
                   + " chỉ còn "
-                  + outboundQuantity
+                  + branchProduct.getQuantity()
                   + ", vui lòng nhập số lượng nhỏ hơn.");
         }
 
@@ -459,7 +459,7 @@ public class OutboundServiceImpl implements OutboundService {
                 "Số lượng hiện tại trong kho của sản phẩm "
                     + productEntity.getProductName()
                     + " chỉ còn "
-                    + convertedQuantity
+                    + availableForSell
                     + ", vui lòng nhập số lượng nhỏ hơn.");
           }
 
@@ -522,7 +522,7 @@ public class OutboundServiceImpl implements OutboundService {
                 "Số lượng hiện tại trong kho của sản phẩm "
                     + productEntity.getProductName()
                     + " chỉ còn "
-                    + convertedQuantity
+                    + branchProduct.getQuantity()
                     + ", vui lòng nhập số lượng nhỏ hơn.");
           }
 
@@ -609,7 +609,7 @@ public class OutboundServiceImpl implements OutboundService {
             "Số lượng hiện tại trong kho của sản phẩm "
                 + productEntity.getProductName()
                 + " chỉ còn "
-                + outboundQuantity
+                + branchProduct.getQuantity()
                 + ", vui lòng nhập số lượng nhỏ hơn.");
       }
 
@@ -660,7 +660,7 @@ public class OutboundServiceImpl implements OutboundService {
             "Số lượng hiện tại trong kho của lô "
                 + batch.getBatchCode()
                 + " chỉ còn "
-                + batchQuantity
+                + branchBatch.getQuantity()
                 + ", vui lòng nhập số lượng nhỏ hơn.");
       }
 
