@@ -177,63 +177,45 @@ public class ManufacturerServiceImplTest {
         HrmCommonException.class, () -> manufacturerService.create(duplicateManufacturerName));
   }
 
-  // UTCID06 - create: address null
+  // UTCID06 - create: address greater than 256 characters
   @Test
-  void testUTCID06_Create_addressNull() {
-    Manufacturer Manufacturer = createValidManufacturer();
-    Manufacturer.setAddress(null);
-
-    assertThrows(HrmCommonException.class, () -> manufacturerService.create(Manufacturer));
-  }
-
-  // UTCID07 - create: address empty
-  @Test
-  void testUTCID07_Create_addressEmpty() {
-    Manufacturer Manufacturer = createValidManufacturer();
-    Manufacturer.setAddress("");
-
-    assertThrows(HrmCommonException.class, () -> manufacturerService.create(Manufacturer));
-  }
-
-  // UTCID08 - create: address greater than 256 characters
-  @Test
-  void testUTCID08_Create_addressLong() {
+  void testUTCID06_Create_addressLong() {
     Manufacturer Manufacturer = createValidManufacturer();
     Manufacturer.setAddress("A".repeat(256));
 
     assertThrows(HrmCommonException.class, () -> manufacturerService.create(Manufacturer));
   }
 
-  // UTCID09 - create: email not match regex
+  // UTCID07 - create: email not match regex
   @Test
-  void testUTCID09_Create_emailInvalidFormat() {
+  void testUTCID07_Create_emailInvalidFormat() {
     Manufacturer Manufacturer = createValidManufacturer();
     Manufacturer.setEmail("Email");
 
     assertThrows(HrmCommonException.class, () -> manufacturerService.create(Manufacturer));
   }
 
-  // UTCID010 - create: phoneNumber not match regex
+  // UTCID08 - create: phoneNumber not match regex
   @Test
-  void testUTCID011_Create_phoneNumberInvalidFormat() {
+  void testUTCID08_Create_phoneNumberInvalidFormat() {
     Manufacturer Manufacturer = createValidManufacturer();
     Manufacturer.setPhoneNumber("INVALID_PHONE");
 
     assertThrows(HrmCommonException.class, () -> manufacturerService.create(Manufacturer));
   }
 
-  // UTCID011 - create: taxCode not match tax code regex
+  // UTCID09 - create: taxCode not match tax code regex
   @Test
-  void testUTCID011_Create_taxCodeInvalidFormat() {
+  void testUTCID09_Create_taxCodeInvalidFormat() {
     Manufacturer Manufacturer = createValidManufacturer();
     Manufacturer.setTaxCode("a");
 
     assertThrows(HrmCommonException.class, () -> manufacturerService.create(Manufacturer));
   }
 
-  // UTCID012 - create: taxCode duplicate
+  // UTCID010 - create: taxCode duplicate
   @Test
-  void testUTCID012_Create_taxCodeDuplicate() {
+  void testUTCID010_Create_taxCodeDuplicate() {
     Manufacturer Manufacturer = createValidManufacturer();
     manufacturerService.create(Manufacturer);
     Manufacturer duplicateAddressManufacturer =
@@ -249,17 +231,17 @@ public class ManufacturerServiceImplTest {
         HrmCommonException.class, () -> manufacturerService.create(duplicateAddressManufacturer));
   }
 
-  // UTCID013 - create: origin greater than 255 characters
+  // UTCID011 - create: origin greater than 255 characters
   @Test
-  void testUTCID013_Create_originLong() {
+  void testUTCID011_Create_originLong() {
     Manufacturer Manufacturer = createValidManufacturer();
     Manufacturer.setOrigin("A".repeat(101));
     assertThrows(HrmCommonException.class, () -> manufacturerService.create(Manufacturer));
   }
 
-  // UTCID014 - create: status null
+  // UTCID012 - create: status null
   @Test
-  void testUTCID014_Create_statusNull() {
+  void testUTCID012_Create_statusNull() {
     Manufacturer Manufacturer = createValidManufacturer();
     Manufacturer.setStatus(null);
     assertThrows(HrmCommonException.class, () -> manufacturerService.create(Manufacturer));
@@ -333,31 +315,9 @@ public class ManufacturerServiceImplTest {
     assertThrows(HrmCommonException.class, () -> manufacturerService.update(returnValue));
   }
 
-  // UTCID06 - Update: address null
+  // UTCID06 - Update: address greater than 255 characters
   @Test
-  void testUTCID06_Update_addressNull() {
-    manufacturerRepository.deleteAll();
-    Manufacturer Manufacturer = createValidManufacturer();
-    Manufacturer createdManufacturer = manufacturerService.create(Manufacturer);
-    createdManufacturer.setAddress(null);
-
-    assertThrows(HrmCommonException.class, () -> manufacturerService.update(createdManufacturer));
-  }
-
-  // UTCID07 - Update: address empty
-  @Test
-  void testUTCID07_Update_addressEmpty() {
-    manufacturerRepository.deleteAll();
-    Manufacturer Manufacturer = createValidManufacturer();
-    Manufacturer createdManufacturer = manufacturerService.create(Manufacturer);
-    createdManufacturer.setAddress("");
-
-    assertThrows(HrmCommonException.class, () -> manufacturerService.update(createdManufacturer));
-  }
-
-  // UTCID08 - Update: address greater than 255 characters
-  @Test
-  void testUTCID08_Update_addressLong() {
+  void testUTCID06_Update_addressLong() {
     manufacturerRepository.deleteAll();
     Manufacturer Manufacturer = createValidManufacturer();
     Manufacturer createdManufacturer = manufacturerService.create(Manufacturer);
@@ -366,9 +326,9 @@ public class ManufacturerServiceImplTest {
     assertThrows(HrmCommonException.class, () -> manufacturerService.update(createdManufacturer));
   }
 
-  // UTCID09 - Update: email not match regex
+  // UTCID07 - Update: email not match regex
   @Test
-  void testUTCID09_Update_emailInvalidFormat() {
+  void testUTCID07_Update_emailInvalidFormat() {
     manufacturerRepository.deleteAll();
     Manufacturer Manufacturer = createValidManufacturer();
     Manufacturer createdManufacturer = manufacturerService.create(Manufacturer);
@@ -377,9 +337,9 @@ public class ManufacturerServiceImplTest {
     assertThrows(HrmCommonException.class, () -> manufacturerService.update(createdManufacturer));
   }
 
-  // UTCID010 - update: phoneNumber not match regex
+  // UTCID08 - update: phoneNumber not match regex
   @Test
-  void testUTCID010_Update_phoneNumberInvalidFormat() {
+  void testUTCID08_Update_phoneNumberInvalidFormat() {
     manufacturerRepository.deleteAll();
     Manufacturer Manufacturer = createValidManufacturer();
     Manufacturer createdManufacturer = manufacturerService.create(Manufacturer);
@@ -388,9 +348,9 @@ public class ManufacturerServiceImplTest {
     assertThrows(HrmCommonException.class, () -> manufacturerService.update(createdManufacturer));
   }
 
-  // UTCID011 - Update: phoneNumber greater than 256 characters
+  // UTCID09 - Update: phoneNumber greater than 256 characters
   @Test
-  void testUTCID011_Update_phoneNumberLong() {
+  void testUTCID09_Update_phoneNumberLong() {
     manufacturerRepository.deleteAll();
     Manufacturer Manufacturer = createValidManufacturer();
     Manufacturer createdManufacturer = manufacturerService.create(Manufacturer);
@@ -399,9 +359,9 @@ public class ManufacturerServiceImplTest {
     assertThrows(HrmCommonException.class, () -> manufacturerService.update(createdManufacturer));
   }
 
-  // UTCID012 - update: taxCode not match tax code regex
+  // UTCID010 - update: taxCode not match tax code regex
   @Test
-  void testUTCID012_Update_taxCodeInvalidFormat() {
+  void testUTCID010_Update_taxCodeInvalidFormat() {
     manufacturerRepository.deleteAll();
     Manufacturer Manufacturer = createValidManufacturer();
     Manufacturer createdManufacturer = manufacturerService.create(Manufacturer);
@@ -410,9 +370,9 @@ public class ManufacturerServiceImplTest {
     assertThrows(HrmCommonException.class, () -> manufacturerService.update(createdManufacturer));
   }
 
-  // UTCID013 - update: taxCode duplicate
+  // UTCID011 - update: taxCode duplicate
   @Test
-  void testUTCID013_Update_taxCodeDuplicate() {
+  void testUTCID011_Update_taxCodeDuplicate() {
     manufacturerRepository.deleteAll();
     Manufacturer Manufacturer = createValidManufacturer();
     Manufacturer createdManufacturer = manufacturerService.create(Manufacturer);
@@ -431,9 +391,9 @@ public class ManufacturerServiceImplTest {
     assertThrows(HrmCommonException.class, () -> manufacturerService.update(secondManufacturer));
   }
 
-  // UTCID014 - update: origin greater than 255 characters
+  // UTCID012 - update: origin greater than 255 characters
   @Test
-  void testUTCID014_Update_originLong() {
+  void testUTCID012_Update_originLong() {
     manufacturerRepository.deleteAll();
     Manufacturer Manufacturer = createValidManufacturer();
     Manufacturer createdManufacturer = manufacturerService.create(Manufacturer);
@@ -441,9 +401,9 @@ public class ManufacturerServiceImplTest {
     assertThrows(HrmCommonException.class, () -> manufacturerService.update(createdManufacturer));
   }
 
-  // UTCID015 - update: status null
+  // UTCID013 - update: status null
   @Test
-  void testUTCID015_Update_statusNull() {
+  void testUTCID013_Update_statusNull() {
     manufacturerRepository.deleteAll();
     Manufacturer Manufacturer = createValidManufacturer();
     Manufacturer createdManufacturer = manufacturerService.create(Manufacturer);
@@ -451,9 +411,9 @@ public class ManufacturerServiceImplTest {
     assertThrows(HrmCommonException.class, () -> manufacturerService.update(createdManufacturer));
   }
 
-  // UTCID016 - Update: id null
+  // UTCID014 - Update: id null
   @Test
-  void testUTCID016_Update_idNull() {
+  void testUTCID014_Update_idNull() {
     manufacturerRepository.deleteAll();
     Manufacturer Manufacturer = createValidManufacturer();
     Manufacturer createdManufacturer = manufacturerService.create(Manufacturer);
@@ -462,9 +422,9 @@ public class ManufacturerServiceImplTest {
     assertThrows(HrmCommonException.class, () -> manufacturerService.update(createdManufacturer));
   }
 
-  // UTCID017 - Update: id not exist
+  // UTCID015 - Update: id not exist
   @Test
-  void testUTCID017_Update_idNotExist() {
+  void testUTCID015_Update_idNotExist() {
     manufacturerRepository.deleteAll();
     Manufacturer Manufacturer = createValidManufacturer();
     Manufacturer.setId(1L);

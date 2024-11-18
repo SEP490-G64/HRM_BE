@@ -3,6 +3,7 @@ package com.example.hrm_be.controllers.batch;
 import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.commons.enums.ResponseStatus;
 import com.example.hrm_be.models.dtos.Batch;
+import com.example.hrm_be.models.dtos.BatchDto;
 import com.example.hrm_be.models.responses.BaseOutput;
 import com.example.hrm_be.services.BatchService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -29,7 +30,7 @@ public class StaffBatchController {
 
   // Handles GET requests for paginated list of Batch entities
   @GetMapping("")
-  protected ResponseEntity<BaseOutput<List<Batch>>> getByPaging(
+  protected ResponseEntity<BaseOutput<List<BatchDto>>> getByPaging(
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "20") int size,
       @RequestParam(required = false, defaultValue = "id") String sortBy,
@@ -39,7 +40,7 @@ public class StaffBatchController {
       @RequestParam(required = false) LocalDateTime produceEndDate,
       @RequestParam(required = false) LocalDateTime expireStartDate,
       @RequestParam(required = false) LocalDateTime expireEndDate) {
-    Page<Batch> batchPage =
+    Page<BatchDto> batchPage =
         batchService.getByPaging(
             page,
             size,
@@ -52,8 +53,8 @@ public class StaffBatchController {
             expireEndDate);
 
     // Building response object with the retrieved data and pagination details
-    BaseOutput<List<Batch>> response =
-        BaseOutput.<List<Batch>>builder()
+    BaseOutput<List<BatchDto>> response =
+        BaseOutput.<List<BatchDto>>builder()
             .message(HttpStatus.OK.toString())
             .totalPages(batchPage.getTotalPages())
             .currentPage(page)

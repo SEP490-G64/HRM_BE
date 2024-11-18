@@ -47,6 +47,7 @@ public class StaffOutboundController {
       @RequestParam(defaultValue = "20") int size,
       @RequestParam(required = false, defaultValue = "id") String sortBy,
       @RequestParam(required = false, defaultValue = "") String keyword,
+      @RequestParam(required = false) Long branchId,
       @RequestParam(required = false, defaultValue = "DESC") String direction,
       @RequestParam(required = false) LocalDateTime startDate,
       @RequestParam(required = false) LocalDateTime endDate,
@@ -54,7 +55,7 @@ public class StaffOutboundController {
       @RequestParam(required = false) OutboundType type) {
     Page<Outbound> OutboundPage =
         outboundService.getByPaging(
-            page, size, sortBy, direction, keyword, startDate, endDate, status, type);
+            page, size, sortBy, direction, branchId, keyword, startDate, endDate, status, type);
 
     // Build the response with pagination details
     BaseOutput<List<Outbound>> response =

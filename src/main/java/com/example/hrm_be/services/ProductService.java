@@ -57,4 +57,6 @@ public interface ProductService {
   List<ProductBaseDTO> getProductsWithLossOrNoSellPriceInBranch();
 
   List<ProductBaseDTO> getProductsBySellPrice(BigDecimal sellPrice);
+
+  List<ProductBaseDTO> getByKeyword(String keyword);
 }
