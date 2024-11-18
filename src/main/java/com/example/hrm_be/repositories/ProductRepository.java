@@ -90,14 +90,4 @@ public interface ProductRepository
           + "WHERE (p.sellPrice = :sellPrice) AND bp.branch.id = :id")
   List<ProductEntity> findProductsBySellPrice(
       @Param("sellPrice") BigDecimal sellPrice, @Param("id") Long id);
-
-  @Query("SELECT p FROM ProductEntity p " +
-      "LEFT JOIN FETCH p.inboundDetails i " +
-      "WHERE p.id = :productId " +
-      "AND (i.inbound.createdDate BETWEEN :startDate AND :endDate) " )
-  Optional<ProductEntity> findProductInboundDetailsInPeriod(
-      @Param("productId") Long productId,
-      @Param("startDate") LocalDateTime startDate,
-      @Param("endDate") LocalDateTime endDate);
-
 }
