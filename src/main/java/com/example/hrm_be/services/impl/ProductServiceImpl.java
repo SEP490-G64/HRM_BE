@@ -786,7 +786,10 @@ public class ProductServiceImpl implements ProductService {
     return productRepository
         .searchProductByBranchId(branchId, keyword, checkValid, supplierId)
         .stream()
-        .map(productMapper::convertToProductForSearchInNotes)
+        .map(
+            entity ->
+                productMapper.convertToProductForSearchInNotes(
+                    entity, branchId)) // Pass branchId to the mapper
         .collect(Collectors.toList());
   }
 

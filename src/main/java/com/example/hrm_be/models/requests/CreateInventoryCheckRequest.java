@@ -1,5 +1,6 @@
 package com.example.hrm_be.models.requests;
 
+import com.example.hrm_be.commons.enums.InventoryCheckType;
 import com.example.hrm_be.models.dtos.InventoryCheckProductDetails;
 import com.example.hrm_be.models.dtos.User;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -26,6 +27,7 @@ import lombok.extern.jackson.Jacksonized;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CreateInventoryCheckRequest {
   Long inventoryCheckId;
+  InventoryCheckType inventoryCheckType;
   String code;
   String note;
   LocalDateTime createdDate;

@@ -350,6 +350,7 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
         InventoryCheck.builder()
             .id(unsavedInventoryCheck.getId()) // Retain the existing ID
             .code(request.getCode())
+            .inventoryCheckType(request.getInventoryCheckType())
             .createdDate(
                 request.getCreatedDate() != null ? request.getCreatedDate() : LocalDateTime.now())
             .status(InventoryCheckStatus.DANG_KIEM) // Example status

@@ -34,6 +34,7 @@ public class ProductBaseDTO {
   private String formulation;
   private BigDecimal inboundPrice;
   private BigDecimal sellPrice;
+  private BigDecimal productQuantity;
   private ProductStatus status;
 
   // New fields for category, type, and manufacturer names
