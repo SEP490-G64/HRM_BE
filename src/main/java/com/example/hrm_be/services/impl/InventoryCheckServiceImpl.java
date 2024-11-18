@@ -7,7 +7,6 @@ import com.example.hrm_be.commons.constants.HrmConstant.ERROR.BRANCHPRODUCT;
 import com.example.hrm_be.commons.constants.HrmConstant.ERROR.INVENTORY_CHECK;
 import com.example.hrm_be.commons.constants.HrmConstant.ERROR.PRODUCT;
 import com.example.hrm_be.commons.enums.InventoryCheckStatus;
-import com.example.hrm_be.commons.enums.InventoryCheckType;
 import com.example.hrm_be.commons.enums.NotificationType;
 import com.example.hrm_be.components.BranchBatchMapper;
 import com.example.hrm_be.components.BranchMapper;
