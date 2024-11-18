@@ -2,6 +2,7 @@ package com.example.hrm_be.components;
 
 import com.example.hrm_be.models.dtos.Batch;
 import com.example.hrm_be.models.entities.BatchEntity;
+import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -127,7 +128,8 @@ public class BatchMapper {
   }
 
   // Helper method to map BatchEntity to BatchDTO
-  public Batch convertToDtoForGetProductInBranch(BatchEntity entity) {
+  public Batch convertToDtoForGetProductInBranch(
+      BatchEntity entity, BigDecimal branchBatchQuantity) {
     return Optional.ofNullable(entity)
         .map(
             e ->
@@ -136,6 +138,7 @@ public class BatchMapper {
                     .batchCode(e.getBatchCode())
                     .expireDate(e.getExpireDate())
                     .inboundPrice(e.getInboundPrice())
+                    .quantity(branchBatchQuantity)
                     .build())
         .orElse(null);
   }

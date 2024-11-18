@@ -181,6 +181,7 @@ public class StaffInboundController {
   @PutMapping("/{id}/submit")
   public ResponseEntity<BaseOutput<Inbound>> submitToSystem(@PathVariable(name = "id") Long id) {
     Inbound inbound = inboundService.submitInboundToSystem(id);
+
     BaseOutput<Inbound> response =
         BaseOutput.<Inbound>builder()
             .message(HttpStatus.OK.toString())
