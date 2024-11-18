@@ -388,6 +388,68 @@ public class ProductMapper {
         .build();
   }
 
+  public ProductBaseDTO convertToProductDto(ProductEntity entity) {
+    // Get unit of measurements
+    List<UnitOfMeasurement> unitOfMeasurementList = new ArrayList<>();
+    if (entity.getUnitConversions() != null) {
+      unitOfMeasurementList =
+              entity.getUnitConversions().stream()
+                      .map(unitConversionMapper::toDTO)
+                      .map(UnitConversion::getSmallerUnit)
+                      .collect(Collectors.toList());
+    }
+    if (entity.getBaseUnit() != null) {
+      unitOfMeasurementList.add(unitOfMeasurementMapper.toDTO(entity.getBaseUnit()));
+    }
+
+    // Convert batches with BranchBatch quantities
+    List<Batch> batchDTOs =
+            entity.getBatches() != null
+                    ? entity.getBatches().stream()
+                    .map(
+                            batch -> {
+                              return batchMapper.convertToDtoForGetProductInBranch(
+                                      batch, batch.getBranchBatches() != null
+                                              ? batch.getBranchBatches().stream()
+                                              .toList()
+                                              .stream()
+                                              .filter(
+                                                      b -> b.getQuantity() != null) // Lọc các giá trị null
+                                              .map(BranchBatchEntity::getQuantity) // Lấy giá trị quantity kiểu BigDecimal
+                                              .reduce(BigDecimal.ZERO, BigDecimal::add) // Tính tổng
+                                              : BigDecimal.ZERO // Nếu danh sách là null, trả về 0);
+                              );
+                            })
+                    .collect(Collectors.toList())
+                    : null;
+
+    return ProductBaseDTO.builder()
+            .id(entity.getId())
+            .productName(entity.getProductName())
+            .registrationCode(entity.getRegistrationCode())
+            .urlImage(entity.getUrlImage())
+            .inboundPrice(entity.getInboundPrice())
+            .sellPrice(entity.getSellPrice())
+            .productBaseUnit(
+                    entity.getBaseUnit() != null
+                            ? unitOfMeasurementMapper.toDTO(entity.getBaseUnit())
+                            : null)
+            .batches(batchDTOs)
+            .productUnits(unitOfMeasurementList)
+            .productQuantity(entity.getBranchProducs() != null
+                    ? entity.getBranchProducs().stream()
+                    .map(branchProductMapper::toDTO)
+                    .toList()
+                    .stream()
+                    .filter(product -> product.getQuantity() != null) // Lọc các giá trị null
+                    .map(BranchProduct::getQuantity) // Lấy giá trị quantity kiểu BigDecimal
+                    .reduce(BigDecimal.ZERO, BigDecimal::add) // Tính tổng
+                    : BigDecimal.ZERO) // Nếu danh sách là null, trả về 0) //
+            // Add product
+            // quantity
+            .build();
+  }
+
   // Helper method to convert ProductEntity to ProductDTO
   public Product convertToDtoForBatch(ProductEntity entity) {
     return Product.builder()

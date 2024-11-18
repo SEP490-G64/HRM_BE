@@ -21,8 +21,8 @@ public interface ProductRepository
   Page<ProductEntity> findProductEntitiesByRegistrationCodeContainingIgnoreCase(
       String code, Pageable pageable);
 
-  Page<ProductEntity> findProductEntitiesByProductNameContainingIgnoreCase(
-      String name, Pageable pageable);
+  @Query("SELECT p FROM ProductEntity p WHERE LOWER(p.productName) LIKE LOWER(CONCAT('%', :keyword, '%'))")
+  List<ProductEntity> findProductEntitiesByProductNameIgnoreCase(@Param("keyword") String keyword);
 
   @Query("SELECT p FROM ProductEntity p WHERE p.category.id=:cateId")
   Page<ProductEntity> findProductByPagingAndCategoryId(Long cateId, Pageable pageable);
