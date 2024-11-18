@@ -144,7 +144,8 @@ public class BatchMapper {
   }
 
   // Helper method to map BatchEntity to BatchDTO
-  public Batch convertToDtoForGetProductInBranch(BatchEntity entity, BigDecimal branchBatchQuantity) {
+  public Batch convertToDtoForGetProductInBranch(
+      BatchEntity entity, BigDecimal branchBatchQuantity) {
     return Optional.ofNullable(entity)
         .map(
             e ->
