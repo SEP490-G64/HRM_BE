@@ -44,12 +44,12 @@ public interface InboundBatchDetailRepository
 
   void deleteAllByInbound_Id(Long id);
 
-  @Query("SELECT i FROM InboundBatchDetailEntity i " +
-      "WHERE i.batch.product.id = :productId " +
-      "AND i.inbound.createdDate BETWEEN :startDate AND :endDate")
+  @Query(
+      "SELECT i FROM InboundBatchDetailEntity i "
+          + "WHERE i.batch.product.id = :productId "
+          + "AND i.inbound.createdDate BETWEEN :startDate AND :endDate")
   List<InboundBatchDetailEntity> findInboundDetailsByProductIdAndPeriod(
       @Param("productId") Long productId,
       @Param("startDate") LocalDateTime startDate,
       @Param("endDate") LocalDateTime endDate);
-
 }

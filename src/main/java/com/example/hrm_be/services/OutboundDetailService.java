@@ -1,7 +1,6 @@
 package com.example.hrm_be.services;
 
 import com.example.hrm_be.models.dtos.OutboundDetail;
-import com.example.hrm_be.models.dtos.OutboundProductDetail;
 import com.example.hrm_be.models.entities.OutboundDetailEntity;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -28,7 +27,6 @@ public interface OutboundDetailService {
 
   List<OutboundDetail> findByOutboundWithCategory(Long outboundId);
 
-  List<OutboundDetail>  getOutboundDetailsByProductIdAndPeriod(Long productId,
-      LocalDateTime startDate,
-      LocalDateTime endDate);
+  List<OutboundDetail> getOutboundDetailsByProductIdAndPeriod(
+      Long productId, LocalDateTime startDate, LocalDateTime endDate);
 }

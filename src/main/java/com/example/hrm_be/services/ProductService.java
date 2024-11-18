@@ -59,6 +59,7 @@ public interface ProductService {
   List<ProductBaseDTO> getProductsWithLossOrNoSellPriceInBranch();
 
   List<ProductBaseDTO> getProductsBySellPrice(BigDecimal sellPrice);
-  List<AuditHistory>  getProductDetailsInPeriod(Long productId, LocalDateTime startDate,
-      LocalDateTime endDate);
+
+  List<AuditHistory> getProductDetailsInPeriod(
+      Long productId, LocalDateTime startDate, LocalDateTime endDate);
 }

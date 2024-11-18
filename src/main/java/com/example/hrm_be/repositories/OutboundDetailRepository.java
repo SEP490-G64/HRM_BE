@@ -1,7 +1,6 @@
 package com.example.hrm_be.repositories;
 
 import com.example.hrm_be.models.entities.BatchEntity;
-import com.example.hrm_be.models.entities.InboundBatchDetailEntity;
 import com.example.hrm_be.models.entities.OutboundDetailEntity;
 import com.example.hrm_be.models.entities.OutboundEntity;
 import java.time.LocalDateTime;
@@ -32,10 +31,10 @@ public interface OutboundDetailRepository extends JpaRepository<OutboundDetailEn
           + "WHERE od.outbound.id = :outboundId")
   List<OutboundDetailEntity> findAllWithBatchAndProductAndCategoryByOutboundId(Long outboundId);
 
-
-  @Query("SELECT i FROM OutboundDetailEntity i " +
-      "WHERE i.batch.product.id = :productId " +
-      "AND i.outbound.createdDate BETWEEN :startDate AND :endDate")
+  @Query(
+      "SELECT i FROM OutboundDetailEntity i "
+          + "WHERE i.batch.product.id = :productId "
+          + "AND i.outbound.createdDate BETWEEN :startDate AND :endDate")
   List<OutboundDetailEntity> findOutboundDetailsByProductIdAndPeriod(
       @Param("productId") Long productId,
       @Param("startDate") LocalDateTime startDate,
