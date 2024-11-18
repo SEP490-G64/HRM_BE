@@ -1,6 +1,8 @@
 package com.example.hrm_be.components;
 
 import com.example.hrm_be.models.dtos.*;
+import com.example.hrm_be.models.entities.BranchBatchEntity;
+import com.example.hrm_be.models.entities.BranchProductEntity;
 import com.example.hrm_be.models.entities.ProductEntity;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -328,18 +330,38 @@ public class ProductMapper {
         .build();
   }
 
-  public ProductBaseDTO convertToProductForSearchInNotes(ProductEntity entity) {
+  public ProductBaseDTO convertToProductForSearchInNotes(ProductEntity entity, Long branchId ) {
+    // Get branch product for the specific branch
+    BranchProductEntity branchProduct = entity.getBranchProducs().stream()
+        .filter(bp -> bp.getBranch().getId().equals(branchId))
+        .findFirst()
+        .orElse(null);
+
+    // Get unit of measurements
     List<UnitOfMeasurement> unitOfMeasurementList = new ArrayList<>();
     if (entity.getUnitConversions() != null) {
-      unitOfMeasurementList =
-          entity.getUnitConversions().stream()
-              .map(unitConversionMapper::toDTO)
-              .map(UnitConversion::getSmallerUnit)
-              .collect(Collectors.toList());
+      unitOfMeasurementList = entity.getUnitConversions().stream()
+          .map(unitConversionMapper::toDTO)
+          .map(UnitConversion::getSmallerUnit)
+          .collect(Collectors.toList());
     }
     if (entity.getBaseUnit() != null) {
       unitOfMeasurementList.add(unitOfMeasurementMapper.toDTO(entity.getBaseUnit()));
     }
+
+    // Convert batches with BranchBatch quantities
+    List<Batch> batchDTOs = entity.getBatches() != null
+        ? entity.getBatches().stream()
+        .map(batch -> {
+          BranchBatchEntity branchBatch = batch.getBranchBatches().stream()
+              .filter(bb -> bb.getBranch().getId().equals(branchId))
+              .findFirst()
+              .orElse(null);
+
+          return batchMapper.convertToDtoForGetProductInBranch(batch, branchBatch != null ? branchBatch.getQuantity() : null);
+        })
+        .collect(Collectors.toList())
+        : null;
 
     return ProductBaseDTO.builder()
         .id(entity.getId())
@@ -352,13 +374,11 @@ public class ProductMapper {
             entity.getBaseUnit() != null
                 ? unitOfMeasurementMapper.toDTO(entity.getBaseUnit())
                 : null)
-        .batches(
-            entity.getBatches() != null
-                ? entity.getBatches().stream()
-                    .map(batchMapper::convertToDtoForGetProductInBranch)
-                    .collect(Collectors.toList())
-                : null)
+        .batches(batchDTOs)
         .productUnits(unitOfMeasurementList)
+        .productQuantity(branchProduct != null ? branchProduct.getQuantity() : BigDecimal.ZERO) //
+        // Add product
+        // quantity
         .build();
   }
 }
