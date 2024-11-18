@@ -761,18 +761,15 @@ public class PDFUtil {
       String client = "Khách mua";
       if (outbound.getOutboundType() == OutboundType.TRA_HANG) {
         client = outbound.getSupplier().getSupplierName();
-      }
-      else if (outbound.getOutboundType() == OutboundType.HUY_HANG) {
+      } else if (outbound.getOutboundType() == OutboundType.HUY_HANG) {
         client = outbound.getFromBranch().getBranchName();
       }
-      document.add(
-          new Paragraph("Khách Hàng: " + client, fontSubTitle));
+      document.add(new Paragraph("Khách Hàng: " + client, fontSubTitle));
       String address = "";
       if (outbound.getOutboundType() == OutboundType.TRA_HANG) {
         address = outbound.getSupplier().getAddress();
       }
-      document.add(
-          new Paragraph("Địa chỉ: " + address, fontSubTitle));
+      document.add(new Paragraph("Địa chỉ: " + address, fontSubTitle));
       document.add(new Paragraph("Lý do: " + outbound.getNote(), fontSubTitle));
       document.add(
           new Paragraph("Xuất Tại: " + outbound.getFromBranch().getBranchName(), fontSubTitle));

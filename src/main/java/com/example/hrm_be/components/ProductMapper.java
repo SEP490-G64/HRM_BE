@@ -391,18 +391,18 @@ public class ProductMapper {
   // Helper method to convert ProductEntity to ProductDTO
   public Product convertToDtoForBatch(ProductEntity entity) {
     return Product.builder()
-            .id(entity.getId())
-            .productName(entity.getProductName())
-            .baseUnit(
-                    entity.getBaseUnit() != null
-                            ? unitOfMeasurementMapper.toDTO(entity.getBaseUnit())
-                            : null)
-            .unitConversions(
-                    entity.getUnitConversions() != null
-                            ? entity.getUnitConversions().stream()
-                            .map(unitConversionMapper::toDTO)
-                            .collect(Collectors.toList())
-                            : null)
-            .build();
+        .id(entity.getId())
+        .productName(entity.getProductName())
+        .baseUnit(
+            entity.getBaseUnit() != null
+                ? unitOfMeasurementMapper.toDTO(entity.getBaseUnit())
+                : null)
+        .unitConversions(
+            entity.getUnitConversions() != null
+                ? entity.getUnitConversions().stream()
+                    .map(unitConversionMapper::toDTO)
+                    .collect(Collectors.toList())
+                : null)
+        .build();
   }
 }

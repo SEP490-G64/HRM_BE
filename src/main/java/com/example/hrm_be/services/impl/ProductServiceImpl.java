@@ -852,9 +852,9 @@ public class ProductServiceImpl implements ProductService {
   @Override
   public List<ProductBaseDTO> getByKeyword(String keyword) {
     return productRepository
-            .findProductEntitiesByProductNameContainingIgnoreCase(keyword, null)
-            .stream()
-            .map(productMapper::convertToProductForSearchInNotes)
-            .collect(Collectors.toList());
+        .findProductEntitiesByProductNameContainingIgnoreCase(keyword, null)
+        .stream()
+        .map(productMapper::convertToProductForSearchInNotes)
+        .collect(Collectors.toList());
   }
 }
