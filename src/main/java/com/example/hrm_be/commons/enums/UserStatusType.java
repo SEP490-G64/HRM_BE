@@ -4,7 +4,8 @@ public enum UserStatusType {
   PENDING("Chờ duyệt"),
   REJECTED("Từ chối"),
   ACTIVATE("Đang kích hoạt"),
-  DEACTIVATE("Vô hiệu hoá");
+  DEACTIVATE("Vô hiệu hoá"),
+  DELETED("Đã xóa");
 
   private final String displayName;
 

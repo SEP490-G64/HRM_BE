@@ -1,7 +1,11 @@
 package com.example.hrm_be.components;
 
 import com.example.hrm_be.models.dtos.Batch;
+import com.example.hrm_be.models.dtos.BatchDto;
+import com.example.hrm_be.models.dtos.BranchBatch;
 import com.example.hrm_be.models.entities.BatchEntity;
+
+import java.math.BigDecimal;
 import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -17,6 +21,7 @@ public class BatchMapper {
   @Autowired @Lazy private BranchBatchMapper branchBatchMapper;
   @Autowired @Lazy private InboundBatchDetailMapper inboundBatchDetailMapper;
   @Autowired @Lazy private ProductMapper productMapper;
+  @Autowired private UnitOfMeasurementMapper unitOfMeasurementMapper;
 
   // Convert BatchEntity to BatchDTO
   public Batch toDTO(BatchEntity entity) {
@@ -138,6 +143,56 @@ public class BatchMapper {
                     .expireDate(e.getExpireDate())
                     .inboundPrice(e.getInboundPrice())
                     .quantity(branchBatchQuantity)
+                    .build())
+        .orElse(null);
+  }
+
+  public BatchDto convertToDtoWithQuantity(BatchEntity entity) {
+    return Optional.ofNullable(entity)
+        .map(
+            e ->
+                BatchDto.builder()
+                    .id(e.getId())
+                    .batchCode(e.getBatchCode())
+                    .batchStatus(e.getBatchStatus())
+                    .produceDate(e.getProduceDate())
+                    .expireDate(e.getExpireDate())
+                    .inboundPrice(e.getInboundPrice())
+                    .quantity(
+                        e.getBranchBatches() != null
+                            ? entity.getBranchBatches().stream()
+                                .map(branchBatchMapper::toDTO)
+                                .toList()
+                                .stream()
+                                .filter(
+                                    batch -> batch.getQuantity() != null) // Lọc các giá trị null
+                                .map(
+                                    BranchBatch
+                                        ::getQuantity) // Lấy giá trị quantity kiểu BigDecimal
+                                .reduce(BigDecimal.ZERO, BigDecimal::add) // Tính tổng
+                            : BigDecimal.ZERO // Nếu danh sách là null, trả về 0
+                        )
+                    .baseUnit(
+                        e.getProduct() != null
+                            ? (productMapper.convertToDTOWithBatch(e.getProduct()).getBaseUnit()
+                                    != null
+                                ? productMapper
+                                    .convertToDTOWithBatch(e.getProduct())
+                                    .getBaseUnit()
+                                    .getUnitName()
+                                : null)
+                            : null)
+                    .unitConversions(
+                        e.getProduct() != null
+                            ? (productMapper
+                                        .convertToDTOWithoutProductInBranchProduct(e.getProduct())
+                                        .getUnitConversions()
+                                    != null
+                                ? productMapper
+                                    .convertToDTOWithoutProductInBranchProduct(e.getProduct())
+                                    .getUnitConversions()
+                                : null)
+                            : null)
                     .build())
         .orElse(null);
   }

@@ -23,6 +23,7 @@ public interface OutboundService {
       int pageSize,
       String sortBy,
       String direction,
+      Long branchId,
       String keyword,
       LocalDateTime startDate,
       LocalDateTime endDate,

@@ -1,6 +1,7 @@
 package com.example.hrm_be.services;
 
 import com.example.hrm_be.models.dtos.Batch;
+import com.example.hrm_be.models.dtos.BatchDto;
 import com.example.hrm_be.models.dtos.Product;
 import com.example.hrm_be.models.entities.BatchEntity;
 import java.time.LocalDateTime;
@@ -15,7 +16,7 @@ public interface BatchService {
   Batch getById(Long id);
 
   // Get a paginated list of batch based on provided filters.
-  Page<Batch> getByPaging(
+  Page<BatchDto> getByPaging(
       int pageNo,
       int pageSize,
       String sortBy,

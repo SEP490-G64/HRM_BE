@@ -3,9 +3,9 @@ package com.example.hrm_be.services.impl;
 import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.commons.enums.BatchStatus;
 import com.example.hrm_be.components.BatchMapper;
-import com.example.hrm_be.components.ProductMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.Batch;
+import com.example.hrm_be.models.dtos.BatchDto;
 import com.example.hrm_be.models.dtos.Product;
 import com.example.hrm_be.models.entities.BatchEntity;
 import com.example.hrm_be.repositories.BatchRepository;
@@ -39,8 +39,6 @@ public class BatchServiceImpl implements BatchService {
 
   // Injects the mapper to convert between DTO and Entity objects for batches
   @Autowired private BatchMapper batchMapper;
-
-  @Autowired private ProductMapper productMapper;
   @Autowired private UserService userService;
 
   // Retrieves a Batch by its ID
@@ -58,7 +56,7 @@ public class BatchServiceImpl implements BatchService {
 
   // Retrieves a paginated list of Batch entities, allowing sorting and searching by name
   @Override
-  public Page<Batch> getByPaging(
+  public Page<BatchDto> getByPaging(
       int pageNo,
       int pageSize,
       String sortBy,
@@ -104,7 +102,7 @@ public class BatchServiceImpl implements BatchService {
                 expireStartDate,
                 expireEndDate),
             pageable)
-        .map(dao -> batchMapper.convertToDtoBasicInfo(dao));
+        .map(dao -> batchMapper.convertToDtoWithQuantity(dao));
   }
 
   private Specification<BatchEntity> getSpecification(
@@ -267,7 +265,7 @@ public class BatchServiceImpl implements BatchService {
 
     BigDecimal inboundPrice = batch.getInboundPrice();
     if (inboundPrice != null) {
-      if (inboundPrice.compareTo(BigDecimal.ZERO) <= 0
+      if (inboundPrice.compareTo(BigDecimal.ZERO) < 0
           || inboundPrice.compareTo(new BigDecimal("10000000")) >= 0) {
         return false;
       }

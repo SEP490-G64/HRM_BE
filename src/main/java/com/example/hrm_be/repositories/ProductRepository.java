@@ -22,8 +22,10 @@ public interface ProductRepository
   Page<ProductEntity> findProductEntitiesByRegistrationCodeContainingIgnoreCase(
       String code, Pageable pageable);
 
-  Page<ProductEntity> findProductEntitiesByProductNameContainingIgnoreCase(
-      String name, Pageable pageable);
+  @Query(
+      "SELECT p FROM ProductEntity p WHERE LOWER(p.productName) LIKE LOWER(CONCAT('%', :keyword,"
+          + " '%'))")
+  List<ProductEntity> findProductEntitiesByProductNameIgnoreCase(@Param("keyword") String keyword);
 
   @Query("SELECT p FROM ProductEntity p WHERE p.category.id=:cateId")
   Page<ProductEntity> findProductByPagingAndCategoryId(Long cateId, Pageable pageable);
@@ -31,20 +33,21 @@ public interface ProductRepository
   @Query("SELECT p FROM ProductEntity p WHERE p.category.id=:typeId")
   Page<ProductEntity> findProductByPagingAndTypeId(Long typeId, Pageable pageable);
 
+  @Query(
+      "SELECT COUNT(p) > 0 FROM ProductEntity p WHERE p.registrationCode = :code AND p.status !="
+          + " 'DA_XOA'")
   boolean existsByRegistrationCode(String code);
 
   @Query(
       "SELECT DISTINCT p FROM ProductEntity p JOIN p.branchProducs bp LEFT JOIN FETCH p.batches b"
           + " LEFT JOIN BranchBatchEntity bb ON bb.batch = b AND bb.branch.id = :branchId LEFT JOIN"
           + " p.productSuppliers ps WHERE LOWER(p.productName) LIKE LOWER(CONCAT('%', :searchStr,"
-          + " '%')) AND bp.branch.id = :branchId AND (:checkValid IS NULL OR :checkValid = FALSE OR"
-          + "     (b IS NOT NULL AND b.expireDate >= CURRENT_TIMESTAMP AND bb.quantity > 0 AND"
-          + " bp.quantity > 0)) AND (:supplierId IS NULL OR ps.supplier.id = :supplierId) AND (b IS"
-          + " NULL OR bb.branch.id = :branchId)")
+          + " '%')) AND bp.branch.id = :branchId AND bp.quantity > 0 AND (b IS NULL OR bb.quantity"
+          + " > 0) AND (:checkValid IS NULL OR :checkValid = FALSE OR (b IS NOT NULL AND"
+          + " b.expireDate >= CURRENT_TIMESTAMP)) AND (:supplierId IS NULL OR ps.supplier.id ="
+          + " :supplierId)")
   List<ProductEntity> searchProductByBranchId(
       Long branchId, String searchStr, Boolean checkValid, Long supplierId);
-
-  List<ProductEntity> findByRegistrationCodeIn(List<String> productName);
 
   Optional<ProductEntity> findByRegistrationCode(String registrationCode);
 

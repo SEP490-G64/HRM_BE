@@ -7,7 +7,6 @@ import com.example.hrm_be.commons.enums.UserStatusType;
 import com.example.hrm_be.components.BranchMapper;
 import com.example.hrm_be.components.RoleMapper;
 import com.example.hrm_be.components.UserMapper;
-import com.example.hrm_be.components.UserRoleMapMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.Branch;
 import com.example.hrm_be.models.dtos.Role;
@@ -16,7 +15,6 @@ import com.example.hrm_be.models.entities.UserEntity;
 import com.example.hrm_be.models.entities.UserRoleMapEntity;
 import com.example.hrm_be.models.requests.ChangePasswordRequest;
 import com.example.hrm_be.models.requests.RegisterRequest;
-import com.example.hrm_be.repositories.RoleRepository;
 import com.example.hrm_be.repositories.UserRepository;
 import com.example.hrm_be.repositories.UserRoleMapRepository;
 import com.example.hrm_be.services.*;
@@ -36,7 +34,6 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.hibernate.validator.internal.constraintvalidators.bv.time.futureorpresent.FutureOrPresentValidatorForReadableInstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
@@ -61,21 +58,17 @@ public class UserServiceImpl implements UserService {
 
   @Lazy @Autowired private UserRepository userRepository;
   @Lazy @Autowired private UserMapper userMapper;
-
-  @Lazy @Autowired private RoleRepository roleRepository;
   @Lazy @Autowired private RoleMapper roleMapper;
 
   @Lazy @Autowired private BranchMapper branchMapper;
 
   @Lazy @Autowired private UserRoleMapService userRoleMapService;
   @Lazy @Autowired private UserRoleMapRepository userRoleMapRepository;
-  @Lazy @Autowired private UserRoleMapMapper userRoleMapMapper;
 
   @Lazy @Autowired private PasswordEncoder passwordEncoder;
   @Autowired private EmailService emailService;
   @Lazy @Autowired private BranchService branchService;
   @Lazy @Autowired private RoleService roleService;
-  private FutureOrPresentValidatorForReadableInstant futureOrPresentValidatorForReadableInstant;
 
   @Override
   public String getAuthenticatedUserEmail() throws UsernameNotFoundException {
@@ -129,9 +122,7 @@ public class UserServiceImpl implements UserService {
     Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(convertDirection, sortBy));
 
     // Fetch users by keyword and map to DTO
-    return userRepository
-        .searchUsers(keyword, UserStatusType.PENDING, status, pageable)
-        .map(userMapper::toDTO);
+    return userRepository.searchUsers(keyword, status, pageable).map(userMapper::toDTO);
   }
 
   @Override
@@ -161,11 +152,14 @@ public class UserServiceImpl implements UserService {
       throw new HrmCommonException(HrmConstant.ERROR.ROLE.NOT_ALLOWED);
     }
 
+    UserEntity user = userRepository.findById(id).orElse(null);
+    // Validate that the user exists before attempting to delete
+    if (user == null || user.getStatus() == UserStatusType.DELETED) {
+      return null;
+    }
+
     // Retrieve user by ID and map to DTO
-    return Optional.ofNullable(id)
-        .flatMap(e -> userRepository.findById(id))
-        .map(userMapper::toDTO)
-        .orElse(null); // Return null if user not found
+    return userMapper.toDTO(user); // Return null if update fails
   }
 
   @Override
@@ -254,7 +248,7 @@ public class UserServiceImpl implements UserService {
     /** TODO Only allow admin user to update other users. */
     UserEntity oldUserEntity = null;
 
-    if (!validateUser(user) || user.getId() == null) {
+    if (!validateUser(user) || (!profile && user.getId() == null)) {
       throw new HrmCommonException(HrmConstant.ERROR.USER.INVALID);
     }
 
@@ -269,11 +263,11 @@ public class UserServiceImpl implements UserService {
     } else {
       // Get data of logged in user before updating
       String email = this.getAuthenticatedUserEmail();
-      oldUserEntity = userMapper.toEntity(this.findLoggedInfoByEmail(email));
+      oldUserEntity = userRepository.findByEmail(email).orElse(null);
     }
 
     // Check if the user exists before updating
-    if (oldUserEntity == null) {
+    if (oldUserEntity == null || oldUserEntity.getStatus() == UserStatusType.DELETED) {
       throw new HrmCommonException(USER.NOT_EXIST);
     }
 
@@ -354,13 +348,15 @@ public class UserServiceImpl implements UserService {
       throw new HrmCommonException(HrmConstant.ERROR.ROLE.NOT_ALLOWED);
     }
 
+    UserEntity user = userRepository.findById(id).orElse(null);
     // Validate that the user exists before attempting to delete
-    if (!userRepository.existsById(id)) {
+    if (user == null || user.getStatus() == UserStatusType.DELETED) {
       throw new HrmCommonException(USER.NOT_EXIST);
     }
 
-    // TODO should delete license as well
-    userRepository.deleteById(id); // Delete the user
+    Optional.ofNullable(user)
+        .map(e -> e.setStatus(UserStatusType.DELETED))
+        .map(userRepository::save); // Delete the user
   }
 
   @Deprecated
@@ -547,10 +543,7 @@ public class UserServiceImpl implements UserService {
             // Mapping fields from the Excel row to the User object
             user.setUserName(row.getCell(0) != null ? row.getCell(0).getStringCellValue() : null);
             user.setEmail(row.getCell(1) != null ? row.getCell(1).getStringCellValue() : null);
-            user.setPhone(
-                row.getCell(2) != null
-                    ? String.valueOf((long) row.getCell(2).getNumericCellValue())
-                    : null);
+            user.setPhone(row.getCell(2) != null ? row.getCell(2).getStringCellValue() : null);
             user.setFirstName(row.getCell(3) != null ? row.getCell(3).getStringCellValue() : null);
             user.setLastName(row.getCell(4) != null ? row.getCell(4).getStringCellValue() : null);
 
@@ -684,8 +677,7 @@ public class UserServiceImpl implements UserService {
         };
 
     // Fetch user data (this would typically come from your database/repository)
-    List<User> users =
-        userRepository.findAll().stream().map(userMapper::toDTO).collect(Collectors.toList());
+    List<User> users = getByPaging(0, Integer.MAX_VALUE, "id", "ASC", "", null).stream().toList();
 
     // Call the utility to export data
     try {

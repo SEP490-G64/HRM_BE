@@ -66,7 +66,6 @@ public class ProductServiceImpl implements ProductService {
   @Autowired private InboundBatchDetailRepository inboundBatchDetailRepository;
   @Autowired private InboundDetailsRepository inboundDetailsRepository;
   @Autowired private AllowedProductRepository allowedProductRepository;
-  @Autowired private BranchProductRepository branchProductRepository;
 
   @Autowired private UserService userService;
   @Autowired private ProductCategoryService productCategoryService;
@@ -100,6 +99,9 @@ public class ProductServiceImpl implements ProductService {
             e ->
                 productRepository
                     .findById(e)
+                    .filter(
+                        product ->
+                            !product.getStatus().equals(ProductStatus.DA_XOA)) // Kiểm tra status
                     .map(b -> productMapper.convertToDTOWithoutProductInBranchProduct(b)))
         .orElse(null);
   }
@@ -493,6 +495,11 @@ public class ProductServiceImpl implements ProductService {
     Sort.Direction direction = Sort.Direction.fromString(sortDirection);
     Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(direction, sortBy));
 
+    specification =
+        specification.and(
+            (root, query, criteriaBuilder) ->
+                criteriaBuilder.notEqual(root.get("status"), "DA_XOA"));
+
     // Keyword search for product name, registration code, and active ingredient
     if (keyword.isPresent()) {
       String searchPattern = "%" + keyword.get().toLowerCase() + "%";
@@ -538,6 +545,7 @@ public class ProductServiceImpl implements ProductService {
               (root, query, criteriaBuilder) ->
                   criteriaBuilder.equal(root.get("status"), status.get()));
     }
+
     return productRepository
         .findAll(specification, pageable)
         .map(productMapper::convertToProductBaseDTO);
@@ -700,16 +708,17 @@ public class ProductServiceImpl implements ProductService {
   @Override
   public ByteArrayInputStream exportFile() throws IOException {
     String[] headers = {
-      "Regation Code",
-      "Product Name",
-      "Active Ingredient",
-      "Excipient",
-      "Formulation",
-      "Category",
-      "Type",
-      "Base Unit",
-      "Manufacturer",
-      "Sell Price"
+      "Mã đăng ký",
+      "Tên sản phẩm",
+      "Hoạt chất",
+      "Bào chế",
+      "Tá dược",
+      "Nhóm sản phẩm",
+      "Loại sản phẩm",
+      "Đơn vị cơ sở",
+      "Nhà sản xuất",
+      "Giá nhập",
+      "Giá bán"
     };
 
     // Row mapper to convert a Product object to a list of cell values
@@ -728,6 +737,8 @@ public class ProductServiceImpl implements ProductService {
           cellValues.add(product.getBaseUnit() != null ? product.getBaseUnit() : "");
           cellValues.add(
               product.getManufacturerName() != null ? product.getManufacturerName() : "");
+          cellValues.add(
+              product.getInboundPrice() != null ? product.getInboundPrice().toString() : "");
           cellValues.add(product.getSellPrice() != null ? product.getSellPrice().toString() : "");
 
           return cellValues;
@@ -735,9 +746,18 @@ public class ProductServiceImpl implements ProductService {
 
     // Fetch product data
     List<ProductBaseDTO> products =
-        productRepository.findAll().stream()
-            .map(productMapper::convertToProductBaseDTO)
-            .collect(Collectors.toList());
+        searchProducts(
+                0,
+                Integer.MAX_VALUE,
+                "id",
+                "ASC",
+                Optional.ofNullable(null),
+                Optional.ofNullable(null),
+                Optional.ofNullable(null),
+                Optional.ofNullable(null),
+                Optional.ofNullable(null))
+            .stream()
+            .toList();
 
     // Export data using utility
     try {
@@ -839,6 +859,13 @@ public class ProductServiceImpl implements ProductService {
 
     return productRepository.findProductsBySellPrice(sellPrice, branchId).stream()
         .map(productMapper::convertToProductBaseDTO)
+        .collect(Collectors.toList());
+  }
+
+  @Override
+  public List<ProductBaseDTO> getByKeyword(String keyword) {
+    return productRepository.findProductEntitiesByProductNameIgnoreCase(keyword).stream()
+        .map(productMapper::convertToProductDto)
         .collect(Collectors.toList());
   }
 
