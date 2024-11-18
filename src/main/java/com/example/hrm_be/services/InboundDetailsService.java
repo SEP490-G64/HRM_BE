@@ -2,6 +2,7 @@ package com.example.hrm_be.services;
 
 import com.example.hrm_be.models.dtos.InboundDetails;
 import com.example.hrm_be.models.entities.InboundEntity;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -23,4 +24,7 @@ public interface InboundDetailsService {
   InboundEntity updateAverageInboundPricesForProductsAndInboundTotalPrice(InboundEntity inbound);
 
   void deleteAllByInboundId(Long inboundId);
+
+  List<InboundDetails> getInboundDetailsByProductIdAndPeriod(
+      Long productId, LocalDateTime startDate, LocalDateTime endDate);
 }

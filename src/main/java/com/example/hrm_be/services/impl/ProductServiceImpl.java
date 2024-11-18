@@ -24,6 +24,7 @@ import com.example.hrm_be.models.entities.AllowedProductEntity;
 import com.example.hrm_be.models.entities.BranchProductEntity;
 import com.example.hrm_be.models.entities.ProductEntity;
 import com.example.hrm_be.models.entities.SpecialConditionEntity;
+import com.example.hrm_be.models.responses.AuditHistory;
 import com.example.hrm_be.repositories.*;
 import com.example.hrm_be.repositories.AllowedProductRepository;
 import com.example.hrm_be.repositories.ProductRepository;
@@ -33,6 +34,7 @@ import com.example.hrm_be.utils.ExcelUtility;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +47,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -60,6 +63,8 @@ import org.springframework.web.multipart.MultipartFile;
 @Transactional
 public class ProductServiceImpl implements ProductService {
   @Autowired private ProductRepository productRepository;
+  @Autowired private InboundBatchDetailRepository inboundBatchDetailRepository;
+  @Autowired private InboundDetailsRepository inboundDetailsRepository;
   @Autowired private AllowedProductRepository allowedProductRepository;
 
   @Autowired private UserService userService;
@@ -73,11 +78,19 @@ public class ProductServiceImpl implements ProductService {
   @Autowired private UnitConversionService unitConversionService;
 
   @Autowired private ProductMapper productMapper;
+  @Autowired private InboundDetailsMapper inboundDetailsMapper;
+  @Autowired private InboundBatchDetailMapper inboundBatchDetailMapper;
   @Autowired private SpecialConditionMapper specialConditionMapper;
   @Autowired private BranchMapper branchMapper;
   @Autowired private StorageLocationMapper storageLocationMapper;
   @Autowired private UnitConversionMapper unitConversionMapper;
   @Autowired private AllowedProductService allowedProductService;
+  @Lazy @Autowired private InboundDetailsService inboundDetailsService;
+  @Lazy @Autowired private OutboundDetailService outboundDetailService;
+  @Lazy @Autowired private OutboundProductDetailService outboundProductDetailService;
+  @Lazy @Autowired private InboundBatchDetailService inboundBatchDetailService;
+  @Autowired private BatchRepository batchRepository;
+  @Autowired private NotificationService notificationService;
 
   @Override
   public Product getById(Long id) {
@@ -854,5 +867,76 @@ public class ProductServiceImpl implements ProductService {
     return productRepository.findProductEntitiesByProductNameIgnoreCase(keyword).stream()
         .map(productMapper::convertToProductDto)
         .collect(Collectors.toList());
+  }
+
+  public List<AuditHistory> getProductDetailsInPeriod(
+      Long productId, LocalDateTime startDate, LocalDateTime endDate) {
+    // Fetch product details
+    List<InboundDetails> productInbound =
+        inboundDetailsService.getInboundDetailsByProductIdAndPeriod(productId, startDate, endDate);
+    List<InboundBatchDetail> batchInbound =
+        inboundBatchDetailService.getInboundBatchDetailsByProductIdAndPeriod(
+            productId, startDate, endDate);
+
+    List<OutboundDetail> batchOutbound =
+        outboundDetailService.getOutboundDetailsByProductIdAndPeriod(productId, startDate, endDate);
+    List<OutboundProductDetail> productOutbound =
+        outboundProductDetailService.getOutboundProductDetailsByProductIdAndPeriod(
+            productId, startDate, endDate);
+    List<AuditHistory> auditHistoryList = new ArrayList<>();
+
+    // Map inbound details to AuditHistory
+    productInbound.forEach(
+        inbound -> {
+          AuditHistory audit = new AuditHistory();
+          audit.setTransactionType("INBOUND");
+          audit.setTransactionId(inbound.getInbound().getId());
+          audit.setProductId(inbound.getProduct().getId());
+          audit.setProductName(inbound.getProduct().getProductName());
+          audit.setQuantity(BigDecimal.valueOf(inbound.getReceiveQuantity()));
+          audit.setBatch(null); // No batch details for InboundDetails
+          audit.setCreatedAt(inbound.getInbound().getCreatedDate());
+          auditHistoryList.add(audit);
+        });
+
+    // Map outbound details to AuditHistory
+    batchInbound.forEach(
+        inbound -> {
+          AuditHistory audit = new AuditHistory();
+          audit.setTransactionType("INBOUND");
+          audit.setTransactionId(inbound.getInbound().getId());
+          audit.setProductId(inbound.getBatch().getProduct().getId());
+          audit.setProductName(inbound.getBatch().getProduct().getProductName());
+          audit.setQuantity(BigDecimal.valueOf(inbound.getQuantity()));
+          audit.setBatch(inbound.getBatch().getBatchCode()); // Include batch details
+          audit.setCreatedAt(inbound.getInbound().getCreatedDate());
+          auditHistoryList.add(audit);
+        }); // Map outbound details to AuditHistory
+    batchOutbound.forEach(
+        outbound -> {
+          AuditHistory audit = new AuditHistory();
+          audit.setTransactionType("OUTBOUND");
+          audit.setTransactionId(outbound.getOutbound().getId());
+          audit.setProductId(outbound.getBatch().getProduct().getId());
+          audit.setProductName(outbound.getBatch().getProduct().getProductName());
+          audit.setQuantity(outbound.getQuantity());
+          audit.setBatch(outbound.getBatch().getBatchCode()); // Include batch details
+          audit.setCreatedAt(outbound.getOutbound().getCreatedDate());
+          auditHistoryList.add(audit);
+        }); // Map outbound details to AuditHistory
+    productOutbound.forEach(
+        outbound -> {
+          AuditHistory audit = new AuditHistory();
+          audit.setTransactionType("OUTBOUND");
+          audit.setTransactionId(outbound.getOutbound().getId());
+          audit.setProductId(outbound.getProduct().getId());
+          audit.setProductName(outbound.getProduct().getProductName());
+          audit.setQuantity(outbound.getOutboundQuantity());
+          audit.setBatch(null); // Include batch details
+          audit.setCreatedAt(outbound.getOutbound().getCreatedDate());
+          auditHistoryList.add(audit);
+        });
+
+    return auditHistoryList;
   }
 }

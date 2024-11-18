@@ -6,6 +6,7 @@ import com.example.hrm_be.models.dtos.Product;
 import com.example.hrm_be.models.dtos.ProductBaseDTO;
 import com.example.hrm_be.models.dtos.ProductSupplierDTO;
 import com.example.hrm_be.models.entities.AllowedProductEntity;
+import com.example.hrm_be.models.responses.AuditHistory;
 import com.example.hrm_be.models.responses.BaseOutput;
 import com.example.hrm_be.services.ProductService;
 import com.example.hrm_be.utils.ExcelUtility;
@@ -15,6 +16,7 @@ import jakarta.validation.constraints.NotNull;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -340,6 +342,22 @@ public class StaffProductController {
 
     BaseOutput<List<ProductBaseDTO>> response =
         BaseOutput.<List<ProductBaseDTO>>builder()
+            .data(products)
+            .message(HttpStatus.OK.toString())
+            .status(ResponseStatus.SUCCESS)
+            .build();
+    return ResponseEntity.ok(response);
+  }
+
+  @GetMapping("/{productId}/audit-history")
+  public ResponseEntity<BaseOutput<List<AuditHistory>>> getProductDetailsInPeriod(
+      @PathVariable Long productId,
+      @RequestParam("startDate") LocalDateTime startDate,
+      @RequestParam("endDate") LocalDateTime endDate) {
+    List<AuditHistory> products =
+        productService.getProductDetailsInPeriod(productId, startDate, endDate);
+    BaseOutput<List<AuditHistory>> response =
+        BaseOutput.<List<AuditHistory>>builder()
             .data(products)
             .message(HttpStatus.OK.toString())
             .status(ResponseStatus.SUCCESS)

@@ -4,6 +4,7 @@ import com.example.hrm_be.models.dtos.InboundBatchDetail;
 import com.example.hrm_be.models.entities.BatchEntity;
 import com.example.hrm_be.models.entities.InboundBatchDetailEntity;
 import com.example.hrm_be.models.entities.ProductEntity;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
@@ -24,4 +25,7 @@ public interface InboundBatchDetailService {
   InboundBatchDetailEntity findByBatchIdAndAndInboundId(Long batchId, Long inboundId);
 
   void deleteAllByInboundId(Long inboundId);
+
+  List<InboundBatchDetail> getInboundBatchDetailsByProductIdAndPeriod(
+      Long productId, LocalDateTime startDate, LocalDateTime endDate);
 }

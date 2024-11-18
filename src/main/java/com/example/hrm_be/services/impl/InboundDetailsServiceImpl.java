@@ -11,6 +11,7 @@ import com.example.hrm_be.services.*;
 import io.micrometer.common.util.StringUtils;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -209,5 +210,15 @@ public class InboundDetailsServiceImpl implements InboundDetailsService {
   @Override
   public void deleteAllByInboundId(Long inboundId) {
     inboundDetailsRepository.deleteAllByInbound_Id(inboundId);
+  }
+
+  @Override
+  public List<InboundDetails> getInboundDetailsByProductIdAndPeriod(
+      Long productId, LocalDateTime startDate, LocalDateTime endDate) {
+    return inboundDetailsRepository
+        .findInboundDetailsByProductIdAndPeriod(productId, startDate, endDate)
+        .stream()
+        .map(inboundDetailsMapper::toDTOWithInBoundDetails)
+        .collect(Collectors.toList());
   }
 }

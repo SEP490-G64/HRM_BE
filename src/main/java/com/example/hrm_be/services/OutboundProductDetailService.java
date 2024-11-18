@@ -2,6 +2,7 @@ package com.example.hrm_be.services;
 
 import com.example.hrm_be.models.dtos.OutboundProductDetail;
 import com.example.hrm_be.models.entities.OutboundProductDetailEntity;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
@@ -15,4 +16,7 @@ public interface OutboundProductDetailService {
 
   List<OutboundProductDetail> saveAll(
       List<OutboundProductDetailEntity> outboundProductDetailEntities);
+
+  List<OutboundProductDetail> getOutboundProductDetailsByProductIdAndPeriod(
+      Long productId, LocalDateTime startDate, LocalDateTime endDate);
 }

@@ -3,6 +3,7 @@ package com.example.hrm_be.repositories;
 import com.example.hrm_be.models.entities.BatchEntity;
 import com.example.hrm_be.models.entities.OutboundDetailEntity;
 import com.example.hrm_be.models.entities.OutboundEntity;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -29,4 +30,13 @@ public interface OutboundDetailRepository extends JpaRepository<OutboundDetailEn
           + "LEFT JOIN FETCH p.category c "
           + "WHERE od.outbound.id = :outboundId")
   List<OutboundDetailEntity> findAllWithBatchAndProductAndCategoryByOutboundId(Long outboundId);
+
+  @Query(
+      "SELECT i FROM OutboundDetailEntity i "
+          + "WHERE i.batch.product.id = :productId "
+          + "AND i.outbound.createdDate BETWEEN :startDate AND :endDate")
+  List<OutboundDetailEntity> findOutboundDetailsByProductIdAndPeriod(
+      @Param("productId") Long productId,
+      @Param("startDate") LocalDateTime startDate,
+      @Param("endDate") LocalDateTime endDate);
 }
