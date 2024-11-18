@@ -182,7 +182,6 @@ public class StaffInboundController {
   public ResponseEntity<BaseOutput<Inbound>> submitToSystem(@PathVariable(name = "id") Long id) {
     Inbound inbound = inboundService.submitInboundToSystem(id);
 
-
     BaseOutput<Inbound> response =
         BaseOutput.<Inbound>builder()
             .message(HttpStatus.OK.toString())
@@ -190,8 +189,6 @@ public class StaffInboundController {
             .status(ResponseStatus.SUCCESS)
             .build();
     return ResponseEntity.ok(response);
-
-
   }
 
   @GetMapping("/generate-receipt/{id}")
