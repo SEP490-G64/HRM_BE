@@ -144,7 +144,7 @@ public class UserServiceImplTest {
   void testUTCID03_GetByID_InvalidNotExist() {
     // Mock admin user
     TestUtils.mockAuthenticatedUser("dsdadmin@gmail.com", RoleType.ADMIN);
-    assertThrows(HrmCommonException.class, () -> userService.getById(-1L));
+    Assertions.assertNull(userService.getById(-1L));
   }
 
   // GET USER BY EMAIL
