@@ -22,7 +22,17 @@ public class ProductSupplierServiceImpl implements ProductSupplierService {
 
   @Override
   public List<ProductSuppliersEntity> saveAll(
-      List<ProductSuppliersEntity> productSuppliersEntities) {
+          List<ProductSuppliersEntity> productSuppliersEntities) {
     return productSuppliersRepository.saveAll(productSuppliersEntities);
+  }
+
+  @Override
+  public ProductSuppliersEntity save(ProductSuppliersEntity productSuppliersEntity) {
+    return productSuppliersRepository.save(productSuppliersEntity);
+  }
+
+  @Override
+  public void delete(Long id) {
+    productSuppliersRepository.deleteById(id);
   }
 }

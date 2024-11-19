@@ -35,7 +35,7 @@ public interface InboundService {
 
   Inbound saveInbound(CreateInboundRequest innitInbound);
 
-  Inbound submitInboundToSystem(Long inboundId);
+  Inbound submitInboundToSystem(CreateInboundRequest request);
 
   Inbound createInnitInbound(InboundType type);
 

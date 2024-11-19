@@ -36,7 +36,7 @@ public interface OutboundService {
 
   Outbound saveOutboundForSell(CreateOutboundRequest initOutbound);
 
-  Outbound submitOutboundToSystem(Long outboundId);
+  Outbound submitOutboundToSystem(CreateOutboundRequest request);
 
   Outbound createInnitOutbound(OutboundType type);
 

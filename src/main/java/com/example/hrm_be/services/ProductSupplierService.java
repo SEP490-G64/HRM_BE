@@ -10,5 +10,10 @@ import org.springframework.stereotype.Service;
 public interface ProductSupplierService {
   ProductSuppliersEntity findByProductAndSupplier(ProductEntity product, SupplierEntity supplier);
 
-  List<ProductSuppliersEntity> saveAll(List<ProductSuppliersEntity> productSuppliersEntities);
+  ProductSuppliersEntity save(ProductSuppliersEntity productSuppliersEntity);
+
+  void delete(Long id);
+
+  public List<ProductSuppliersEntity> saveAll(
+          List<ProductSuppliersEntity> productSuppliersEntities);
 }

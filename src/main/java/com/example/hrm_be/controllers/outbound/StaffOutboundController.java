@@ -191,9 +191,9 @@ public class StaffOutboundController {
     return ResponseEntity.ok(BaseOutput.<String>builder().status(ResponseStatus.SUCCESS).build());
   }
 
-  @PutMapping("/{id}/submit")
-  public ResponseEntity<BaseOutput<Outbound>> submitToSystem(@PathVariable(name = "id") Long id) {
-    Outbound outbound = outboundService.submitOutboundToSystem(id);
+  @PutMapping("/submit")
+  public ResponseEntity<BaseOutput<Outbound>> submitToSystem(@RequestBody CreateOutboundRequest request) {
+    Outbound outbound = outboundService.submitOutboundToSystem(request);
     BaseOutput<Outbound> response =
         BaseOutput.<Outbound>builder()
             .message(HttpStatus.OK.toString())
