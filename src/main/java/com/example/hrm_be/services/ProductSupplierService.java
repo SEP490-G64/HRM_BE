@@ -15,5 +15,5 @@ public interface ProductSupplierService {
   void delete(Long id);
 
   public List<ProductSuppliersEntity> saveAll(
-          List<ProductSuppliersEntity> productSuppliersEntities);
+      List<ProductSuppliersEntity> productSuppliersEntities);
 }

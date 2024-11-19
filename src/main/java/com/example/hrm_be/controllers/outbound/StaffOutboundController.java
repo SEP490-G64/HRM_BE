@@ -192,7 +192,8 @@ public class StaffOutboundController {
   }
 
   @PutMapping("/submit")
-  public ResponseEntity<BaseOutput<Outbound>> submitToSystem(@RequestBody CreateOutboundRequest request) {
+  public ResponseEntity<BaseOutput<Outbound>> submitToSystem(
+      @RequestBody CreateOutboundRequest request) {
     Outbound outbound = outboundService.submitOutboundToSystem(request);
     BaseOutput<Outbound> response =
         BaseOutput.<Outbound>builder()

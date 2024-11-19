@@ -32,7 +32,6 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
@@ -51,8 +50,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 public class OutboundServiceImpl implements OutboundService {
-  @PersistenceContext
-  private EntityManager entityManager;
+  @PersistenceContext private EntityManager entityManager;
   @Autowired private OutboundRepository outboundRepository;
 
   @Autowired private OutboundMapper outboundMapper;
@@ -579,9 +577,9 @@ public class OutboundServiceImpl implements OutboundService {
   public Outbound submitOutboundToSystem(CreateOutboundRequest request) {
     // Fetch the OutboundEntity from the repository
     OutboundEntity outboundEntity =
-            outboundRepository
-                    .findById(request.getOutboundId())
-                    .orElseThrow(() -> new HrmCommonException(OUTBOUND.NOT_EXIST));
+        outboundRepository
+            .findById(request.getOutboundId())
+            .orElseThrow(() -> new HrmCommonException(OUTBOUND.NOT_EXIST));
 
     // check status
     if (!outboundEntity.getStatus().isCheck()) {
@@ -590,42 +588,59 @@ public class OutboundServiceImpl implements OutboundService {
 
     // Map old and new quantities for comparison
     Map<Long, BigDecimal> oldProductQuantities =
-            Optional.ofNullable(outboundEntity.getOutboundProductDetails())
-                    .orElse(Collections.emptyList())
-                    .stream()
-                    .collect(Collectors.toMap(
-                            batchDetail -> batchDetail.getProduct().getId(),
-                            batchDetail -> batchDetail.getOutboundQuantity() != null ? batchDetail.getOutboundQuantity() : BigDecimal.ZERO));
+        Optional.ofNullable(outboundEntity.getOutboundProductDetails())
+            .orElse(Collections.emptyList())
+            .stream()
+            .collect(
+                Collectors.toMap(
+                    batchDetail -> batchDetail.getProduct().getId(),
+                    batchDetail ->
+                        batchDetail.getOutboundQuantity() != null
+                            ? batchDetail.getOutboundQuantity()
+                            : BigDecimal.ZERO));
 
     Map<Long, BigDecimal> oldBatchQuantities =
-            Optional.ofNullable(outboundEntity.getOutboundDetails())
-                    .orElse(Collections.emptyList())
-                    .stream()
-                    .collect(Collectors.toMap(
-                            batchDetail -> batchDetail.getBatch().getId(),
-                            batchDetail -> batchDetail.getQuantity() != null ? batchDetail.getQuantity() : BigDecimal.ZERO));
+        Optional.ofNullable(outboundEntity.getOutboundDetails())
+            .orElse(Collections.emptyList())
+            .stream()
+            .collect(
+                Collectors.toMap(
+                    batchDetail -> batchDetail.getBatch().getId(),
+                    batchDetail ->
+                        batchDetail.getQuantity() != null
+                            ? batchDetail.getQuantity()
+                            : BigDecimal.ZERO));
 
     saveOutbound(request);
     outboundRepository.flush();
     entityManager.clear();
-    OutboundEntity updatedOutboundEntity = outboundRepository
+    OutboundEntity updatedOutboundEntity =
+        outboundRepository
             .findById(request.getOutboundId())
             .orElseThrow(() -> new HrmCommonException(INBOUND.NOT_EXIST));
     Map<Long, BigDecimal> newProductQuantities =
-            Optional.ofNullable(updatedOutboundEntity.getOutboundProductDetails())
-                    .orElse(Collections.emptyList())
-                    .stream()
-                    .collect(Collectors.toMap(
-                            batchDetail -> batchDetail.getProduct().getId(),
-                            batchDetail -> batchDetail.getOutboundQuantity() != null ? batchDetail.getOutboundQuantity() : BigDecimal.ZERO));
+        Optional.ofNullable(updatedOutboundEntity.getOutboundProductDetails())
+            .orElse(Collections.emptyList())
+            .stream()
+            .collect(
+                Collectors.toMap(
+                    batchDetail -> batchDetail.getProduct().getId(),
+                    batchDetail ->
+                        batchDetail.getOutboundQuantity() != null
+                            ? batchDetail.getOutboundQuantity()
+                            : BigDecimal.ZERO));
 
     Map<Long, BigDecimal> newBatchQuantities =
-            Optional.ofNullable(updatedOutboundEntity.getOutboundDetails())
-                    .orElse(Collections.emptyList())
-                    .stream()
-                    .collect(Collectors.toMap(
-                            batchDetail -> batchDetail.getBatch().getId(),
-                            batchDetail -> batchDetail.getQuantity() != null ? batchDetail.getQuantity() : BigDecimal.ZERO));
+        Optional.ofNullable(updatedOutboundEntity.getOutboundDetails())
+            .orElse(Collections.emptyList())
+            .stream()
+            .collect(
+                Collectors.toMap(
+                    batchDetail -> batchDetail.getBatch().getId(),
+                    batchDetail ->
+                        batchDetail.getQuantity() != null
+                            ? batchDetail.getQuantity()
+                            : BigDecimal.ZERO));
     Outbound outbound = outboundMapper.toDTO(updatedOutboundEntity);
     Branch fromBranch = outbound.getFromBranch();
 
@@ -647,8 +662,10 @@ public class OutboundServiceImpl implements OutboundService {
       BranchProduct branchProduct =
           branchProductService.getByBranchIdAndProductId(fromBranch.getId(), productEntity.getId());
 
-      BigDecimal oldQuantity = oldProductQuantities.getOrDefault(productEntity.getId(), BigDecimal.ZERO);
-      BigDecimal newQuantity = newProductQuantities.getOrDefault(productEntity.getId(), BigDecimal.ZERO);
+      BigDecimal oldQuantity =
+          oldProductQuantities.getOrDefault(productEntity.getId(), BigDecimal.ZERO);
+      BigDecimal newQuantity =
+          newProductQuantities.getOrDefault(productEntity.getId(), BigDecimal.ZERO);
       BigDecimal difference = newQuantity.subtract(oldQuantity);
 
       // Check if sufficient quantity is available
