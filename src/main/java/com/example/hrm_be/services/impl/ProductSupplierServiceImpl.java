@@ -13,22 +13,17 @@ import org.springframework.stereotype.Service;
 @Service
 public class ProductSupplierServiceImpl implements ProductSupplierService {
   @Autowired private ProductSuppliersRepository productSuppliersRepository;
+  @Autowired private ProductSuppliersMapper productSuppliersMapper;
 
   @Override
-  public ProductSuppliersEntity findByProductAndSupplier(
+  public ProductSuppliers findByProductAndSupplier(
       ProductEntity product, SupplierEntity supplier) {
-    return productSuppliersRepository.findByProductAndSupplier(product, supplier).orElse(null);
+    return productSuppliersMapper.toDTO(productSuppliersRepository.findByProductAndSupplier(product, supplier).orElse(null));
   }
 
   @Override
-  public List<ProductSuppliersEntity> saveAll(
-          List<ProductSuppliersEntity> productSuppliersEntities) {
-    return productSuppliersRepository.saveAll(productSuppliersEntities);
-  }
-
-  @Override
-  public ProductSuppliersEntity save(ProductSuppliersEntity productSuppliersEntity) {
-    return productSuppliersRepository.save(productSuppliersEntity);
+  public ProductSuppliers save(ProductSuppliersEntity productSuppliersEntity) {
+    return productSuppliersMapper.toDTO(productSuppliersRepository.save(productSuppliersEntity));
   }
 
   @Override

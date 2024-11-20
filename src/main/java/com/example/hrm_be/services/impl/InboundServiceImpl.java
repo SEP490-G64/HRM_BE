@@ -41,7 +41,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.Predicate;
 import org.apache.commons.lang3.StringUtils;
@@ -512,10 +511,10 @@ public class InboundServiceImpl implements InboundService {
         branchProductService.updateBranchProductInInbound(
                 toBranch, productEntity, BigDecimal.valueOf(-oldQuantity));
 
-        ProductSuppliersEntity productSuppliersEntity = productSupplierService
+        ProductSuppliers productSuppliers = productSupplierService
                 .findByProductAndSupplier(productEntity, supplier);
-        if (productSuppliersEntity != null) {
-          productSupplierService.delete(productSuppliersEntity.getId());
+        if (productSuppliers != null) {
+          productSupplierService.delete(productSuppliers.getId());
         }
       }
     }
@@ -554,10 +553,10 @@ public class InboundServiceImpl implements InboundService {
         branchBatchService.updateBranchBatchInInbound(
                 toBranch, batchEntity, BigDecimal.valueOf(-oldQuantity));
 
-        ProductSuppliersEntity productSuppliersEntity = productSupplierService
+        ProductSuppliers productSuppliers = productSupplierService
                 .findByProductAndSupplier(batchEntity.getProduct(), supplier);
-        if (productSuppliersEntity != null) {
-          productSupplierService.delete(productSuppliersEntity.getId());
+        if (productSuppliers != null) {
+          productSupplierService.delete(productSuppliers.getId());
         }
       }
     }
