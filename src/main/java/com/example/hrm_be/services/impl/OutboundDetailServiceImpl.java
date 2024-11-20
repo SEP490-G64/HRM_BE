@@ -135,8 +135,8 @@ public class OutboundDetailServiceImpl implements OutboundDetailService {
   public List<OutboundDetail> getOutboundDetailsByProductIdAndPeriod(
       Long productId, LocalDateTime startDate, LocalDateTime endDate) {
     return outboundDetailRepository
-        .findOutboundDetailsByProductIdAndPeriod(productId,List.of(OutboundStatus.HOAN_THANH) ,startDate,
-            endDate)
+        .findOutboundDetailsByProductIdAndPeriod(
+            productId, List.of(OutboundStatus.HOAN_THANH), startDate, endDate)
         .stream()
         .map(outboundDetailMapper::toDTOWithBatchAndOutBound)
         .collect(Collectors.toList());

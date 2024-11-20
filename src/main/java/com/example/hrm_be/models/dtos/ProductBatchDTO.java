@@ -1,7 +1,5 @@
 package com.example.hrm_be.models.dtos;
 
-import com.example.hrm_be.models.entities.BatchEntity;
-import com.example.hrm_be.models.entities.ProductEntity;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.io.Serial;
 import java.io.Serializable;
@@ -29,6 +27,6 @@ public class ProductBatchDTO implements Serializable {
 
   @Serial private static final long serialVersionUID = 1900263145970214060L;
   Product product;
-   BigDecimal systemQuantity;
-   Batch batch;
+  BigDecimal systemQuantity;
+  Batch batch;
 }

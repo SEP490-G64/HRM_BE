@@ -3,7 +3,6 @@ package com.example.hrm_be.components;
 import com.example.hrm_be.models.dtos.OutboundProductDetail;
 import com.example.hrm_be.models.entities.OutboundProductDetailEntity;
 import com.example.hrm_be.models.responses.AuditHistory;
-import java.math.BigDecimal;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -57,6 +56,7 @@ public class OutboundProductDetailMapper {
         .price(entity.getPrice())
         .build();
   }
+
   public AuditHistory toAudit(OutboundProductDetail dto) {
     return Optional.ofNullable(dto)
         .map(

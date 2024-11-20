@@ -809,8 +809,7 @@ public class ProductServiceImpl implements ProductService {
         .collect(Collectors.toList());
   }
 
-  public List<ProductBatchDTO> getProductInBranchForInventoryCheck(
-      Long branchId) {
+  public List<ProductBatchDTO> getProductInBranchForInventoryCheck(Long branchId) {
     List<ProductBaseDTO> products =
         productRepository.searchAllProductByBranchId(branchId, "", null, null).stream()
             .map(
