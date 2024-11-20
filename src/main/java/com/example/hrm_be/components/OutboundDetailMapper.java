@@ -2,6 +2,8 @@ package com.example.hrm_be.components;
 
 import com.example.hrm_be.models.dtos.OutboundDetail;
 import com.example.hrm_be.models.entities.OutboundDetailEntity;
+import com.example.hrm_be.models.responses.AuditHistory;
+import java.math.BigDecimal;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -113,6 +115,22 @@ public class OutboundDetailMapper {
                         entity.getUnitOfMeasurement() != null
                             ? unitOfMeasurementMapper.toDTO(entity.getUnitOfMeasurement())
                             : null)
+                    .build())
+        .orElse(null);
+  }
+
+  public AuditHistory toAudit(OutboundDetail dto) {
+    return Optional.ofNullable(dto)
+        .map(
+            d ->
+                AuditHistory.builder()
+                    .transactionType("OUTBOUND")
+                    .transactionId(dto.getOutbound().getId())
+                    .productId(dto.getBatch().getProduct().getId())
+                    .productName(dto.getBatch().getProduct().getProductName())
+                    .quantity(dto.getQuantity())
+                    .batch(dto.getBatch().getBatchCode()) // No batch details for InboundDetails
+                    .createdAt(dto.getOutbound().getCreatedDate())
                     .build())
         .orElse(null);
   }

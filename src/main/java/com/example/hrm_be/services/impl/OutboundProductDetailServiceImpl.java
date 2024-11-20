@@ -1,5 +1,6 @@
 package com.example.hrm_be.services.impl;
 
+import com.example.hrm_be.commons.enums.OutboundStatus;
 import com.example.hrm_be.components.OutboundProductDetailMapper;
 import com.example.hrm_be.models.dtos.OutboundProductDetail;
 import com.example.hrm_be.models.entities.OutboundProductDetailEntity;
@@ -54,7 +55,8 @@ public class OutboundProductDetailServiceImpl implements OutboundProductDetailSe
   public List<OutboundProductDetail> getOutboundProductDetailsByProductIdAndPeriod(
       Long productId, LocalDateTime startDate, LocalDateTime endDate) {
     return outboundProductDetailRepository
-        .findInboundDetailsByProductIdAndPeriod(productId, startDate, endDate)
+        .findInboundDetailsByProductIdAndPeriod(productId,List.of(OutboundStatus.HOAN_THANH),
+            startDate, endDate)
         .stream()
         .map(outboundProductDetailMapper::toDTO)
         .collect(Collectors.toList());

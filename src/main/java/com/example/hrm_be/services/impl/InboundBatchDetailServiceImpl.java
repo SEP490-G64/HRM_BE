@@ -1,6 +1,7 @@
 package com.example.hrm_be.services.impl;
 
 import com.example.hrm_be.commons.constants.HrmConstant;
+import com.example.hrm_be.commons.enums.InboundStatus;
 import com.example.hrm_be.components.BatchMapper;
 import com.example.hrm_be.components.InboundBatchDetailMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
@@ -125,7 +126,7 @@ public class InboundBatchDetailServiceImpl implements InboundBatchDetailService 
   public List<InboundBatchDetail> getInboundBatchDetailsByProductIdAndPeriod(
       Long productId, LocalDateTime startDate, LocalDateTime endDate) {
     return inboundBatchDetailRepository
-        .findInboundDetailsByProductIdAndPeriod(productId, startDate, endDate)
+        .findInboundDetailsByProductIdAndPeriod(productId,List.of(InboundStatus.HOAN_THANH),startDate, endDate)
         .stream()
         .map(inboundBatchDetailMapper::convertToDTOWithBatchAndInbound)
         .collect(Collectors.toList());

@@ -53,6 +53,12 @@ public class InventoryCheckEntity extends CommonEntity {
   @Column(name = "created_date")
   LocalDateTime createdDate;
 
+  @Column(name = "start_date")
+  LocalDateTime startDate;
+
+  @Column(name = "end_date")
+  LocalDateTime endDate;
+
   @Column(name = "inventory_check_type")
   InventoryCheckType inventoryCheckType;
 

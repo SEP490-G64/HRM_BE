@@ -7,7 +7,11 @@ import com.example.hrm_be.commons.constants.HrmConstant.ERROR.BRANCHPRODUCT;
 import com.example.hrm_be.commons.constants.HrmConstant.ERROR.INVENTORY_CHECK;
 import com.example.hrm_be.commons.constants.HrmConstant.ERROR.PRODUCT;
 import com.example.hrm_be.commons.enums.*;
+import com.example.hrm_be.components.InboundBatchDetailMapper;
+import com.example.hrm_be.components.InboundDetailsMapper;
 import com.example.hrm_be.components.InventoryCheckMapper;
+import com.example.hrm_be.components.OutboundDetailMapper;
+import com.example.hrm_be.components.OutboundProductDetailMapper;
 import com.example.hrm_be.components.UserMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.Batch;
@@ -21,26 +25,30 @@ import com.example.hrm_be.models.dtos.Notification;
 import com.example.hrm_be.models.dtos.Product;
 import com.example.hrm_be.models.entities.*;
 import com.example.hrm_be.models.requests.CreateInventoryCheckRequest;
+import com.example.hrm_be.models.responses.AuditHistory;
 import com.example.hrm_be.repositories.InventoryCheckRepository;
 import com.example.hrm_be.services.BatchService;
 import com.example.hrm_be.services.BranchBatchService;
 import com.example.hrm_be.services.BranchProductService;
+import com.example.hrm_be.services.InboundBatchDetailService;
+import com.example.hrm_be.services.InboundDetailsService;
 import com.example.hrm_be.services.InventoryCheckDetailsService;
 import com.example.hrm_be.services.InventoryCheckProductDetailsService;
 import com.example.hrm_be.services.InventoryCheckService;
 import com.example.hrm_be.services.NotificationService;
+import com.example.hrm_be.services.OutboundDetailService;
+import com.example.hrm_be.services.OutboundProductDetailService;
 import com.example.hrm_be.services.ProductService;
 import com.example.hrm_be.services.UserService;
 import com.example.hrm_be.utils.WplUtil;
 import io.micrometer.common.util.StringUtils;
+import jakarta.persistence.criteria.Predicate;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import jakarta.persistence.criteria.Predicate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -57,10 +65,18 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
   @Autowired private InventoryCheckRepository inventoryCheckRepository;
 
   @Autowired private InventoryCheckMapper inventoryCheckMapper;
+  @Autowired private InboundDetailsMapper inboundDetailsMapper;
+  @Autowired private InboundBatchDetailMapper inboundBatchDetailMapper;
+  @Autowired private OutboundProductDetailMapper outboundProductDetailMapper;
+  @Autowired private OutboundDetailMapper outboundDetailMapper;
 
   @Autowired private UserService userService;
 
   @Autowired private BranchBatchService branchBatchService;
+  @Autowired private InboundBatchDetailService inboundBatchDetailService;
+  @Autowired private InboundDetailsService inboundDetailsService;
+  @Autowired private OutboundDetailService outboundDetailService;
+  @Autowired private OutboundProductDetailService outboundProductDetailService;
   @Autowired private BranchProductService branchProductService;
   @Autowired private ProductService productService;
   @Autowired private NotificationService notificationService;
@@ -270,6 +286,8 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
             op ->
                 op.toBuilder()
                     .note(inventoryCheck.getNote())
+                    .startDate(inventoryCheck.getStartDate())
+                    .endDate(inventoryCheck.getEndDate())
                     .status(inventoryCheck.getStatus())
                     .build())
         .map(inventoryCheckRepository::save)
@@ -305,11 +323,14 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
   }
 
   @Override
-  public InventoryCheck createInitInventoryCheck() {
+  public InventoryCheck createInitInventoryCheck(LocalDateTime startDate) {
     LocalDateTime currentDateTime = LocalDateTime.now();
     String checkCode = WplUtil.generateNoteCode(currentDateTime, "IC");
     if (inventoryCheckRepository.existsByCode(checkCode)) {
       throw new HrmCommonException(INVENTORY_CHECK.EXIST);
+    }
+    if (startDate == null) {
+      startDate = LocalDateTime.now();
     }
     String email = userService.getAuthenticatedUserEmail(); // Retrieve the logged-in user's email
     UserEntity userEntity = userMapper.toEntity(userService.findLoggedInfoByEmail(email));
@@ -322,6 +343,7 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
             .createdDate(currentDateTime)
             .status(InventoryCheckStatus.CHUA_LUU)
             .code(checkCode)
+            .startDate(startDate!=null? startDate : currentDateTime)
             .createdBy(userEntity)
             .branch(branchEntity)
             .build();
@@ -446,6 +468,9 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
   @Override
   public InventoryCheck submitInventoryCheckToSystem(Long id) {
     InventoryCheck unsavedInventoryCheck = getById(id);
+    LocalDateTime endDate = LocalDateTime.now();
+    unsavedInventoryCheck.setEndDate(endDate);
+    update(unsavedInventoryCheck);
 
     if (unsavedInventoryCheck == null) {
       throw new HrmCommonException(INVENTORY_CHECK.NOT_EXIST);
@@ -507,7 +532,6 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
     notification.setNotiName("Nhập phiếu vào kho");
     notification.setNotiType(NotificationType.NHAP_PHIEU_VAO_HE_THONG);
     notification.setCreatedDate(LocalDateTime.now());
-
     notificationService.sendNotification(
         notification,
         userService.findAllManagerByBranchId(unsavedInventoryCheck.getBranch().getId()));

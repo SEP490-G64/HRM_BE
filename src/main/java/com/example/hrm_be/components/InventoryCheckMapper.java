@@ -30,6 +30,8 @@ public class InventoryCheckMapper {
                     .id(d.getId())
                     .branch(d.getBranch() != null ? branchMapper.toEntity(d.getBranch()) : null)
                     .code(d.getCode())
+                    .startDate(d.getStartDate())
+                    .endDate(d.getEndDate())
                     .inventoryCheckType(d.getInventoryCheckType())
                     .createdBy(
                         d.getCreatedBy() != null ? userMapper.toEntity(d.getCreatedBy()) : null)
@@ -55,6 +57,8 @@ public class InventoryCheckMapper {
         .id(entity.getId())
         .inventoryCheckType(entity.getInventoryCheckType())
         .code(entity.getCode())
+        .startDate(entity.getStartDate())
+        .endDate(entity.getEndDate())
         .branch(
             entity.getBranch() != null
                 ? branchMapper.convertToDTOBasicInfo(entity.getBranch())

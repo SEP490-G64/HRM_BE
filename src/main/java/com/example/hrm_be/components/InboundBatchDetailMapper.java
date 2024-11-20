@@ -1,7 +1,10 @@
 package com.example.hrm_be.components;
 
 import com.example.hrm_be.models.dtos.InboundBatchDetail;
+import com.example.hrm_be.models.dtos.InboundDetails;
 import com.example.hrm_be.models.entities.InboundBatchDetailEntity;
+import com.example.hrm_be.models.responses.AuditHistory;
+import java.math.BigDecimal;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -50,5 +53,21 @@ public class InboundBatchDetailMapper {
         .batch(batchMapper.convertToDtoBasicInfo(entity.getBatch()))
         .inbound(inboundMapper.convertToBasicInfo(entity.getInbound()))
         .build();
+  }
+
+  public AuditHistory toAudit(InboundBatchDetail dto) {
+    return Optional.ofNullable(dto)
+        .map(
+            d ->
+                AuditHistory.builder()
+                    .transactionType("INBOUND")
+                    .transactionId(dto.getInbound().getId())
+                    .productId(dto.getBatch().getProduct().getId())
+                    .productName(dto.getBatch().getProduct().getProductName())
+                    .quantity(BigDecimal.valueOf(dto.getQuantity()))
+                    .batch(dto.getBatch().getBatchCode()) // No batch details for InboundDetails
+                    .createdAt(dto.getInbound().getCreatedDate())
+                    .build())
+        .orElse(null);
   }
 }

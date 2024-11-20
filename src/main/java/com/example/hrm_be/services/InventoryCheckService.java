@@ -31,7 +31,7 @@ public interface InventoryCheckService {
 
   InventoryCheck approve(Long id, boolean accept);
 
-  InventoryCheck createInitInventoryCheck();
+  InventoryCheck createInitInventoryCheck(LocalDateTime startDate);
 
   InventoryCheck saveInventoryCheck(CreateInventoryCheckRequest initOutbound);
 
