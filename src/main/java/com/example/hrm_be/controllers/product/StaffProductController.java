@@ -4,8 +4,10 @@ import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.commons.enums.ResponseStatus;
 import com.example.hrm_be.models.dtos.Product;
 import com.example.hrm_be.models.dtos.ProductBaseDTO;
+import com.example.hrm_be.models.dtos.ProductBatchDTO;
 import com.example.hrm_be.models.dtos.ProductSupplierDTO;
 import com.example.hrm_be.models.entities.AllowedProductEntity;
+import com.example.hrm_be.models.responses.AuditHistory;
 import com.example.hrm_be.models.responses.BaseOutput;
 import com.example.hrm_be.services.ProductService;
 import com.example.hrm_be.utils.ExcelUtility;
@@ -14,6 +16,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotNull;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -44,6 +48,53 @@ import org.springframework.web.multipart.MultipartFile;
 @SecurityRequirement(name = "Authorization")
 public class StaffProductController {
   private final ProductService productService;
+
+  @GetMapping("/filter")
+  public ResponseEntity<BaseOutput<List<ProductBaseDTO>>> filterProducts(
+      @RequestParam(required = false) Boolean lessThanOrEqual,
+      @RequestParam(required = false) Integer quantity,
+      @RequestParam(required = false) Boolean warning,
+      @RequestParam(required = false) Boolean outOfStock) {
+    List<ProductBaseDTO> products =
+        productService.filterProducts(lessThanOrEqual, quantity, warning, outOfStock);
+
+    BaseOutput<List<ProductBaseDTO>> response =
+        BaseOutput.<List<ProductBaseDTO>>builder()
+            .message(HttpStatus.OK.toString())
+            .total((long) products.size())
+            .data(products)
+            .status(ResponseStatus.SUCCESS)
+            .build();
+    return ResponseEntity.ok(response);
+  }
+
+  @GetMapping("/sell-price-equal-zero")
+  public ResponseEntity<BaseOutput<List<ProductBaseDTO>>> getProductsBySellPriceEqualZero() {
+    List<ProductBaseDTO> products = productService.getProductsBySellPrice(BigDecimal.ZERO);
+
+    BaseOutput<List<ProductBaseDTO>> response =
+        BaseOutput.<List<ProductBaseDTO>>builder()
+            .message(HttpStatus.OK.toString())
+            .total((long) products.size())
+            .data(products)
+            .status(ResponseStatus.SUCCESS)
+            .build();
+    return ResponseEntity.ok(response);
+  }
+
+  @GetMapping("/loss-price")
+  public ResponseEntity<BaseOutput<List<ProductBaseDTO>>>
+      getProductsWithLossOrNoSellPriceInBranch() {
+    List<ProductBaseDTO> products = productService.getProductsWithLossOrNoSellPriceInBranch();
+
+    BaseOutput<List<ProductBaseDTO>> response =
+        BaseOutput.<List<ProductBaseDTO>>builder()
+            .message(HttpStatus.OK.toString())
+            .data(products)
+            .status(ResponseStatus.SUCCESS)
+            .build();
+    return ResponseEntity.ok(response);
+  }
 
   @GetMapping("/allow-products")
   protected ResponseEntity<BaseOutput<List<AllowedProductEntity>>> getAllowProducts(
@@ -278,6 +329,81 @@ public class StaffProductController {
 
     BaseOutput<List<ProductBaseDTO>> response =
         BaseOutput.<List<ProductBaseDTO>>builder()
+            .data(products)
+            .message(HttpStatus.OK.toString())
+            .status(ResponseStatus.SUCCESS)
+            .build();
+    return ResponseEntity.ok(response);
+  }
+
+  @GetMapping("/products-inventory-check/{branchId}")
+  public ResponseEntity<BaseOutput<List<ProductBatchDTO>>> getProductInBranchForInventoryCheck(
+      @PathVariable("branchId") Long branchId) {
+    List<ProductBatchDTO> products = productService.getProductInBranchForInventoryCheck(branchId);
+
+    BaseOutput<List<ProductBatchDTO>> response =
+        BaseOutput.<List<ProductBatchDTO>>builder()
+            .data(products)
+            .message(HttpStatus.OK.toString())
+            .status(ResponseStatus.SUCCESS)
+            .build();
+    return ResponseEntity.ok(response);
+  }
+
+  @GetMapping("/products-inventory-check/{branchId}/type/{typeId}")
+  public ResponseEntity<BaseOutput<List<ProductBatchDTO>>>
+      getProductByTypeIdInBranchForInventoryCheck(
+          @PathVariable("branchId") Long branchId, @PathVariable("typeId") Long typeId) {
+    List<ProductBatchDTO> products =
+        productService.getProductByTypeIdInBranchForInventoryCheck(branchId, typeId);
+
+    BaseOutput<List<ProductBatchDTO>> response =
+        BaseOutput.<List<ProductBatchDTO>>builder()
+            .data(products)
+            .message(HttpStatus.OK.toString())
+            .status(ResponseStatus.SUCCESS)
+            .build();
+    return ResponseEntity.ok(response);
+  }
+
+  @GetMapping("/products-inventory-check/{branchId}/category/{cateId}")
+  public ResponseEntity<BaseOutput<List<ProductBatchDTO>>> getProductInBranchForInventoryCheck(
+      @PathVariable("branchId") Long branchId, @PathVariable("cateId") Long cateId) {
+    List<ProductBatchDTO> products =
+        productService.getProductByCateInBranchForInventoryCheck(branchId, cateId);
+
+    BaseOutput<List<ProductBatchDTO>> response =
+        BaseOutput.<List<ProductBatchDTO>>builder()
+            .data(products)
+            .message(HttpStatus.OK.toString())
+            .status(ResponseStatus.SUCCESS)
+            .build();
+    return ResponseEntity.ok(response);
+  }
+
+  @GetMapping("/get-by-keyword")
+  public ResponseEntity<BaseOutput<List<ProductBaseDTO>>> getByKeyword(
+      @RequestParam(defaultValue = "") String keyword) {
+    List<ProductBaseDTO> products = productService.getByKeyword(keyword);
+
+    BaseOutput<List<ProductBaseDTO>> response =
+        BaseOutput.<List<ProductBaseDTO>>builder()
+            .data(products)
+            .message(HttpStatus.OK.toString())
+            .status(ResponseStatus.SUCCESS)
+            .build();
+    return ResponseEntity.ok(response);
+  }
+
+  @GetMapping("/{productId}/audit-history")
+  public ResponseEntity<BaseOutput<List<AuditHistory>>> getProductDetailsInPeriod(
+      @PathVariable Long productId,
+      @RequestParam("startDate") LocalDateTime startDate,
+      @RequestParam("endDate") LocalDateTime endDate) {
+    List<AuditHistory> products =
+        productService.getProductDetailsInPeriod(productId, startDate, endDate);
+    BaseOutput<List<AuditHistory>> response =
+        BaseOutput.<List<AuditHistory>>builder()
             .data(products)
             .message(HttpStatus.OK.toString())
             .status(ResponseStatus.SUCCESS)

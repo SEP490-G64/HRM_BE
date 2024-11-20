@@ -195,23 +195,24 @@ public class ManufacturerServiceImpl implements ManufacturerService {
         || manufacturer.getManufacturerName().length() > 100) {
       return false;
     }
-    if (manufacturer.getAddress() == null
-        || manufacturer.getAddress().isEmpty()
-        || manufacturer.getAddress().length() > 255) {
+    if (manufacturer.getAddress() != null && manufacturer.getAddress().length() > 255) {
       return false;
     }
-    if (manufacturer.getEmail() != null
-        && (!manufacturer.getEmail().matches(HrmConstant.REGEX.EMAIL)
-            || (manufacturer.getEmail().length() > 255))) {
-      return false;
+    if (manufacturer.getEmail() != null && !manufacturer.getEmail().isEmpty()) {
+      if (!manufacturer.getEmail().matches(HrmConstant.REGEX.EMAIL)
+          || manufacturer.getEmail().length() > 255) {
+        return false;
+      }
     }
-    if (manufacturer.getPhoneNumber() == null
-        || !manufacturer.getPhoneNumber().matches(HrmConstant.REGEX.PHONE_NUMBER)) {
-      return false;
+    if (manufacturer.getPhoneNumber() != null && !manufacturer.getPhoneNumber().isEmpty()) {
+      if (!manufacturer.getPhoneNumber().matches(HrmConstant.REGEX.PHONE_NUMBER)) {
+        return false;
+      }
     }
-    if (manufacturer.getTaxCode() != null
-        && !manufacturer.getTaxCode().matches(HrmConstant.REGEX.TAX_CODE)) {
-      return false;
+    if (manufacturer.getTaxCode() != null && !manufacturer.getTaxCode().isEmpty()) {
+      if (!manufacturer.getTaxCode().matches(HrmConstant.REGEX.TAX_CODE)) {
+        return false;
+      }
     }
     if (manufacturer.getOrigin() != null && manufacturer.getOrigin().length() > 100) {
       return false;

@@ -24,6 +24,7 @@ import com.example.hrm_be.models.entities.AllowedProductEntity;
 import com.example.hrm_be.models.entities.BranchProductEntity;
 import com.example.hrm_be.models.entities.ProductEntity;
 import com.example.hrm_be.models.entities.SpecialConditionEntity;
+import com.example.hrm_be.models.responses.AuditHistory;
 import com.example.hrm_be.repositories.*;
 import com.example.hrm_be.repositories.AllowedProductRepository;
 import com.example.hrm_be.repositories.ProductRepository;
@@ -32,6 +33,8 @@ import com.example.hrm_be.services.UserService;
 import com.example.hrm_be.utils.ExcelUtility;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,11 +42,13 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -59,6 +64,8 @@ import org.springframework.web.multipart.MultipartFile;
 @Transactional
 public class ProductServiceImpl implements ProductService {
   @Autowired private ProductRepository productRepository;
+  @Autowired private InboundBatchDetailRepository inboundBatchDetailRepository;
+  @Autowired private InboundDetailsRepository inboundDetailsRepository;
   @Autowired private AllowedProductRepository allowedProductRepository;
 
   @Autowired private UserService userService;
@@ -72,12 +79,21 @@ public class ProductServiceImpl implements ProductService {
   @Autowired private UnitConversionService unitConversionService;
 
   @Autowired private ProductMapper productMapper;
+  @Autowired private InboundDetailsMapper inboundDetailsMapper;
+  @Autowired private InboundBatchDetailMapper inboundBatchDetailMapper;
   @Autowired private SpecialConditionMapper specialConditionMapper;
   @Autowired private BranchMapper branchMapper;
   @Autowired private StorageLocationMapper storageLocationMapper;
+  @Autowired private OutboundDetailMapper outboundDetailMapper;
+  @Autowired private OutboundProductDetailMapper outboundProductDetailMapper;
   @Autowired private UnitConversionMapper unitConversionMapper;
   @Autowired private AllowedProductService allowedProductService;
+  @Lazy @Autowired private InboundDetailsService inboundDetailsService;
+  @Lazy @Autowired private OutboundDetailService outboundDetailService;
+  @Lazy @Autowired private OutboundProductDetailService outboundProductDetailService;
+  @Lazy @Autowired private InboundBatchDetailService inboundBatchDetailService;
   @Autowired private BatchRepository batchRepository;
+  @Autowired private NotificationService notificationService;
 
   @Override
   public Product getById(Long id) {
@@ -86,6 +102,9 @@ public class ProductServiceImpl implements ProductService {
             e ->
                 productRepository
                     .findById(e)
+                    .filter(
+                        product ->
+                            !product.getStatus().equals(ProductStatus.DA_XOA)) // Kiểm tra status
                     .map(b -> productMapper.convertToDTOWithoutProductInBranchProduct(b)))
         .orElse(null);
   }
@@ -479,6 +498,11 @@ public class ProductServiceImpl implements ProductService {
     Sort.Direction direction = Sort.Direction.fromString(sortDirection);
     Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(direction, sortBy));
 
+    specification =
+        specification.and(
+            (root, query, criteriaBuilder) ->
+                criteriaBuilder.notEqual(root.get("status"), "DA_XOA"));
+
     // Keyword search for product name, registration code, and active ingredient
     if (keyword.isPresent()) {
       String searchPattern = "%" + keyword.get().toLowerCase() + "%";
@@ -524,6 +548,7 @@ public class ProductServiceImpl implements ProductService {
               (root, query, criteriaBuilder) ->
                   criteriaBuilder.equal(root.get("status"), status.get()));
     }
+
     return productRepository
         .findAll(specification, pageable)
         .map(productMapper::convertToProductBaseDTO);
@@ -686,16 +711,17 @@ public class ProductServiceImpl implements ProductService {
   @Override
   public ByteArrayInputStream exportFile() throws IOException {
     String[] headers = {
-      "Regation Code",
-      "Product Name",
-      "Active Ingredient",
-      "Excipient",
-      "Formulation",
-      "Category",
-      "Type",
-      "Base Unit",
-      "Manufacturer",
-      "Sell Price"
+      "Mã đăng ký",
+      "Tên sản phẩm",
+      "Hoạt chất",
+      "Bào chế",
+      "Tá dược",
+      "Nhóm sản phẩm",
+      "Loại sản phẩm",
+      "Đơn vị cơ sở",
+      "Nhà sản xuất",
+      "Giá nhập",
+      "Giá bán"
     };
 
     // Row mapper to convert a Product object to a list of cell values
@@ -714,6 +740,8 @@ public class ProductServiceImpl implements ProductService {
           cellValues.add(product.getBaseUnit() != null ? product.getBaseUnit() : "");
           cellValues.add(
               product.getManufacturerName() != null ? product.getManufacturerName() : "");
+          cellValues.add(
+              product.getInboundPrice() != null ? product.getInboundPrice().toString() : "");
           cellValues.add(product.getSellPrice() != null ? product.getSellPrice().toString() : "");
 
           return cellValues;
@@ -721,9 +749,18 @@ public class ProductServiceImpl implements ProductService {
 
     // Fetch product data
     List<ProductBaseDTO> products =
-        productRepository.findAll().stream()
-            .map(productMapper::convertToProductBaseDTO)
-            .collect(Collectors.toList());
+        searchProducts(
+                0,
+                Integer.MAX_VALUE,
+                "id",
+                "ASC",
+                Optional.ofNullable(null),
+                Optional.ofNullable(null),
+                Optional.ofNullable(null),
+                Optional.ofNullable(null),
+                Optional.ofNullable(null))
+            .stream()
+            .toList();
 
     // Export data using utility
     try {
@@ -765,7 +802,190 @@ public class ProductServiceImpl implements ProductService {
     return productRepository
         .searchProductByBranchId(branchId, keyword, checkValid, supplierId)
         .stream()
-        .map(productMapper::convertToProductForSearchInNotes)
+        .map(
+            entity ->
+                productMapper.convertToProductForSearchInNotes(
+                    entity, branchId)) // Pass branchId to the mapper
+        .collect(Collectors.toList());
+  }
+
+  private List<ProductBatchDTO> processProductData(List<ProductBaseDTO> products) {
+    List<ProductBatchDTO> allProductBatches = new ArrayList<>();
+    for (ProductBaseDTO product : products) {
+      ProductBatchDTO productBaseDTO =
+          ProductBatchDTO.builder()
+              .product(
+                  Product.builder()
+                      .id(product.getId())
+                      .productName(product.getProductName())
+                      .baseUnit(product.getProductBaseUnit())
+                      .build())
+              .systemQuantity(
+                  product.getProductQuantity() != null
+                      ? product.getProductQuantity()
+                      : BigDecimal.ZERO)
+              .build();
+      List<ProductBatchDTO> batches =
+          product.getBatches().stream()
+              .map(
+                  batch ->
+                      ProductBatchDTO.builder()
+                          .product(
+                              Product.builder()
+                                  .id(product.getId())
+                                  .productName(product.getProductName())
+                                  .baseUnit(product.getProductBaseUnit())
+                                  .build())
+                          .batch(
+                              Batch.builder()
+                                  .id(batch.getId())
+                                  .batchCode(batch.getBatchCode())
+                                  .build())
+                          .systemQuantity(batch.getQuantity())
+                          .build() // Missing build() for ProductBatchDTO
+                  )
+              .collect(Collectors.toList());
+      allProductBatches.add(productBaseDTO);
+      allProductBatches.addAll(batches);
+    }
+    return allProductBatches;
+  }
+
+  public List<ProductBatchDTO> getProductInBranchForInventoryCheck(Long branchId) {
+    List<ProductBaseDTO> products =
+        productRepository.searchAllProductByBranchId(branchId, "", null, null).stream()
+            .map(
+                entity ->
+                    productMapper.convertToProductForSearchInNotes(
+                        entity, branchId)) // Pass branchId to the mapper
+            .toList();
+    return processProductData(products);
+  }
+
+  public List<ProductBatchDTO> getProductByCateInBranchForInventoryCheck(
+      Long branchId, Long cateId) {
+    List<ProductBaseDTO> products =
+        productRepository
+            .searchAllProductByBranchIdAndCateId(branchId, cateId, "", null, null)
+            .stream()
+            .map(
+                entity ->
+                    productMapper.convertToProductForSearchInNotes(
+                        entity, branchId)) // Pass branchId to the mapper
+            .toList();
+    return processProductData(products);
+  }
+
+  public List<ProductBatchDTO> getProductByTypeIdInBranchForInventoryCheck(
+      Long branchId, Long typeId) {
+    List<ProductBaseDTO> products =
+        productRepository
+            .searchAllProductByBranchIdAndTypeId(branchId, typeId, "", null, null)
+            .stream()
+            .map(
+                entity ->
+                    productMapper.convertToProductForSearchInNotes(
+                        entity, branchId)) // Pass branchId to the mapper
+            .toList();
+    return processProductData(products);
+  }
+
+  public List<ProductBaseDTO> filterProducts(
+      Boolean lessThanOrEqual, Integer quantity, Boolean warning, Boolean outOfStock) {
+    Set<ProductBaseDTO> resultSet = new HashSet<>();
+    String userEmail = userService.getAuthenticatedUserEmail();
+    Long branchId = userService.findBranchIdByUserEmail(userEmail).orElse(null);
+    // Apply "less than or equal" filter if selected
+    if (lessThanOrEqual != null && lessThanOrEqual && quantity != null) {
+      List<ProductBaseDTO> lessThanEqualProducts =
+          productRepository.findByQuantityLessThanEqualInBranch(quantity, branchId).stream()
+              .map(productMapper::convertToProductBaseDTO)
+              .toList();
+      resultSet.addAll(lessThanEqualProducts);
+    }
+
+    // Apply "warning threshold" filter if selected
+    if (warning != null && warning) {
+      List<ProductBaseDTO> warningProducts =
+          productRepository.findByQuantityLessThanMinQuantityInBranch(branchId).stream()
+              .map(productMapper::convertToProductBaseDTO)
+              .toList();
+      resultSet.addAll(warningProducts);
+    }
+
+    // Apply "out of stock" filter if selected
+    if (outOfStock != null && outOfStock) {
+      List<ProductBaseDTO> outOfStockProducts =
+          productRepository.findByQuantityInBranch(0, branchId).stream()
+              .map(productMapper::convertToProductBaseDTO)
+              .toList();
+      resultSet.addAll(outOfStockProducts);
+    }
+
+    // Convert the Set to List to remove duplicates
+    return new ArrayList<>(resultSet);
+  }
+
+  @Override
+  public List<ProductBaseDTO> getProductsWithLossOrNoSellPriceInBranch() {
+    String userEmail = userService.getAuthenticatedUserEmail();
+    Long branchId = userService.findBranchIdByUserEmail(userEmail).orElse(null);
+
+    return productRepository.findProductsWithLossOrNoSellPriceInBranch(branchId).stream()
+        .map(productMapper::convertToProductBaseDTO)
+        .collect(Collectors.toList());
+  }
+
+  @Override
+  public List<ProductBaseDTO> getProductsBySellPrice(BigDecimal sellPrice) {
+    String userEmail = userService.getAuthenticatedUserEmail();
+    Long branchId = userService.findBranchIdByUserEmail(userEmail).orElse(null);
+
+    return productRepository.findProductsBySellPrice(sellPrice, branchId).stream()
+        .map(productMapper::convertToProductBaseDTO)
+        .collect(Collectors.toList());
+  }
+
+  @Override
+  public List<ProductBaseDTO> getByKeyword(String keyword) {
+    return productRepository.findProductEntitiesByProductNameIgnoreCase(keyword).stream()
+        .map(productMapper::convertToProductDto)
+        .collect(Collectors.toList());
+  }
+
+  public List<AuditHistory> getProductDetailsInPeriod(
+      Long productId, LocalDateTime startDate, LocalDateTime endDate) {
+    // Fetch product details
+    List<AuditHistory> productInbound =
+        inboundDetailsService
+            .getInboundDetailsByProductIdAndPeriod(productId, startDate, endDate)
+            .stream()
+            .map(inboundDetailsMapper::toAudit)
+            .toList();
+
+    List<AuditHistory> batchInbound =
+        inboundBatchDetailService
+            .getInboundBatchDetailsByProductIdAndPeriod(productId, startDate, endDate)
+            .stream()
+            .map(inboundBatchDetailMapper::toAudit)
+            .toList();
+
+    List<AuditHistory> batchOutbound =
+        outboundDetailService
+            .getOutboundDetailsByProductIdAndPeriod(productId, startDate, endDate)
+            .stream()
+            .map(outboundDetailMapper::toAudit)
+            .toList();
+    List<AuditHistory> productOutbound =
+        outboundProductDetailService
+            .getOutboundProductDetailsByProductIdAndPeriod(productId, startDate, endDate)
+            .stream()
+            .map(outboundProductDetailMapper::toAudit)
+            .toList();
+
+    return Stream.of(productInbound, batchInbound, batchOutbound, productOutbound)
+        .flatMap(Collection::stream)
+        .sorted(Comparator.comparing(AuditHistory::getCreatedAt))
         .collect(Collectors.toList());
   }
 }

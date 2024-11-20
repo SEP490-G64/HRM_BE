@@ -3,6 +3,8 @@ package com.example.hrm_be.controllers.outbound;
 import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.commons.enums.OutboundStatus;
 import com.example.hrm_be.commons.enums.*;
+import com.example.hrm_be.commons.enums.OutboundStatus;
+import com.example.hrm_be.commons.enums.OutboundType;
 import com.example.hrm_be.commons.enums.ResponseStatus;
 import com.example.hrm_be.models.dtos.Outbound;
 import com.example.hrm_be.models.requests.CreateOutboundRequest;
@@ -45,6 +47,7 @@ public class StaffOutboundController {
       @RequestParam(defaultValue = "20") int size,
       @RequestParam(required = false, defaultValue = "id") String sortBy,
       @RequestParam(required = false, defaultValue = "") String keyword,
+      @RequestParam(required = false) Long branchId,
       @RequestParam(required = false, defaultValue = "DESC") String direction,
       @RequestParam(required = false) LocalDateTime startDate,
       @RequestParam(required = false) LocalDateTime endDate,
@@ -52,7 +55,7 @@ public class StaffOutboundController {
       @RequestParam(required = false) OutboundType type) {
     Page<Outbound> OutboundPage =
         outboundService.getByPaging(
-            page, size, sortBy, direction, keyword, startDate, endDate, status, type);
+            page, size, sortBy, direction, branchId, keyword, startDate, endDate, status, type);
 
     // Build the response with pagination details
     BaseOutput<List<Outbound>> response =
@@ -181,9 +184,17 @@ public class StaffOutboundController {
         BaseOutput.<Outbound>builder().data(outbound).status(ResponseStatus.SUCCESS).build());
   }
 
-  @PutMapping("/{id}/submit")
-  public ResponseEntity<BaseOutput<Outbound>> submitToSystem(@PathVariable(name = "id") Long id) {
-    Outbound outbound = outboundService.submitOutboundToSystem(id);
+  @PutMapping("/{id}/update-status")
+  public ResponseEntity<BaseOutput<String>> updateStatus(
+      @RequestParam String type, @PathVariable(name = "id") Long id) {
+    outboundService.updateOutboundStatus(OutboundStatus.valueOf(type), id);
+    return ResponseEntity.ok(BaseOutput.<String>builder().status(ResponseStatus.SUCCESS).build());
+  }
+
+  @PutMapping("/submit")
+  public ResponseEntity<BaseOutput<Outbound>> submitToSystem(
+      @RequestBody CreateOutboundRequest request) {
+    Outbound outbound = outboundService.submitOutboundToSystem(request);
     BaseOutput<Outbound> response =
         BaseOutput.<Outbound>builder()
             .message(HttpStatus.OK.toString())
@@ -191,13 +202,6 @@ public class StaffOutboundController {
             .status(ResponseStatus.SUCCESS)
             .build();
     return ResponseEntity.ok(response);
-  }
-
-  @PutMapping("/{id}/update-status")
-  public ResponseEntity<BaseOutput<String>> updateStatus(
-      @RequestParam String type, @PathVariable(name = "id") Long id) {
-    outboundService.updateOutboundStatus(OutboundStatus.valueOf(type), id);
-    return ResponseEntity.ok(BaseOutput.<String>builder().status(ResponseStatus.SUCCESS).build());
   }
 
   @GetMapping("/generate-outbound/{id}")

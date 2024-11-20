@@ -2,6 +2,8 @@ package com.example.hrm_be.components;
 
 import com.example.hrm_be.models.dtos.InboundDetails;
 import com.example.hrm_be.models.entities.*;
+import com.example.hrm_be.models.responses.AuditHistory;
+import java.math.BigDecimal;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -31,6 +33,23 @@ public class InboundDetailsMapper {
                     .requestQuantity(d.getRequestQuantity())
                     .receiveQuantity(d.getReceiveQuantity())
                     .inboundPrice(d.getInboundPrice())
+                    .build())
+        .orElse(null);
+  }
+
+  // Convert InboundDetailsDTO to InboundDetailsEntity
+  public AuditHistory toAudit(InboundDetails dto) {
+    return Optional.ofNullable(dto)
+        .map(
+            d ->
+                AuditHistory.builder()
+                    .transactionType("INBOUND")
+                    .transactionId(dto.getInbound().getId())
+                    .productId(dto.getProduct().getId())
+                    .productName(dto.getProduct().getProductName())
+                    .quantity(BigDecimal.valueOf(dto.getReceiveQuantity()))
+                    .batch(null) // No batch details for InboundDetails
+                    .createdAt(dto.getInbound().getCreatedDate())
                     .build())
         .orElse(null);
   }

@@ -2,6 +2,7 @@ package com.example.hrm_be.components;
 
 import com.example.hrm_be.models.dtos.OutboundProductDetail;
 import com.example.hrm_be.models.entities.OutboundProductDetailEntity;
+import com.example.hrm_be.models.responses.AuditHistory;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -54,5 +55,21 @@ public class OutboundProductDetailMapper {
                 : null)
         .price(entity.getPrice())
         .build();
+  }
+
+  public AuditHistory toAudit(OutboundProductDetail dto) {
+    return Optional.ofNullable(dto)
+        .map(
+            d ->
+                AuditHistory.builder()
+                    .transactionType("OUTBOUND")
+                    .transactionId(dto.getOutbound().getId())
+                    .productId(dto.getProduct().getId())
+                    .productName(dto.getProduct().getProductName())
+                    .quantity(dto.getOutboundQuantity())
+                    .batch(null) // No batch details for InboundDetails
+                    .createdAt(dto.getOutbound().getCreatedDate())
+                    .build())
+        .orElse(null);
   }
 }

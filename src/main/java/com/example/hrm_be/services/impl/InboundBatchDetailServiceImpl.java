@@ -1,6 +1,7 @@
 package com.example.hrm_be.services.impl;
 
 import com.example.hrm_be.commons.constants.HrmConstant;
+import com.example.hrm_be.commons.enums.InboundStatus;
 import com.example.hrm_be.components.BatchMapper;
 import com.example.hrm_be.components.InboundBatchDetailMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
@@ -14,6 +15,7 @@ import com.example.hrm_be.services.BatchService;
 import com.example.hrm_be.services.InboundBatchDetailService;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
@@ -118,5 +120,16 @@ public class InboundBatchDetailServiceImpl implements InboundBatchDetailService 
   @Override
   public void deleteAllByInboundId(Long inboundId) {
     inboundBatchDetailRepository.deleteAllByInbound_Id(inboundId);
+  }
+
+  @Override
+  public List<InboundBatchDetail> getInboundBatchDetailsByProductIdAndPeriod(
+      Long productId, LocalDateTime startDate, LocalDateTime endDate) {
+    return inboundBatchDetailRepository
+        .findInboundDetailsByProductIdAndPeriod(
+            productId, List.of(InboundStatus.HOAN_THANH), startDate, endDate)
+        .stream()
+        .map(inboundBatchDetailMapper::convertToDTOWithBatchAndInbound)
+        .collect(Collectors.toList());
   }
 }

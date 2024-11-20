@@ -1,6 +1,8 @@
 package com.example.hrm_be.repositories;
 
+import com.example.hrm_be.commons.enums.OutboundStatus;
 import com.example.hrm_be.models.entities.OutboundProductDetailEntity;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -26,4 +28,15 @@ public interface OutboundProductDetailRepository
           + "LEFT JOIN FETCH p.category c "
           + "WHERE opd.outbound.id = :outboundId")
   List<OutboundProductDetailEntity> findAllWithProductAndCategoryByOutboundId(Long outboundId);
+
+  @Query(
+      "SELECT i FROM OutboundProductDetailEntity i "
+          + "WHERE i.product.id = :productId "
+          + "AND i.outbound.createdDate BETWEEN :startDate AND :endDate "
+          + "AND i.outbound.status in :status")
+  List<OutboundProductDetailEntity> findInboundDetailsByProductIdAndPeriod(
+      @Param("productId") Long productId,
+      @Param("status") List<OutboundStatus> status,
+      @Param("startDate") LocalDateTime startDate,
+      @Param("endDate") LocalDateTime endDate);
 }

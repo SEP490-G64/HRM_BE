@@ -6,6 +6,7 @@ import com.example.hrm_be.commons.constants.HrmConstant.ERROR.INBOUND;
 import com.example.hrm_be.commons.constants.HrmConstant.ERROR.SUPPLIER;
 import com.example.hrm_be.commons.enums.InboundStatus;
 import com.example.hrm_be.commons.enums.InboundType;
+import com.example.hrm_be.commons.enums.NotificationType;
 import com.example.hrm_be.components.*;
 import com.example.hrm_be.components.BranchMapper;
 import com.example.hrm_be.components.InboundMapper;
@@ -13,8 +14,13 @@ import com.example.hrm_be.components.UnitOfMeasurementMapper;
 import com.example.hrm_be.components.UserMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.*;
-import com.example.hrm_be.models.entities.*;
-import com.example.hrm_be.models.dtos.*;
+import com.example.hrm_be.models.entities.BatchEntity;
+import com.example.hrm_be.models.entities.BranchEntity;
+import com.example.hrm_be.models.entities.InboundEntity;
+import com.example.hrm_be.models.entities.ProductEntity;
+import com.example.hrm_be.models.entities.ProductSuppliersEntity;
+import com.example.hrm_be.models.entities.SupplierEntity;
+import com.example.hrm_be.models.entities.UserEntity;
 import com.example.hrm_be.models.requests.CreateInboundRequest;
 import com.example.hrm_be.models.responses.InboundDetail;
 import com.example.hrm_be.repositories.InboundRepository;
@@ -24,18 +30,17 @@ import com.example.hrm_be.services.UserService;
 import com.example.hrm_be.utils.PDFUtil;
 import com.example.hrm_be.utils.WplUtil;
 import com.itextpdf.text.DocumentException;
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.Predicate;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,18 +55,23 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 public class InboundServiceImpl implements InboundService {
+  @PersistenceContext private EntityManager entityManager;
+
   @Autowired private InboundRepository inboundRepository;
 
   @Autowired private InboundMapper inboundMapper;
   @Autowired private BranchMapper branchMapper;
   @Autowired private UnitOfMeasurementMapper unitOfMeasurementMapper;
   @Autowired private UserMapper userMapper;
+  @Autowired private BatchMapper batchMapper;
+  @Autowired private ProductMapper productMapper;
 
   @Autowired private InboundDetailsService inboundDetailsService;
   @Autowired private InboundBatchDetailService inboundBatchDetailService;
   @Autowired private UserService userService;
   @Autowired private ProductService productService;
   @Autowired private BatchService batchService;
+  @Autowired private NotificationService notificationService;
   @Autowired private BranchBatchService branchBatchService;
   @Autowired private BranchProductService branchProductService;
   @Autowired private ProductSupplierService productSupplierService;
@@ -169,6 +179,7 @@ public class InboundServiceImpl implements InboundService {
       int pageSize,
       String sortBy,
       String direction,
+      Long branchId,
       String keyword,
       LocalDateTime startDate,
       LocalDateTime endDate,
@@ -180,13 +191,10 @@ public class InboundServiceImpl implements InboundService {
             ? Sort.by(sortBy).ascending()
             : Sort.by(sortBy).descending(); // Default is descending
 
-    String email = userService.getAuthenticatedUserEmail();
-    UserEntity userEntity = userMapper.toEntity(userService.findLoggedInfoByEmail(email));
-
     Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
 
     Specification<InboundEntity> specification =
-        getSpecification(userEntity.getBranch().getId(), keyword, startDate, endDate, status, type);
+        getSpecification(branchId, keyword, startDate, endDate, status, type);
     return inboundRepository.findAll(specification, pageable).map(dao -> inboundMapper.toDTO(dao));
   }
 
@@ -200,8 +208,11 @@ public class InboundServiceImpl implements InboundService {
     return (root, query, criteriaBuilder) -> {
       List<Predicate> predicates = new ArrayList<>();
 
-      // Get inbound in registered user's branch
-      predicates.add(criteriaBuilder.equal(root.get("toBranch").get("id"), branchId));
+      // Get inbound have code containing keyword
+      if (branchId != null) {
+        // Get inbound in registered user's branch
+        predicates.add(criteriaBuilder.equal(root.get("toBranch").get("id"), branchId));
+      }
 
       // Get inbound have code containing keyword
       if (keyword != null && !keyword.isEmpty()) {
@@ -387,95 +398,214 @@ public class InboundServiceImpl implements InboundService {
 
   @Override
   @Transactional
-  public Inbound submitInboundToSystem(Long inboundId) {
-
+  public Inbound submitInboundToSystem(CreateInboundRequest request) {
     // Fetch the InboundEntity from the repository
     InboundEntity inboundEntity =
         inboundRepository
-            .findById(inboundId)
+            .findById(request.getInboundId())
             .orElseThrow(() -> new HrmCommonException(INBOUND.NOT_EXIST));
 
     // check status
     if (!inboundEntity.getStatus().isCheck()) {
       throw new HrmCommonException("Trạng thái của phiếu không hợp lệ");
     }
-    List<ProductSuppliersEntity> productSuppliersEntities = new ArrayList<>();
 
-    // Iterate through InboundDetails to manage Product-Supplier relations
-    inboundEntity
-        .getInboundDetails()
-        .forEach(
-            inboundDetail -> {
-              ProductEntity product = inboundDetail.getProduct();
-              SupplierEntity supplier = inboundEntity.getSupplier();
+    // Map old and new quantities for comparison
+    Map<Long, Integer> oldProductQuantities =
+        Optional.ofNullable(inboundEntity.getInboundDetails())
+            .orElse(Collections.emptyList())
+            .stream()
+            .flatMap(
+                detail -> {
+                  Long productId = detail.getProduct().getId();
+                  int productQuantity =
+                      detail.getReceiveQuantity() != null ? detail.getReceiveQuantity() : 0;
 
-              if (supplier != null) {
-                // Check if a ProductSupplierEntity exists for the product-supplier pair
-                ProductSuppliersEntity productSupplier =
-                    productSupplierService.findByProductAndSupplier(product, supplier);
+                  // Get batch quantities for the same product and sum them up
+                  int batchQuantitySum =
+                      Optional.ofNullable(inboundEntity.getInboundBatchDetails())
+                          .orElse(Collections.emptyList())
+                          .stream()
+                          .filter(
+                              batchDetail ->
+                                  batchDetail.getBatch().getProduct().getId().equals(productId))
+                          .mapToInt(
+                              batchDetail ->
+                                  batchDetail.getQuantity() != null ? batchDetail.getQuantity() : 0)
+                          .sum();
 
-                // If it exists, update necessary fields, otherwise create a new one
-                if (productSupplier == null) {
-                  ProductSuppliersEntity productSuppliersAdd = new ProductSuppliersEntity();
-                  productSuppliersAdd.setProduct(product);
-                  productSuppliersAdd.setSupplier(supplier);
-                  productSuppliersEntities.add(productSuppliersAdd);
-                }
-              }
-              productSupplierService.saveAll(productSuppliersEntities);
-            });
+                  // Combine both product and batch quantities
+                  return Stream.of(
+                      new AbstractMap.SimpleEntry<>(productId, productQuantity + batchQuantitySum));
+                })
+            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-    // Get the branch details
-    BranchEntity toBranch = inboundEntity.getToBranch();
+    Map<Long, Integer> oldBatchQuantities =
+        Optional.ofNullable(inboundEntity.getInboundBatchDetails())
+            .orElse(Collections.emptyList())
+            .stream()
+            .collect(
+                Collectors.toMap(
+                    batchDetail -> batchDetail.getBatch().getId(),
+                    batchDetail ->
+                        batchDetail.getQuantity() != null ? batchDetail.getQuantity() : 0));
 
-    // Iterate through InboundBatchDetails to create or update BranchBatchEntity
-    inboundEntity
-        .getInboundBatchDetails()
-        .forEach(
-            inboundBatchDetail -> {
-              BatchEntity batch = inboundBatchDetail.getBatch();
-              int quantity =
-                  inboundBatchDetail.getQuantity() != null ? inboundBatchDetail.getQuantity() : 0;
-              // Assume this represents the batch
-              // quantity
+    saveInbound(request);
+    inboundRepository.flush();
+    entityManager.clear();
+    InboundEntity updatedInboundEntity =
+        inboundRepository
+            .findById(request.getInboundId())
+            .orElseThrow(() -> new HrmCommonException(INBOUND.NOT_EXIST));
+    Map<Long, Integer> newProductQuantities =
+        Optional.ofNullable(updatedInboundEntity.getInboundDetails())
+            .orElse(Collections.emptyList())
+            .stream()
+            .flatMap(
+                detail -> {
+                  Long productId = detail.getProduct().getId();
+                  int productQuantity =
+                      detail.getReceiveQuantity() != null ? detail.getReceiveQuantity() : 0;
 
-              // Save the BranchBatchEntity
-              branchBatchService.updateBranchBatchInInbound(
-                  toBranch, batch, BigDecimal.valueOf(quantity));
+                  // Get batch quantities for the same product and sum them up
+                  int batchQuantitySum =
+                      Optional.ofNullable(updatedInboundEntity.getInboundBatchDetails())
+                          .orElse(Collections.emptyList())
+                          .stream()
+                          .filter(
+                              batchDetail ->
+                                  batchDetail.getBatch().getProduct().getId().equals(productId))
+                          .mapToInt(
+                              batchDetail ->
+                                  batchDetail.getQuantity() != null ? batchDetail.getQuantity() : 0)
+                          .sum();
 
-              inboundBatchDetailService.updateAverageInboundPricesForBatches(batch);
-            });
+                  // Combine both product and batch quantities
+                  return Stream.of(
+                      new AbstractMap.SimpleEntry<>(productId, productQuantity + batchQuantitySum));
+                })
+            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-    // Iterate through InboundDetails to create or update BranchProductEntity
-    inboundEntity
-        .getInboundDetails()
-        .forEach(
-            inboundDetail -> {
-              ProductEntity product = inboundDetail.getProduct();
-              Integer totalQuantity =
-                  inboundBatchDetailService.findTotalQuantityByInboundAndProduct(
-                      inboundId, product);
+    Map<Long, Integer> newBatchQuantities =
+        Optional.ofNullable(updatedInboundEntity.getInboundBatchDetails())
+            .orElse(Collections.emptyList())
+            .stream()
+            .collect(
+                Collectors.toMap(
+                    batchDetail -> batchDetail.getBatch().getId(),
+                    batchDetail ->
+                        batchDetail.getQuantity() != null ? batchDetail.getQuantity() : 0));
 
-              Integer quantity =
-                  totalQuantity != 0
-                      ? totalQuantity
-                      : (inboundDetail.getReceiveQuantity() != null
-                          ? inboundDetail.getReceiveQuantity()
-                          : 0); // Assume this represents the
-              // quantity to be stored
+    BranchEntity toBranch = updatedInboundEntity.getToBranch();
+    SupplierEntity supplier = updatedInboundEntity.getSupplier();
 
-              inboundDetail.setReceiveQuantity(quantity);
+    // Process Product changes
+    for (Map.Entry<Long, Integer> entry : newProductQuantities.entrySet()) {
+      Long productId = entry.getKey();
+      int newQuantity = entry.getValue();
+      int oldQuantity = oldProductQuantities.getOrDefault(productId, 0);
+      int quantityDifference = newQuantity - oldQuantity;
 
-              branchProductService.updateBranchProductInInbound(
-                  toBranch, product, BigDecimal.valueOf(quantity));
-            });
+      // Update BranchProduct with the difference
+      ProductEntity productEntity = productMapper.toEntity(productService.getById(productId));
+      branchProductService.updateBranchProductInInbound(
+          toBranch, productEntity, BigDecimal.valueOf(quantityDifference));
 
-    inboundRepository.save(inboundEntity);
+      if (productSupplierService.findByProductAndSupplier(productEntity, supplier) == null) {
+        ProductSuppliersEntity productSuppliersEntity = new ProductSuppliersEntity();
+        productSuppliersEntity.setProduct(productEntity);
+        productSuppliersEntity.setSupplier(supplier);
+        productSupplierService.save(productSuppliersEntity);
+      }
+    }
+
+    // Handle removed products
+    for (Map.Entry<Long, Integer> entry : oldProductQuantities.entrySet()) {
+      if (!newProductQuantities.containsKey(entry.getKey())) {
+        Long productId = entry.getKey();
+        int oldQuantity = entry.getValue();
+
+        // Subtract the removed quantity from BranchProduct
+        ProductEntity productEntity = productMapper.toEntity(productService.getById(productId));
+        branchProductService.updateBranchProductInInbound(
+            toBranch, productEntity, BigDecimal.valueOf(-oldQuantity));
+
+        ProductSuppliers productSuppliers =
+            productSupplierService.findByProductAndSupplier(productEntity, supplier);
+        if (productSuppliers != null) {
+          productSupplierService.delete(productSuppliers.getId());
+        }
+      }
+    }
+
+    // Process Batch changes
+    for (Map.Entry<Long, Integer> entry : newBatchQuantities.entrySet()) {
+      Long batchId = entry.getKey();
+      int newQuantity = entry.getValue();
+      int oldQuantity = oldBatchQuantities.getOrDefault(batchId, 0);
+      int quantityDifference = newQuantity - oldQuantity;
+
+      // Update BranchBatch with the difference
+      BatchEntity batchEntity = batchMapper.toEntity(batchService.getById(batchId));
+      branchBatchService.updateBranchBatchInInbound(
+          toBranch, batchEntity, BigDecimal.valueOf(quantityDifference));
+
+      // Update average prices for this batch
+      inboundBatchDetailService.updateAverageInboundPricesForBatches(batchEntity);
+
+      if (productSupplierService.findByProductAndSupplier(batchEntity.getProduct(), supplier)
+          == null) {
+        ProductSuppliersEntity productSuppliersEntity = new ProductSuppliersEntity();
+        productSuppliersEntity.setProduct(batchEntity.getProduct());
+        productSuppliersEntity.setSupplier(supplier);
+        productSupplierService.save(productSuppliersEntity);
+      }
+    }
+
+    // Handle removed batches
+    for (Map.Entry<Long, Integer> entry : oldBatchQuantities.entrySet()) {
+      if (!newBatchQuantities.containsKey(entry.getKey())) {
+        Long batchId = entry.getKey();
+        int oldQuantity = entry.getValue();
+
+        // Subtract the removed quantity from BranchBatch
+        BatchEntity batchEntity = batchMapper.toEntity(batchService.getById(batchId));
+        branchBatchService.updateBranchBatchInInbound(
+            toBranch, batchEntity, BigDecimal.valueOf(-oldQuantity));
+
+        ProductSuppliers productSuppliers =
+            productSupplierService.findByProductAndSupplier(batchEntity.getProduct(), supplier);
+        if (productSuppliers != null) {
+          productSupplierService.delete(productSuppliers.getId());
+        }
+      }
+    }
+
+    // Save the updated inbound entity
+    inboundRepository.save(updatedInboundEntity);
+
     InboundEntity inbound =
         inboundDetailsService.updateAverageInboundPricesForProductsAndInboundTotalPrice(
             inboundEntity);
     inboundRepository.save(inbound);
+    // Notification for Manager
 
+    String message =
+        "🔔 Thông báo: Phiếu nhập "
+            + inbound.getInboundCode()
+            + " đã được thêm vào hệ"
+            + " thống "
+            + "bởi "
+            + inbound.getCreatedBy().getUserName();
+
+    Notification notification = new Notification();
+    notification.setMessage(message);
+    notification.setNotiName("Nhập phiếu vào kho");
+    notification.setNotiType(NotificationType.NHAP_PHIEU_VAO_HE_THONG);
+    notification.setCreatedDate(LocalDateTime.now());
+
+    notificationService.sendNotification(
+        notification, userService.findAllManagerByBranchId(inbound.getToBranch().getId()));
     // Return the updated inbound entity (or any other response you need)
     return inboundMapper.convertToBasicInfo(
         inboundEntity); // You can return a DTO or any other object
@@ -515,9 +645,28 @@ public class InboundServiceImpl implements InboundService {
 
   @Override
   public void updateInboundStatus(InboundStatus status, Long id) {
-    Optional<InboundEntity> inbound = inboundRepository.findById(id);
-    if (inbound.isEmpty()) {
+    InboundEntity inbound = inboundRepository.findById(id).orElse(null);
+    if (inbound == null) {
       throw new HrmCommonException(INBOUND.NOT_EXIST);
+    }
+    if (status.isWaitingForApprove()) {
+      // Notification for Manager
+
+      String message =
+          "🔔 Thông báo: Phiều nhập "
+              + inbound.getInboundCode()
+              + "đang chờ duyệt "
+              + "bởi "
+              + inbound.getCreatedBy().getUserName();
+
+      Notification notification = new Notification();
+      notification.setMessage(message);
+      notification.setNotiName(NotificationType.YEU_CAU_DUYET.getDisplayName());
+      notification.setNotiType(NotificationType.YEU_CAU_DUYET);
+      notification.setCreatedDate(LocalDateTime.now());
+
+      notificationService.sendNotification(
+          notification, userService.findAllManagerByBranchId(inbound.getFromBranch().getId()));
     }
     inboundRepository.updateInboundStatus(status, id);
   }

@@ -1,8 +1,10 @@
 package com.example.hrm_be.services;
 
 import com.example.hrm_be.models.dtos.Batch;
+import com.example.hrm_be.models.dtos.BatchDto;
 import com.example.hrm_be.models.dtos.Product;
 import com.example.hrm_be.models.entities.BatchEntity;
+import java.time.LocalDateTime;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.data.domain.Page;
@@ -14,7 +16,7 @@ public interface BatchService {
   Batch getById(Long id);
 
   // Get a paginated list of batch based on provided filters.
-  Page<Batch> getByPaging(
+  Page<BatchDto> getByPaging(
       int pageNo,
       int pageSize,
       String sortBy,
@@ -34,7 +36,14 @@ public interface BatchService {
   // Delete a Batch by its ID.
   void delete(Long id);
 
+  // Method to get a list of batches by productId through the intermediary table (BatchInbound)
+  List<Batch> getBatchesByProductThroughInbound(Long productId);
+
+  List<Batch> getExpiredBatches(LocalDateTime now);
+
   Batch addBatchInInbound(Batch batch, Product product);
 
   List<BatchEntity> findAllByProductId(Long inboundId);
+
+  List<Batch> getExpiredBatchesInDays(LocalDateTime now, Long days);
 }

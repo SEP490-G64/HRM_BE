@@ -1,20 +1,16 @@
 package com.example.hrm_be.models.dtos;
 
 import com.example.hrm_be.commons.enums.BatchStatus;
-import com.example.hrm_be.models.entities.CommonEntity;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.List;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -25,7 +21,7 @@ import lombok.extern.jackson.Jacksonized;
 @EqualsAndHashCode
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Batch extends CommonEntity {
+public class BatchDto {
   Long id;
   String batchCode;
 
@@ -37,18 +33,9 @@ public class Batch extends CommonEntity {
 
   BigDecimal inboundPrice;
 
-  List<OutboundDetail> outboundDetails; // 1-N with OutboundDetails
-
-  List<BranchBatch> branchBatches; // 1-N with BranchBatch
-
-  List<InboundBatchDetail> inboundBatchDetails;
-
-  List<InventoryCheckDetails> inventoryCheckDetails;
-
-  Product product;
-
-  Integer inboundBatchQuantity;
-  Integer outBoundBatchQuantity;
-
   BigDecimal quantity;
+
+  String baseUnit;
+
+  List<UnitConversion> unitConversions;
 }

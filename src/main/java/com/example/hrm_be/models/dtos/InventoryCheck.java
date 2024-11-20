@@ -1,6 +1,7 @@
 package com.example.hrm_be.models.dtos;
 
 import com.example.hrm_be.commons.enums.InventoryCheckStatus;
+import com.example.hrm_be.commons.enums.InventoryCheckType;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -32,8 +33,12 @@ public class InventoryCheck {
   User approvedBy; // N-1 with User (for the user who approved the check)
 
   LocalDateTime createdDate;
+  LocalDateTime startDate;
+  LocalDateTime endDate;
 
   Boolean isApproved;
+
+  InventoryCheckType inventoryCheckType;
 
   InventoryCheckStatus status; // Enum for 'Đang kiểm', 'Chờ duyệt', 'Đã cân bằng'
 

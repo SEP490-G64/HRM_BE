@@ -1,6 +1,7 @@
 package com.example.hrm_be.services.impl;
 
 import com.example.hrm_be.commons.constants.HrmConstant;
+import com.example.hrm_be.commons.enums.InboundStatus;
 import com.example.hrm_be.components.InboundDetailsMapper;
 import com.example.hrm_be.components.ProductMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
@@ -11,6 +12,7 @@ import com.example.hrm_be.services.*;
 import io.micrometer.common.util.StringUtils;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -209,5 +211,16 @@ public class InboundDetailsServiceImpl implements InboundDetailsService {
   @Override
   public void deleteAllByInboundId(Long inboundId) {
     inboundDetailsRepository.deleteAllByInbound_Id(inboundId);
+  }
+
+  @Override
+  public List<InboundDetails> getInboundDetailsByProductIdAndPeriod(
+      Long productId, LocalDateTime startDate, LocalDateTime endDate) {
+    return inboundDetailsRepository
+        .findInboundDetailsByProductIdAndPeriod(
+            productId, List.of(InboundStatus.HOAN_THANH), startDate, endDate)
+        .stream()
+        .map(inboundDetailsMapper::toDTOWithInBoundDetails)
+        .collect(Collectors.toList());
   }
 }

@@ -1,6 +1,7 @@
 package com.example.hrm_be.services;
 
 import com.example.hrm_be.commons.enums.OutboundStatus;
+import com.example.hrm_be.commons.enums.OutboundStatus;
 import com.example.hrm_be.commons.enums.OutboundType;
 import com.example.hrm_be.models.dtos.Outbound;
 import com.example.hrm_be.models.requests.CreateOutboundRequest;
@@ -22,6 +23,7 @@ public interface OutboundService {
       int pageSize,
       String sortBy,
       String direction,
+      Long branchId,
       String keyword,
       LocalDateTime startDate,
       LocalDateTime endDate,
@@ -34,7 +36,7 @@ public interface OutboundService {
 
   Outbound saveOutboundForSell(CreateOutboundRequest initOutbound);
 
-  Outbound submitOutboundToSystem(Long outboundId);
+  Outbound submitOutboundToSystem(CreateOutboundRequest request);
 
   Outbound createInnitOutbound(OutboundType type);
 

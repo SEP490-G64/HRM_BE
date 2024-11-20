@@ -1,6 +1,7 @@
 package com.example.hrm_be.models.entities;
 
 import com.example.hrm_be.commons.enums.InventoryCheckStatus;
+import com.example.hrm_be.commons.enums.InventoryCheckType;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.Column;
@@ -46,14 +47,20 @@ public class InventoryCheckEntity extends CommonEntity {
   UserEntity createdBy; // N-1 with User (for the user who created the check)
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(
-      name = "approved_by",
-      nullable = true,
-      foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+  @JoinColumn(name = "approved_by", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   UserEntity approvedBy; // N-1 with User (for the user who approved the check)
 
   @Column(name = "created_date")
   LocalDateTime createdDate;
+
+  @Column(name = "start_date")
+  LocalDateTime startDate;
+
+  @Column(name = "end_date")
+  LocalDateTime endDate;
+
+  @Column(name = "inventory_check_type")
+  InventoryCheckType inventoryCheckType;
 
   @Column(name = "is_approved")
   Boolean isApproved;

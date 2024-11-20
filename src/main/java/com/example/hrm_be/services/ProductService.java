@@ -2,11 +2,15 @@ package com.example.hrm_be.services;
 
 import com.example.hrm_be.models.dtos.Product;
 import com.example.hrm_be.models.dtos.ProductBaseDTO;
+import com.example.hrm_be.models.dtos.ProductBatchDTO;
 import com.example.hrm_be.models.dtos.ProductInbound;
 import com.example.hrm_be.models.dtos.ProductSupplierDTO;
 import com.example.hrm_be.models.entities.AllowedProductEntity;
+import com.example.hrm_be.models.responses.AuditHistory;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -49,4 +53,22 @@ public interface ProductService {
 
   List<ProductBaseDTO> getProductInBranch(
       Long branchId, String keyword, Boolean checkValid, Long supplierId);
+
+  List<ProductBaseDTO> filterProducts(
+      Boolean lessThanOrEqual, Integer quantity, Boolean warning, Boolean outOfStock);
+
+  List<ProductBaseDTO> getProductsWithLossOrNoSellPriceInBranch();
+
+  List<ProductBaseDTO> getProductsBySellPrice(BigDecimal sellPrice);
+
+  List<ProductBaseDTO> getByKeyword(String keyword);
+
+  List<ProductBatchDTO> getProductInBranchForInventoryCheck(Long branchId);
+
+  List<AuditHistory> getProductDetailsInPeriod(
+      Long productId, LocalDateTime startDate, LocalDateTime endDate);
+
+  List<ProductBatchDTO> getProductByCateInBranchForInventoryCheck(Long branchId, Long cateId);
+
+  List<ProductBatchDTO> getProductByTypeIdInBranchForInventoryCheck(Long branchId, Long typeId);
 }

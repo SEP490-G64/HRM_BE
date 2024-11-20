@@ -1,5 +1,6 @@
 package com.example.hrm_be.repositories;
 
+import com.example.hrm_be.commons.enums.RoleType;
 import com.example.hrm_be.commons.enums.UserStatusType;
 import com.example.hrm_be.models.entities.RoleEntity;
 import com.example.hrm_be.models.entities.UserEntity;
@@ -20,9 +21,15 @@ import org.springframework.transaction.annotation.Transactional;
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
   Optional<UserEntity> findByEmail(String email);
 
-  boolean existsByEmail(String email);
+  @Query(
+      "SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END FROM UserEntity u WHERE u.email ="
+          + " :email AND u.status <> 'DELETED'")
+  boolean existsByEmail(@Param("email") String email);
 
-  boolean existsByUserName(String username);
+  @Query(
+      "SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END FROM UserEntity u WHERE u.userName ="
+          + " :userName AND u.status <> 'DELETED'")
+  boolean existsByUserName(@Param("userName") String username);
 
   @Query(
       "SELECT u FROM UserEntity u "
@@ -30,12 +37,10 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
           + "OR LOWER(u.email) LIKE LOWER(CONCAT('%', :searchKeyword, '%')) "
           + "OR LOWER(u.firstName) LIKE LOWER(CONCAT('%', :searchKeyword, '%')) "
           + "OR LOWER(u.lastName) LIKE LOWER(CONCAT('%', :searchKeyword, '%'))) "
-          + "AND (u.status <> :pending) AND (:status IS NULL OR u.status = :status)")
+          + "AND (u.status <> 'PENDING') AND (u.status <> 'DELETED') "
+          + "AND (:status IS NULL OR u.status = :status)")
   Page<UserEntity> searchUsers(
-      String searchKeyword,
-      UserStatusType pending,
-      @Nullable UserStatusType status,
-      Pageable pageable);
+      String searchKeyword, @Nullable UserStatusType status, Pageable pageable);
 
   Page<UserEntity> findByStatus(UserStatusType status, Pageable pageable);
 
@@ -43,6 +48,9 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
   @Transactional
   @Query("DELETE FROM UserEntity u WHERE u.id IN :ids")
   void deleteByIds(@Param("ids") List<Long> ids);
+
+  @Query("SELECT  u FROM UserEntity u WHERE u.id IN :ids")
+  List<UserEntity> findByIds(@Param("ids") List<Long> ids);
 
   @Query(
       "SELECT role FROM UserEntity user "
@@ -59,4 +67,13 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
   @Query("SELECT u.branch.id FROM UserEntity u WHERE u.email = :userEmail")
   Optional<Long> findBranchIdByUserEmail(@Param("userEmail") String userEmail);
+
+  List<UserEntity> findByBranch_Id(Long branchId);
+
+  @Query(
+      "SELECT user FROM UserEntity user "
+          + "JOIN user.userRoleMap urm "
+          + "JOIN urm.role role "
+          + "WHERE user.branch.id = :branchId AND role.type= :roleType")
+  List<UserEntity> findAllByBranchIdAndRoleType(Long branchId, RoleType roleType);
 }

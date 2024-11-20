@@ -1,6 +1,8 @@
 package com.example.hrm_be.components;
 
 import com.example.hrm_be.models.dtos.*;
+import com.example.hrm_be.models.entities.BranchBatchEntity;
+import com.example.hrm_be.models.entities.BranchProductEntity;
 import com.example.hrm_be.models.entities.ProductEntity;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -328,7 +330,15 @@ public class ProductMapper {
         .build();
   }
 
-  public ProductBaseDTO convertToProductForSearchInNotes(ProductEntity entity) {
+  public ProductBaseDTO convertToProductForSearchInNotes(ProductEntity entity, Long branchId) {
+    // Get branch product for the specific branch
+    BranchProductEntity branchProduct =
+        entity.getBranchProducs().stream()
+            .filter(bp -> bp.getBranch().getId().equals(branchId))
+            .findFirst()
+            .orElse(null);
+
+    // Get unit of measurements
     List<UnitOfMeasurement> unitOfMeasurementList = new ArrayList<>();
     if (entity.getUnitConversions() != null) {
       unitOfMeasurementList =
@@ -341,6 +351,24 @@ public class ProductMapper {
       unitOfMeasurementList.add(unitOfMeasurementMapper.toDTO(entity.getBaseUnit()));
     }
 
+    // Convert batches with BranchBatch quantities
+    List<Batch> batchDTOs =
+        entity.getBatches() != null
+            ? entity.getBatches().stream()
+                .map(
+                    batch -> {
+                      BranchBatchEntity branchBatch =
+                          batch.getBranchBatches().stream()
+                              .filter(bb -> bb.getBranch().getId().equals(branchId))
+                              .findFirst()
+                              .orElse(null);
+
+                      return batchMapper.convertToDtoForGetProductInBranch(
+                          batch, branchBatch != null ? branchBatch.getQuantity() : null);
+                    })
+                .collect(Collectors.toList())
+            : null;
+
     return ProductBaseDTO.builder()
         .id(entity.getId())
         .productName(entity.getProductName())
@@ -352,13 +380,92 @@ public class ProductMapper {
             entity.getBaseUnit() != null
                 ? unitOfMeasurementMapper.toDTO(entity.getBaseUnit())
                 : null)
-        .batches(
-            entity.getBatches() != null
-                ? entity.getBatches().stream()
-                    .map(batchMapper::convertToDtoForGetProductInBranch)
+        .batches(batchDTOs)
+        .productUnits(unitOfMeasurementList)
+        .productQuantity(branchProduct != null ? branchProduct.getQuantity() : BigDecimal.ZERO) //
+        // Add product
+        // quantity
+        .build();
+  }
+
+  public ProductBaseDTO convertToProductDto(ProductEntity entity) {
+    // Get unit of measurements
+    List<UnitOfMeasurement> unitOfMeasurementList = new ArrayList<>();
+    if (entity.getUnitConversions() != null) {
+      unitOfMeasurementList =
+          entity.getUnitConversions().stream()
+              .map(unitConversionMapper::toDTO)
+              .map(UnitConversion::getSmallerUnit)
+              .collect(Collectors.toList());
+    }
+    if (entity.getBaseUnit() != null) {
+      unitOfMeasurementList.add(unitOfMeasurementMapper.toDTO(entity.getBaseUnit()));
+    }
+
+    // Convert batches with BranchBatch quantities
+    List<Batch> batchDTOs =
+        entity.getBatches() != null
+            ? entity.getBatches().stream()
+                .map(
+                    batch -> {
+                      return batchMapper.convertToDtoForGetProductInBranch(
+                          batch,
+                          batch.getBranchBatches() != null
+                              ? batch.getBranchBatches().stream().toList().stream()
+                                  .filter(b -> b.getQuantity() != null) // Lọc các giá trị null
+                                  .map(
+                                      BranchBatchEntity
+                                          ::getQuantity) // Lấy giá trị quantity kiểu BigDecimal
+                                  .reduce(BigDecimal.ZERO, BigDecimal::add) // Tính tổng
+                              : BigDecimal.ZERO // Nếu danh sách là null, trả về 0);
+                          );
+                    })
+                .collect(Collectors.toList())
+            : null;
+
+    return ProductBaseDTO.builder()
+        .id(entity.getId())
+        .productName(entity.getProductName())
+        .registrationCode(entity.getRegistrationCode())
+        .urlImage(entity.getUrlImage())
+        .inboundPrice(entity.getInboundPrice())
+        .sellPrice(entity.getSellPrice())
+        .productBaseUnit(
+            entity.getBaseUnit() != null
+                ? unitOfMeasurementMapper.toDTO(entity.getBaseUnit())
+                : null)
+        .batches(batchDTOs)
+        .productUnits(unitOfMeasurementList)
+        .productQuantity(
+            entity.getBranchProducs() != null
+                ? entity.getBranchProducs().stream()
+                    .map(branchProductMapper::toDTO)
+                    .toList()
+                    .stream()
+                    .filter(product -> product.getQuantity() != null) // Lọc các giá trị null
+                    .map(BranchProduct::getQuantity) // Lấy giá trị quantity kiểu BigDecimal
+                    .reduce(BigDecimal.ZERO, BigDecimal::add) // Tính tổng
+                : BigDecimal.ZERO) // Nếu danh sách là null, trả về 0) //
+        // Add product
+        // quantity
+        .build();
+  }
+
+  // Helper method to convert ProductEntity to ProductDTO
+  public Product convertToDtoForBatch(ProductEntity entity) {
+    return Product.builder()
+        .id(entity.getId())
+        .productName(entity.getProductName())
+        .baseUnit(
+            entity.getBaseUnit() != null
+                ? unitOfMeasurementMapper.toDTO(entity.getBaseUnit())
+                : null)
+        .unitConversions(
+            entity.getUnitConversions() != null
+                ? entity.getUnitConversions().stream()
+                    .map(unitConversionMapper::toDTO)
                     .collect(Collectors.toList())
                 : null)
-        .productUnits(unitOfMeasurementList)
         .build();
   }
 }

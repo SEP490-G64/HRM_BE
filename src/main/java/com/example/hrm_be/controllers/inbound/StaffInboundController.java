@@ -44,13 +44,14 @@ public class StaffInboundController {
       @RequestParam(required = false, defaultValue = "id") String sortBy,
       @RequestParam(required = false, defaultValue = "") String keyword,
       @RequestParam(required = false, defaultValue = "DESC") String direction,
+      @RequestParam(required = false) Long branchId,
       @RequestParam(required = false) LocalDateTime startDate,
       @RequestParam(required = false) LocalDateTime endDate,
       @RequestParam(required = false) InboundStatus status,
       @RequestParam(required = false) InboundType type) {
     Page<Inbound> InboundPage =
         inboundService.getByPaging(
-            page, size, sortBy, direction, keyword, startDate, endDate, status, type);
+            page, size, sortBy, direction, branchId, keyword, startDate, endDate, status, type);
 
     // Build the response with pagination details
     BaseOutput<List<Inbound>> response =
@@ -178,9 +179,11 @@ public class StaffInboundController {
     return ResponseEntity.ok(BaseOutput.<String>builder().status(ResponseStatus.SUCCESS).build());
   }
 
-  @PutMapping("/{id}/submit")
-  public ResponseEntity<BaseOutput<Inbound>> submitToSystem(@PathVariable(name = "id") Long id) {
-    Inbound inbound = inboundService.submitInboundToSystem(id);
+  @PutMapping("/submit")
+  public ResponseEntity<BaseOutput<Inbound>> submitToSystem(
+      @RequestBody CreateInboundRequest request) {
+    Inbound inbound = inboundService.submitInboundToSystem(request);
+
     BaseOutput<Inbound> response =
         BaseOutput.<Inbound>builder()
             .message(HttpStatus.OK.toString())

@@ -3,6 +3,7 @@ package com.example.hrm_be.repositories;
 import com.example.hrm_be.commons.enums.ProductStatus;
 import com.example.hrm_be.models.entities.*;
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -21,6 +22,21 @@ public interface BranchProductRepository
   BigDecimal findTotalQuantityForProduct(Long productId);
 
   Optional<BranchProductEntity> findByBranch_IdAndProduct_Id(Long branchId, Long productId);
+
+  @Query(
+      "SELECT bp FROM BranchProductEntity bp WHERE bp.branch.id = :branchId AND bp.quantity <"
+          + " bp.minQuantity")
+  List<BranchProductEntity> findBranchProductsWithQuantityBelowMin(
+      @Param("branchId") Long branchId);
+
+  @Query(
+      "SELECT bp FROM BranchProductEntity bp WHERE bp.branch.id = :branchId AND bp.quantity >"
+          + " bp.maxQuantity")
+  List<BranchProductEntity> findBranchProductsWithQuantityAboveMax(
+      @Param("branchId") Long branchId);
+
+  @Query("SELECT bp FROM BranchProductEntity bp WHERE bp.branch.id = :branchId AND bp.quantity = 0")
+  List<BranchProductEntity> findBranchProductsWithQuantityIsZero(@Param("branchId") Long branchId);
 
   @Modifying
   @Transactional

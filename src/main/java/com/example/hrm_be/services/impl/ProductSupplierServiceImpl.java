@@ -13,16 +13,21 @@ import org.springframework.stereotype.Service;
 @Service
 public class ProductSupplierServiceImpl implements ProductSupplierService {
   @Autowired private ProductSuppliersRepository productSuppliersRepository;
+  @Autowired private ProductSuppliersMapper productSuppliersMapper;
 
   @Override
-  public ProductSuppliersEntity findByProductAndSupplier(
-      ProductEntity product, SupplierEntity supplier) {
-    return productSuppliersRepository.findByProductAndSupplier(product, supplier).orElse(null);
+  public ProductSuppliers findByProductAndSupplier(ProductEntity product, SupplierEntity supplier) {
+    return productSuppliersMapper.toDTO(
+        productSuppliersRepository.findByProductAndSupplier(product, supplier).orElse(null));
   }
 
   @Override
-  public List<ProductSuppliersEntity> saveAll(
-      List<ProductSuppliersEntity> productSuppliersEntities) {
-    return productSuppliersRepository.saveAll(productSuppliersEntities);
+  public ProductSuppliers save(ProductSuppliersEntity productSuppliersEntity) {
+    return productSuppliersMapper.toDTO(productSuppliersRepository.save(productSuppliersEntity));
+  }
+
+  @Override
+  public void delete(Long id) {
+    productSuppliersRepository.deleteById(id);
   }
 }

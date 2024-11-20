@@ -22,6 +22,7 @@ public interface InboundService {
       int pageSize,
       String sortBy,
       String direction,
+      Long branchId,
       String keyword,
       LocalDateTime startDate,
       LocalDateTime endDate,
@@ -34,7 +35,7 @@ public interface InboundService {
 
   Inbound saveInbound(CreateInboundRequest innitInbound);
 
-  Inbound submitInboundToSystem(Long inboundId);
+  Inbound submitInboundToSystem(CreateInboundRequest request);
 
   Inbound createInnitInbound(InboundType type);
 

@@ -1,6 +1,7 @@
 package com.example.hrm_be.services.impl;
 
 import com.example.hrm_be.commons.constants.HrmConstant;
+import com.example.hrm_be.commons.enums.OutboundStatus;
 import com.example.hrm_be.components.OutboundDetailMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.OutboundDetail;
@@ -8,6 +9,7 @@ import com.example.hrm_be.models.entities.OutboundDetailEntity;
 import com.example.hrm_be.repositories.OutboundDetailRepository;
 import com.example.hrm_be.services.OutboundDetailService;
 import io.micrometer.common.util.StringUtils;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -126,6 +128,17 @@ public class OutboundDetailServiceImpl implements OutboundDetailService {
         outboundDetailRepository.findAllWithBatchAndProductAndCategoryByOutboundId(outboundId);
     return outboundDetailEntities.stream()
         .map(outboundDetailMapper::toDTOWithProductAndCategory)
+        .collect(Collectors.toList());
+  }
+
+  @Override
+  public List<OutboundDetail> getOutboundDetailsByProductIdAndPeriod(
+      Long productId, LocalDateTime startDate, LocalDateTime endDate) {
+    return outboundDetailRepository
+        .findOutboundDetailsByProductIdAndPeriod(
+            productId, List.of(OutboundStatus.HOAN_THANH), startDate, endDate)
+        .stream()
+        .map(outboundDetailMapper::toDTOWithBatchAndOutBound)
         .collect(Collectors.toList());
   }
 }

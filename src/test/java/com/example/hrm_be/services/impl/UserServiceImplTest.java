@@ -444,24 +444,6 @@ public class UserServiceImplTest {
   //    assertThrows(HrmCommonException.class, () -> userService.create(user));
   //  }
   //
-  //  // UTCID06 - Create User: password null
-  //  @Test
-  //  void testUTCID06_Create_PasswordNull() {
-  //    TestUtils.mockAuthenticatedUser("dsdadmin@gmail.com", RoleType.ADMIN);
-  //    User user = initValidUser();
-  //    user.setPassword(null);
-  //    assertThrows(HrmCommonException.class, () -> userService.create(user));
-  //  }
-  //
-  //  // UTCID07 - Create User: password smaller than 8 characters
-  //  @Test
-  //  void testUTCID07_Create_PasswordLengthInvalid() {
-  //    TestUtils.mockAuthenticatedUser("dsdadmin@gmail.com", RoleType.ADMIN);
-  //    User user = initValidUser();
-  //    user.setPassword("abcdefg");
-  //    assertThrows(HrmCommonException.class, () -> userService.create(user));
-  //  }
-  //
   //  // UTCID08 - Create User: null email
   //  @Test
   //  void testUTCID08_Create_EmailNull() {
@@ -595,6 +577,6 @@ public class UserServiceImplTest {
   void testUTCID03_Delete_InvalidNotExist() {
     // Mock admin user
     TestUtils.mockAuthenticatedUser("dsdadmin@gmail.com", RoleType.ADMIN);
-    Assertions.assertNull(userService.getById(-1L));
+    assertThrows(HrmCommonException.class, () -> userService.delete(-1L));
   }
 }

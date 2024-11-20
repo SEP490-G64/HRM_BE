@@ -22,4 +22,10 @@ public interface BranchProductService {
   BigDecimal findTotalQuantityForProduct(Long productId);
 
   void saveAll(List<BranchProductEntity> branchProducts);
+
+  List<BranchProduct> findBranchProductsWithQuantityAboveMax(Long branchId);
+
+  List<BranchProduct> findBranchProductsWithQuantityBelowMin(Long branchId);
+
+  List<BranchProduct> findBranchProductsWithQuantityIsZero(Long branchId);
 }
