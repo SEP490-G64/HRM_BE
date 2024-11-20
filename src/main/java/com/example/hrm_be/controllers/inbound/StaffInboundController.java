@@ -180,7 +180,8 @@ public class StaffInboundController {
   }
 
   @PutMapping("/submit")
-  public ResponseEntity<BaseOutput<Inbound>> submitToSystem(@RequestBody CreateInboundRequest request) {
+  public ResponseEntity<BaseOutput<Inbound>> submitToSystem(
+      @RequestBody CreateInboundRequest request) {
     Inbound inbound = inboundService.submitInboundToSystem(request);
 
     BaseOutput<Inbound> response =
