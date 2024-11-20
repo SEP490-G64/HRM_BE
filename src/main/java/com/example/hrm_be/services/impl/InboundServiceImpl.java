@@ -530,8 +530,8 @@ public class InboundServiceImpl implements InboundService {
         branchProductService.updateBranchProductInInbound(
             toBranch, productEntity, BigDecimal.valueOf(-oldQuantity));
 
-        ProductSuppliers productSuppliers = productSupplierService
-                .findByProductAndSupplier(productEntity, supplier);
+        ProductSuppliers productSuppliers =
+            productSupplierService.findByProductAndSupplier(productEntity, supplier);
         if (productSuppliers != null) {
           productSupplierService.delete(productSuppliers.getId());
         }
@@ -573,8 +573,8 @@ public class InboundServiceImpl implements InboundService {
         branchBatchService.updateBranchBatchInInbound(
             toBranch, batchEntity, BigDecimal.valueOf(-oldQuantity));
 
-        ProductSuppliers productSuppliers = productSupplierService
-                .findByProductAndSupplier(batchEntity.getProduct(), supplier);
+        ProductSuppliers productSuppliers =
+            productSupplierService.findByProductAndSupplier(batchEntity.getProduct(), supplier);
         if (productSuppliers != null) {
           productSupplierService.delete(productSuppliers.getId());
         }

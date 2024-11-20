@@ -16,9 +16,9 @@ public class ProductSupplierServiceImpl implements ProductSupplierService {
   @Autowired private ProductSuppliersMapper productSuppliersMapper;
 
   @Override
-  public ProductSuppliers findByProductAndSupplier(
-      ProductEntity product, SupplierEntity supplier) {
-    return productSuppliersMapper.toDTO(productSuppliersRepository.findByProductAndSupplier(product, supplier).orElse(null));
+  public ProductSuppliers findByProductAndSupplier(ProductEntity product, SupplierEntity supplier) {
+    return productSuppliersMapper.toDTO(
+        productSuppliersRepository.findByProductAndSupplier(product, supplier).orElse(null));
   }
 
   @Override
