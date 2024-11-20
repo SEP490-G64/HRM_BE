@@ -25,7 +25,6 @@ import com.example.hrm_be.models.dtos.Notification;
 import com.example.hrm_be.models.dtos.Product;
 import com.example.hrm_be.models.entities.*;
 import com.example.hrm_be.models.requests.CreateInventoryCheckRequest;
-import com.example.hrm_be.models.responses.AuditHistory;
 import com.example.hrm_be.repositories.InventoryCheckRepository;
 import com.example.hrm_be.services.BatchService;
 import com.example.hrm_be.services.BranchBatchService;
@@ -343,7 +342,7 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
             .createdDate(currentDateTime)
             .status(InventoryCheckStatus.CHUA_LUU)
             .code(checkCode)
-            .startDate(startDate!=null? startDate : currentDateTime)
+            .startDate(startDate != null ? startDate : currentDateTime)
             .createdBy(userEntity)
             .branch(branchEntity)
             .build();

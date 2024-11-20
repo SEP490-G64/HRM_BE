@@ -338,9 +338,8 @@ public class StaffProductController {
 
   @GetMapping("/products-inventory-check/{branchId}")
   public ResponseEntity<BaseOutput<List<ProductBatchDTO>>> getProductInBranchForInventoryCheck(
-      @PathVariable("branchId") Long branchId){
-    List<ProductBatchDTO> products =
-        productService.getProductInBranchForInventoryCheck(branchId);
+      @PathVariable("branchId") Long branchId) {
+    List<ProductBatchDTO> products = productService.getProductInBranchForInventoryCheck(branchId);
 
     BaseOutput<List<ProductBatchDTO>> response =
         BaseOutput.<List<ProductBatchDTO>>builder()
