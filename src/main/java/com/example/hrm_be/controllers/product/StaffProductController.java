@@ -338,9 +338,39 @@ public class StaffProductController {
 
   @GetMapping("/products-inventory-check/{branchId}")
   public ResponseEntity<BaseOutput<List<ProductBatchDTO>>> getProductInBranchForInventoryCheck(
-      @PathVariable("branchId") Long branchId){
+      @PathVariable("branchId") Long branchId) {
+    List<ProductBatchDTO> products = productService.getProductInBranchForInventoryCheck(branchId);
+
+    BaseOutput<List<ProductBatchDTO>> response =
+        BaseOutput.<List<ProductBatchDTO>>builder()
+            .data(products)
+            .message(HttpStatus.OK.toString())
+            .status(ResponseStatus.SUCCESS)
+            .build();
+    return ResponseEntity.ok(response);
+  }
+
+  @GetMapping("/products-inventory-check/{branchId}/type/{typeId}")
+  public ResponseEntity<BaseOutput<List<ProductBatchDTO>>>
+      getProductByTypeIdInBranchForInventoryCheck(
+          @PathVariable("branchId") Long branchId, @PathVariable("typeId") Long typeId) {
     List<ProductBatchDTO> products =
-        productService.getProductInBranchForInventoryCheck(branchId);
+        productService.getProductByTypeIdInBranchForInventoryCheck(branchId, typeId);
+
+    BaseOutput<List<ProductBatchDTO>> response =
+        BaseOutput.<List<ProductBatchDTO>>builder()
+            .data(products)
+            .message(HttpStatus.OK.toString())
+            .status(ResponseStatus.SUCCESS)
+            .build();
+    return ResponseEntity.ok(response);
+  }
+
+  @GetMapping("/products-inventory-check/{branchId}/category/{cateId}")
+  public ResponseEntity<BaseOutput<List<ProductBatchDTO>>> getProductInBranchForInventoryCheck(
+      @PathVariable("branchId") Long branchId, @PathVariable("cateId") Long cateId) {
+    List<ProductBatchDTO> products =
+        productService.getProductByCateInBranchForInventoryCheck(branchId, cateId);
 
     BaseOutput<List<ProductBatchDTO>> response =
         BaseOutput.<List<ProductBatchDTO>>builder()
