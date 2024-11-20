@@ -809,7 +809,6 @@ public class ProductServiceImpl implements ProductService {
         .collect(Collectors.toList());
   }
 
-
   private List<ProductBatchDTO> processProductData(List<ProductBaseDTO> products) {
     List<ProductBatchDTO> allProductBatches = new ArrayList<>();
     for (ProductBaseDTO product : products) {
