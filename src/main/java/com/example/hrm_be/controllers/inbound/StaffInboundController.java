@@ -179,9 +179,10 @@ public class StaffInboundController {
     return ResponseEntity.ok(BaseOutput.<String>builder().status(ResponseStatus.SUCCESS).build());
   }
 
-  @PutMapping("/{id}/submit")
-  public ResponseEntity<BaseOutput<Inbound>> submitToSystem(@PathVariable(name = "id") Long id) {
-    Inbound inbound = inboundService.submitInboundToSystem(id);
+  @PutMapping("/submit")
+  public ResponseEntity<BaseOutput<Inbound>> submitToSystem(
+      @RequestBody CreateInboundRequest request) {
+    Inbound inbound = inboundService.submitInboundToSystem(request);
 
     BaseOutput<Inbound> response =
         BaseOutput.<Inbound>builder()
