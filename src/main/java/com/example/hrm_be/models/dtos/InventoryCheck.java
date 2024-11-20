@@ -33,6 +33,8 @@ public class InventoryCheck {
   User approvedBy; // N-1 with User (for the user who approved the check)
 
   LocalDateTime createdDate;
+  LocalDateTime startDate;
+  LocalDateTime endDate;
 
   Boolean isApproved;
 

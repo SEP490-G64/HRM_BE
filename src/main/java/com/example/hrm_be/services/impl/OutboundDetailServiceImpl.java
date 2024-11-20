@@ -1,6 +1,7 @@
 package com.example.hrm_be.services.impl;
 
 import com.example.hrm_be.commons.constants.HrmConstant;
+import com.example.hrm_be.commons.enums.OutboundStatus;
 import com.example.hrm_be.components.OutboundDetailMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.OutboundDetail;
@@ -134,7 +135,8 @@ public class OutboundDetailServiceImpl implements OutboundDetailService {
   public List<OutboundDetail> getOutboundDetailsByProductIdAndPeriod(
       Long productId, LocalDateTime startDate, LocalDateTime endDate) {
     return outboundDetailRepository
-        .findOutboundDetailsByProductIdAndPeriod(productId, startDate, endDate)
+        .findOutboundDetailsByProductIdAndPeriod(productId,List.of(OutboundStatus.HOAN_THANH) ,startDate,
+            endDate)
         .stream()
         .map(outboundDetailMapper::toDTOWithBatchAndOutBound)
         .collect(Collectors.toList());

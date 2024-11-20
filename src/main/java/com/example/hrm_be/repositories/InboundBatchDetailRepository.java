@@ -1,5 +1,6 @@
 package com.example.hrm_be.repositories;
 
+import com.example.hrm_be.commons.enums.InboundStatus;
 import com.example.hrm_be.models.entities.InboundBatchDetailEntity;
 import com.example.hrm_be.models.entities.ProductEntity;
 import java.time.LocalDateTime;
@@ -47,9 +48,11 @@ public interface InboundBatchDetailRepository
   @Query(
       "SELECT i FROM InboundBatchDetailEntity i "
           + "WHERE i.batch.product.id = :productId "
-          + "AND i.inbound.createdDate BETWEEN :startDate AND :endDate")
+          + "AND i.inbound.createdDate BETWEEN :startDate AND :endDate "
+          + "AND i.inbound.status in :status")
   List<InboundBatchDetailEntity> findInboundDetailsByProductIdAndPeriod(
       @Param("productId") Long productId,
+      @Param("status") List<InboundStatus> status,
       @Param("startDate") LocalDateTime startDate,
       @Param("endDate") LocalDateTime endDate);
 }

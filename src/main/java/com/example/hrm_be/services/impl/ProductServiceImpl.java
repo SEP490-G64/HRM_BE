@@ -42,6 +42,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
@@ -83,6 +84,8 @@ public class ProductServiceImpl implements ProductService {
   @Autowired private SpecialConditionMapper specialConditionMapper;
   @Autowired private BranchMapper branchMapper;
   @Autowired private StorageLocationMapper storageLocationMapper;
+  @Autowired private OutboundDetailMapper outboundDetailMapper;
+  @Autowired private OutboundProductDetailMapper outboundProductDetailMapper;
   @Autowired private UnitConversionMapper unitConversionMapper;
   @Autowired private AllowedProductService allowedProductService;
   @Lazy @Autowired private InboundDetailsService inboundDetailsService;
@@ -806,6 +809,58 @@ public class ProductServiceImpl implements ProductService {
         .collect(Collectors.toList());
   }
 
+  public List<ProductBatchDTO> getProductInBranchForInventoryCheck(
+      Long branchId) {
+    List<ProductBaseDTO> products =
+        productRepository.searchAllProductByBranchId(branchId, "", null, null).stream()
+            .map(
+                entity ->
+                    productMapper.convertToProductForSearchInNotes(
+                        entity, branchId)) // Pass branchId to the mapper
+            .toList();
+
+    List<ProductBatchDTO> allProductBatches = new ArrayList<>();
+
+    for (ProductBaseDTO product : products) {
+      ProductBatchDTO productBaseDTO =
+          ProductBatchDTO.builder()
+              .product(
+                  Product.builder()
+                      .id(product.getId())
+                      .productName(product.getProductName())
+                      .baseUnit(product.getProductBaseUnit())
+                      .build())
+              .systemQuantity(
+                  product.getProductQuantity() != null
+                      ? product.getProductQuantity()
+                      : BigDecimal.ZERO)
+              .build();
+      List<ProductBatchDTO> batches =
+          product.getBatches().stream()
+              .map(
+                  batch ->
+                      ProductBatchDTO.builder()
+                          .product(
+                              Product.builder()
+                                  .id(product.getId())
+                                  .productName(product.getProductName())
+                                  .baseUnit(product.getProductBaseUnit())
+                                  .build())
+                          .batch(
+                              Batch.builder()
+                                  .id(batch.getId())
+                                  .batchCode(batch.getBatchCode())
+                                  .build())
+                          .systemQuantity(batch.getQuantity())
+                          .build() // Missing build() for ProductBatchDTO
+                  )
+              .collect(Collectors.toList());
+      allProductBatches.add(productBaseDTO);
+      allProductBatches.addAll(batches);
+    }
+    return allProductBatches;
+  }
+
   public List<ProductBaseDTO> filterProducts(
       Boolean lessThanOrEqual, Integer quantity, Boolean warning, Boolean outOfStock) {
     Set<ProductBaseDTO> resultSet = new HashSet<>();
@@ -872,71 +927,36 @@ public class ProductServiceImpl implements ProductService {
   public List<AuditHistory> getProductDetailsInPeriod(
       Long productId, LocalDateTime startDate, LocalDateTime endDate) {
     // Fetch product details
-    List<InboundDetails> productInbound =
-        inboundDetailsService.getInboundDetailsByProductIdAndPeriod(productId, startDate, endDate);
-    List<InboundBatchDetail> batchInbound =
-        inboundBatchDetailService.getInboundBatchDetailsByProductIdAndPeriod(
-            productId, startDate, endDate);
+    List<AuditHistory> productInbound =
+        inboundDetailsService
+            .getInboundDetailsByProductIdAndPeriod(productId, startDate, endDate)
+            .stream()
+            .map(inboundDetailsMapper::toAudit)
+            .toList();
 
-    List<OutboundDetail> batchOutbound =
-        outboundDetailService.getOutboundDetailsByProductIdAndPeriod(productId, startDate, endDate);
-    List<OutboundProductDetail> productOutbound =
-        outboundProductDetailService.getOutboundProductDetailsByProductIdAndPeriod(
-            productId, startDate, endDate);
-    List<AuditHistory> auditHistoryList = new ArrayList<>();
+    List<AuditHistory> batchInbound =
+        inboundBatchDetailService
+            .getInboundBatchDetailsByProductIdAndPeriod(productId, startDate, endDate)
+            .stream()
+            .map(inboundBatchDetailMapper::toAudit)
+            .toList();
 
-    // Map inbound details to AuditHistory
-    productInbound.forEach(
-        inbound -> {
-          AuditHistory audit = new AuditHistory();
-          audit.setTransactionType("INBOUND");
-          audit.setTransactionId(inbound.getInbound().getId());
-          audit.setProductId(inbound.getProduct().getId());
-          audit.setProductName(inbound.getProduct().getProductName());
-          audit.setQuantity(BigDecimal.valueOf(inbound.getReceiveQuantity()));
-          audit.setBatch(null); // No batch details for InboundDetails
-          audit.setCreatedAt(inbound.getInbound().getCreatedDate());
-          auditHistoryList.add(audit);
-        });
+    List<AuditHistory> batchOutbound =
+        outboundDetailService
+            .getOutboundDetailsByProductIdAndPeriod(productId, startDate, endDate)
+            .stream()
+            .map(outboundDetailMapper::toAudit)
+            .toList();
+    List<AuditHistory> productOutbound =
+        outboundProductDetailService
+            .getOutboundProductDetailsByProductIdAndPeriod(productId, startDate, endDate)
+            .stream()
+            .map(outboundProductDetailMapper::toAudit)
+            .toList();
 
-    // Map outbound details to AuditHistory
-    batchInbound.forEach(
-        inbound -> {
-          AuditHistory audit = new AuditHistory();
-          audit.setTransactionType("INBOUND");
-          audit.setTransactionId(inbound.getInbound().getId());
-          audit.setProductId(inbound.getBatch().getProduct().getId());
-          audit.setProductName(inbound.getBatch().getProduct().getProductName());
-          audit.setQuantity(BigDecimal.valueOf(inbound.getQuantity()));
-          audit.setBatch(inbound.getBatch().getBatchCode()); // Include batch details
-          audit.setCreatedAt(inbound.getInbound().getCreatedDate());
-          auditHistoryList.add(audit);
-        }); // Map outbound details to AuditHistory
-    batchOutbound.forEach(
-        outbound -> {
-          AuditHistory audit = new AuditHistory();
-          audit.setTransactionType("OUTBOUND");
-          audit.setTransactionId(outbound.getOutbound().getId());
-          audit.setProductId(outbound.getBatch().getProduct().getId());
-          audit.setProductName(outbound.getBatch().getProduct().getProductName());
-          audit.setQuantity(outbound.getQuantity());
-          audit.setBatch(outbound.getBatch().getBatchCode()); // Include batch details
-          audit.setCreatedAt(outbound.getOutbound().getCreatedDate());
-          auditHistoryList.add(audit);
-        }); // Map outbound details to AuditHistory
-    productOutbound.forEach(
-        outbound -> {
-          AuditHistory audit = new AuditHistory();
-          audit.setTransactionType("OUTBOUND");
-          audit.setTransactionId(outbound.getOutbound().getId());
-          audit.setProductId(outbound.getProduct().getId());
-          audit.setProductName(outbound.getProduct().getProductName());
-          audit.setQuantity(outbound.getOutboundQuantity());
-          audit.setBatch(null); // Include batch details
-          audit.setCreatedAt(outbound.getOutbound().getCreatedDate());
-          auditHistoryList.add(audit);
-        });
-
-    return auditHistoryList;
+    return Stream.of(productInbound, batchInbound, batchOutbound, productOutbound)
+        .flatMap(Collection::stream)
+        .sorted(Comparator.comparing(AuditHistory::getCreatedAt))
+        .collect(Collectors.toList());
   }
 }

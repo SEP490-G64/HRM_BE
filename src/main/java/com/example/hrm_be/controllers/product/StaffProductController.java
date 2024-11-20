@@ -4,6 +4,7 @@ import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.commons.enums.ResponseStatus;
 import com.example.hrm_be.models.dtos.Product;
 import com.example.hrm_be.models.dtos.ProductBaseDTO;
+import com.example.hrm_be.models.dtos.ProductBatchDTO;
 import com.example.hrm_be.models.dtos.ProductSupplierDTO;
 import com.example.hrm_be.models.entities.AllowedProductEntity;
 import com.example.hrm_be.models.responses.AuditHistory;
@@ -328,6 +329,21 @@ public class StaffProductController {
 
     BaseOutput<List<ProductBaseDTO>> response =
         BaseOutput.<List<ProductBaseDTO>>builder()
+            .data(products)
+            .message(HttpStatus.OK.toString())
+            .status(ResponseStatus.SUCCESS)
+            .build();
+    return ResponseEntity.ok(response);
+  }
+
+  @GetMapping("/products-inventory-check/{branchId}")
+  public ResponseEntity<BaseOutput<List<ProductBatchDTO>>> getProductInBranchForInventoryCheck(
+      @PathVariable("branchId") Long branchId){
+    List<ProductBatchDTO> products =
+        productService.getProductInBranchForInventoryCheck(branchId);
+
+    BaseOutput<List<ProductBatchDTO>> response =
+        BaseOutput.<List<ProductBatchDTO>>builder()
             .data(products)
             .message(HttpStatus.OK.toString())
             .status(ResponseStatus.SUCCESS)

@@ -10,7 +10,6 @@ import com.example.hrm_be.services.InventoryCheckService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotNull;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -202,9 +201,10 @@ public class StaffInventoryCheckController {
   }
 
   @PostMapping("/create-init-check")
-  public ResponseEntity<BaseOutput<InventoryCheck>> createInitCheck() {
+  public ResponseEntity<BaseOutput<InventoryCheck>> createInitCheck(
+      @RequestParam(required = false) LocalDateTime startDate) {
     // Check if the type is valid using the exists method
-    InventoryCheck check = inventoryCheckService.createInitInventoryCheck();
+    InventoryCheck check = inventoryCheckService.createInitInventoryCheck(startDate);
     return ResponseEntity.ok(
         BaseOutput.<InventoryCheck>builder().data(check).status(ResponseStatus.SUCCESS).build());
   }

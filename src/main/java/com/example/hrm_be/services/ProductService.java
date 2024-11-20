@@ -2,6 +2,7 @@ package com.example.hrm_be.services;
 
 import com.example.hrm_be.models.dtos.Product;
 import com.example.hrm_be.models.dtos.ProductBaseDTO;
+import com.example.hrm_be.models.dtos.ProductBatchDTO;
 import com.example.hrm_be.models.dtos.ProductInbound;
 import com.example.hrm_be.models.dtos.ProductSupplierDTO;
 import com.example.hrm_be.models.entities.AllowedProductEntity;
@@ -61,6 +62,8 @@ public interface ProductService {
   List<ProductBaseDTO> getProductsBySellPrice(BigDecimal sellPrice);
 
   List<ProductBaseDTO> getByKeyword(String keyword);
+
+  List<ProductBatchDTO> getProductInBranchForInventoryCheck(Long branchId);
 
   List<AuditHistory> getProductDetailsInPeriod(
       Long productId, LocalDateTime startDate, LocalDateTime endDate);
