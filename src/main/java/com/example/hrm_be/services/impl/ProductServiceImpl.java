@@ -809,16 +809,7 @@ public class ProductServiceImpl implements ProductService {
         .collect(Collectors.toList());
   }
 
-  public List<ProductBatchDTO> getProductInBranchForInventoryCheck(
-      Long branchId) {
-    List<ProductBaseDTO> products =
-        productRepository.searchAllProductByBranchId(branchId, "", null, null).stream()
-            .map(
-                entity ->
-                    productMapper.convertToProductForSearchInNotes(
-                        entity, branchId)) // Pass branchId to the mapper
-            .toList();
-
+  private List<ProductBatchDTO> processProductData(List<ProductBaseDTO> products) {
     List<ProductBatchDTO> allProductBatches = new ArrayList<>();
 
     for (ProductBaseDTO product : products) {
@@ -859,6 +850,45 @@ public class ProductServiceImpl implements ProductService {
       allProductBatches.addAll(batches);
     }
     return allProductBatches;
+  }
+
+  public List<ProductBatchDTO> getProductInBranchForInventoryCheck(Long branchId) {
+    List<ProductBaseDTO> products =
+        productRepository.searchAllProductByBranchId(branchId, "", null, null).stream()
+            .map(
+                entity ->
+                    productMapper.convertToProductForSearchInNotes(
+                        entity, branchId)) // Pass branchId to the mapper
+            .toList();
+    return processProductData(products);
+  }
+
+  public List<ProductBatchDTO> getProductByCateInBranchForInventoryCheck(
+      Long branchId, Long cateId) {
+    List<ProductBaseDTO> products =
+        productRepository
+            .searchAllProductByBranchIdAndCateId(branchId, cateId, "", null, null)
+            .stream()
+            .map(
+                entity ->
+                    productMapper.convertToProductForSearchInNotes(
+                        entity, branchId)) // Pass branchId to the mapper
+            .toList();
+    return processProductData(products);
+  }
+
+  public List<ProductBatchDTO> getProductByTypeIdInBranchForInventoryCheck(
+      Long branchId, Long typeId) {
+    List<ProductBaseDTO> products =
+        productRepository
+            .searchAllProductByBranchIdAndTypeId(branchId, typeId, "", null, null)
+            .stream()
+            .map(
+                entity ->
+                    productMapper.convertToProductForSearchInNotes(
+                        entity, branchId)) // Pass branchId to the mapper
+            .toList();
+    return processProductData(products);
   }
 
   public List<ProductBaseDTO> filterProducts(

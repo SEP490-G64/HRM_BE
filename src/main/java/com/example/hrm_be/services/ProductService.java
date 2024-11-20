@@ -67,4 +67,10 @@ public interface ProductService {
 
   List<AuditHistory> getProductDetailsInPeriod(
       Long productId, LocalDateTime startDate, LocalDateTime endDate);
+
+  List<ProductBatchDTO> getProductByCateInBranchForInventoryCheck(
+      Long branchId, Long cateId);
+
+  List<ProductBatchDTO> getProductByTypeIdInBranchForInventoryCheck(
+      Long branchId, Long typeId);
 }
