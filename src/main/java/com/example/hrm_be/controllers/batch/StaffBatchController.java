@@ -110,6 +110,7 @@ public class StaffBatchController {
             .build();
     return ResponseEntity.ok(response);
   }
+
   // Handles GET requests to retrieve a single Batch by ID
   @GetMapping("/expired-batch")
   protected ResponseEntity<BaseOutput<List<Batch>>> getByExpiredBatch(
