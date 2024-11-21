@@ -277,7 +277,7 @@ public class BatchServiceImpl implements BatchService {
   @Override
   public List<Batch> getExpiredBatches(LocalDateTime now) {
     return batchRepository.findExpiredBatches(now).stream()
-        .map(batchMapper::toDTO)
+        .map(batchMapper::convertToDtoBasicInfo)
         .collect(Collectors.toList());
   }
 
