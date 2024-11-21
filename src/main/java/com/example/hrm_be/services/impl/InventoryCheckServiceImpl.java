@@ -128,6 +128,7 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
                   // Set product details
                   Product productDTO = new Product();
                   productDTO.setId(detail.getProduct().getId());
+                  productDTO.setBaseUnit(detail.getProduct().getBaseUnit());
                   productDTO.setProductName(detail.getProduct().getProductName());
                   productDTO.setRegistrationCode(detail.getProduct().getRegistrationCode());
                   detailDTO.setProduct(productDTO);
@@ -157,6 +158,7 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
 
                   Product productDTO = new Product();
                   productDTO.setId(batchDetail.getBatch().getProduct().getId());
+                  productDTO.setBaseUnit(batchDetail.getBatch().getProduct().getBaseUnit());
                   productDTO.setProductName(batchDetail.getBatch().getProduct().getProductName());
                   productDTO.setRegistrationCode(
                       batchDetail.getBatch().getProduct().getRegistrationCode());
