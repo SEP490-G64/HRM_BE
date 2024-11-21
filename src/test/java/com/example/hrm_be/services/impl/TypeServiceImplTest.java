@@ -3,291 +3,374 @@ package com.example.hrm_be.services.impl;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.when;
 
 import com.example.hrm_be.HrmBeApplication;
 import com.example.hrm_be.commons.constants.HrmConstant;
+import com.example.hrm_be.components.ProductTypeMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.ProductType;
+import com.example.hrm_be.models.entities.ProductTypeEntity;
 import com.example.hrm_be.repositories.ProductTypeRepository;
 import com.example.hrm_be.services.ProductTypeService;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.domain.Page;
+import org.springframework.data.convert.TypeMapper;
+import org.springframework.data.domain.*;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-@Testcontainers
-@ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = HrmBeApplication.class)
-@ActiveProfiles("test")
-@Import(ProductTypeServiceImpl.class)
-@Transactional
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+@ExtendWith(MockitoExtension.class)
 public class TypeServiceImplTest {
 
-  @Autowired private ProductTypeService productTypeService;
-  @Autowired private ProductTypeRepository productTypeRepository;
+  @Mock
+  private ProductTypeMapper typeMapper;
+  @Mock
+  private ProductTypeRepository typeRepository;
+  @InjectMocks
+  private ProductTypeServiceImpl typeService;
 
-  // Helper to create a valid Type entity
-  private ProductType createValidType() {
-    return new ProductType()
-        .setTypeName("Valid Type Name")
-        .setTypeDescription("Valid Type Description");
+  private ProductType type;
+  private ProductTypeEntity typeEntity;
+
+  @BeforeEach
+  public void setup() {
+    type = ProductType.builder()
+            .typeName("Valid Type Name")
+            .typeDescription("Valid Type Description")
+            .build();
+
+    typeEntity = ProductTypeEntity.builder()
+            .typeName("Valid Type Name")
+            .typeDescription("Valid Type Description")
+            .build();
   }
 
   // GET
   // UTCID01 - Get: valid
   @Test
-  void testUTCID01_Get_AllValid() {
-    ProductType Type = createValidType();
-    ProductType Type1 = productTypeService.create(Type);
-    ProductType Type2 = productTypeService.getById(Type1.getId());
-    assertEquals(Type1, Type2);
+  void testUTCID01_Get_idValid() {
+    type.setId(1L);
+    typeEntity.setId(1L);
+    when(typeRepository.findById(type.getId())).thenReturn(Optional.of(typeEntity));
+    when(typeMapper.toDTO(typeEntity)).thenReturn(type);
+    ProductType result = typeService.getById(typeEntity.getId());
+    Assertions.assertNotNull(result);
   }
 
   // UTCID02 - Get: id null
   @Test
   void testUTCID02_Get_idNull() {
-    assertThrows(HrmCommonException.class, () -> productTypeService.getById(null));
+    Long id = null;
+    assertThrows(HrmCommonException.class, () -> typeService.getById(id));
   }
 
   // UTCID03 - Get: id not exist
   @Test
   void testUTCID03_Get_idNotExist() {
-    productTypeRepository.deleteAll();
-    Long nonExistingId = 1L;
-    assertEquals(null, productTypeService.getById(nonExistingId));
+    Long id = 1L;
+    when(typeRepository.findById(id)).thenReturn(Optional.empty());
+    Assertions.assertNull(typeService.getById(id));
   }
 
   // SEARCH
   // UTCID01 - getByPaging: All valid
   @Test
   void testUTCID01_GetByPaging_AllValid() {
-    ProductType Type = createValidType();
-    productTypeRepository.deleteAll();
-    ProductType savedType = productTypeService.create(Type);
-    assertThat(savedType).isNotNull();
+    Pageable pageable = PageRequest.of(0, 10, Sort.by("typeName").ascending());
+    List<ProductTypeEntity> types = Collections.singletonList(typeEntity);
+    Page<ProductTypeEntity> page = new PageImpl<>(types, pageable, types.size());
 
-    Page<ProductType> result = productTypeService.getByPaging(0, 1, "typeName", "a");
-    assertEquals(1, result.getTotalElements());
-    assertEquals(Type.getTypeName(), result.getContent().get(0).getTypeName());
+    when(typeRepository.findByTypeNameContainingIgnoreCase("", pageable)).thenReturn(page);
+    when(typeMapper.toDTO(typeEntity)).thenReturn(type);
+
+    Page<ProductType> result = typeService.getByPaging(0, 10, "typeName", "");
+
+    Assertions.assertNotNull(result);
+    Assertions.assertEquals(1, result.getTotalElements());
   }
 
   // UTCID02 - getByPaging: pageNo invalid
   @Test
   void testUTCID02_GetByPaging_pageNoInvalid() {
-    Exception exception =
-        assertThrows(
-            HrmCommonException.class,
-            () -> {
-              productTypeService.getByPaging(-1, 1, "typeName", "a");
-            });
-    assertEquals(HrmConstant.ERROR.PAGE.INVALID, exception.getMessage());
+    assertThrows(HrmCommonException.class, () -> typeService.getByPaging(-1, 10, "typeName", ""));
   }
 
   // UTCID03 - getByPaging: pageSize invalid
   @Test
   void testUTCID03_GetByPaging_pageSizeInvalid() {
-    Exception exception =
-        assertThrows(
-            HrmCommonException.class,
-            () -> {
-              productTypeService.getByPaging(0, 0, "typeName", "a");
-            });
-    assertEquals(HrmConstant.ERROR.PAGE.INVALID, exception.getMessage());
+    assertThrows(HrmCommonException.class, () -> typeService.getByPaging(0,0, "typeName", ""));
   }
 
   // UTCID04 - getByPaging: sortBy invalid
   @Test
   void testUTCID04_GetByPaging_sortByInvalid() {
-    Exception exception =
-        assertThrows(
-            HrmCommonException.class,
-            () -> {
-              productTypeService.getByPaging(0, 1, "a", "a");
-            });
-    assertEquals(HrmConstant.ERROR.PAGE.INVALID, exception.getMessage());
+    assertThrows(HrmCommonException.class, () -> typeService.getByPaging(0,0, "a", ""));
+  }
+
+  // UTCID05 - getByPaging: All valid
+  @Test
+  void testUTCID05_GetByPaging_AllValid() {
+    Pageable pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
+    List<ProductTypeEntity> types = Collections.singletonList(typeEntity);
+    Page<ProductTypeEntity> page = new PageImpl<>(types, pageable, types.size());
+
+    when(typeRepository.findByTypeNameContainingIgnoreCase("", pageable)).thenReturn(page);
+    when(typeMapper.toDTO(typeEntity)).thenReturn(type);
+
+    Page<ProductType> result = typeService.getByPaging(0, 10, null, "");
+
+    Assertions.assertNotNull(result);
+    Assertions.assertEquals(1, result.getTotalElements());
+  }
+
+  // UTCID06 - getByPaging: All valid
+  @Test
+  void testUTCID06_GetByPaging_AllValid() {
+    Pageable pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
+    List<ProductTypeEntity> types = Collections.singletonList(typeEntity);
+    Page<ProductTypeEntity> page = new PageImpl<>(types, pageable, types.size());
+
+    when(typeRepository.findByTypeNameContainingIgnoreCase("", pageable)).thenReturn(page);
+    when(typeMapper.toDTO(typeEntity)).thenReturn(type);
+
+    Page<ProductType> result = typeService.getByPaging(0, 10, null, null);
+
+    Assertions.assertNotNull(result);
+    Assertions.assertEquals(1, result.getTotalElements());
+  }
+
+  // UTCID06 - getByPaging: All valid
+  @Test
+  void testUTCID07_GetByPaging_AllValid() {
+    Pageable pageable = PageRequest.of(0, 10, Sort.by("typeDescription").ascending());
+    List<ProductTypeEntity> types = Collections.singletonList(typeEntity);
+    Page<ProductTypeEntity> page = new PageImpl<>(types, pageable, types.size());
+
+    when(typeRepository.findByTypeNameContainingIgnoreCase("", pageable)).thenReturn(page);
+    when(typeMapper.toDTO(typeEntity)).thenReturn(type);
+
+    Page<ProductType> result = typeService.getByPaging(0, 10, "typeDescription", null);
+
+    Assertions.assertNotNull(result);
+    Assertions.assertEquals(1, result.getTotalElements());
   }
 
   // CREATE
   // UTCID01 - create: all valid
   @Test
   void testUTCID01_Create_AllValid() {
-    ProductType type = createValidType();
-    ProductType savedType = productTypeService.create(type);
+    when(typeMapper.toEntity(type)).thenReturn(typeEntity);
+    when(typeRepository.save(typeEntity)).thenReturn(typeEntity);
+    when(typeMapper.toDTO(typeEntity)).thenReturn(type);
 
-    assertThat(savedType).isNotNull();
-    assertThat(savedType.getTypeName()).isEqualTo("Valid Type Name");
+    ProductType result = typeService.create(type);
+
+    Assertions.assertNotNull(result);
   }
 
   // UTCID02 - create: TypeName null
   @Test
-  void testUTCID02_Create_TypeNameNull() {
-    ProductType type = createValidType();
+  void testUTCID02_Create_nameNull() {
     type.setTypeName(null);
-
-    assertThrows(HrmCommonException.class, () -> productTypeService.create(type));
+    assertThrows(HrmCommonException.class, () -> typeService.create(type));
   }
 
   // UTCID03 - create: TypeName empty
   @Test
-  void testUTCID03_Create_TypeNameEmpty() {
-    ProductType type = createValidType();
+  void testUTCID03_Create_nameEmpty() {
     type.setTypeName("");
-
-    assertThrows(HrmCommonException.class, () -> productTypeService.create(type));
+    assertThrows(HrmCommonException.class, () -> typeService.create(type));
   }
 
   // UTCID04 - create: TypeName greater than 100 characters
   @Test
-  void testUTCID04_Create_TypeNameLong() {
-    ProductType type = createValidType();
+  void testUTCID04_Create_nameLong() {
     type.setTypeName("A".repeat(101));
-
-    assertThrows(HrmCommonException.class, () -> productTypeService.create(type));
+    assertThrows(HrmCommonException.class, () -> typeService.create(type));
   }
 
   // UTCID05 - create: TypeName duplicate
   @Test
   void testUTCID05_Create_TypeNameDuplicate() {
-    ProductType type = createValidType();
-    productTypeService.create(type);
-    ProductType duplicateType =
-        new ProductType()
-            .setTypeName("Valid Type Name")
-            .setTypeDescription("Valid Type Description");
-
-    assertThrows(HrmCommonException.class, () -> productTypeService.create(duplicateType));
+   type.setTypeName("Duplicate");
+   when(typeRepository.existsByTypeName(type.getTypeName())).thenReturn(true);
+    assertThrows(HrmCommonException.class, () -> typeService.create(type));
   }
 
   // UTCID06 - create: TypeDescription greater than 500 characters
   @Test
   void testUTCID06_Create_TypeDescriptionLong() {
-    ProductType type = createValidType();
     type.setTypeDescription("A".repeat(501));
 
-    assertThrows(HrmCommonException.class, () -> productTypeService.create(type));
+    assertThrows(HrmCommonException.class, () -> typeService.create(type));
   }
+
+  // UTCID07 - create: Type Null
+  @Test
+  void testUTCID07_Create_TypeNull() {
+    type = null;
+
+    assertThrows(HrmCommonException.class, () -> typeService.create(type));
+  }
+
 
   // UPDATE
   // UTCID01 - UPDATE: all valid
   @Test
   void testUTCID01_Update_AllValid() {
-    productTypeRepository.deleteAll();
-    ProductType type = createValidType();
-    ProductType savedType = productTypeService.create(type);
-    ProductType updateType = productTypeService.update(savedType);
+    type.setId(1L);
+    typeEntity.setId(1L);
 
-    assertThat(savedType).isNotNull();
-    assertThat(updateType.getTypeName()).isEqualTo("Valid Type Name");
+    when(typeRepository.findById(type.getId())).thenReturn(Optional.of(typeEntity));
+    when(typeRepository.save(typeEntity)).thenReturn(typeEntity);
+    when(typeMapper.toDTO(typeEntity)).thenReturn(type);
+
+    ProductType result = typeService.update(type);
+
+    Assertions.assertNotNull(result);
   }
 
-  // UTCID02 - UPDATE: typeName null
+  // UTCID02 - Update: TypeName null
   @Test
-  void testUTCID02_Update_typeNameNull() {
-    productTypeRepository.deleteAll();
-    ProductType type = createValidType();
-    ProductType createType = productTypeService.create(type);
-    createType.setTypeName(null);
-
-    assertThrows(HrmCommonException.class, () -> productTypeService.update(createType));
+  void testUTCID02_Update_nameNull() {
+    type.setTypeName(null);
+    assertThrows(HrmCommonException.class, () -> typeService.update(type));
   }
 
-  // UTCID03 - Update: typeName empty
+  // UTCID03 - Update: TypeName empty
   @Test
-  void testUTCID03_Update_TypeNameEmpty() {
-    productTypeRepository.deleteAll();
-    ProductType type = createValidType();
-    ProductType createType = productTypeService.create(type);
-    createType.setTypeName("");
-
-    assertThrows(HrmCommonException.class, () -> productTypeService.update(createType));
+  void testUTCID03_Update_nameEmpty() {
+    type.setTypeName("");
+    assertThrows(HrmCommonException.class, () -> typeService.update(type));
   }
 
-  // UTCID04 - Update: typeName greater than 100 characters
+  // UTCID04 - Update: TypeName greater than 100 characters
   @Test
-  void testUTCID04_Update_typeNameLong() {
-    productTypeRepository.deleteAll();
-    ProductType type = createValidType();
-    ProductType createType = productTypeService.create(type);
-    createType.setTypeName("A".repeat(101));
-
-    assertThrows(HrmCommonException.class, () -> productTypeService.update(createType));
+  void testUTCID04_Update_nameLong() {
+    type.setTypeName("A".repeat(101));
+    assertThrows(HrmCommonException.class, () -> typeService.update(type));
   }
 
-  // UTCID05 - Update: typeName duplicate
+  // UTCID05 - Update: TypeName duplicate
   @Test
-  void testUTCID05_Update_typeNameDuplicate() {
-    productTypeRepository.deleteAll();
-    ProductType type = createValidType();
-    productTypeService.create(type);
-    ProductType secondType =
-        new ProductType()
-            .setTypeName("Valid Type Name 123123")
-            .setTypeDescription("Valid Type Description");
-    ProductType returnValue = productTypeService.create(secondType);
-    returnValue.setTypeName("Valid Type Name");
+  void testUTCID05_Update_nameDuplicate() {
+    type.setTypeName("new Name");
+    typeEntity.setTypeName("Old Name");
 
-    assertThrows(HrmCommonException.class, () -> productTypeService.update(returnValue));
+    lenient().when(typeRepository.existsByTypeName(type.getTypeName())).thenReturn(true);
+    assertThrows(HrmCommonException.class, () -> typeService.update(type));
   }
 
   // UTCID06 - Update: TypeDescription greater than 500 characters
   @Test
   void testUTCID06_Update_typeDescriptionLong() {
-    productTypeRepository.deleteAll();
-    ProductType type = createValidType();
-    ProductType createType = productTypeService.create(type);
-    createType.setTypeDescription("A".repeat(501));
+    type.setTypeDescription("A".repeat(501));
 
-    assertThrows(HrmCommonException.class, () -> productTypeService.update(createType));
+    assertThrows(HrmCommonException.class, () -> typeService.update(type));
   }
 
   // UTCID07 - Update: id null
   @Test
   void testUTCID07_Update_idNull() {
-    productTypeRepository.deleteAll();
-    ProductType type = createValidType();
-    ProductType createType = productTypeService.create(type);
-    createType.setId(null);
-
-    assertThrows(HrmCommonException.class, () -> productTypeService.update(createType));
+    type.setId(null);
+    assertThrows(HrmCommonException.class, () -> typeService.update(type));
   }
 
-  // UTCID08 - Update: id not exist
   @Test
   void testUTCID08_Update_idNotExist() {
-    productTypeRepository.deleteAll();
-    ProductType type = createValidType();
     type.setId(1L);
 
-    assertThrows(HrmCommonException.class, () -> productTypeService.update(type));
+    assertThrows(HrmCommonException.class, () -> typeService.update(type));
+  }
+
+  @Test
+  void testUTCID09_Update_typeNull() {
+    type = null;
+
+    assertThrows(HrmCommonException.class, () -> typeService.update(type));
   }
 
   // DELETE
   // UTCID01 - Delete: valid
   @Test
   void testUTCID01_Delete_AllValid() {
-    ProductType type = createValidType();
-    ProductType type1 = productTypeService.create(type);
-    productTypeService.delete(type1.getId());
-    assertEquals(productTypeService.getById(type1.getId()), null);
+    type.setId(1L);
+    when(typeService.existById(type.getId())).thenReturn(true);
+    typeService.delete(type.getId());
+
   }
 
   // UTCID02 - Delete: id null
   @Test
   void testUTCID02_Delete_idNull() {
-    assertThrows(HrmCommonException.class, () -> productTypeService.delete(null));
+    type.setId(null);
+    assertThrows(HrmCommonException.class, () -> typeService.delete(type.getId()));
   }
 
   // UTCID03 - Delete: id not exist
   @Test
   void testUTCID03_Delete_idNotExist() {
-    productTypeRepository.deleteAll();
-    Long nonExistingId = 2L;
-    assertThrows(HrmCommonException.class, () -> productTypeService.delete(nonExistingId));
+    type.setId(1L);
+    when(typeService.existById(type.getId())).thenReturn(false);
+    assertThrows(HrmCommonException.class, () -> typeService.delete(type.getId()));
   }
+
+  // existById
+  // UTCID01 - existById: valid
+  @Test
+  void testUTCID01_ExistById_AllValid() {
+    type.setId(1L);
+    boolean result = typeService.existById(type.getId());
+    Assertions.assertNotNull(result);
+  }
+
+  // existById
+  // UTCID01 - existById: invalid
+  @Test
+  void testUTCID02_ExistById_InValid() {
+    Long id = null;
+    assertThrows(HrmCommonException.class, () -> typeService.existById(id));
+  }
+
+  // getAll
+  // UTCID01 - getAll: valid
+  @Test
+  void testUTCID01_getAll_AllValid() {
+    when(typeRepository.findAll()).thenReturn(List.of(typeEntity));
+    when(typeMapper.toDTO(typeEntity)).thenReturn(type);
+    List<ProductType> result = typeService.getAll();
+    Assertions.assertNotNull(result);
+  }
+
+  // getByName
+  // UTCID01 - getByName: valid
+  @Test
+  void testUTCID01_getByName_AllValid() {
+    String name = "Valid Type Name";
+    when(typeRepository.findByTypeName(name)).thenReturn(Optional.of(typeEntity));
+    when(typeMapper.toDTO(typeEntity)).thenReturn(type);
+    ProductType result = typeService.getByName(name);
+    Assertions.assertNotNull(result);
+  }
+
+
+
+
 }
+

@@ -164,7 +164,7 @@ public class HrmConstant {
       public static final String NOT_CHILD = "error.manufacturer.not_child";
       public static final String NOT_EXIST = "error.manufacturer.not_exist";
       public static final String INVALID = "error.manufacturer.invalid";
-      public static final String TAXCODE_EXIST = "error.manufacturer.taxcode_exist";
+      public static final String TAXCODE_EXIST = "error.manufacturer.invalid";
     }
 
     public static class INVENTORY_CHECK {

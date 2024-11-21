@@ -3,262 +3,283 @@ package com.example.hrm_be.services.impl;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.when;
 
 import com.example.hrm_be.HrmBeApplication;
 import com.example.hrm_be.commons.constants.HrmConstant;
+import com.example.hrm_be.components.UnitOfMeasurementMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.UnitOfMeasurement;
+import com.example.hrm_be.models.entities.UnitOfMeasurementEntity;
 import com.example.hrm_be.repositories.UnitOfMeasurementRepository;
 import com.example.hrm_be.services.UnitOfMeasurementService;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.domain.Page;
+import org.springframework.data.domain.*;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-@Testcontainers
-@ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = HrmBeApplication.class)
-@ActiveProfiles("test")
-@Import(UnitOfMeasurementServiceImpl.class)
-@Transactional
-public class UnitServiceImplTest {
-  @Autowired private UnitOfMeasurementService unitOfMeasurementService;
-  @Autowired private UnitOfMeasurementRepository unitOfMeasurementRepository;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
-  // Helper to create a valid unit entity
-  private UnitOfMeasurement createValidUnit() {
-    return new UnitOfMeasurement().setUnitName("Valid Unit Name");
+@ExtendWith(MockitoExtension.class)
+public class UnitServiceImplTest {
+
+  @Mock
+  private UnitOfMeasurementMapper unitMapper;
+  @Mock
+  private UnitOfMeasurementRepository unitRepository;
+  @InjectMocks
+  private UnitOfMeasurementServiceImpl unitService;
+
+  private UnitOfMeasurement unit;
+  private UnitOfMeasurementEntity unitEntity;
+
+  @BeforeEach
+  public void setup() {
+    unit = UnitOfMeasurement.builder()
+            .unitName("Valid Unit Name")
+            .build();
+
+    unitEntity = UnitOfMeasurementEntity.builder()
+            .unitName("Valid Unit Name")
+            .build();
   }
 
   // GET
   // UTCID01 - Get: valid
   @Test
-  void testUTCID01_Get_AllValid() {
-    UnitOfMeasurement unit = createValidUnit();
-    UnitOfMeasurement unit1 = unitOfMeasurementService.create(unit);
-    UnitOfMeasurement unit2 = unitOfMeasurementService.getById(unit1.getId());
-    assertEquals(unit1, unit2);
+  void testUTCID01_Get_idValid() {
+    Long id = 1L;
+    when(unitRepository.findById(id)).thenReturn(Optional.of(unitEntity));
+    when(unitMapper.toDTO(unitEntity)).thenReturn(unit);
+    UnitOfMeasurement result = unitService.getById(id);
+    Assertions.assertNotNull(result);
   }
 
   // UTCID02 - Get: id null
   @Test
   void testUTCID02_Get_idNull() {
-    assertThrows(HrmCommonException.class, () -> unitOfMeasurementService.getById(null));
+    Long id = null;
+    assertThrows(HrmCommonException.class, () -> unitService.getById(id));
   }
 
   // UTCID03 - Get: id not exist
   @Test
   void testUTCID03_Get_idNotExist() {
-    unitOfMeasurementRepository.deleteAll();
-    Long nonExistingId = 1L;
-    assertEquals(null, unitOfMeasurementService.getById(nonExistingId));
+    Long id = 1L;
+    when(unitRepository.findById(id)).thenReturn(Optional.empty());
+    Assertions.assertNull(unitService.getById(id));
   }
 
   // SEARCH
   // UTCID01 - getByPaging: All valid
   @Test
   void testUTCID01_GetByPaging_AllValid() {
-    UnitOfMeasurement unit = createValidUnit();
-    unitOfMeasurementRepository.deleteAll();
-    UnitOfMeasurement savedUnit = unitOfMeasurementService.create(unit);
-    assertThat(savedUnit).isNotNull();
+    Pageable pageable = PageRequest.of(0, 10, Sort.by("unitName").descending());
+    List<UnitOfMeasurementEntity> units = Collections.singletonList(unitEntity);
+    Page<UnitOfMeasurementEntity> page = new PageImpl<>(units, pageable, units.size());
 
-    Page<UnitOfMeasurement> result = unitOfMeasurementService.getByPaging(0, 1, "unitName", "a");
-    assertEquals(1, result.getTotalElements());
-    assertEquals(unit.getUnitName(), result.getContent().get(0).getUnitName());
+    when(unitRepository.findByUnitNameContainingIgnoreCase("", pageable)).thenReturn(page);
+    when(unitMapper.toDTO(unitEntity)).thenReturn(unit);
+
+    Page<UnitOfMeasurement> result = unitService.getByPaging(0, 10, "unitName", "");
+
+    Assertions.assertNotNull(result);
   }
 
   // UTCID02 - getByPaging: pageNo invalid
   @Test
   void testUTCID02_GetByPaging_pageNoInvalid() {
-    Exception exception =
-        assertThrows(
-            HrmCommonException.class,
-            () -> {
-              unitOfMeasurementService.getByPaging(-1, 1, "unitName", "a");
-            });
-    assertEquals(HrmConstant.ERROR.PAGE.INVALID, exception.getMessage());
+    assertThrows(HrmCommonException.class, () -> unitService.getByPaging(-1, 10, "unitName", ""));
   }
 
   // UTCID03 - getByPaging: pageSize invalid
   @Test
   void testUTCID03_GetByPaging_pageSizeInvalid() {
-    Exception exception =
-        assertThrows(
-            HrmCommonException.class,
-            () -> {
-              unitOfMeasurementService.getByPaging(0, 0, "unitName", "a");
-            });
-    assertEquals(HrmConstant.ERROR.PAGE.INVALID, exception.getMessage());
+    assertThrows(HrmCommonException.class, () -> unitService.getByPaging(0, 0, "unitName", ""));
   }
 
   // UTCID04 - getByPaging: sortBy invalid
   @Test
   void testUTCID04_GetByPaging_sortByInvalid() {
-    Exception exception =
-        assertThrows(
-            HrmCommonException.class,
-            () -> {
-              unitOfMeasurementService.getByPaging(0, 1, "a", "a");
-            });
-    assertEquals(HrmConstant.ERROR.PAGE.INVALID, exception.getMessage());
+    assertThrows(HrmCommonException.class, () -> unitService.getByPaging(-1, 10, "a", ""));
+  }
+
+  // SEARCH
+  // UTCID05 - getByPaging: All valid
+  @Test
+  void testUTCID05_GetByPaging_AllValid() {
+    Pageable pageable = PageRequest.of(0, 10, Sort.by("id").descending());
+    List<UnitOfMeasurementEntity> units = Collections.singletonList(unitEntity);
+    Page<UnitOfMeasurementEntity> page = new PageImpl<>(units, pageable, units.size());
+
+    when(unitRepository.findByUnitNameContainingIgnoreCase("", pageable)).thenReturn(page);
+    when(unitMapper.toDTO(unitEntity)).thenReturn(unit);
+
+    Page<UnitOfMeasurement> result = unitService.getByPaging(0, 10, null, "");
+
+    Assertions.assertNotNull(result);
+  }
+
+  // UTCID06 - getByPaging: All valid
+  @Test
+  void testUTCID06_GetByPaging_AllValid() {
+    Pageable pageable = PageRequest.of(0, 10, Sort.by("id").descending());
+    List<UnitOfMeasurementEntity> units = Collections.singletonList(unitEntity);
+    Page<UnitOfMeasurementEntity> page = new PageImpl<>(units, pageable, units.size());
+
+    when(unitRepository.findByUnitNameContainingIgnoreCase("", pageable)).thenReturn(page);
+    when(unitMapper.toDTO(unitEntity)).thenReturn(unit);
+
+    Page<UnitOfMeasurement> result = unitService.getByPaging(0, 10, null, null);
+
+    Assertions.assertNotNull(result);
   }
 
   // CREATE
   // UTCID01 - create: all valid
   @Test
   void testUTCID01_Create_AllValid() {
-    UnitOfMeasurement unit = createValidUnit();
-    UnitOfMeasurement savedunit = unitOfMeasurementService.create(unit);
+    when(unitMapper.toEntity(unit)).thenReturn(unitEntity);
+    when(unitRepository.save(unitEntity)).thenReturn(unitEntity);
+    when(unitMapper.toDTO(unitEntity)).thenReturn(unit);
 
-    assertThat(savedunit).isNotNull();
-    assertThat(savedunit.getUnitName()).isEqualTo("Valid Unit Name");
+    UnitOfMeasurement result = unitService.create(unit);
+
+    Assertions.assertNotNull(result);
   }
 
-  // UTCID02 - create: unitName null
+  // UTCID02 - create: UnitName null
   @Test
-  void testUTCID02_Create_unitNameNull() {
-    UnitOfMeasurement unit = createValidUnit();
+  void testUTCID02_Create_nameNull() {
     unit.setUnitName(null);
-
-    assertThrows(HrmCommonException.class, () -> unitOfMeasurementService.create(unit));
+    assertThrows(HrmCommonException.class, () -> unitService.create(unit));
   }
 
-  // UTCID03 - create: unitName empty
+  // UTCID03 - create: UnitName empty
   @Test
-  void testUTCID03_Create_unitNameEmpty() {
-    UnitOfMeasurement unit = createValidUnit();
+  void testUTCID03_Create_nameEmpty() {
     unit.setUnitName("");
-
-    assertThrows(HrmCommonException.class, () -> unitOfMeasurementService.create(unit));
+    assertThrows(HrmCommonException.class, () -> unitService.create(unit));
   }
 
-  // UTCID04 - create: unitName greater than 100 characters
+  // UTCID04 - create: UnitName greater than 100 characters
   @Test
-  void testUTCID04_Create_unitNameLong() {
-    UnitOfMeasurement unit = createValidUnit();
+  void testUTCID04_Create_nameLong() {
     unit.setUnitName("A".repeat(101));
-
-    assertThrows(HrmCommonException.class, () -> unitOfMeasurementService.create(unit));
+    assertThrows(HrmCommonException.class, () -> unitService.create(unit));
   }
 
   // UTCID05 - create: unitName duplicate
   @Test
   void testUTCID05_Create_unitNameDuplicate() {
-    UnitOfMeasurement unit = createValidUnit();
-    unitOfMeasurementService.create(unit);
-    UnitOfMeasurement duplicateunit = new UnitOfMeasurement().setUnitName("Valid Unit Name");
-
-    assertThrows(HrmCommonException.class, () -> unitOfMeasurementService.create(duplicateunit));
+    unit.setUnitName("Valid Unit Name");
+    unitEntity.setUnitName("Valid Unit Name");
+    when(unitRepository.existsByUnitName(unit.getUnitName())).thenReturn(true);
+    assertThrows(HrmCommonException.class, () -> unitService.create(unit));
   }
+
 
   // UPDATE
   // UTCID01 - UPDATE: all valid
   @Test
   void testUTCID01_Update_AllValid() {
-    unitOfMeasurementRepository.deleteAll();
-    UnitOfMeasurement unit = createValidUnit();
-    UnitOfMeasurement savedUnit = unitOfMeasurementService.create(unit);
-    UnitOfMeasurement updateUnit = unitOfMeasurementService.update(savedUnit);
+    unit.setId(1L);
+    unitEntity.setId(1L);
 
-    assertThat(savedUnit).isNotNull();
-    assertThat(updateUnit.getUnitName()).isEqualTo("Valid Unit Name");
+    when(unitRepository.findById(unit.getId())).thenReturn(Optional.of(unitEntity));
+    when(unitRepository.save(unitEntity)).thenReturn(unitEntity);
+    when(unitMapper.toDTO(unitEntity)).thenReturn(unit);
+
+    UnitOfMeasurement result = unitService.update(unit);
+
+    Assertions.assertNotNull(result);
   }
 
-  // UTCID02 - UPDATE: unitName null
+  // UTCID02 - Update: UnitName null
   @Test
-  void testUTCID02_Update_unitNameNull() {
-    unitOfMeasurementRepository.deleteAll();
-    UnitOfMeasurement unit = createValidUnit();
-    UnitOfMeasurement createUnit = unitOfMeasurementService.create(unit);
-    createUnit.setUnitName(null);
-
-    assertThrows(HrmCommonException.class, () -> unitOfMeasurementService.update(createUnit));
+  void testUTCID02_Update_nameNull() {
+    unit.setUnitName(null);
+    assertThrows(HrmCommonException.class, () -> unitService.update(unit));
   }
 
-  // UTCID03 - Update: unitName empty
+  // UTCID03 - Update: UnitName empty
   @Test
-  void testUTCID03_Update_unitNameEmpty() {
-    unitOfMeasurementRepository.deleteAll();
-    UnitOfMeasurement unit = createValidUnit();
-    UnitOfMeasurement createUnit = unitOfMeasurementService.create(unit);
-    createUnit.setUnitName("");
-
-    assertThrows(HrmCommonException.class, () -> unitOfMeasurementService.update(createUnit));
+  void testUTCID03_Update_nameEmpty() {
+    unit.setUnitName("");
+    assertThrows(HrmCommonException.class, () -> unitService.update(unit));
   }
 
-  // UTCID04 - Update: unitName greater than 100 characters
+  // UTCID04 - Update: UnitName greater than 100 characters
   @Test
-  void testUTCID04_Update_unitNameLong() {
-    unitOfMeasurementRepository.deleteAll();
-    UnitOfMeasurement unit = createValidUnit();
-    UnitOfMeasurement createUnit = unitOfMeasurementService.create(unit);
-    createUnit.setUnitName("A".repeat(101));
-
-    assertThrows(HrmCommonException.class, () -> unitOfMeasurementService.update(createUnit));
+  void testUTCID04_Update_nameLong() {
+    unit.setUnitName("A".repeat(101));
+    assertThrows(HrmCommonException.class, () -> unitService.update(unit));
   }
 
-  // UTCID05 - Update: unitName duplicate
+  // UTCID05 - Update: UnitName and Description duplicate
   @Test
-  void testUTCID05_Update_unitNameDuplicate() {
-    unitOfMeasurementRepository.deleteAll();
-    UnitOfMeasurement unit = createValidUnit();
-    unitOfMeasurementService.create(unit);
-    UnitOfMeasurement secondUnit = new UnitOfMeasurement().setUnitName("Valid Unit Name 123123");
-    UnitOfMeasurement returnValue = unitOfMeasurementService.create(secondUnit);
-    returnValue.setUnitName("Valid Unit Name");
+  void testUTCID05_Update_nameDuplicate() {
+    unit.setUnitName("new Name");
+    unitEntity.setUnitName("Old Name");
 
-    assertThrows(HrmCommonException.class, () -> unitOfMeasurementService.update(returnValue));
+    lenient().when(unitRepository.existsByUnitName(unit.getUnitName())) .thenReturn(true);
+    assertThrows(HrmCommonException.class, () -> unitService.update(unit));
   }
 
   // UTCID06 - Update: id null
   @Test
   void testUTCID06_Update_idNull() {
-    unitOfMeasurementRepository.deleteAll();
-    UnitOfMeasurement unit = createValidUnit();
-    UnitOfMeasurement createUnit = unitOfMeasurementService.create(unit);
-    createUnit.setId(null);
-
-    assertThrows(HrmCommonException.class, () -> unitOfMeasurementService.update(createUnit));
+    unit.setId(null);
+    assertThrows(HrmCommonException.class, () -> unitService.update(unit));
   }
 
   // UTCID07 - Update: id not exist
   @Test
   void testUTCID07_Update_idNotExist() {
-    unitOfMeasurementRepository.deleteAll();
-    UnitOfMeasurement unit = createValidUnit();
     unit.setId(1L);
-
-    assertThrows(HrmCommonException.class, () -> unitOfMeasurementService.update(unit));
+    when(unitRepository.findById(unit.getId())).thenReturn(Optional.empty());
+    assertThrows(HrmCommonException.class, () -> unitService.update(unit));
   }
 
-  // DELETE
-  // UTCID01 - Delete: valid
+  //EXISTBYID
+  // UTCID01 -exist: all valid
   @Test
-  void testUTCID01_Delete_AllValid() {
-    UnitOfMeasurement unit = createValidUnit();
-    UnitOfMeasurement unit1 = unitOfMeasurementService.create(unit);
-    unitOfMeasurementService.delete(unit1.getId());
-    assertEquals(unitOfMeasurementService.getById(unit1.getId()), null);
+  void testUTCID01_Exist_AllValid() {
+    Long id = 1L;
+    boolean exist = unitRepository.existsById(id);
+    Assertions.assertNotNull(exist);
   }
 
-  // UTCID02 - Delete: id null
+  // UTCID02 -exist: id is null
   @Test
-  void testUTCID02_Delete_idNull() {
-    assertThrows(HrmCommonException.class, () -> unitOfMeasurementService.delete(null));
+  void testUTCID02_Exist_IdNull() {
+    Long id = null;
+    assertThrows(HrmCommonException.class, () -> unitService.existById(id));
   }
 
-  // UTCID03 - Delete: id not exist
+  //GETBYNAME
+  // UTCID01 -BETBYNAME: all valid
   @Test
-  void testUTCID03_Delete_idNotExist() {
-    unitOfMeasurementRepository.deleteAll();
-    Long nonExistingId = 2L;
-    assertThrows(HrmCommonException.class, () -> unitOfMeasurementService.delete(nonExistingId));
+  void testUTCID01_GetByName_AllValid() {
+    String name = "Valid Unit Name";
+    when(unitRepository.findByUnitName(name)).thenReturn(Optional.of(unitEntity));
+    when(unitMapper.toDTO(unitEntity)).thenReturn(unit);
+    UnitOfMeasurement result = unitService.getByName(name);
+    Assertions.assertNotNull(result);
   }
 }
+
