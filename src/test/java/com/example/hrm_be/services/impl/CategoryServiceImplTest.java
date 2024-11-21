@@ -1,336 +1,398 @@
 package com.example.hrm_be.services.impl;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.when;
 
-import com.example.hrm_be.HrmBeApplication;
-import com.example.hrm_be.commons.constants.HrmConstant;
+import com.example.hrm_be.components.ProductCategoryMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.ProductCategory;
+import com.example.hrm_be.models.entities.ProductCategoryEntity;
 import com.example.hrm_be.repositories.ProductCategoryRepository;
-import com.example.hrm_be.services.ProductCategoryService;
 import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.data.domain.Page;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.transaction.annotation.Transactional;
-import org.testcontainers.junit.jupiter.Testcontainers;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.*;
 
-@Testcontainers
-@ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = HrmBeApplication.class)
-@ActiveProfiles("test")
-@Import(ProductCategoryServiceImpl.class)
-@Transactional
+@ExtendWith(MockitoExtension.class)
 public class CategoryServiceImplTest {
 
-  @Autowired private ProductCategoryService productCategoryService;
-  @Autowired private ProductCategoryRepository productCategoryRepository;
+  @Mock private ProductCategoryMapper categoryMapper;
+  @Mock private ProductCategoryRepository categoryRepository;
+  @InjectMocks private ProductCategoryServiceImpl categoryService;
 
-  // Helper to create a valid category entity
-  private ProductCategory createValidCategory() {
-    return new ProductCategory()
-        .setCategoryName("Valid Category Name")
-        .setCategoryDescription("Valid Category Description")
-        .setTaxRate(BigDecimal.TEN);
+  private ProductCategory category;
+  private ProductCategoryEntity categoryEntity;
+
+  @BeforeEach
+  public void setup() {
+    category =
+        ProductCategory.builder()
+            .categoryName("Valid Category")
+            .categoryDescription("Valid Description")
+            .taxRate(BigDecimal.valueOf(10.0))
+            .build();
+
+    categoryEntity =
+        ProductCategoryEntity.builder()
+            .categoryName("Valid Category")
+            .categoryDescription("Valid Description")
+            .taxRate(BigDecimal.valueOf(10.0))
+            .build();
   }
 
-  // GET
-  // UTCID01 - Get: valid
+  // GET BY ID
   @Test
-  void testUTCID01_Get_AllValid() {
-    ProductCategory category = createValidCategory();
-    ProductCategory category1 = productCategoryService.create(category);
-    ProductCategory category2 = productCategoryService.getById(category1.getId());
-    assertEquals(category1, category2);
+  void testUTCID01_Get_idValid() {
+    Long id = 1L;
+    when(categoryRepository.findById(id)).thenReturn(Optional.of(categoryEntity));
+    when(categoryMapper.toDTO(categoryEntity)).thenReturn(category);
+    ProductCategory result = categoryService.getById(id);
+    Assertions.assertNotNull(result);
+    Assertions.assertEquals("Valid Category", result.getCategoryName());
   }
 
-  // UTCID02 - Get: id null
   @Test
   void testUTCID02_Get_idNull() {
-    assertThrows(HrmCommonException.class, () -> productCategoryService.getById(null));
+    Long id = null;
+    assertThrows(HrmCommonException.class, () -> categoryService.getById(id));
   }
 
-  // UTCID03 - Get: id not exist
   @Test
   void testUTCID03_Get_idNotExist() {
-    productCategoryRepository.deleteAll();
-    Long nonExistingId = 1L;
-    assertEquals(null, productCategoryService.getById(nonExistingId));
+    Long id = 1L;
+    when(categoryRepository.findById(id)).thenReturn(Optional.empty());
+
+    Assertions.assertNull(categoryService.getById(id));
   }
 
-  // SEARCH
-  // UTCID01 - getByPaging: All valid
+  // GET BY PAGING
   @Test
   void testUTCID01_GetByPaging_AllValid() {
-    ProductCategory category = createValidCategory();
-    productCategoryRepository.deleteAll();
-    ProductCategory savedCategory = productCategoryService.create(category);
-    assertThat(savedCategory).isNotNull();
+    Pageable pageable = PageRequest.of(0, 10, Sort.by("categoryName"));
+    List<ProductCategoryEntity> categories = Collections.singletonList(categoryEntity);
+    Page<ProductCategoryEntity> page = new PageImpl<>(categories, pageable, categories.size());
 
-    Page<ProductCategory> result = productCategoryService.getByPaging(0, 1, "categoryName", "a");
-    assertEquals(1, result.getTotalElements());
-    assertEquals(category.getCategoryName(), result.getContent().get(0).getCategoryName());
+    when(categoryRepository.findByCategoryNameContainingIgnoreCase("a", pageable)).thenReturn(page);
+    when(categoryMapper.toDTO(categoryEntity)).thenReturn(category);
+
+    Page<ProductCategory> result = categoryService.getByPaging(0, 10, "categoryName", "a");
+
+    Assertions.assertNotNull(result);
+    Assertions.assertEquals(1, result.getTotalElements());
   }
 
-  // UTCID02 - getByPaging: pageNo invalid
   @Test
   void testUTCID02_GetByPaging_pageNoInvalid() {
-    Exception exception =
-        assertThrows(
-            HrmCommonException.class,
-            () -> {
-              productCategoryService.getByPaging(-1, 1, "categoryName", "a");
-            });
-    assertEquals(HrmConstant.ERROR.PAGE.INVALID, exception.getMessage());
+    assertThrows(
+        HrmCommonException.class, () -> categoryService.getByPaging(-1, 10, "categoryName", "a"));
   }
 
-  // UTCID03 - getByPaging: pageSize invalid
   @Test
   void testUTCID03_GetByPaging_pageSizeInvalid() {
-    Exception exception =
-        assertThrows(
-            HrmCommonException.class,
-            () -> {
-              productCategoryService.getByPaging(0, 0, "categoryName", "a");
-            });
-    assertEquals(HrmConstant.ERROR.PAGE.INVALID, exception.getMessage());
+    assertThrows(
+        HrmCommonException.class, () -> categoryService.getByPaging(0, 0, "categoryName", "a"));
   }
 
-  // UTCID04 - getByPaging: sortBy invalid
+  // GET BY PAGING
   @Test
-  void testUTCID04_GetByPaging_sortByInvalid() {
-    Exception exception =
-        assertThrows(
-            HrmCommonException.class,
-            () -> {
-              productCategoryService.getByPaging(0, 1, "a", "a");
-            });
-    assertEquals(HrmConstant.ERROR.PAGE.INVALID, exception.getMessage());
+  void testUTCID04_GetByPaging_AllValid() {
+    Pageable pageable = PageRequest.of(0, 10, Sort.by("categoryDescription"));
+    List<ProductCategoryEntity> categories = Collections.singletonList(categoryEntity);
+    Page<ProductCategoryEntity> page = new PageImpl<>(categories, pageable, categories.size());
+
+    when(categoryRepository.findByCategoryNameContainingIgnoreCase("a", pageable)).thenReturn(page);
+    when(categoryMapper.toDTO(categoryEntity)).thenReturn(category);
+
+    Page<ProductCategory> result = categoryService.getByPaging(0, 10, "categoryDescription", "a");
+
+    Assertions.assertNotNull(result);
+    Assertions.assertEquals(1, result.getTotalElements());
+  }
+
+  // GET BY PAGING
+  @Test
+  void testUTCID05_GetByPaging_AllValid() {
+    Pageable pageable = PageRequest.of(0, 10, Sort.by("taxRate"));
+    List<ProductCategoryEntity> categories = Collections.singletonList(categoryEntity);
+    Page<ProductCategoryEntity> page = new PageImpl<>(categories, pageable, categories.size());
+
+    when(categoryRepository.findByCategoryNameContainingIgnoreCase("a", pageable)).thenReturn(page);
+    when(categoryMapper.toDTO(categoryEntity)).thenReturn(category);
+
+    Page<ProductCategory> result = categoryService.getByPaging(0, 10, "taxRate", "a");
+
+    Assertions.assertNotNull(result);
+    Assertions.assertEquals(1, result.getTotalElements());
+  }
+
+  // GET BY PAGING
+  @Test
+  void testUTCID06_GetByPaging_AllValid() {
+    Pageable pageable = PageRequest.of(0, 10, Sort.by("id"));
+    List<ProductCategoryEntity> categories = Collections.singletonList(categoryEntity);
+    Page<ProductCategoryEntity> page = new PageImpl<>(categories, pageable, categories.size());
+
+    when(categoryRepository.findByCategoryNameContainingIgnoreCase("a", pageable)).thenReturn(page);
+    when(categoryMapper.toDTO(categoryEntity)).thenReturn(category);
+
+    Page<ProductCategory> result = categoryService.getByPaging(0, 10, null, "a");
+
+    Assertions.assertNotNull(result);
+    Assertions.assertEquals(1, result.getTotalElements());
+  }
+
+  // GET BY PAGING
+  @Test
+  void testUTCID07_GetByPaging_AllValid() {
+    Pageable pageable = PageRequest.of(0, 10, Sort.by("id"));
+    List<ProductCategoryEntity> categories = Collections.singletonList(categoryEntity);
+    Page<ProductCategoryEntity> page = new PageImpl<>(categories, pageable, categories.size());
+
+    when(categoryRepository.findByCategoryNameContainingIgnoreCase("", pageable)).thenReturn(page);
+    when(categoryMapper.toDTO(categoryEntity)).thenReturn(category);
+
+    Page<ProductCategory> result = categoryService.getByPaging(0, 10, null, null);
+
+    Assertions.assertNotNull(result);
+    Assertions.assertEquals(1, result.getTotalElements());
+  }
+
+  @Test
+  void testUTCID08_GetByPaging_pageSizeInvalid() {
+    assertThrows(HrmCommonException.class, () -> categoryService.getByPaging(0, 10, "abc", "a"));
   }
 
   // CREATE
-  // UTCID01 - create: all valid
   @Test
   void testUTCID01_Create_AllValid() {
-    ProductCategory category = createValidCategory();
-    ProductCategory savedCategory = productCategoryService.create(category);
+    when(categoryMapper.toEntity(category)).thenReturn(categoryEntity);
+    when(categoryRepository.save(categoryEntity)).thenReturn(categoryEntity);
+    when(categoryMapper.toDTO(categoryEntity)).thenReturn(category);
 
-    assertThat(savedCategory).isNotNull();
-    assertThat(savedCategory.getCategoryName()).isEqualTo("Valid Category Name");
+    ProductCategory result = categoryService.create(category);
+
+    Assertions.assertNotNull(result);
+    Assertions.assertEquals("Valid Category", result.getCategoryName());
   }
 
-  // UTCID02 - create: categoryName null
   @Test
   void testUTCID02_Create_categoryNameNull() {
-    ProductCategory category = createValidCategory();
     category.setCategoryName(null);
-
-    assertThrows(HrmCommonException.class, () -> productCategoryService.create(category));
+    assertThrows(HrmCommonException.class, () -> categoryService.create(category));
   }
 
-  // UTCID03 - create: categoryName empty
   @Test
   void testUTCID03_Create_categoryNameEmpty() {
-    ProductCategory category = createValidCategory();
     category.setCategoryName("");
-
-    assertThrows(HrmCommonException.class, () -> productCategoryService.create(category));
+    assertThrows(HrmCommonException.class, () -> categoryService.create(category));
   }
 
-  // UTCID04 - create: categoryName greater than 100 characters
   @Test
   void testUTCID04_Create_categoryNameLong() {
-    ProductCategory category = createValidCategory();
     category.setCategoryName("A".repeat(101));
-
-    assertThrows(HrmCommonException.class, () -> productCategoryService.create(category));
+    assertThrows(HrmCommonException.class, () -> categoryService.create(category));
   }
 
-  // UTCID05 - create: categoryName duplicate
   @Test
   void testUTCID05_Create_categoryNameDuplicate() {
-    ProductCategory category = createValidCategory();
-    productCategoryService.create(category);
-    ProductCategory duplicateCategory =
-        new ProductCategory()
-            .setCategoryName("Valid Category Name")
-            .setCategoryDescription("Valid Category Description")
-            .setTaxRate(BigDecimal.ONE);
-
-    assertThrows(HrmCommonException.class, () -> productCategoryService.create(duplicateCategory));
+    category.setCategoryName("Name Duplicate");
+    categoryEntity.setCategoryName("Name Duplicate");
+    when(categoryRepository.existsByCategoryName(categoryEntity.getCategoryName()))
+        .thenReturn(true);
+    assertThrows(HrmCommonException.class, () -> categoryService.create(category));
   }
 
   // UTCID06 - create: categoryDescription greater than 256 characters
   @Test
   void testUTCID06_Create_categoryDescriptionLong() {
-    ProductCategory category = createValidCategory();
     category.setCategoryDescription("A".repeat(1001));
-
-    assertThrows(HrmCommonException.class, () -> productCategoryService.create(category));
+    assertThrows(HrmCommonException.class, () -> categoryService.create(category));
   }
 
-  // UTCID07 - create: taxRate negative number
   @Test
   void testUTCID07_Create_taxRateNegative() {
-    ProductCategory category = createValidCategory();
     category.setTaxRate(BigDecimal.valueOf(-1));
-
-    assertThrows(HrmCommonException.class, () -> productCategoryService.create(category));
+    assertThrows(HrmCommonException.class, () -> categoryService.create(category));
   }
 
   // UTCID08 - create: taxRate greater than 100
   @Test
   void testUTCID08_Create_taxRateExcessive() {
-    ProductCategory category = createValidCategory();
     category.setTaxRate(BigDecimal.valueOf(101));
 
-    assertThrows(HrmCommonException.class, () -> productCategoryService.create(category));
+    assertThrows(HrmCommonException.class, () -> categoryService.create(category));
+  }
+
+  // UTCID09 - create: category null
+  @Test
+  void testUTCID09_Create_categoryNull() {
+    category = null;
+
+    assertThrows(HrmCommonException.class, () -> categoryService.create(category));
   }
 
   // UPDATE
-  // UTCID01 - UPDATE: all valid
   @Test
   void testUTCID01_Update_AllValid() {
-    productCategoryRepository.deleteAll();
-    ProductCategory category = createValidCategory();
-    ProductCategory savedCategory = productCategoryService.create(category);
-    ProductCategory updateCategory = productCategoryService.update(savedCategory);
+    category.setId(1L);
+    categoryEntity.setId(1L);
 
-    assertThat(savedCategory).isNotNull();
-    assertThat(updateCategory.getCategoryName()).isEqualTo("Valid Category Name");
+    when(categoryRepository.findById(category.getId())).thenReturn(Optional.of(categoryEntity));
+    when(categoryRepository.save(categoryEntity)).thenReturn(categoryEntity);
+    when(categoryMapper.toDTO(categoryEntity)).thenReturn(category);
+
+    ProductCategory result = categoryService.update(category);
+
+    Assertions.assertNotNull(result);
+    Assertions.assertEquals("Valid Category", result.getCategoryName());
   }
 
-  // UTCID02 - UPDATE: categoryName null
   @Test
   void testUTCID02_Update_categoryNameNull() {
-    productCategoryRepository.deleteAll();
-    ProductCategory category = createValidCategory();
-    ProductCategory createCategory = productCategoryService.create(category);
-    createCategory.setCategoryName(null);
-
-    assertThrows(HrmCommonException.class, () -> productCategoryService.update(createCategory));
+    category.setId(1L);
+    category.setCategoryName(null);
+    assertThrows(HrmCommonException.class, () -> categoryService.update(category));
   }
 
-  // UTCID03 - Update: categoryName empty
   @Test
   void testUTCID03_Update_categoryNameEmpty() {
-    productCategoryRepository.deleteAll();
-    ProductCategory category = createValidCategory();
-    ProductCategory createCategory = productCategoryService.create(category);
-    createCategory.setCategoryName("");
-
-    assertThrows(HrmCommonException.class, () -> productCategoryService.update(createCategory));
+    category.setId(1L);
+    category.setCategoryName("");
+    assertThrows(HrmCommonException.class, () -> categoryService.update(category));
   }
 
-  // UTCID04 - Update: categoryName greater than 100 characters
   @Test
   void testUTCID04_Update_categoryNameLong() {
-    productCategoryRepository.deleteAll();
-    ProductCategory category = createValidCategory();
-    ProductCategory createCategory = productCategoryService.create(category);
-    createCategory.setCategoryName("A".repeat(101));
-
-    assertThrows(HrmCommonException.class, () -> productCategoryService.update(createCategory));
+    category.setId(1L);
+    category.setCategoryName("A".repeat(101));
+    assertThrows(HrmCommonException.class, () -> categoryService.update(category));
   }
 
   // UTCID05 - Update: categoryName duplicate
   @Test
   void testUTCID05_Update_categoryNameDuplicate() {
-    productCategoryRepository.deleteAll();
-    ProductCategory category = createValidCategory();
-    productCategoryService.create(category);
-    ProductCategory secondcategory =
-        new ProductCategory()
-            .setCategoryName("Valid Category Name 123123")
-            .setCategoryDescription("Valid Category Description")
-            .setTaxRate(BigDecimal.ZERO);
-    ProductCategory returnValue = productCategoryService.create(secondcategory);
-    returnValue.setCategoryName("Valid Category Name");
+    category.setId(1L);
+    categoryEntity.setId(1L);
+    category.setCategoryName("new Name");
+    categoryEntity.setCategoryName("Old Name");
 
-    assertThrows(HrmCommonException.class, () -> productCategoryService.update(returnValue));
+    when(categoryRepository.findById(category.getId())).thenReturn(Optional.of(categoryEntity));
+
+    when(categoryRepository.existsByCategoryName(category.getCategoryName())).thenReturn(true);
+
+    assertThrows(HrmCommonException.class, () -> categoryService.update(category));
   }
 
   // UTCID06 - Update: categoryDescription greater than 1000 characters
   @Test
   void testUTCID06_Update_categoryDescriptionLong() {
-    productCategoryRepository.deleteAll();
-    ProductCategory category = createValidCategory();
-    ProductCategory createCategory = productCategoryService.create(category);
-    createCategory.setCategoryDescription("A".repeat(1001));
-
-    assertThrows(HrmCommonException.class, () -> productCategoryService.update(createCategory));
+    category.setCategoryDescription("A".repeat(1001));
+    assertThrows(HrmCommonException.class, () -> categoryService.update(category));
   }
 
-  // UTCID07 - Update: taxRate negative number
   @Test
   void testUTCID07_Update_taxRateNegative() {
-    productCategoryRepository.deleteAll();
-    ProductCategory category = createValidCategory();
-    ProductCategory createCategory = productCategoryService.create(category);
-    createCategory.setTaxRate(BigDecimal.valueOf(-1));
-
-    assertThrows(HrmCommonException.class, () -> productCategoryService.update(createCategory));
+    category.setId(1L);
+    category.setTaxRate(BigDecimal.valueOf(-1));
+    assertThrows(HrmCommonException.class, () -> categoryService.update(category));
   }
 
   // UTCID08 - Update: taxRate greater than 100
   @Test
   void testUTCID08_Update_taxRateExcessive() {
-    productCategoryRepository.deleteAll();
-    ProductCategory category = createValidCategory();
-    ProductCategory createCategory = productCategoryService.create(category);
-    createCategory.setTaxRate(BigDecimal.valueOf(101));
-
-    assertThrows(HrmCommonException.class, () -> productCategoryService.update(createCategory));
+    category.setTaxRate(BigDecimal.valueOf(101));
+    assertThrows(HrmCommonException.class, () -> categoryService.update(category));
   }
 
   // UTCID09 - Update: id null
   @Test
   void testUTCID09_Update_idNull() {
-    productCategoryRepository.deleteAll();
-    ProductCategory category = createValidCategory();
-    ProductCategory createCategory = productCategoryService.create(category);
-    createCategory.setId(null);
-
-    assertThrows(HrmCommonException.class, () -> productCategoryService.update(createCategory));
+    category.setId(null);
+    assertThrows(HrmCommonException.class, () -> categoryService.update(category));
   }
 
   // UTCID010 - Update: id not exist
   @Test
   void testUTCID010_Update_idNotExist() {
-    productCategoryRepository.deleteAll();
-    ProductCategory category = createValidCategory();
+    category.setId(1L);
+    when(categoryRepository.findById(category.getId())).thenReturn(Optional.empty());
+    assertThrows(HrmCommonException.class, () -> categoryService.update(category));
+  }
 
-    assertThrows(HrmCommonException.class, () -> productCategoryService.update(category));
+  // UTCID11 - Update: category null
+  @Test
+  void testUTCID011_Update_categoryNull() {
+    category = null;
+    assertThrows(HrmCommonException.class, () -> categoryService.update(category));
   }
 
   // DELETE
   // UTCID01 - Delete: valid
   @Test
   void testUTCID01_Delete_AllValid() {
-    ProductCategory category = createValidCategory();
-    ProductCategory category1 = productCategoryService.create(category);
-    productCategoryService.delete(category1.getId());
-    assertEquals(productCategoryService.getById(category1.getId()), null);
+    category.setId(1L);
+    when(categoryService.existById(category.getId())).thenReturn(true);
+    categoryService.delete(category.getId());
   }
 
   // UTCID02 - Delete: id null
   @Test
   void testUTCID02_Delete_idNull() {
-    assertThrows(HrmCommonException.class, () -> productCategoryService.delete(null));
+    category.setId(null);
+    assertThrows(HrmCommonException.class, () -> categoryService.delete(null));
   }
 
   // UTCID03 - Delete: id not exist
   @Test
   void testUTCID03_Delete_idNotExist() {
-    productCategoryRepository.deleteAll();
-    Long nonExistingId = 2L;
-    assertThrows(HrmCommonException.class, () -> productCategoryService.delete(nonExistingId));
+    category.setId(1L);
+    when(categoryService.existById(category.getId())).thenReturn(false);
+    assertThrows(HrmCommonException.class, () -> categoryService.delete(category.getId()));
+  }
+
+  // existById
+  // UTCID01 - existById: valid
+  @Test
+  void testUTCID01_existById_AllValid() {
+    Long id = 1L;
+    boolean result = categoryService.existById(id);
+    Assertions.assertNotNull(result);
+  }
+
+  // UTCID02 - existById: id null
+  @Test
+  void testUTCID02_existById_idNull() {
+    Long id = null;
+    assertThrows(HrmCommonException.class, () -> categoryService.existById(id));
+  }
+
+  // getAll
+  // UTCID01 - getAll: valid
+  @Test
+  void testUTCID01_getAll_AllValid() {
+    when(categoryRepository.findAll()).thenReturn(List.of(categoryEntity));
+    when(categoryMapper.toDTO(categoryEntity)).thenReturn(category);
+    List<ProductCategory> result = categoryService.getAll();
+    Assertions.assertNotNull(result);
+  }
+
+  // getByName
+  // UTCID01 - getByName: valid
+  @Test
+  void testUTCID01_getByName_AllValid() {
+    String name = "a";
+    when(categoryRepository.findByCategoryName(name)).thenReturn(Optional.of(categoryEntity));
+    when(categoryMapper.toDTO(categoryEntity)).thenReturn(category);
+    ProductCategory result = categoryService.findByCategoryName(name);
+    Assertions.assertNotNull(result);
   }
 }

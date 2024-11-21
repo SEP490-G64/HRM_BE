@@ -173,6 +173,246 @@ public class BranchServiceImplTest {
         });
   }
 
+  // UTCID05 - getByPaging: sortByNull
+  @Test
+  void testUTCID05_GetByPaging_sortByNull() {
+    // Create a Pageable object with sorting by "branchName"
+    Pageable pageable = PageRequest.of(0, 10, Sort.by("id"));
+    // Create a mock list of BranchEntity objects
+    List<BranchEntity> branches = Collections.singletonList(branchEntity);
+    // Create a Page object using the list of BranchEntity and the Pageable
+    Page<BranchEntity> page = new PageImpl<>(branches, pageable, branches.size());
+    // Mock the repository method findByBranchNameOrLocationAndBranchType to return the Page of
+    // BranchEntity
+    when(branchRepository.findByBranchNameOrLocationAndBranchType(
+            "a", BranchType.MAIN, true, pageable))
+        .thenReturn(page);
+    // Mock the branchMapper's toDTO method to return the Branch DTO
+    when(branchMapper.toDTO(Mockito.any(BranchEntity.class))).thenReturn(branch);
+    // Call the method to be tested
+    Page<Branch> result =
+        branchService.getByPaging(0, 10, "id", "a", BranchType.MAIN, Boolean.TRUE);
+    // Verify that the result is not null
+    Assertions.assertNotNull(result);
+  }
+
+  // UTCID06 - getByPaging: keyword null
+  @Test
+  void testUTCID06_GetByPaging_keywordNull() {
+    // Create a Pageable object with sorting by "branchName"
+    Pageable pageable = PageRequest.of(0, 10, Sort.by("id"));
+    // Create a mock list of BranchEntity objects
+    List<BranchEntity> branches = Collections.singletonList(branchEntity);
+    // Create a Page object using the list of BranchEntity and the Pageable
+    Page<BranchEntity> page = new PageImpl<>(branches, pageable, branches.size());
+    // Mock the repository method findByBranchNameOrLocationAndBranchType to return the Page of
+    // BranchEntity
+    when(branchRepository.findByBranchNameOrLocationAndBranchType(
+            " ", BranchType.MAIN, true, pageable))
+        .thenReturn(page);
+    // Mock the branchMapper's toDTO method to return the Branch DTO
+    when(branchMapper.toDTO(Mockito.any(BranchEntity.class))).thenReturn(branch);
+    // Call the method to be tested
+    Page<Branch> result =
+        branchService.getByPaging(0, 10, "id", " ", BranchType.MAIN, Boolean.TRUE);
+    // Verify that the result is not null
+    Assertions.assertNotNull(result);
+  }
+
+  // UTCID07 - getByPaging:sortBy location
+  @Test
+  void testUTCID07_GetByPaging_sortByLocationInvalid() {
+    // Create a Pageable object with sorting by "branchName"
+    Pageable pageable = PageRequest.of(0, 10, Sort.by("location"));
+    // Create a mock list of BranchEntity objects
+    List<BranchEntity> branches = Collections.singletonList(branchEntity);
+    // Create a Page object using the list of BranchEntity and the Pageable
+    Page<BranchEntity> page = new PageImpl<>(branches, pageable, branches.size());
+    // Mock the repository method findByBranchNameOrLocationAndBranchType to return the Page of
+    // BranchEntity
+    when(branchRepository.findByBranchNameOrLocationAndBranchType(
+            "a", BranchType.MAIN, true, pageable))
+        .thenReturn(page);
+    // Mock the branchMapper's toDTO method to return the Branch DTO
+    when(branchMapper.toDTO(Mockito.any(BranchEntity.class))).thenReturn(branch);
+    // Call the method to be tested
+    Page<Branch> result =
+        branchService.getByPaging(0, 10, "location", "a", BranchType.MAIN, Boolean.TRUE);
+    // Verify that the result is not null
+    Assertions.assertNotNull(result);
+  }
+
+  // UTCID08 - getByPaging:sortBy brandType
+  @Test
+  void testUTCID08_GetByPaging_sortByBrandTypeInvalid() {
+    // Create a Pageable object with sorting by "branchName"
+    Pageable pageable = PageRequest.of(0, 10, Sort.by("branchType"));
+    // Create a mock list of BranchEntity objects
+    List<BranchEntity> branches = Collections.singletonList(branchEntity);
+    // Create a Page object using the list of BranchEntity and the Pageable
+    Page<BranchEntity> page = new PageImpl<>(branches, pageable, branches.size());
+    // Mock the repository method findByBranchNameOrLocationAndBranchType to return the Page of
+    // BranchEntity
+    when(branchRepository.findByBranchNameOrLocationAndBranchType(
+            "a", BranchType.MAIN, true, pageable))
+        .thenReturn(page);
+    // Mock the branchMapper's toDTO method to return the Branch DTO
+    when(branchMapper.toDTO(Mockito.any(BranchEntity.class))).thenReturn(branch);
+    // Call the method to be tested
+    Page<Branch> result =
+        branchService.getByPaging(0, 10, "branchType", "a", BranchType.MAIN, Boolean.TRUE);
+    // Verify that the result is not null
+    Assertions.assertNotNull(result);
+  }
+
+  // UTCID09 - getByPaging:sortBy contactPerson
+  @Test
+  void testUTCID09_GetByPaging_sortByContactPersonInvalid() {
+    // Create a Pageable object with sorting by "branchName"
+    Pageable pageable = PageRequest.of(0, 10, Sort.by("contactPerson"));
+    // Create a mock list of BranchEntity objects
+    List<BranchEntity> branches = Collections.singletonList(branchEntity);
+    // Create a Page object using the list of BranchEntity and the Pageable
+    Page<BranchEntity> page = new PageImpl<>(branches, pageable, branches.size());
+    // Mock the repository method findByBranchNameOrLocationAndBranchType to return the Page of
+    // BranchEntity
+    when(branchRepository.findByBranchNameOrLocationAndBranchType(
+            "a", BranchType.MAIN, true, pageable))
+        .thenReturn(page);
+    // Mock the branchMapper's toDTO method to return the Branch DTO
+    when(branchMapper.toDTO(Mockito.any(BranchEntity.class))).thenReturn(branch);
+    // Call the method to be tested
+    Page<Branch> result =
+        branchService.getByPaging(0, 10, "contactPerson", "a", BranchType.MAIN, Boolean.TRUE);
+    // Verify that the result is not null
+    Assertions.assertNotNull(result);
+  }
+
+  // UTCID010 - getByPaging:sortBy phoneNumber
+  @Test
+  void testUTCID010_GetByPaging_sortByPhoneNumberInvalid() {
+    // Create a Pageable object with sorting by "branchName"
+    Pageable pageable = PageRequest.of(0, 10, Sort.by("phoneNumber"));
+    // Create a mock list of BranchEntity objects
+    List<BranchEntity> branches = Collections.singletonList(branchEntity);
+    // Create a Page object using the list of BranchEntity and the Pageable
+    Page<BranchEntity> page = new PageImpl<>(branches, pageable, branches.size());
+    // Mock the repository method findByBranchNameOrLocationAndBranchType to return the Page of
+    // BranchEntity
+    when(branchRepository.findByBranchNameOrLocationAndBranchType(
+            "a", BranchType.MAIN, true, pageable))
+        .thenReturn(page);
+    // Mock the branchMapper's toDTO method to return the Branch DTO
+    when(branchMapper.toDTO(Mockito.any(BranchEntity.class))).thenReturn(branch);
+    // Call the method to be tested
+    Page<Branch> result =
+        branchService.getByPaging(0, 10, "phoneNumber", "a", BranchType.MAIN, Boolean.TRUE);
+    // Verify that the result is not null
+    Assertions.assertNotNull(result);
+  }
+
+  // UTCID011 - getByPaging:sortBy capacity
+  @Test
+  void testUTCID011_GetByPaging_sortByCapacityInvalid() {
+    // Create a Pageable object with sorting by "branchName"
+    Pageable pageable = PageRequest.of(0, 10, Sort.by("capacity"));
+    // Create a mock list of BranchEntity objects
+    List<BranchEntity> branches = Collections.singletonList(branchEntity);
+    // Create a Page object using the list of BranchEntity and the Pageable
+    Page<BranchEntity> page = new PageImpl<>(branches, pageable, branches.size());
+    // Mock the repository method findByBranchNameOrLocationAndBranchType to return the Page of
+    // BranchEntity
+    when(branchRepository.findByBranchNameOrLocationAndBranchType(
+            "a", BranchType.MAIN, true, pageable))
+        .thenReturn(page);
+    // Mock the branchMapper's toDTO method to return the Branch DTO
+    when(branchMapper.toDTO(Mockito.any(BranchEntity.class))).thenReturn(branch);
+    // Call the method to be tested
+    Page<Branch> result =
+        branchService.getByPaging(0, 10, "capacity", "a", BranchType.MAIN, Boolean.TRUE);
+    // Verify that the result is not null
+    Assertions.assertNotNull(result);
+  }
+
+  // UTCID012 - getByPaging:sortBy activeStatus
+  @Test
+  void testUTCID012_GetByPaging_sortByActiveStatusInvalid() {
+    // Create a Pageable object with sorting by "branchName"
+    Pageable pageable = PageRequest.of(0, 10, Sort.by("activeStatus"));
+    // Create a mock list of BranchEntity objects
+    List<BranchEntity> branches = Collections.singletonList(branchEntity);
+    // Create a Page object using the list of BranchEntity and the Pageable
+    Page<BranchEntity> page = new PageImpl<>(branches, pageable, branches.size());
+    // Mock the repository method findByBranchNameOrLocationAndBranchType to return the Page of
+    // BranchEntity
+    when(branchRepository.findByBranchNameOrLocationAndBranchType(
+            "a", BranchType.MAIN, true, pageable))
+        .thenReturn(page);
+    // Mock the branchMapper's toDTO method to return the Branch DTO
+    when(branchMapper.toDTO(Mockito.any(BranchEntity.class))).thenReturn(branch);
+    // Call the method to be tested
+    Page<Branch> result =
+        branchService.getByPaging(0, 10, "activeStatus", "a", BranchType.MAIN, Boolean.TRUE);
+    // Verify that the result is not null
+    Assertions.assertNotNull(result);
+  }
+
+  // UTCID013 - getByPaging:sortBy activeStatus
+  @Test
+  void testUTCID013_GetByPaging_sortByActiveStatusInvalid() {
+    // Create a Pageable object with sorting by "branchName"
+    Pageable pageable = PageRequest.of(0, 10, Sort.by("id"));
+    // Create a mock list of BranchEntity objects
+    List<BranchEntity> branches = Collections.singletonList(branchEntity);
+    // Create a Page object using the list of BranchEntity and the Pageable
+    Page<BranchEntity> page = new PageImpl<>(branches, pageable, branches.size());
+    // Mock the repository method findByBranchNameOrLocationAndBranchType to return the Page of
+    // BranchEntity
+    when(branchRepository.findByBranchNameOrLocationAndBranchType(
+            "a", BranchType.MAIN, true, pageable))
+        .thenReturn(page);
+    // Mock the branchMapper's toDTO method to return the Branch DTO
+    when(branchMapper.toDTO(Mockito.any(BranchEntity.class))).thenReturn(branch);
+    // Call the method to be tested
+    Page<Branch> result =
+        branchService.getByPaging(0, 10, null, "a", BranchType.MAIN, Boolean.TRUE);
+    // Verify that the result is not null
+    Assertions.assertNotNull(result);
+  }
+
+  // UTCID014 - getByPaging: keyword null
+  @Test
+  void testUTCID014_GetByPaging_sortByActiveStatusInvalid() {
+    // Create a Pageable object with sorting by "branchName"
+    Pageable pageable = PageRequest.of(0, 10, Sort.by("activeStatus"));
+    // Create a mock list of BranchEntity objects
+    List<BranchEntity> branches = Collections.singletonList(branchEntity);
+    // Create a Page object using the list of BranchEntity and the Pageable
+    Page<BranchEntity> page = new PageImpl<>(branches, pageable, branches.size());
+    // Mock the repository method findByBranchNameOrLocationAndBranchType to return the Page of
+    // BranchEntity
+    when(branchRepository.findByBranchNameOrLocationAndBranchType(
+            "", BranchType.MAIN, true, pageable))
+        .thenReturn(page);
+    // Mock the branchMapper's toDTO method to return the Branch DTO
+    when(branchMapper.toDTO(Mockito.any(BranchEntity.class))).thenReturn(branch);
+    // Call the method to be tested
+    Page<Branch> result =
+        branchService.getByPaging(0, 10, "activeStatus", null, BranchType.MAIN, Boolean.TRUE);
+    // Verify that the result is not null
+    Assertions.assertNotNull(result);
+  }
+
+  // UTCID015 - getByPaging: sort invalid
+  @Test
+  void testUTCID015_GetByPaging_sortInvalid() {
+    assertThrows(
+        HrmCommonException.class,
+        () -> {
+          branchService.getByPaging(0, 10, "123455", "", BranchType.MAIN, Boolean.TRUE);
+        });
+  }
+
   // CREATE
   // UTCID01 - create: all valid
   @Test
@@ -295,6 +535,13 @@ public class BranchServiceImplTest {
   // UTCID017 - create: activeStatus null
   @Test
   void testUTCID017_Create_activeStatusNull() {
+    branch.setActiveStatus(null);
+    assertThrows(HrmCommonException.class, () -> branchService.create(branch));
+  }
+
+  // UTCID018 - create: brand null
+  @Test
+  void testUTCID018_Create_branchNull() {
     branch.setActiveStatus(null);
     assertThrows(HrmCommonException.class, () -> branchService.create(branch));
   }
@@ -472,6 +719,13 @@ public class BranchServiceImplTest {
     // Call the update method and expect an exception (the name is changed and conflicts with an
     // existing name)
     Assertions.assertThrows(HrmCommonException.class, () -> branchService.update(branch));
+  }
+
+  // UTCID019 - Update: branch null
+  @Test
+  void testUTCID019_Update_branchNull() {
+    branch = null;
+    assertThrows(HrmCommonException.class, () -> branchService.update(branch));
   }
 
   // DELETE
