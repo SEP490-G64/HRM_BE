@@ -1,20 +1,14 @@
 package com.example.hrm_be.services.impl;
 
-import static com.jayway.jsonpath.internal.path.PathCompiler.fail;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
-import com.example.hrm_be.HrmBeApplication;
 import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.components.SupplierMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.Supplier;
 import com.example.hrm_be.models.entities.SupplierEntity;
 import com.example.hrm_be.repositories.SupplierRepository;
-import com.example.hrm_be.services.SupplierService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,14 +16,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.*;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.transaction.annotation.Transactional;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.Collections;
 import java.util.List;
@@ -38,19 +25,17 @@ import java.util.Optional;
 @ExtendWith(MockitoExtension.class)
 public class SupplierServiceImplTest {
 
-  @Mock
-  private SupplierMapper supplierMapper;
-  @Mock
-  private SupplierRepository supplierRepository;
-  @InjectMocks
-  private SupplierServiceImpl supplierService;
+  @Mock private SupplierMapper supplierMapper;
+  @Mock private SupplierRepository supplierRepository;
+  @InjectMocks private SupplierServiceImpl supplierService;
 
   private Supplier supplier;
   private SupplierEntity supplierEntity;
 
   @BeforeEach
   public void setup() {
-    supplier = Supplier.builder()
+    supplier =
+        Supplier.builder()
             .supplierName("Valid Supplier Name")
             .address("Valid Supplier Address")
             .email("validsupplier@mail.com")
@@ -59,7 +44,8 @@ public class SupplierServiceImplTest {
             .status(true)
             .build();
 
-    supplierEntity = SupplierEntity.builder()
+    supplierEntity =
+        SupplierEntity.builder()
             .supplierName("Valid Supplier Name")
             .address("Valid Supplier Address")
             .email("validsupplier@mail.com")
@@ -115,13 +101,17 @@ public class SupplierServiceImplTest {
   // UTCID02 - getByPaging: pageNo invalid
   @Test
   void testUTCID02_GetByPaging_pageNoInvalid() {
-    assertThrows(HrmCommonException.class, () -> supplierService.getByPaging(-1, 10, "supplierName", "", true));
+    assertThrows(
+        HrmCommonException.class,
+        () -> supplierService.getByPaging(-1, 10, "supplierName", "", true));
   }
 
   // UTCID03 - getByPaging: pageSize invalid
   @Test
   void testUTCID03_GetByPaging_pageSizeInvalid() {
-    assertThrows(HrmCommonException.class, () -> supplierService.getByPaging(0, 0, "supplierName", "", true));
+    assertThrows(
+        HrmCommonException.class,
+        () -> supplierService.getByPaging(0, 0, "supplierName", "", true));
   }
 
   // UTCID04 - getByPaging: sortBy invalid
@@ -148,7 +138,6 @@ public class SupplierServiceImplTest {
     Assertions.assertNotNull(result);
     Assertions.assertEquals(1, result.getTotalElements());
   }
-
 
   @Test
   void testUTCID06_GetByPaging_NullKeyword_DefaultToEmpty() {
@@ -209,9 +198,12 @@ public class SupplierServiceImplTest {
     String invalidSortBy = "invalidField";
 
     // Act & Assert
-    HrmCommonException exception = Assertions.assertThrows(HrmCommonException.class, () -> {
-      supplierService.getByPaging(0, 10, invalidSortBy, "", true);
-    });
+    HrmCommonException exception =
+        Assertions.assertThrows(
+            HrmCommonException.class,
+            () -> {
+              supplierService.getByPaging(0, 10, invalidSortBy, "", true);
+            });
 
     Assertions.assertEquals(HrmConstant.ERROR.PAGE.INVALID, exception.getMessage());
   }
@@ -351,8 +343,9 @@ public class SupplierServiceImplTest {
   void testUTCID05_Create_nameDuplicate() {
     supplier.setSupplierName("Name Duplicate");
     supplierEntity.setSupplierName("Name Duplicate");
-    when(supplierRepository.existsBySupplierNameAndAddress(supplierEntity.getSupplierName(),
-            supplierEntity.getAddress())).thenReturn(true);
+    when(supplierRepository.existsBySupplierNameAndAddress(
+            supplierEntity.getSupplierName(), supplierEntity.getAddress()))
+        .thenReturn(true);
     assertThrows(HrmCommonException.class, () -> supplierService.create(supplier));
   }
 
@@ -371,7 +364,6 @@ public class SupplierServiceImplTest {
 
     assertThrows(HrmCommonException.class, () -> supplierService.create(supplier));
   }
-
 
   // UTCID08 - create: address greater than 256 characters
   @Test
@@ -441,7 +433,6 @@ public class SupplierServiceImplTest {
     assertThrows(HrmCommonException.class, () -> supplierService.create(supplier));
   }
 
-
   // UTCID017 - create: origin greater than 255 characters
   @Test
   void testUTCID017_Create_originLong() {
@@ -455,7 +446,6 @@ public class SupplierServiceImplTest {
     supplier = null;
     assertThrows(HrmCommonException.class, () -> supplierService.create(supplier));
   }
-
 
   // UPDATE
   // UTCID01 - UPDATE: all valid
@@ -502,8 +492,11 @@ public class SupplierServiceImplTest {
     supplierEntity.setSupplierName("Old Name");
     supplierEntity.setAddress("Old Address");
 
-    lenient().when(supplierRepository.existsBySupplierNameAndAddress(supplier.getSupplierName(),
-            supplierEntity.getAddress())).thenReturn(true);
+    lenient()
+        .when(
+            supplierRepository.existsBySupplierNameAndAddress(
+                supplier.getSupplierName(), supplierEntity.getAddress()))
+        .thenReturn(true);
     assertThrows(HrmCommonException.class, () -> supplierService.update(supplier));
   }
 
@@ -618,8 +611,9 @@ public class SupplierServiceImplTest {
     supplier.setTaxCode("12345"); // Current tax code of the supplier
     supplierEntity.setTaxCode("12345"); // Old tax code matches the current one
 
-    lenient().when(supplierRepository.existsByTaxCode(supplier.getTaxCode()))
-            .thenReturn(true); // Mock that the tax code does not already exist in the database
+    lenient()
+        .when(supplierRepository.existsByTaxCode(supplier.getTaxCode()))
+        .thenReturn(true); // Mock that the tax code does not already exist in the database
 
     assertThrows(HrmCommonException.class, () -> supplierService.update(supplier));
   }
@@ -632,8 +626,9 @@ public class SupplierServiceImplTest {
     supplierEntity.setId(1L);
     supplierEntity.setTaxCode("12345"); // Old tax code differs from the new one
 
-    lenient().when(supplierRepository.existsByTaxCode(supplier.getTaxCode()))
-            .thenReturn(true); // Mock that the new tax code does not already exist
+    lenient()
+        .when(supplierRepository.existsByTaxCode(supplier.getTaxCode()))
+        .thenReturn(true); // Mock that the new tax code does not already exist
 
     assertThrows(HrmCommonException.class, () -> supplierService.update(supplier));
   }
@@ -647,15 +642,15 @@ public class SupplierServiceImplTest {
     supplierEntity.setTaxCode("12345"); // Old tax code differs from the new one
 
     // Mock that supplierRepository.findById() returns the old supplier entity
-    lenient().when(supplierRepository.findById(supplier.getId())).thenReturn(Optional.of(supplierEntity));
+    lenient()
+        .when(supplierRepository.findById(supplier.getId()))
+        .thenReturn(Optional.of(supplierEntity));
     lenient().when(supplierMapper.toDTO(supplierEntity)).thenReturn(supplier);
 
     // Mock that the new tax code already exists in the database
-    lenient().when(supplierRepository.existsByTaxCode(supplier.getTaxCode()))
-            .thenReturn(true);
+    lenient().when(supplierRepository.existsByTaxCode(supplier.getTaxCode())).thenReturn(true);
     // Act & Assert: Verify that the correct exception is thrown with the expected message
-    assertThrows(HrmCommonException.class,
-            () -> supplierService.update(supplier));
+    assertThrows(HrmCommonException.class, () -> supplierService.update(supplier));
   }
 
   // UTCID020 - UPDATE: Supplier null
@@ -670,13 +665,12 @@ public class SupplierServiceImplTest {
     // Arrange: Prepare mock data
     supplier.setTaxCode(null); // Tax code is null
     supplierEntity.setTaxCode("0101234565"); // Old tax code exists
-    lenient().when(supplierRepository.findById(supplier.getId())).thenReturn(Optional.of(supplierEntity));
+    lenient()
+        .when(supplierRepository.findById(supplier.getId()))
+        .thenReturn(Optional.of(supplierEntity));
     lenient().when(supplierRepository.existsByTaxCode(supplier.getTaxCode())).thenReturn(true);
     // Act & Assert: Ensure no exception is thrown since tax code is null
-    assertThrows(
-            HrmCommonException.class,
-            () -> supplierService.update(supplier)
-    );
+    assertThrows(HrmCommonException.class, () -> supplierService.update(supplier));
   }
 
   @Test
@@ -684,19 +678,19 @@ public class SupplierServiceImplTest {
     // Arrange: Prepare mock data
     supplier.setTaxCode(""); // Tax code is null
     supplierEntity.setTaxCode("0101234565"); // Old tax code exists
-    lenient().when(supplierRepository.findById(supplier.getId())).thenReturn(Optional.of(supplierEntity));
+    lenient()
+        .when(supplierRepository.findById(supplier.getId()))
+        .thenReturn(Optional.of(supplierEntity));
     lenient().when(supplierRepository.existsByTaxCode(supplier.getTaxCode())).thenReturn(true);
     // Act & Assert: Ensure no exception is thrown since tax code is null
-    assertThrows(
-            HrmCommonException.class,
-            () -> supplierService.update(supplier)
-    );
+    assertThrows(HrmCommonException.class, () -> supplierService.update(supplier));
   }
+
   // DELETE
   // UTCID01 - DELETE: valid
   @Test
   void testUTCID01_Delete_Valid() {
-   supplier.setId(1L);
+    supplier.setId(1L);
     when(supplierRepository.findById(supplier.getId())).thenReturn(Optional.of(supplierEntity));
     when(supplierRepository.save(supplierEntity)).thenReturn(supplierEntity);
     when(supplierMapper.toDTO(supplierEntity)).thenReturn(supplier);
@@ -712,8 +706,7 @@ public class SupplierServiceImplTest {
     assertThrows(HrmCommonException.class, () -> supplierService.delete(null));
   }
 
-
-  //UTCID03 - Delete: id not exist
+  // UTCID03 - Delete: id not exist
   @Test
   void testUTCID03_Delete_Invalid() {
     Long id = 1L;
@@ -722,4 +715,3 @@ public class SupplierServiceImplTest {
     assertThrows(HrmCommonException.class, () -> supplierService.delete(id));
   }
 }
-

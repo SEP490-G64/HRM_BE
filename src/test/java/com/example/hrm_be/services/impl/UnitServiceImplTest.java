@@ -1,19 +1,14 @@
 package com.example.hrm_be.services.impl;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
-import com.example.hrm_be.HrmBeApplication;
-import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.components.UnitOfMeasurementMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.UnitOfMeasurement;
 import com.example.hrm_be.models.entities.UnitOfMeasurementEntity;
 import com.example.hrm_be.repositories.UnitOfMeasurementRepository;
-import com.example.hrm_be.services.UnitOfMeasurementService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,14 +16,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.*;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.transaction.annotation.Transactional;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.Collections;
 import java.util.List;
@@ -37,25 +25,18 @@ import java.util.Optional;
 @ExtendWith(MockitoExtension.class)
 public class UnitServiceImplTest {
 
-  @Mock
-  private UnitOfMeasurementMapper unitMapper;
-  @Mock
-  private UnitOfMeasurementRepository unitRepository;
-  @InjectMocks
-  private UnitOfMeasurementServiceImpl unitService;
+  @Mock private UnitOfMeasurementMapper unitMapper;
+  @Mock private UnitOfMeasurementRepository unitRepository;
+  @InjectMocks private UnitOfMeasurementServiceImpl unitService;
 
   private UnitOfMeasurement unit;
   private UnitOfMeasurementEntity unitEntity;
 
   @BeforeEach
   public void setup() {
-    unit = UnitOfMeasurement.builder()
-            .unitName("Valid Unit Name")
-            .build();
+    unit = UnitOfMeasurement.builder().unitName("Valid Unit Name").build();
 
-    unitEntity = UnitOfMeasurementEntity.builder()
-            .unitName("Valid Unit Name")
-            .build();
+    unitEntity = UnitOfMeasurementEntity.builder().unitName("Valid Unit Name").build();
   }
 
   // GET
@@ -192,7 +173,6 @@ public class UnitServiceImplTest {
     assertThrows(HrmCommonException.class, () -> unitService.create(unit));
   }
 
-
   // UPDATE
   // UTCID01 - UPDATE: all valid
   @Test
@@ -236,7 +216,7 @@ public class UnitServiceImplTest {
     unit.setUnitName("new Name");
     unitEntity.setUnitName("Old Name");
 
-    lenient().when(unitRepository.existsByUnitName(unit.getUnitName())) .thenReturn(true);
+    lenient().when(unitRepository.existsByUnitName(unit.getUnitName())).thenReturn(true);
     assertThrows(HrmCommonException.class, () -> unitService.update(unit));
   }
 
@@ -255,7 +235,7 @@ public class UnitServiceImplTest {
     assertThrows(HrmCommonException.class, () -> unitService.update(unit));
   }
 
-  //EXISTBYID
+  // EXISTBYID
   // UTCID01 -exist: all valid
   @Test
   void testUTCID01_Exist_AllValid() {
@@ -271,7 +251,7 @@ public class UnitServiceImplTest {
     assertThrows(HrmCommonException.class, () -> unitService.existById(id));
   }
 
-  //GETBYNAME
+  // GETBYNAME
   // UTCID01 -BETBYNAME: all valid
   @Test
   void testUTCID01_GetByName_AllValid() {
@@ -282,4 +262,3 @@ public class UnitServiceImplTest {
     Assertions.assertNotNull(result);
   }
 }
-

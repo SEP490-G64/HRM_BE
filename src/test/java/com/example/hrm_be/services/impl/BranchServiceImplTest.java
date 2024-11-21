@@ -186,12 +186,12 @@ public class BranchServiceImplTest {
     // BranchEntity
     when(branchRepository.findByBranchNameOrLocationAndBranchType(
             "a", BranchType.MAIN, true, pageable))
-            .thenReturn(page);
+        .thenReturn(page);
     // Mock the branchMapper's toDTO method to return the Branch DTO
     when(branchMapper.toDTO(Mockito.any(BranchEntity.class))).thenReturn(branch);
     // Call the method to be tested
     Page<Branch> result =
-            branchService.getByPaging(0, 10, "id", "a", BranchType.MAIN, Boolean.TRUE);
+        branchService.getByPaging(0, 10, "id", "a", BranchType.MAIN, Boolean.TRUE);
     // Verify that the result is not null
     Assertions.assertNotNull(result);
   }
@@ -209,12 +209,12 @@ public class BranchServiceImplTest {
     // BranchEntity
     when(branchRepository.findByBranchNameOrLocationAndBranchType(
             " ", BranchType.MAIN, true, pageable))
-            .thenReturn(page);
+        .thenReturn(page);
     // Mock the branchMapper's toDTO method to return the Branch DTO
     when(branchMapper.toDTO(Mockito.any(BranchEntity.class))).thenReturn(branch);
     // Call the method to be tested
     Page<Branch> result =
-            branchService.getByPaging(0, 10, "id", " ", BranchType.MAIN, Boolean.TRUE);
+        branchService.getByPaging(0, 10, "id", " ", BranchType.MAIN, Boolean.TRUE);
     // Verify that the result is not null
     Assertions.assertNotNull(result);
   }
@@ -232,12 +232,12 @@ public class BranchServiceImplTest {
     // BranchEntity
     when(branchRepository.findByBranchNameOrLocationAndBranchType(
             "a", BranchType.MAIN, true, pageable))
-            .thenReturn(page);
+        .thenReturn(page);
     // Mock the branchMapper's toDTO method to return the Branch DTO
     when(branchMapper.toDTO(Mockito.any(BranchEntity.class))).thenReturn(branch);
     // Call the method to be tested
     Page<Branch> result =
-            branchService.getByPaging(0, 10, "location", "a", BranchType.MAIN, Boolean.TRUE);
+        branchService.getByPaging(0, 10, "location", "a", BranchType.MAIN, Boolean.TRUE);
     // Verify that the result is not null
     Assertions.assertNotNull(result);
   }
@@ -255,12 +255,12 @@ public class BranchServiceImplTest {
     // BranchEntity
     when(branchRepository.findByBranchNameOrLocationAndBranchType(
             "a", BranchType.MAIN, true, pageable))
-            .thenReturn(page);
+        .thenReturn(page);
     // Mock the branchMapper's toDTO method to return the Branch DTO
     when(branchMapper.toDTO(Mockito.any(BranchEntity.class))).thenReturn(branch);
     // Call the method to be tested
     Page<Branch> result =
-            branchService.getByPaging(0, 10, "branchType", "a", BranchType.MAIN, Boolean.TRUE);
+        branchService.getByPaging(0, 10, "branchType", "a", BranchType.MAIN, Boolean.TRUE);
     // Verify that the result is not null
     Assertions.assertNotNull(result);
   }
@@ -278,12 +278,12 @@ public class BranchServiceImplTest {
     // BranchEntity
     when(branchRepository.findByBranchNameOrLocationAndBranchType(
             "a", BranchType.MAIN, true, pageable))
-            .thenReturn(page);
+        .thenReturn(page);
     // Mock the branchMapper's toDTO method to return the Branch DTO
     when(branchMapper.toDTO(Mockito.any(BranchEntity.class))).thenReturn(branch);
     // Call the method to be tested
     Page<Branch> result =
-            branchService.getByPaging(0, 10, "contactPerson", "a", BranchType.MAIN, Boolean.TRUE);
+        branchService.getByPaging(0, 10, "contactPerson", "a", BranchType.MAIN, Boolean.TRUE);
     // Verify that the result is not null
     Assertions.assertNotNull(result);
   }
@@ -301,12 +301,12 @@ public class BranchServiceImplTest {
     // BranchEntity
     when(branchRepository.findByBranchNameOrLocationAndBranchType(
             "a", BranchType.MAIN, true, pageable))
-            .thenReturn(page);
+        .thenReturn(page);
     // Mock the branchMapper's toDTO method to return the Branch DTO
     when(branchMapper.toDTO(Mockito.any(BranchEntity.class))).thenReturn(branch);
     // Call the method to be tested
     Page<Branch> result =
-            branchService.getByPaging(0, 10, "phoneNumber", "a", BranchType.MAIN, Boolean.TRUE);
+        branchService.getByPaging(0, 10, "phoneNumber", "a", BranchType.MAIN, Boolean.TRUE);
     // Verify that the result is not null
     Assertions.assertNotNull(result);
   }
@@ -324,12 +324,12 @@ public class BranchServiceImplTest {
     // BranchEntity
     when(branchRepository.findByBranchNameOrLocationAndBranchType(
             "a", BranchType.MAIN, true, pageable))
-            .thenReturn(page);
+        .thenReturn(page);
     // Mock the branchMapper's toDTO method to return the Branch DTO
     when(branchMapper.toDTO(Mockito.any(BranchEntity.class))).thenReturn(branch);
     // Call the method to be tested
     Page<Branch> result =
-            branchService.getByPaging(0, 10, "capacity", "a", BranchType.MAIN, Boolean.TRUE);
+        branchService.getByPaging(0, 10, "capacity", "a", BranchType.MAIN, Boolean.TRUE);
     // Verify that the result is not null
     Assertions.assertNotNull(result);
   }
@@ -347,12 +347,12 @@ public class BranchServiceImplTest {
     // BranchEntity
     when(branchRepository.findByBranchNameOrLocationAndBranchType(
             "a", BranchType.MAIN, true, pageable))
-            .thenReturn(page);
+        .thenReturn(page);
     // Mock the branchMapper's toDTO method to return the Branch DTO
     when(branchMapper.toDTO(Mockito.any(BranchEntity.class))).thenReturn(branch);
     // Call the method to be tested
     Page<Branch> result =
-            branchService.getByPaging(0, 10, "activeStatus", "a", BranchType.MAIN, Boolean.TRUE);
+        branchService.getByPaging(0, 10, "activeStatus", "a", BranchType.MAIN, Boolean.TRUE);
     // Verify that the result is not null
     Assertions.assertNotNull(result);
   }
@@ -370,12 +370,12 @@ public class BranchServiceImplTest {
     // BranchEntity
     when(branchRepository.findByBranchNameOrLocationAndBranchType(
             "a", BranchType.MAIN, true, pageable))
-            .thenReturn(page);
+        .thenReturn(page);
     // Mock the branchMapper's toDTO method to return the Branch DTO
     when(branchMapper.toDTO(Mockito.any(BranchEntity.class))).thenReturn(branch);
     // Call the method to be tested
     Page<Branch> result =
-            branchService.getByPaging(0, 10, null, "a", BranchType.MAIN, Boolean.TRUE);
+        branchService.getByPaging(0, 10, null, "a", BranchType.MAIN, Boolean.TRUE);
     // Verify that the result is not null
     Assertions.assertNotNull(result);
   }
@@ -393,12 +393,12 @@ public class BranchServiceImplTest {
     // BranchEntity
     when(branchRepository.findByBranchNameOrLocationAndBranchType(
             "", BranchType.MAIN, true, pageable))
-            .thenReturn(page);
+        .thenReturn(page);
     // Mock the branchMapper's toDTO method to return the Branch DTO
     when(branchMapper.toDTO(Mockito.any(BranchEntity.class))).thenReturn(branch);
     // Call the method to be tested
     Page<Branch> result =
-            branchService.getByPaging(0, 10, "activeStatus", null, BranchType.MAIN, Boolean.TRUE);
+        branchService.getByPaging(0, 10, "activeStatus", null, BranchType.MAIN, Boolean.TRUE);
     // Verify that the result is not null
     Assertions.assertNotNull(result);
   }
@@ -407,10 +407,10 @@ public class BranchServiceImplTest {
   @Test
   void testUTCID015_GetByPaging_sortInvalid() {
     assertThrows(
-            HrmCommonException.class,
-            () -> {
-              branchService.getByPaging(0, 10, "123455", "", BranchType.MAIN, Boolean.TRUE);
-            });
+        HrmCommonException.class,
+        () -> {
+          branchService.getByPaging(0, 10, "123455", "", BranchType.MAIN, Boolean.TRUE);
+        });
   }
 
   // CREATE

@@ -13,34 +13,32 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 public class EmailServiceTest {
-    @Mock
-    private JavaMailSender mailSender; // Mock the JavaMailSender
+  @Mock private JavaMailSender mailSender; // Mock the JavaMailSender
 
-    @InjectMocks
-    private EmailService emailService; // Inject mocks into EmailService
+  @InjectMocks private EmailService emailService; // Inject mocks into EmailService
 
-    public EmailServiceTest() {
-        MockitoAnnotations.openMocks(this); // Initialize mocks
-    }
+  public EmailServiceTest() {
+    MockitoAnnotations.openMocks(this); // Initialize mocks
+  }
 
-    @Test
-    void testSendEmail() {
-        // Arrange
-        String to = "test@example.com";
-        String subject = "Test Subject";
-        String text = "Test email content";
+  @Test
+  void testSendEmail() {
+    // Arrange
+    String to = "test@example.com";
+    String subject = "Test Subject";
+    String text = "Test email content";
 
-        // Create a SimpleMailMessage object to verify
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("tiendat288966@gmail.com");
-        message.setTo(to);
-        message.setSubject(subject);
-        message.setText(text);
+    // Create a SimpleMailMessage object to verify
+    SimpleMailMessage message = new SimpleMailMessage();
+    message.setFrom("tiendat288966@gmail.com");
+    message.setTo(to);
+    message.setSubject(subject);
+    message.setText(text);
 
-        // Act
-        emailService.sendEmail(to, subject, text);
+    // Act
+    emailService.sendEmail(to, subject, text);
 
-        // Assert
-        verify(mailSender, times(1)).send(refEq(message)); // Verify mailSender.send was called
-    }
+    // Assert
+    verify(mailSender, times(1)).send(refEq(message)); // Verify mailSender.send was called
+  }
 }
