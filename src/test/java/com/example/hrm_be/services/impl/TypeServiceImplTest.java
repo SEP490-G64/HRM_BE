@@ -1,19 +1,14 @@
 package com.example.hrm_be.services.impl;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
-import com.example.hrm_be.HrmBeApplication;
-import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.components.ProductTypeMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.ProductType;
 import com.example.hrm_be.models.entities.ProductTypeEntity;
 import com.example.hrm_be.repositories.ProductTypeRepository;
-import com.example.hrm_be.services.ProductTypeService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,41 +16,32 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.data.convert.TypeMapper;
 import org.springframework.data.domain.*;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.transaction.annotation.Transactional;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
 @ExtendWith(MockitoExtension.class)
 public class TypeServiceImplTest {
 
-  @Mock
-  private ProductTypeMapper typeMapper;
-  @Mock
-  private ProductTypeRepository typeRepository;
-  @InjectMocks
-  private ProductTypeServiceImpl typeService;
+  @Mock private ProductTypeMapper typeMapper;
+  @Mock private ProductTypeRepository typeRepository;
+  @InjectMocks private ProductTypeServiceImpl typeService;
 
   private ProductType type;
   private ProductTypeEntity typeEntity;
 
   @BeforeEach
   public void setup() {
-    type = ProductType.builder()
+    type =
+        ProductType.builder()
             .typeName("Valid Type Name")
             .typeDescription("Valid Type Description")
             .build();
 
-    typeEntity = ProductTypeEntity.builder()
+    typeEntity =
+        ProductTypeEntity.builder()
             .typeName("Valid Type Name")
             .typeDescription("Valid Type Description")
             .build();
@@ -114,13 +100,13 @@ public class TypeServiceImplTest {
   // UTCID03 - getByPaging: pageSize invalid
   @Test
   void testUTCID03_GetByPaging_pageSizeInvalid() {
-    assertThrows(HrmCommonException.class, () -> typeService.getByPaging(0,0, "typeName", ""));
+    assertThrows(HrmCommonException.class, () -> typeService.getByPaging(0, 0, "typeName", ""));
   }
 
   // UTCID04 - getByPaging: sortBy invalid
   @Test
   void testUTCID04_GetByPaging_sortByInvalid() {
-    assertThrows(HrmCommonException.class, () -> typeService.getByPaging(0,0, "a", ""));
+    assertThrows(HrmCommonException.class, () -> typeService.getByPaging(0, 0, "a", ""));
   }
 
   // UTCID05 - getByPaging: All valid
@@ -208,8 +194,8 @@ public class TypeServiceImplTest {
   // UTCID05 - create: TypeName duplicate
   @Test
   void testUTCID05_Create_TypeNameDuplicate() {
-   type.setTypeName("Duplicate");
-   when(typeRepository.existsByTypeName(type.getTypeName())).thenReturn(true);
+    type.setTypeName("Duplicate");
+    when(typeRepository.existsByTypeName(type.getTypeName())).thenReturn(true);
     assertThrows(HrmCommonException.class, () -> typeService.create(type));
   }
 
@@ -228,7 +214,6 @@ public class TypeServiceImplTest {
 
     assertThrows(HrmCommonException.class, () -> typeService.create(type));
   }
-
 
   // UPDATE
   // UTCID01 - UPDATE: all valid
@@ -313,7 +298,6 @@ public class TypeServiceImplTest {
     type.setId(1L);
     when(typeService.existById(type.getId())).thenReturn(true);
     typeService.delete(type.getId());
-
   }
 
   // UTCID02 - Delete: id null
@@ -368,9 +352,4 @@ public class TypeServiceImplTest {
     ProductType result = typeService.getByName(name);
     Assertions.assertNotNull(result);
   }
-
-
-
-
 }
-

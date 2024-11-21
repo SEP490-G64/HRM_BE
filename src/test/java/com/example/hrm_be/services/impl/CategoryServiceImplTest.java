@@ -5,7 +5,6 @@ import static org.mockito.Mockito.when;
 
 import com.example.hrm_be.components.ProductCategoryMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
-import com.example.hrm_be.models.dtos.Manufacturer;
 import com.example.hrm_be.models.dtos.ProductCategory;
 import com.example.hrm_be.models.entities.ProductCategoryEntity;
 import com.example.hrm_be.repositories.ProductCategoryRepository;
@@ -26,24 +25,24 @@ import org.springframework.data.domain.*;
 @ExtendWith(MockitoExtension.class)
 public class CategoryServiceImplTest {
 
-  @Mock
-  private ProductCategoryMapper categoryMapper;
+  @Mock private ProductCategoryMapper categoryMapper;
   @Mock private ProductCategoryRepository categoryRepository;
-  @InjectMocks
-  private ProductCategoryServiceImpl categoryService;
+  @InjectMocks private ProductCategoryServiceImpl categoryService;
 
   private ProductCategory category;
   private ProductCategoryEntity categoryEntity;
 
   @BeforeEach
   public void setup() {
-    category = ProductCategory.builder()
+    category =
+        ProductCategory.builder()
             .categoryName("Valid Category")
             .categoryDescription("Valid Description")
             .taxRate(BigDecimal.valueOf(10.0))
             .build();
 
-    categoryEntity = ProductCategoryEntity.builder()
+    categoryEntity =
+        ProductCategoryEntity.builder()
             .categoryName("Valid Category")
             .categoryDescription("Valid Description")
             .taxRate(BigDecimal.valueOf(10.0))
@@ -82,8 +81,7 @@ public class CategoryServiceImplTest {
     List<ProductCategoryEntity> categories = Collections.singletonList(categoryEntity);
     Page<ProductCategoryEntity> page = new PageImpl<>(categories, pageable, categories.size());
 
-    when(categoryRepository.findByCategoryNameContainingIgnoreCase(
-            "a", pageable)).thenReturn(page);
+    when(categoryRepository.findByCategoryNameContainingIgnoreCase("a", pageable)).thenReturn(page);
     when(categoryMapper.toDTO(categoryEntity)).thenReturn(category);
 
     Page<ProductCategory> result = categoryService.getByPaging(0, 10, "categoryName", "a");
@@ -94,12 +92,14 @@ public class CategoryServiceImplTest {
 
   @Test
   void testUTCID02_GetByPaging_pageNoInvalid() {
-    assertThrows(HrmCommonException.class, () -> categoryService.getByPaging(-1, 10, "categoryName", "a"));
+    assertThrows(
+        HrmCommonException.class, () -> categoryService.getByPaging(-1, 10, "categoryName", "a"));
   }
 
   @Test
   void testUTCID03_GetByPaging_pageSizeInvalid() {
-    assertThrows(HrmCommonException.class, () -> categoryService.getByPaging(0, 0, "categoryName", "a"));
+    assertThrows(
+        HrmCommonException.class, () -> categoryService.getByPaging(0, 0, "categoryName", "a"));
   }
 
   // GET BY PAGING
@@ -109,8 +109,7 @@ public class CategoryServiceImplTest {
     List<ProductCategoryEntity> categories = Collections.singletonList(categoryEntity);
     Page<ProductCategoryEntity> page = new PageImpl<>(categories, pageable, categories.size());
 
-    when(categoryRepository.findByCategoryNameContainingIgnoreCase(
-            "a", pageable)).thenReturn(page);
+    when(categoryRepository.findByCategoryNameContainingIgnoreCase("a", pageable)).thenReturn(page);
     when(categoryMapper.toDTO(categoryEntity)).thenReturn(category);
 
     Page<ProductCategory> result = categoryService.getByPaging(0, 10, "categoryDescription", "a");
@@ -126,8 +125,7 @@ public class CategoryServiceImplTest {
     List<ProductCategoryEntity> categories = Collections.singletonList(categoryEntity);
     Page<ProductCategoryEntity> page = new PageImpl<>(categories, pageable, categories.size());
 
-    when(categoryRepository.findByCategoryNameContainingIgnoreCase(
-            "a", pageable)).thenReturn(page);
+    when(categoryRepository.findByCategoryNameContainingIgnoreCase("a", pageable)).thenReturn(page);
     when(categoryMapper.toDTO(categoryEntity)).thenReturn(category);
 
     Page<ProductCategory> result = categoryService.getByPaging(0, 10, "taxRate", "a");
@@ -143,8 +141,7 @@ public class CategoryServiceImplTest {
     List<ProductCategoryEntity> categories = Collections.singletonList(categoryEntity);
     Page<ProductCategoryEntity> page = new PageImpl<>(categories, pageable, categories.size());
 
-    when(categoryRepository.findByCategoryNameContainingIgnoreCase(
-            "a", pageable)).thenReturn(page);
+    when(categoryRepository.findByCategoryNameContainingIgnoreCase("a", pageable)).thenReturn(page);
     when(categoryMapper.toDTO(categoryEntity)).thenReturn(category);
 
     Page<ProductCategory> result = categoryService.getByPaging(0, 10, null, "a");
@@ -160,8 +157,7 @@ public class CategoryServiceImplTest {
     List<ProductCategoryEntity> categories = Collections.singletonList(categoryEntity);
     Page<ProductCategoryEntity> page = new PageImpl<>(categories, pageable, categories.size());
 
-    when(categoryRepository.findByCategoryNameContainingIgnoreCase(
-            "", pageable)).thenReturn(page);
+    when(categoryRepository.findByCategoryNameContainingIgnoreCase("", pageable)).thenReturn(page);
     when(categoryMapper.toDTO(categoryEntity)).thenReturn(category);
 
     Page<ProductCategory> result = categoryService.getByPaging(0, 10, null, null);
@@ -210,7 +206,8 @@ public class CategoryServiceImplTest {
   void testUTCID05_Create_categoryNameDuplicate() {
     category.setCategoryName("Name Duplicate");
     categoryEntity.setCategoryName("Name Duplicate");
-    when(categoryRepository.existsByCategoryName(categoryEntity.getCategoryName())).thenReturn(true);
+    when(categoryRepository.existsByCategoryName(categoryEntity.getCategoryName()))
+        .thenReturn(true);
     assertThrows(HrmCommonException.class, () -> categoryService.create(category));
   }
 
@@ -238,7 +235,7 @@ public class CategoryServiceImplTest {
   // UTCID09 - create: category null
   @Test
   void testUTCID09_Create_categoryNull() {
-    category= null;
+    category = null;
 
     assertThrows(HrmCommonException.class, () -> categoryService.create(category));
   }
@@ -327,7 +324,7 @@ public class CategoryServiceImplTest {
   @Test
   void testUTCID010_Update_idNotExist() {
     category.setId(1L);
-    when(categoryRepository.findById(category.getId())).thenReturn(Optional.empty() );
+    when(categoryRepository.findById(category.getId())).thenReturn(Optional.empty());
     assertThrows(HrmCommonException.class, () -> categoryService.update(category));
   }
 
@@ -337,7 +334,6 @@ public class CategoryServiceImplTest {
     category = null;
     assertThrows(HrmCommonException.class, () -> categoryService.update(category));
   }
-
 
   // DELETE
   // UTCID01 - Delete: valid
@@ -400,4 +396,3 @@ public class CategoryServiceImplTest {
     Assertions.assertNotNull(result);
   }
 }
-

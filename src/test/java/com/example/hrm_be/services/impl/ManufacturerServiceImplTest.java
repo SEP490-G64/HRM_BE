@@ -1,18 +1,13 @@
 package com.example.hrm_be.services.impl;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
-import com.example.hrm_be.HrmBeApplication;
-import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.components.ManufacturerMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.Manufacturer;
 import com.example.hrm_be.models.entities.ManufacturerEntity;
 import com.example.hrm_be.repositories.ManufacturerRepository;
-import com.example.hrm_be.services.ManufacturerService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,17 +15,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.*;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.transaction.annotation.Transactional;
-import org.testcontainers.junit.jupiter.Testcontainers;
-import reactor.core.publisher.Mono;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -38,19 +24,17 @@ import java.util.Optional;
 @ExtendWith(MockitoExtension.class)
 public class ManufacturerServiceImplTest {
 
-  @Mock
-  private ManufacturerMapper manufacturerMapper;
-  @Mock
-  private ManufacturerRepository manufacturerRepository;
-  @InjectMocks
-  private ManufacturerServiceImpl manufacturerService;
+  @Mock private ManufacturerMapper manufacturerMapper;
+  @Mock private ManufacturerRepository manufacturerRepository;
+  @InjectMocks private ManufacturerServiceImpl manufacturerService;
 
   private Manufacturer manufacturer;
   private ManufacturerEntity manufacturerEntity;
 
   @BeforeEach
   public void setup() {
-    manufacturer = Manufacturer.builder()
+    manufacturer =
+        Manufacturer.builder()
             .manufacturerName("Valid Manufacturer Name")
             .address("Valid Manufacturer Address")
             .email("validemail@mail.com")
@@ -60,7 +44,8 @@ public class ManufacturerServiceImplTest {
             .status(true)
             .build();
 
-    manufacturerEntity = ManufacturerEntity.builder()
+    manufacturerEntity =
+        ManufacturerEntity.builder()
             .manufacturerName("Valid Manufacturer Name")
             .address("Valid Manufacturer Address")
             .email("validemail@mail.com")
@@ -108,32 +93,34 @@ public class ManufacturerServiceImplTest {
     when(manufacturerRepository.searchManufacturers("", true, pageable)).thenReturn(page);
     when(manufacturerMapper.toDTO(manufacturerEntity)).thenReturn(manufacturer);
 
-    Page<Manufacturer> result = manufacturerService.getByPaging(0, 10, "manufacturerName", "", true);
+    Page<Manufacturer> result =
+        manufacturerService.getByPaging(0, 10, "manufacturerName", "", true);
 
     Assertions.assertNotNull(result);
     Assertions.assertEquals(1, result.getTotalElements());
-
   }
 
   // UTCID02 - getByPaging: pageNo invalid
   @Test
   void testUTCID02_GetByPaging_pageNoInvalid() {
-    assertThrows(HrmCommonException.class, () ->
-            manufacturerService.getByPaging(-1, 10, "manufacturerName", "", true));
+    assertThrows(
+        HrmCommonException.class,
+        () -> manufacturerService.getByPaging(-1, 10, "manufacturerName", "", true));
   }
 
   // UTCID03 - getByPaging: pageSize invalid
   @Test
   void testUTCID03_GetByPaging_pageSizeInvalid() {
-    assertThrows(HrmCommonException.class, () ->
-            manufacturerService.getByPaging(0, 0, "manufacturerName", "", true));
+    assertThrows(
+        HrmCommonException.class,
+        () -> manufacturerService.getByPaging(0, 0, "manufacturerName", "", true));
   }
 
   // UTCID04 - getByPaging: sortBy invalid
   @Test
   void testUTCID04_GetByPaging_sortByInvalid() {
-    assertThrows(HrmCommonException.class, () ->
-                      manufacturerService.getByPaging(0, 1, "a", "a", true));
+    assertThrows(
+        HrmCommonException.class, () -> manufacturerService.getByPaging(0, 1, "a", "a", true));
   }
 
   // SEARCH
@@ -151,7 +138,6 @@ public class ManufacturerServiceImplTest {
 
     Assertions.assertNotNull(result);
     Assertions.assertEquals(1, result.getTotalElements());
-
   }
 
   // SEARCH
@@ -169,7 +155,6 @@ public class ManufacturerServiceImplTest {
 
     Assertions.assertNotNull(result);
     Assertions.assertEquals(1, result.getTotalElements());
-
   }
 
   // SEARCH
@@ -187,7 +172,6 @@ public class ManufacturerServiceImplTest {
 
     Assertions.assertNotNull(result);
     Assertions.assertEquals(1, result.getTotalElements());
-
   }
 
   // SEARCH
@@ -205,7 +189,6 @@ public class ManufacturerServiceImplTest {
 
     Assertions.assertNotNull(result);
     Assertions.assertEquals(1, result.getTotalElements());
-
   }
 
   // SEARCH
@@ -223,7 +206,6 @@ public class ManufacturerServiceImplTest {
 
     Assertions.assertNotNull(result);
     Assertions.assertEquals(1, result.getTotalElements());
-
   }
 
   // SEARCH
@@ -241,7 +223,6 @@ public class ManufacturerServiceImplTest {
 
     Assertions.assertNotNull(result);
     Assertions.assertEquals(1, result.getTotalElements());
-
   }
 
   // UTCID011 - getByPaging: All valid
@@ -258,7 +239,6 @@ public class ManufacturerServiceImplTest {
 
     Assertions.assertNotNull(result);
     Assertions.assertEquals(1, result.getTotalElements());
-
   }
 
   // UTCID012 - getByPaging: All valid
@@ -275,7 +255,6 @@ public class ManufacturerServiceImplTest {
 
     Assertions.assertNotNull(result);
     Assertions.assertEquals(1, result.getTotalElements());
-
   }
 
   // CREATE
@@ -319,8 +298,9 @@ public class ManufacturerServiceImplTest {
     manufacturer.setManufacturerName("Name Duplicate");
     manufacturerEntity.setId(1L);
     manufacturerEntity.setManufacturerName("Name Duplicate");
-    when(manufacturerRepository.existsByManufacturerNameAndAddress(manufacturerEntity.getManufacturerName(),
-            manufacturerEntity.getAddress())).thenReturn(true);
+    when(manufacturerRepository.existsByManufacturerNameAndAddress(
+            manufacturerEntity.getManufacturerName(), manufacturerEntity.getAddress()))
+        .thenReturn(true);
     assertThrows(HrmCommonException.class, () -> manufacturerService.create(manufacturer));
   }
 
@@ -352,19 +332,19 @@ public class ManufacturerServiceImplTest {
     assertThrows(HrmCommonException.class, () -> manufacturerService.create(manufacturer));
   }
 
-   //UTCID010 - create: taxCode duplicate
-   @Test
-   void testUTCID010_Create_taxCodeDuplicate() {
-     // Set the tax code for manufacturer to "Duplicate"
-     manufacturer.setId(1L);
-     manufacturer.setTaxCode("0101234557");
+  // UTCID010 - create: taxCode duplicate
+  @Test
+  void testUTCID010_Create_taxCodeDuplicate() {
+    // Set the tax code for manufacturer to "Duplicate"
+    manufacturer.setId(1L);
+    manufacturer.setTaxCode("0101234557");
 
-     // Use lenient stubbing
-     when(manufacturerRepository.existsByTaxCode(manufacturer.getTaxCode())).thenReturn(true);
+    // Use lenient stubbing
+    when(manufacturerRepository.existsByTaxCode(manufacturer.getTaxCode())).thenReturn(true);
 
-     // Execute the method and expect an exception to be thrown due to duplicate tax code
-     assertThrows(HrmCommonException.class, () -> manufacturerService.create(manufacturer));
-   }
+    // Execute the method and expect an exception to be thrown due to duplicate tax code
+    assertThrows(HrmCommonException.class, () -> manufacturerService.create(manufacturer));
+  }
 
   // UTCID011 - create: origin greater than 255 characters
   @Test
@@ -387,8 +367,6 @@ public class ManufacturerServiceImplTest {
     assertThrows(HrmCommonException.class, () -> manufacturerService.create(manufacturer));
   }
 
-
-
   // UPDATE
   // UTCID01 - UPDATE: all valid
   @Test
@@ -396,7 +374,8 @@ public class ManufacturerServiceImplTest {
     manufacturer.setId(1L);
     manufacturerEntity.setId(1L);
 
-    when(manufacturerRepository.findById(manufacturer.getId())).thenReturn(Optional.of(manufacturerEntity));
+    when(manufacturerRepository.findById(manufacturer.getId()))
+        .thenReturn(Optional.of(manufacturerEntity));
     when(manufacturerRepository.save(manufacturerEntity)).thenReturn(manufacturerEntity);
     when(manufacturerMapper.toDTO(manufacturerEntity)).thenReturn(manufacturer);
 
@@ -435,9 +414,11 @@ public class ManufacturerServiceImplTest {
     manufacturerEntity.setId(1L);
     manufacturerEntity.setManufacturerName("Old Name");
     manufacturerEntity.setAddress("Old Address");
-    when(manufacturerRepository.findById(manufacturer.getId())).thenReturn(Optional.of(manufacturerEntity));
-    when(manufacturerRepository.existsByManufacturerNameAndAddress(manufacturer.getManufacturerName(),
-            manufacturer.getAddress())).thenReturn(true);
+    when(manufacturerRepository.findById(manufacturer.getId()))
+        .thenReturn(Optional.of(manufacturerEntity));
+    when(manufacturerRepository.existsByManufacturerNameAndAddress(
+            manufacturer.getManufacturerName(), manufacturer.getAddress()))
+        .thenReturn(true);
     assertThrows(HrmCommonException.class, () -> manufacturerService.update(manufacturer));
   }
 
@@ -450,9 +431,11 @@ public class ManufacturerServiceImplTest {
     manufacturerEntity.setId(1L);
     manufacturerEntity.setManufacturerName("new Name");
     manufacturerEntity.setAddress(" Address");
-    when(manufacturerRepository.findById(manufacturer.getId())).thenReturn(Optional.of(manufacturerEntity));
-    when(manufacturerRepository.existsByManufacturerNameAndAddress(manufacturer.getManufacturerName(),
-            manufacturer.getAddress())).thenReturn(true);
+    when(manufacturerRepository.findById(manufacturer.getId()))
+        .thenReturn(Optional.of(manufacturerEntity));
+    when(manufacturerRepository.existsByManufacturerNameAndAddress(
+            manufacturer.getManufacturerName(), manufacturer.getAddress()))
+        .thenReturn(true);
     assertThrows(HrmCommonException.class, () -> manufacturerService.update(manufacturer));
   }
 
@@ -502,7 +485,8 @@ public class ManufacturerServiceImplTest {
     manufacturer.setTaxCode("0101234557");
     manufacturerEntity.setId(1L);
     manufacturerEntity.setTaxCode("0101234566");
-    when(manufacturerRepository.findById(manufacturer.getId())).thenReturn(Optional.of(manufacturerEntity));
+    when(manufacturerRepository.findById(manufacturer.getId()))
+        .thenReturn(Optional.of(manufacturerEntity));
     when(manufacturerRepository.existsByTaxCode(manufacturer.getTaxCode())).thenReturn(true);
     assertThrows(HrmCommonException.class, () -> manufacturerService.update(manufacturer));
   }
@@ -582,10 +566,10 @@ public class ManufacturerServiceImplTest {
   @Test
   void testUTCID01_getByName_AllValid() {
     String name = "a";
-    when(manufacturerRepository.findByManufacturerName(name)).thenReturn(Optional.of(manufacturerEntity));
+    when(manufacturerRepository.findByManufacturerName(name))
+        .thenReturn(Optional.of(manufacturerEntity));
     when(manufacturerMapper.toDTO(manufacturerEntity)).thenReturn(manufacturer);
     Manufacturer result = manufacturerService.getByName(name);
     Assertions.assertNotNull(result);
   }
 }
-
