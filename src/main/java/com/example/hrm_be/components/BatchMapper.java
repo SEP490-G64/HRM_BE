@@ -104,9 +104,9 @@ public class BatchMapper {
                     .produceDate(e.getProduceDate())
                     .expireDate(e.getExpireDate())
                     .inboundPrice(e.getInboundPrice())
-                    .product(
+                    .productBaseDTO(
                         e.getProduct() != null
-                            ? productMapper.convertToBaseInfo(e.getProduct())
+                            ? productMapper.convertToProductBaseDTO(e.getProduct())
                             : null)
                     .build())
         .orElse(null);
