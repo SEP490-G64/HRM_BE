@@ -131,6 +131,8 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
                   productDTO.setProductName(detail.getProduct().getProductName());
                   productDTO.setRegistrationCode(detail.getProduct().getRegistrationCode());
                   detailDTO.setProduct(productDTO);
+                  detailDTO.setSystemQuantity(detail.getSystemQuantity());
+                  detailDTO.setCountedQuantity(detail.getCountedQuantity());
                   detailDTO.setReason(detail.getReason());
 
                   // Set difference quantity
@@ -161,6 +163,8 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
 
                   batchDetailDTO.setBatch(batchDTO);
                   batchDetailDTO.setProduct(productDTO);
+                  batchDetailDTO.setCountedQuantity(batchDetail.getSystemQuantity());
+                  batchDetailDTO.setSystemQuantity(batchDetail.getCountedQuantity());
                   batchDetailDTO.setReason(batchDetail.getReason());
                   // Set difference quantity
                   batchDetailDTO.setDifference(batchDetail.getDifference());
