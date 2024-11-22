@@ -45,6 +45,7 @@ import jakarta.persistence.criteria.Predicate;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -128,9 +129,12 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
                   // Set product details
                   Product productDTO = new Product();
                   productDTO.setId(detail.getProduct().getId());
+                  productDTO.setBaseUnit(detail.getProduct().getBaseUnit());
                   productDTO.setProductName(detail.getProduct().getProductName());
                   productDTO.setRegistrationCode(detail.getProduct().getRegistrationCode());
                   detailDTO.setProduct(productDTO);
+                  detailDTO.setSystemQuantity(detail.getSystemQuantity());
+                  detailDTO.setCountedQuantity(detail.getCountedQuantity());
                   detailDTO.setReason(detail.getReason());
 
                   // Set difference quantity
@@ -155,12 +159,15 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
 
                   Product productDTO = new Product();
                   productDTO.setId(batchDetail.getBatch().getProduct().getId());
+                  productDTO.setBaseUnit(batchDetail.getBatch().getProduct().getBaseUnit());
                   productDTO.setProductName(batchDetail.getBatch().getProduct().getProductName());
                   productDTO.setRegistrationCode(
                       batchDetail.getBatch().getProduct().getRegistrationCode());
 
                   batchDetailDTO.setBatch(batchDTO);
                   batchDetailDTO.setProduct(productDTO);
+                  batchDetailDTO.setCountedQuantity(batchDetail.getSystemQuantity());
+                  batchDetailDTO.setSystemQuantity(batchDetail.getCountedQuantity());
                   batchDetailDTO.setReason(batchDetail.getReason());
                   // Set difference quantity
                   batchDetailDTO.setDifference(batchDetail.getDifference());
@@ -173,6 +180,14 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
     List<InventoryCheckProductDetails> combinedProducts = new ArrayList<>();
     combinedProducts.addAll(productDetails);
     combinedProducts.addAll(batchDetails);
+    combinedProducts.sort(Comparator.comparing((InventoryCheckProductDetails detail) -> detail.getProduct().getId())
+        .thenComparing(detail -> {
+          // Handle batch ID for tie-breaking
+          if (detail.getBatch() != null) {
+            return detail.getBatch().getId();
+          }
+          return Long.MIN_VALUE; // Non-batch items get the lowest priority
+        }));
     // Set details in the InventoryCheckDTO
     inventoryCheckDTO.setInventoryCheckProductDetails(combinedProducts);
 
@@ -511,8 +526,6 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
       branchBatch.setQuantity(
           branchBatch.getQuantity().subtract(BigDecimal.valueOf(batchDetail.getDifference())));
       branchBatchService.save(branchBatch);
-      branchProduct.setQuantity(
-          branchProduct.getQuantity().subtract(BigDecimal.valueOf(batchDetail.getDifference())));
       branchProductService.save(branchProduct);
     }
     // Notification for Manager
