@@ -19,14 +19,14 @@ import java.math.BigDecimal;
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class DashboardProduct {
-    Long Id;
-    String ProductName;
-    String Image;
-    BigDecimal InboundQuantity;
-    BigDecimal OutboundQuantity;
-    BigDecimal TotalQuantity;
-    BigDecimal InboundPrice;
-    BigDecimal OutboundPrice;
-    BigDecimal TotalPrice;
-    String UnitName;
+  Long Id;
+  String ProductName;
+  String Image;
+  BigDecimal InboundQuantity;
+  BigDecimal OutboundQuantity;
+  BigDecimal TotalQuantity;
+  BigDecimal InboundPrice;
+  BigDecimal OutboundPrice;
+  BigDecimal TotalPrice;
+  String UnitName;
 }

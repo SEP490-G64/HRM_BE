@@ -19,9 +19,9 @@ import java.math.BigDecimal;
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class DashboardSupplier {
-    Long Id;
-    String SupplierName;
-    String Address;
-    Long Quantity;
-    BigDecimal Value;
+  Long Id;
+  String SupplierName;
+  String Address;
+  Long Quantity;
+  BigDecimal Value;
 }
