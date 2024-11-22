@@ -45,6 +45,7 @@ import jakarta.persistence.criteria.Predicate;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -179,6 +180,14 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
     List<InventoryCheckProductDetails> combinedProducts = new ArrayList<>();
     combinedProducts.addAll(productDetails);
     combinedProducts.addAll(batchDetails);
+    combinedProducts.sort(Comparator.comparing((InventoryCheckProductDetails detail) -> detail.getProduct().getId())
+        .thenComparing(detail -> {
+          // Handle batch ID for tie-breaking
+          if (detail.getBatch() != null) {
+            return detail.getBatch().getId();
+          }
+          return Long.MIN_VALUE; // Non-batch items get the lowest priority
+        }));
     // Set details in the InventoryCheckDTO
     inventoryCheckDTO.setInventoryCheckProductDetails(combinedProducts);
 
@@ -517,8 +526,6 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
       branchBatch.setQuantity(
           branchBatch.getQuantity().subtract(BigDecimal.valueOf(batchDetail.getDifference())));
       branchBatchService.save(branchBatch);
-      branchProduct.setQuantity(
-          branchProduct.getQuantity().subtract(BigDecimal.valueOf(batchDetail.getDifference())));
       branchProductService.save(branchProduct);
     }
     // Notification for Manager
