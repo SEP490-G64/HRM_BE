@@ -728,6 +728,7 @@ public class ProductServiceImpl implements ProductService {
     try {
       for (Product product : productsToSave) {
         // Convert product to entity and save it
+        product.setStatus(ProductStatus.CON_HANG);
         ProductEntity savedProduct = productRepository.save(productMapper.toEntity(product));
 
         // Get the branch of the current authenticated user
