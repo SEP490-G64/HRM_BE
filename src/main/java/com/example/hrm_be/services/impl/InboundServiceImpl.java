@@ -248,11 +248,21 @@ public class InboundServiceImpl implements InboundService {
           HrmConstant.ERROR.INBOUND.NOT_EXIST); // Error if inbound entity is not found
     }
 
+    if (oldinboundEntity.getStatus() != InboundStatus.CHO_DUYET) {
+      throw new HrmCommonException(HrmConstant.ERROR.INBOUND.INVALID);
+    }
+
     String email = userService.getAuthenticatedUserEmail();
     UserEntity userEntity = userMapper.toEntity(userService.findLoggedInfoByEmail(email));
 
     return Optional.ofNullable(oldinboundEntity)
-        .map(op -> op.toBuilder().isApproved(accept).approvedBy(userEntity).build())
+        .map(
+            op ->
+                op.toBuilder()
+                    .isApproved(accept)
+                    .approvedBy(userEntity)
+                    .status(accept ? InboundStatus.CHO_HANG : InboundStatus.BAN_NHAP)
+                    .build())
         .map(inboundRepository::save)
         .map(inboundMapper::toDTO)
         .orElse(null);

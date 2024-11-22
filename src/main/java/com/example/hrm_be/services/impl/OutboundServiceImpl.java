@@ -235,14 +235,24 @@ public class OutboundServiceImpl implements OutboundService {
     OutboundEntity oldOutboundEntity = outboundRepository.findById(id).orElse(null);
     if (oldOutboundEntity == null) {
       throw new HrmCommonException(
-          HrmConstant.ERROR.BRANCH.NOT_EXIST); // Error if outbound entity is not found
+          HrmConstant.ERROR.OUTBOUND.NOT_EXIST); // Error if outbound entity is not found
+    }
+
+    if (oldOutboundEntity.getStatus() != OutboundStatus.CHO_DUYET) {
+      throw new HrmCommonException(HrmConstant.ERROR.OUTBOUND.INVALID);
     }
 
     String email = userService.getAuthenticatedUserEmail();
     UserEntity userEntity = userMapper.toEntity(userService.findLoggedInfoByEmail(email));
 
     return Optional.ofNullable(oldOutboundEntity)
-        .map(op -> op.toBuilder().isApproved(accept).approvedBy(userEntity).build())
+        .map(
+            op ->
+                op.toBuilder()
+                    .isApproved(accept)
+                    .approvedBy(userEntity)
+                    .status(accept ? OutboundStatus.KIEM_HANG : OutboundStatus.BAN_NHAP)
+                    .build())
         .map(outboundRepository::save)
         .map(outboundMapper::toDTO)
         .orElse(null);
@@ -288,7 +298,7 @@ public class OutboundServiceImpl implements OutboundService {
     for (OutboundProductDetail productDetail : request.getOutboundProductDetails()) {
       Product product = productDetail.getProduct();
       Batch batch = productDetail.getBatch();
-      Product productEntity = productService.getById(product.getId());
+      ProductEntity productEntity = productMapper.toEntity(productService.getById(product.getId()));
 
       BigDecimal outboundQuantity = productDetail.getOutboundQuantity();
 
@@ -326,6 +336,7 @@ public class OutboundServiceImpl implements OutboundService {
                   .outbound(updatedOutboundEntity)
                   .quantity(productDetail.getOutboundQuantity())
                   .batch(batchEntity)
+                  .unitOfMeasurement(productEntity.getBaseUnit())
                   .build();
         }
         outboundDetailEntities.add(outboundDetail);
@@ -363,8 +374,9 @@ public class OutboundServiceImpl implements OutboundService {
                   .id(null)
                   .outbound(updatedOutboundEntity)
                   .price(productDetail.getPrice())
-                  .product(productMapper.toEntity(productEntity))
+                  .product(productEntity)
                   .outboundQuantity(productDetail.getOutboundQuantity())
+                  .unitOfMeasurement(productEntity.getBaseUnit())
                   .build();
         }
         outboundProductDetailEntities.add(outboundProductDetail);
@@ -815,7 +827,7 @@ public class OutboundServiceImpl implements OutboundService {
       // Notification for Manager
 
       String message =
-          "🔔 Thông báo: Phiều nhập "
+          "🔔 Thông báo: Phiếu nhập "
               + outbound.getOutboundCode()
               + "đang chờ duyệt "
               + "bởi "
