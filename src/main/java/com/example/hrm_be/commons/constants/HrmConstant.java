@@ -228,6 +228,7 @@ public class HrmConstant {
       public static final String EXIST = "error.inbound.exist";
       public static final String NOT_CHILD = "error.inbound.not_child";
       public static final String NOT_EXIST = "error.inboud.not_exist";
+      public static final String INVALID = "error.inboud.invalid";
     }
 
     public static class BRANCHPRODUCT {
@@ -255,6 +256,7 @@ public class HrmConstant {
       public static final String EXIST = "error.outbound.exist";
       public static final String NOT_CHILD = "error.outbound.not_child";
       public static final String NOT_EXIST = "error.outbound.not_exist";
+      public static final String INVALID = "error.outbound.invalid";
     }
 
     public static class NOTIFICATION {
