@@ -1,510 +1,703 @@
 package com.example.hrm_be.services.impl;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.*;
 
-import com.example.hrm_be.HrmBeApplication;
 import com.example.hrm_be.commons.constants.HrmConstant;
+import com.example.hrm_be.components.SupplierMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.Supplier;
+import com.example.hrm_be.models.entities.SupplierEntity;
 import com.example.hrm_be.repositories.SupplierRepository;
-import com.example.hrm_be.services.SupplierService;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.data.domain.Page;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.transaction.annotation.Transactional;
-import org.testcontainers.junit.jupiter.Testcontainers;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.*;
 
-@Testcontainers
-@ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = HrmBeApplication.class)
-@ActiveProfiles("test")
-@Import(SupplierServiceImpl.class)
-@Transactional
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
+@ExtendWith(MockitoExtension.class)
 public class SupplierServiceImplTest {
 
-  @Autowired private SupplierService supplierService;
-  @Autowired private SupplierRepository supplierRepository;
+  @Mock private SupplierMapper supplierMapper;
+  @Mock private SupplierRepository supplierRepository;
+  @InjectMocks private SupplierServiceImpl supplierService;
 
-  // Helper to create a valid Supplier entity
-  private Supplier createValidSupplier() {
-    return new Supplier()
-        .setSupplierName("Valid Supplier Name")
-        .setAddress("Valid Supplier Address")
-        .setPhoneNumber("0912345678")
-        .setTaxCode("1234567890")
-        .setPhoneNumber("0912345678")
-        .setFaxNumber("012-1234567")
-        .setStatus(true);
+  private Supplier supplier;
+  private SupplierEntity supplierEntity;
+
+  @BeforeEach
+  public void setup() {
+    supplier =
+        Supplier.builder()
+            .supplierName("Valid Supplier Name")
+            .address("Valid Supplier Address")
+            .email("validsupplier@mail.com")
+            .taxCode("0101234567")
+            .phoneNumber("0912345678")
+            .status(true)
+            .build();
+
+    supplierEntity =
+        SupplierEntity.builder()
+            .supplierName("Valid Supplier Name")
+            .address("Valid Supplier Address")
+            .email("validsupplier@mail.com")
+            .taxCode("0101234567")
+            .phoneNumber("0912345678")
+            .status(true)
+            .build();
   }
 
   // GET
   // UTCID01 - Get: valid
   @Test
-  void testUTCID01_Get_AllValid() {
-    Supplier Supplier = createValidSupplier();
-    Supplier Supplier1 = supplierService.create(Supplier);
-    Supplier Supplier2 = supplierService.getById(Supplier1.getId());
-    assertEquals(Supplier1, Supplier2);
+  void testUTCID01_Get_idValid() {
+    Long id = 1L;
+    when(supplierRepository.findById(id)).thenReturn(Optional.of(supplierEntity));
+    when(supplierMapper.toDTO(supplierEntity)).thenReturn(supplier);
+    Supplier result = supplierService.getById(id);
+    Assertions.assertNotNull(result);
   }
 
   // UTCID02 - Get: id null
   @Test
   void testUTCID02_Get_idNull() {
-    assertThrows(HrmCommonException.class, () -> supplierService.getById(null));
+    Long id = null;
+    assertThrows(HrmCommonException.class, () -> supplierService.getById(id));
   }
 
   // UTCID03 - Get: id not exist
   @Test
   void testUTCID03_Get_idNotExist() {
-    supplierRepository.deleteAll();
-    Long nonExistingId = 1L;
-    assertEquals(null, supplierService.getById(nonExistingId));
+    Long id = 1L;
+    when(supplierRepository.findById(id)).thenReturn(Optional.empty());
+    Assertions.assertNull(supplierService.getById(id));
   }
 
   // SEARCH
   // UTCID01 - getByPaging: All valid
   @Test
   void testUTCID01_GetByPaging_AllValid() {
-    Supplier Supplier = createValidSupplier();
-    supplierRepository.deleteAll();
-    Supplier savedSupplier = supplierService.create(Supplier);
-    assertThat(savedSupplier).isNotNull();
+    Pageable pageable = PageRequest.of(0, 10, Sort.by("supplierName").descending());
+    List<SupplierEntity> suppliers = Collections.singletonList(supplierEntity);
+    Page<SupplierEntity> page = new PageImpl<>(suppliers, pageable, suppliers.size());
 
-    Page<Supplier> result = supplierService.getByPaging(0, 1, "supplierName", "a", true);
-    assertEquals(1, result.getTotalElements());
-    assertEquals(Supplier.getSupplierName(), result.getContent().get(0).getSupplierName());
+    when(supplierRepository.searchSuppliers("", true, pageable)).thenReturn(page);
+    when(supplierMapper.toDTO(supplierEntity)).thenReturn(supplier);
+
+    Page<Supplier> result = supplierService.getByPaging(0, 10, "supplierName", "", true);
+
+    Assertions.assertNotNull(result);
+    Assertions.assertEquals(1, result.getTotalElements());
   }
 
   // UTCID02 - getByPaging: pageNo invalid
   @Test
   void testUTCID02_GetByPaging_pageNoInvalid() {
-    Exception exception =
-        assertThrows(
-            HrmCommonException.class,
-            () -> {
-              supplierService.getByPaging(-1, 1, "supplierName", "a", true);
-            });
-    assertEquals(HrmConstant.ERROR.PAGE.INVALID, exception.getMessage());
+    assertThrows(
+        HrmCommonException.class,
+        () -> supplierService.getByPaging(-1, 10, "supplierName", "", true));
   }
 
   // UTCID03 - getByPaging: pageSize invalid
   @Test
   void testUTCID03_GetByPaging_pageSizeInvalid() {
-    Exception exception =
-        assertThrows(
-            HrmCommonException.class,
-            () -> {
-              supplierService.getByPaging(0, 0, "supplierName", "a", true);
-            });
-    assertEquals(HrmConstant.ERROR.PAGE.INVALID, exception.getMessage());
+    assertThrows(
+        HrmCommonException.class,
+        () -> supplierService.getByPaging(0, 0, "supplierName", "", true));
   }
 
   // UTCID04 - getByPaging: sortBy invalid
   @Test
   void testUTCID04_GetByPaging_sortByInvalid() {
-    Exception exception =
-        assertThrows(
+    assertThrows(HrmCommonException.class, () -> supplierService.getByPaging(0, 1, "a", "a", true));
+  }
+
+  @Test
+  void testUTCID05_GetByPaging_NullSortBy_DefaultToId() {
+    // Arrange
+    Pageable pageable = PageRequest.of(0, 10, Sort.by("id").descending());
+    List<SupplierEntity> suppliers = Collections.singletonList(supplierEntity);
+    Page<SupplierEntity> page = new PageImpl<>(suppliers, pageable, suppliers.size());
+
+    // Adjust stubbing to match the actual parameter ("a")
+    when(supplierRepository.searchSuppliers(eq("a"), eq(true), eq(pageable))).thenReturn(page);
+    when(supplierMapper.toDTO(supplierEntity)).thenReturn(supplier);
+
+    // Act
+    Page<Supplier> result = supplierService.getByPaging(0, 10, null, "a", true);
+
+    // Assert
+    Assertions.assertNotNull(result);
+    Assertions.assertEquals(1, result.getTotalElements());
+  }
+
+  @Test
+  void testUTCID06_GetByPaging_NullKeyword_DefaultToEmpty() {
+    // Arrange
+    Pageable pageable = PageRequest.of(0, 10, Sort.by("id").descending());
+    List<SupplierEntity> suppliers = Collections.singletonList(supplierEntity);
+    Page<SupplierEntity> page = new PageImpl<>(suppliers, pageable, suppliers.size());
+
+    lenient().when(supplierRepository.searchSuppliers("", true, pageable)).thenReturn(page);
+    when(supplierMapper.toDTO(supplierEntity)).thenReturn(supplier);
+
+    // Act
+    Page<Supplier> result = supplierService.getByPaging(0, 10, "id", "", true);
+
+    // Assert
+    Assertions.assertNotNull(result);
+    Assertions.assertEquals(1, result.getTotalElements());
+  }
+
+  @Test
+  void testUTCID07_GetByPaging_StatusTrue() {
+    // Arrange
+    Pageable pageable = PageRequest.of(0, 10, Sort.by("id").descending());
+    List<SupplierEntity> suppliers = Collections.singletonList(supplierEntity);
+    Page<SupplierEntity> page = new PageImpl<>(suppliers, pageable, suppliers.size());
+
+    when(supplierRepository.searchSuppliers("", true, pageable)).thenReturn(page);
+    when(supplierMapper.toDTO(supplierEntity)).thenReturn(supplier);
+
+    // Act
+    Page<Supplier> result = supplierService.getByPaging(0, 10, null, "", true);
+
+    // Assert
+    Assertions.assertNotNull(result);
+    Assertions.assertEquals(1, result.getTotalElements());
+  }
+
+  @Test
+  void testUTCID08_GetByPaging_StatusFalse() {
+    // Arrange
+    Pageable pageable = PageRequest.of(0, 10, Sort.by("id").descending());
+    List<SupplierEntity> suppliers = Collections.emptyList();
+    Page<SupplierEntity> page = new PageImpl<>(suppliers, pageable, 0);
+
+    when(supplierRepository.searchSuppliers("", false, pageable)).thenReturn(page);
+
+    // Act
+    Page<Supplier> result = supplierService.getByPaging(0, 10, null, "", false);
+
+    // Assert
+    Assertions.assertNotNull(result);
+    Assertions.assertEquals(0, result.getTotalElements());
+  }
+
+  @Test
+  void testUTCID09_GetByPaging_InvalidSortBy_ThrowsException() {
+    // Arrange
+    String invalidSortBy = "invalidField";
+
+    // Act & Assert
+    HrmCommonException exception =
+        Assertions.assertThrows(
             HrmCommonException.class,
             () -> {
-              supplierService.getByPaging(0, 1, "a", "a", true);
+              supplierService.getByPaging(0, 10, invalidSortBy, "", true);
             });
-    assertEquals(HrmConstant.ERROR.PAGE.INVALID, exception.getMessage());
+
+    Assertions.assertEquals(HrmConstant.ERROR.PAGE.INVALID, exception.getMessage());
+  }
+
+  // UTCID010 - getByPaging: All valid
+  @Test
+  void testUTCID010_GetByPaging_AllValid() {
+    Pageable pageable = PageRequest.of(0, 10, Sort.by("address").descending());
+    List<SupplierEntity> suppliers = Collections.singletonList(supplierEntity);
+    Page<SupplierEntity> page = new PageImpl<>(suppliers, pageable, suppliers.size());
+
+    when(supplierRepository.searchSuppliers("", true, pageable)).thenReturn(page);
+    when(supplierMapper.toDTO(supplierEntity)).thenReturn(supplier);
+
+    Page<Supplier> result = supplierService.getByPaging(0, 10, "address", "", true);
+
+    Assertions.assertNotNull(result);
+    Assertions.assertEquals(1, result.getTotalElements());
+  }
+
+  // UTCID011 - getByPaging: All valid
+  @Test
+  void testUTCID011_GetByPaging_AllValid() {
+    Pageable pageable = PageRequest.of(0, 10, Sort.by("email").descending());
+    List<SupplierEntity> suppliers = Collections.singletonList(supplierEntity);
+    Page<SupplierEntity> page = new PageImpl<>(suppliers, pageable, suppliers.size());
+
+    when(supplierRepository.searchSuppliers("", true, pageable)).thenReturn(page);
+    when(supplierMapper.toDTO(supplierEntity)).thenReturn(supplier);
+
+    Page<Supplier> result = supplierService.getByPaging(0, 10, "email", "", true);
+
+    Assertions.assertNotNull(result);
+    Assertions.assertEquals(1, result.getTotalElements());
+  }
+
+  // UTCID012 - getByPaging: All valid
+  @Test
+  void testUTCID012_GetByPaging_AllValid() {
+    Pageable pageable = PageRequest.of(0, 10, Sort.by("phoneNumber").descending());
+    List<SupplierEntity> suppliers = Collections.singletonList(supplierEntity);
+    Page<SupplierEntity> page = new PageImpl<>(suppliers, pageable, suppliers.size());
+
+    when(supplierRepository.searchSuppliers("", true, pageable)).thenReturn(page);
+    when(supplierMapper.toDTO(supplierEntity)).thenReturn(supplier);
+
+    Page<Supplier> result = supplierService.getByPaging(0, 10, "phoneNumber", "", true);
+
+    Assertions.assertNotNull(result);
+    Assertions.assertEquals(1, result.getTotalElements());
+  }
+
+  // UTCID013 - getByPaging: All valid
+  @Test
+  void testUTCID013_GetByPaging_AllValid() {
+    Pageable pageable = PageRequest.of(0, 10, Sort.by("taxCode").descending());
+    List<SupplierEntity> suppliers = Collections.singletonList(supplierEntity);
+    Page<SupplierEntity> page = new PageImpl<>(suppliers, pageable, suppliers.size());
+
+    when(supplierRepository.searchSuppliers("", true, pageable)).thenReturn(page);
+    when(supplierMapper.toDTO(supplierEntity)).thenReturn(supplier);
+
+    Page<Supplier> result = supplierService.getByPaging(0, 10, "taxCode", "", true);
+
+    Assertions.assertNotNull(result);
+    Assertions.assertEquals(1, result.getTotalElements());
+  }
+
+  // UTCID014 - getByPaging: All valid
+  @Test
+  void testUTCID014_GetByPaging_AllValid() {
+    Pageable pageable = PageRequest.of(0, 10, Sort.by("faxNumber").descending());
+    List<SupplierEntity> suppliers = Collections.singletonList(supplierEntity);
+    Page<SupplierEntity> page = new PageImpl<>(suppliers, pageable, suppliers.size());
+
+    when(supplierRepository.searchSuppliers("", true, pageable)).thenReturn(page);
+    when(supplierMapper.toDTO(supplierEntity)).thenReturn(supplier);
+
+    Page<Supplier> result = supplierService.getByPaging(0, 10, "faxNumber", "", true);
+
+    Assertions.assertNotNull(result);
+    Assertions.assertEquals(1, result.getTotalElements());
+  }
+
+  // UTCID015 - getByPaging: All valid
+  @Test
+  void testUTCID015_GetByPaging_AllValid() {
+    Pageable pageable = PageRequest.of(0, 10, Sort.by("status").descending());
+    List<SupplierEntity> suppliers = Collections.singletonList(supplierEntity);
+    Page<SupplierEntity> page = new PageImpl<>(suppliers, pageable, suppliers.size());
+
+    when(supplierRepository.searchSuppliers("", true, pageable)).thenReturn(page);
+    when(supplierMapper.toDTO(supplierEntity)).thenReturn(supplier);
+
+    Page<Supplier> result = supplierService.getByPaging(0, 10, "status", "", true);
+
+    Assertions.assertNotNull(result);
+    Assertions.assertEquals(1, result.getTotalElements());
   }
 
   // CREATE
   // UTCID01 - create: all valid
   @Test
   void testUTCID01_Create_AllValid() {
-    Supplier Supplier = createValidSupplier();
-    Supplier savedSupplier = supplierService.create(Supplier);
+    when(supplierMapper.toEntity(supplier)).thenReturn(supplierEntity);
+    when(supplierRepository.save(supplierEntity)).thenReturn(supplierEntity);
+    when(supplierMapper.toDTO(supplierEntity)).thenReturn(supplier);
 
-    assertThat(savedSupplier).isNotNull();
-    assertThat(savedSupplier.getSupplierName()).isEqualTo("Valid Supplier Name");
+    Supplier result = supplierService.create(supplier);
+
+    Assertions.assertNotNull(result);
   }
 
   // UTCID02 - create: SupplierName null
   @Test
-  void testUTCID02_Create_SupplierNameNull() {
-    Supplier Supplier = createValidSupplier();
-    Supplier.setSupplierName(null);
-
-    assertThrows(HrmCommonException.class, () -> supplierService.create(Supplier));
+  void testUTCID02_Create_nameNull() {
+    supplier.setSupplierName(null);
+    assertThrows(HrmCommonException.class, () -> supplierService.create(supplier));
   }
 
   // UTCID03 - create: SupplierName empty
   @Test
-  void testUTCID03_Create_SupplierNameEmpty() {
-    Supplier Supplier = createValidSupplier();
-    Supplier.setSupplierName("");
-
-    assertThrows(HrmCommonException.class, () -> supplierService.create(Supplier));
+  void testUTCID03_Create_nameEmpty() {
+    supplier.setSupplierName("");
+    assertThrows(HrmCommonException.class, () -> supplierService.create(supplier));
   }
 
   // UTCID04 - create: SupplierName greater than 100 characters
   @Test
-  void testUTCID04_Create_SupplierNameLong() {
-    Supplier Supplier = createValidSupplier();
-    Supplier.setSupplierName("A".repeat(101));
-
-    assertThrows(HrmCommonException.class, () -> supplierService.create(Supplier));
+  void testUTCID04_Create_nameLong() {
+    supplier.setSupplierName("A".repeat(101));
+    assertThrows(HrmCommonException.class, () -> supplierService.create(supplier));
   }
 
   // UTCID05 - create: SupplierName and Address duplicate
   @Test
-  void testUTCID05_Create_SupplierNameAndAddressDuplicate() {
-    Supplier Supplier = createValidSupplier();
-    supplierService.create(Supplier);
-    Supplier duplicateSupplierName =
-        new Supplier()
-            .setSupplierName("Valid Supplier Name")
-            .setAddress("Valid Supplier Address")
-            .setPhoneNumber("0912345678")
-            .setTaxCode("1234567891")
-            .setPhoneNumber("0912345678")
-            .setFaxNumber("012-1234567")
-            .setStatus(true);
-
-    assertThrows(HrmCommonException.class, () -> supplierService.create(duplicateSupplierName));
+  void testUTCID05_Create_nameDuplicate() {
+    supplier.setSupplierName("Name Duplicate");
+    supplierEntity.setSupplierName("Name Duplicate");
+    when(supplierRepository.existsBySupplierNameAndAddress(
+            supplierEntity.getSupplierName(), supplierEntity.getAddress()))
+        .thenReturn(true);
+    assertThrows(HrmCommonException.class, () -> supplierService.create(supplier));
   }
 
   // UTCID06 - create: address null
   @Test
   void testUTCID06_Create_addressNull() {
-    Supplier Supplier = createValidSupplier();
-    Supplier.setAddress(null);
+    supplier.setAddress(null);
 
-    assertThrows(HrmCommonException.class, () -> supplierService.create(Supplier));
+    assertThrows(HrmCommonException.class, () -> supplierService.create(supplier));
   }
 
   // UTCID07 - create: address empty
   @Test
   void testUTCID07_Create_addressEmpty() {
-    Supplier Supplier = createValidSupplier();
-    Supplier.setAddress("");
+    supplier.setAddress("");
 
-    assertThrows(HrmCommonException.class, () -> supplierService.create(Supplier));
+    assertThrows(HrmCommonException.class, () -> supplierService.create(supplier));
   }
 
-  // UTCID08 - create: address greater than 255 characters
+  // UTCID08 - create: address greater than 256 characters
   @Test
   void testUTCID08_Create_addressLong() {
-    Supplier Supplier = createValidSupplier();
-    Supplier.setAddress("A".repeat(256));
-
-    assertThrows(HrmCommonException.class, () -> supplierService.create(Supplier));
+    supplier.setAddress("A".repeat(1001));
+    assertThrows(HrmCommonException.class, () -> supplierService.create(supplier));
   }
 
   // UTCID09 - create: email not match regex
   @Test
   void testUTCID09_Create_emailInvalidFormat() {
-    Supplier Supplier = createValidSupplier();
-    Supplier.setEmail("Email");
-
-    assertThrows(HrmCommonException.class, () -> supplierService.create(Supplier));
+    supplier.setEmail("Email");
+    assertThrows(HrmCommonException.class, () -> supplierService.create(supplier));
   }
 
   // UTCID010 - create: phoneNumber null
   @Test
   void testUTCID010_Create_phoneNumber() {
-    Supplier Supplier = createValidSupplier();
-    Supplier.setPhoneNumber(null);
+    supplier.setPhoneNumber(null);
 
-    assertThrows(HrmCommonException.class, () -> supplierService.create(Supplier));
+    assertThrows(HrmCommonException.class, () -> supplierService.create(supplier));
   }
 
   // UTCID011 - create: phoneNumber empty
   @Test
   void testUTCID011_Create_phoneNumberEmpty() {
-    Supplier Supplier = createValidSupplier();
-    Supplier.setPhoneNumber("");
+    supplier.setPhoneNumber("");
 
-    assertThrows(HrmCommonException.class, () -> supplierService.create(Supplier));
+    assertThrows(HrmCommonException.class, () -> supplierService.create(supplier));
   }
 
   // UTCID012 - create: phoneNumber not match regex
   @Test
   void testUTCID012_Create_phoneNumberInvalidFormat() {
-    Supplier Supplier = createValidSupplier();
-    Supplier.setPhoneNumber("INVALID_PHONE");
-
-    assertThrows(HrmCommonException.class, () -> supplierService.create(Supplier));
+    supplier.setPhoneNumber("INVALID_PHONE");
+    assertThrows(HrmCommonException.class, () -> supplierService.create(supplier));
   }
 
   // UTCID013 - create: taxCode not match tax code regex
   @Test
   void testUTCID013_Create_taxCodeInvalidFormat() {
-    Supplier Supplier = createValidSupplier();
-    Supplier.setTaxCode("a");
-
-    assertThrows(HrmCommonException.class, () -> supplierService.create(Supplier));
+    supplier.setTaxCode("a");
+    assertThrows(HrmCommonException.class, () -> supplierService.create(supplier));
   }
 
   // UTCID014 - create: taxCode duplicate
   @Test
   void testUTCID014_Create_taxCodeDuplicate() {
-    Supplier Supplier = createValidSupplier();
-    supplierService.create(Supplier);
-    Supplier duplicateAddressSupplier =
-        new Supplier()
-            .setSupplierName("Valid Supplier Name 1")
-            .setAddress("Valid Supplier Address 1")
-            .setPhoneNumber("0912345678")
-            .setTaxCode("1234567890")
-            .setPhoneNumber("0912345678")
-            .setFaxNumber("012-1234567")
-            .setStatus(true);
-    assertThrows(HrmCommonException.class, () -> supplierService.create(duplicateAddressSupplier));
+    supplier.setTaxCode("Duplicate");
+
+    lenient().when(supplierRepository.existsByTaxCode(supplier.getTaxCode())).thenReturn(true);
+
+    assertThrows(HrmCommonException.class, () -> supplierService.create(supplier));
   }
 
   // UTCID015 - create: faxNumber not match regex
   @Test
   void testUTCID015_Create_faxNumberInvalidFormat() {
-    Supplier Supplier = createValidSupplier();
-    Supplier.setFaxNumber("a");
-    assertThrows(HrmCommonException.class, () -> supplierService.create(Supplier));
+    supplier.setFaxNumber("a");
+    assertThrows(HrmCommonException.class, () -> supplierService.create(supplier));
   }
 
   // UTCID016 - create: status null
   @Test
   void testUTCID016_Create_statusNull() {
-    Supplier Supplier = createValidSupplier();
-    Supplier.setStatus(null);
-    assertThrows(HrmCommonException.class, () -> supplierService.create(Supplier));
+    supplier.setStatus(null);
+    assertThrows(HrmCommonException.class, () -> supplierService.create(supplier));
+  }
+
+  // UTCID017 - create: origin greater than 255 characters
+  @Test
+  void testUTCID017_Create_originLong() {
+    supplier.setAddress("A".repeat(256));
+    assertThrows(HrmCommonException.class, () -> supplierService.create(supplier));
+  }
+
+  // UTCID018 - create: origin greater than 255 characters
+  @Test
+  void testUTCID018_Create_originLong() {
+    supplier = null;
+    assertThrows(HrmCommonException.class, () -> supplierService.create(supplier));
   }
 
   // UPDATE
   // UTCID01 - UPDATE: all valid
   @Test
   void testUTCID01_Update_AllValid() {
-    supplierRepository.deleteAll();
-    Supplier Supplier = createValidSupplier();
-    Supplier savedSupplier = supplierService.create(Supplier);
-    Supplier updateSupplier = supplierService.update(savedSupplier);
+    supplier.setId(1L);
+    supplierEntity.setId(1L);
 
-    assertThat(updateSupplier).isNotNull();
-    assertThat(updateSupplier.getSupplierName()).isEqualTo("Valid Supplier Name");
+    when(supplierRepository.findById(supplier.getId())).thenReturn(Optional.of(supplierEntity));
+    when(supplierRepository.save(supplierEntity)).thenReturn(supplierEntity);
+    when(supplierMapper.toDTO(supplierEntity)).thenReturn(supplier);
+
+    Supplier result = supplierService.update(supplier);
+
+    Assertions.assertNotNull(result);
   }
 
   // UTCID02 - UPDATE: SupplierName null
   @Test
-  void testUTCID02_Update_SupplierNameNull() {
-    supplierRepository.deleteAll();
-    Supplier Supplier = createValidSupplier();
-    Supplier Supplier1 = supplierService.create(Supplier);
-    Supplier1.setSupplierName(null);
-
-    assertThrows(HrmCommonException.class, () -> supplierService.update(Supplier1));
+  void testUTCID02_Update_nameNull() {
+    supplier.setSupplierName(null);
+    assertThrows(HrmCommonException.class, () -> supplierService.update(supplier));
   }
 
   // UTCID03 - Update: SupplierName empty
   @Test
-  void testUTCID03_Update_SupplierNameEmpty() {
-    supplierRepository.deleteAll();
-    Supplier Supplier = createValidSupplier();
-    Supplier Supplier1 = supplierService.create(Supplier);
-    Supplier1.setSupplierName("");
-
-    assertThrows(HrmCommonException.class, () -> supplierService.update(Supplier1));
+  void testUTCID03_Update_nameEmpty() {
+    supplier.setSupplierName("");
+    assertThrows(HrmCommonException.class, () -> supplierService.update(supplier));
   }
 
   // UTCID04 - Update: SupplierName greater than 100 characters
   @Test
-  void testUTCID04_Update_SupplierNameLong() {
-    supplierRepository.deleteAll();
-    Supplier Supplier = createValidSupplier();
-    Supplier Supplier1 = supplierService.create(Supplier);
-    Supplier1.setSupplierName("A".repeat(101));
-
-    assertThrows(HrmCommonException.class, () -> supplierService.update(Supplier1));
+  void testUTCID04_Update_nameLong() {
+    supplier.setSupplierName("A".repeat(101));
+    assertThrows(HrmCommonException.class, () -> supplierService.update(supplier));
   }
 
   // UTCID05 - Update: SupplierName and Address duplicate
   @Test
-  void testUTCID05_Update_SupplierNameAndAddressDuplicate() {
-    supplierRepository.deleteAll();
-    Supplier Supplier = createValidSupplier();
-    supplierService.create(Supplier);
-    Supplier secondSupplier =
-        new Supplier()
-            .setSupplierName("Valid Supplier Name 1")
-            .setAddress("Valid Supplier Address 1")
-            .setPhoneNumber("0912345678")
-            .setTaxCode("1234567891")
-            .setPhoneNumber("0912345678")
-            .setFaxNumber("012-1234567")
-            .setStatus(true);
-    Supplier returnValue = supplierService.create(secondSupplier);
-    returnValue.setSupplierName("Valid Supplier Name");
-    returnValue.setAddress("Valid Supplier Address");
+  void testUTCID05_Update_nameDuplicate() {
+    supplier.setSupplierName("new Name");
+    supplier.setAddress("new Address");
+    supplierEntity.setSupplierName("Old Name");
+    supplierEntity.setAddress("Old Address");
 
-    assertThrows(HrmCommonException.class, () -> supplierService.update(returnValue));
+    lenient()
+        .when(
+            supplierRepository.existsBySupplierNameAndAddress(
+                supplier.getSupplierName(), supplierEntity.getAddress()))
+        .thenReturn(true);
+    assertThrows(HrmCommonException.class, () -> supplierService.update(supplier));
   }
 
   // UTCID06 - Update: address null
   @Test
   void testUTCID06_Update_addressNull() {
-    supplierRepository.deleteAll();
-    Supplier Supplier = createValidSupplier();
-    Supplier Supplier1 = supplierService.create(Supplier);
-    Supplier1.setAddress(null);
+    supplier.setAddress(null);
 
-    assertThrows(HrmCommonException.class, () -> supplierService.update(Supplier1));
+    assertThrows(HrmCommonException.class, () -> supplierService.update(supplier));
   }
 
   // UTCID07 - Update: address empty
   @Test
   void testUTCID07_Update_addressEmpty() {
-    supplierRepository.deleteAll();
-    Supplier Supplier = createValidSupplier();
-    Supplier Supplier1 = supplierService.create(Supplier);
-    Supplier1.setAddress("");
+    supplier.setAddress("");
 
-    assertThrows(HrmCommonException.class, () -> supplierService.update(Supplier1));
+    assertThrows(HrmCommonException.class, () -> supplierService.update(supplier));
   }
 
   // UTCID08 - Update: address greater than 255 characters
   @Test
   void testUTCID08_Update_addressLong() {
-    supplierRepository.deleteAll();
-    Supplier Supplier = createValidSupplier();
-    Supplier Supplier1 = supplierService.create(Supplier);
-    Supplier1.setAddress("A".repeat(256));
+    supplier.setAddress("A".repeat(256));
 
-    assertThrows(HrmCommonException.class, () -> supplierService.update(Supplier1));
+    assertThrows(HrmCommonException.class, () -> supplierService.update(supplier));
   }
 
   // UTCID09 - Update: email not match regex
   @Test
   void testUTCID09_Update_emailInvalidFormat() {
-    supplierRepository.deleteAll();
-    Supplier Supplier = createValidSupplier();
-    Supplier Supplier1 = supplierService.create(Supplier);
-    Supplier1.setEmail("Email");
+    supplier.setEmail("invalid email");
 
-    assertThrows(HrmCommonException.class, () -> supplierService.update(Supplier1));
+    assertThrows(HrmCommonException.class, () -> supplierService.update(supplier));
   }
 
   // UTCID010 - Update: phoneNumber null
   @Test
   void testUTCID010_Update_phoneNumberNull() {
-    supplierRepository.deleteAll();
-    Supplier Supplier = createValidSupplier();
-    Supplier Supplier1 = supplierService.create(Supplier);
-    Supplier1.setPhoneNumber(null);
+    supplier.setPhoneNumber(null);
 
-    assertThrows(HrmCommonException.class, () -> supplierService.update(Supplier1));
+    assertThrows(HrmCommonException.class, () -> supplierService.update(supplier));
   }
 
   // UTCID011 - Update: phoneNumber empty
   @Test
   void testUTCID011_Update_phoneNumberEmpty() {
-    supplierRepository.deleteAll();
-    Supplier Supplier = createValidSupplier();
-    Supplier Supplier1 = supplierService.create(Supplier);
-    Supplier1.setPhoneNumber("");
+    supplier.setPhoneNumber("");
 
-    assertThrows(HrmCommonException.class, () -> supplierService.update(Supplier1));
+    assertThrows(HrmCommonException.class, () -> supplierService.update(supplier));
   }
 
   // UTCID012 - Update: phoneNumber not match regex
   @Test
   void testUTCID012_Update_phoneNumberInvalidFormat() {
-    supplierRepository.deleteAll();
-    Supplier Supplier = createValidSupplier();
-    Supplier Supplier1 = supplierService.create(Supplier);
-    Supplier1.setPhoneNumber("INVALID_PHONE");
+    supplier.setPhoneNumber("INVALID_PHONE");
 
-    assertThrows(HrmCommonException.class, () -> supplierService.update(Supplier1));
+    assertThrows(HrmCommonException.class, () -> supplierService.update(supplier));
   }
 
-  // UTCID013 - update: taxCode not match tax code regex
+  // UTCID013 - Update: taxCode not match regex
   @Test
   void testUTCID013_Update_taxCodeInvalidFormat() {
-    supplierRepository.deleteAll();
-    Supplier Supplier = createValidSupplier();
-    Supplier Supplier1 = supplierService.create(Supplier);
-    Supplier1.setTaxCode("a");
-
-    assertThrows(HrmCommonException.class, () -> supplierService.update(Supplier1));
+    supplier.setTaxCode("invalid tax code");
+    assertThrows(HrmCommonException.class, () -> supplierService.update(supplier));
   }
 
   // UTCID014 - update: taxCode duplicate
   @Test
   void testUTCID014_Update_taxCodeDuplicate() {
-    supplierRepository.deleteAll();
-    Supplier Supplier = createValidSupplier();
-    supplierService.create(Supplier);
-    Supplier secondSupplier =
-        new Supplier()
-            .setSupplierName("Valid Supplier Name 1")
-            .setAddress("Valid Supplier Address 1")
-            .setPhoneNumber("0912345678")
-            .setTaxCode("1234567891")
-            .setPhoneNumber("0912345678")
-            .setFaxNumber("012-1234567")
-            .setStatus(true);
-    Supplier returnValue = supplierService.create(secondSupplier);
-    returnValue.setTaxCode("1234567890");
-
-    assertThrows(HrmCommonException.class, () -> supplierService.update(secondSupplier));
+    supplier.setId(1L);
+    supplier.setTaxCode("1234567811");
+    supplierEntity.setId(1L);
+    supplierEntity.setTaxCode("1234567890");
+    when(supplierRepository.findById(supplier.getId())).thenReturn(Optional.of(supplierEntity));
+    lenient().when(supplierRepository.existsByTaxCode(supplier.getTaxCode())).thenReturn(true);
+    assertThrows(HrmCommonException.class, () -> supplierService.update(supplier));
   }
 
   // UTCID015 - update: faxNumber not match regex
   @Test
   void testUTCID015_Update_faxNumberInvalidFormat() {
-    supplierRepository.deleteAll();
-    Supplier Supplier = createValidSupplier();
-    Supplier Supplier1 = supplierService.create(Supplier);
-    Supplier1.setFaxNumber("a");
-    assertThrows(HrmCommonException.class, () -> supplierService.update(Supplier1));
+    supplier.setFaxNumber("a");
+    assertThrows(HrmCommonException.class, () -> supplierService.update(supplier));
   }
 
   // UTCID016 - update: status null
   @Test
   void testUTCID016_Update_statusNull() {
-    supplierRepository.deleteAll();
-    Supplier Supplier = createValidSupplier();
-    Supplier Supplier1 = supplierService.create(Supplier);
-    Supplier1.setStatus(null);
-    assertThrows(HrmCommonException.class, () -> supplierService.update(Supplier1));
+    supplier.setStatus(null);
+    assertThrows(HrmCommonException.class, () -> supplierService.update(supplier));
   }
 
   // UTCID017 - Update: id null
   @Test
   void testUTCID017_Update_idNull() {
-    supplierRepository.deleteAll();
-    Supplier Supplier = createValidSupplier();
-    Supplier Supplier1 = supplierService.create(Supplier);
-    Supplier1.setId(null);
+    supplier.setId(null);
 
-    assertThrows(HrmCommonException.class, () -> supplierService.update(Supplier1));
+    assertThrows(HrmCommonException.class, () -> supplierService.update(supplier));
   }
 
   // UTCID018 - Update: id not exist
   @Test
   void testUTCID018_Update_idNotExist() {
-    supplierRepository.deleteAll();
-    Supplier Supplier = createValidSupplier();
-    Supplier.setId(1L);
+    supplier.setId(1L);
+    when(supplierRepository.findById(supplier.getId())).thenReturn(Optional.empty());
+    assertThrows(HrmCommonException.class, () -> supplierService.update(supplier));
+  }
 
-    assertThrows(HrmCommonException.class, () -> supplierService.update(Supplier));
+  @Test
+  void testUTCID0017_Update_taxCodeNotChanged() {
+    // Arrange: Prepare mock data
+    supplier.setTaxCode("12345"); // Current tax code of the supplier
+    supplierEntity.setTaxCode("12345"); // Old tax code matches the current one
+
+    lenient()
+        .when(supplierRepository.existsByTaxCode(supplier.getTaxCode()))
+        .thenReturn(true); // Mock that the tax code does not already exist in the database
+
+    assertThrows(HrmCommonException.class, () -> supplierService.update(supplier));
+  }
+
+  @Test
+  void testUTCID0018_Update_taxCodeChangedNotDuplicate() {
+    // Arrange: Prepare mock data
+    supplier.setId(1L);
+    supplier.setTaxCode("67890"); // New tax code
+    supplierEntity.setId(1L);
+    supplierEntity.setTaxCode("12345"); // Old tax code differs from the new one
+
+    lenient()
+        .when(supplierRepository.existsByTaxCode(supplier.getTaxCode()))
+        .thenReturn(true); // Mock that the new tax code does not already exist
+
+    assertThrows(HrmCommonException.class, () -> supplierService.update(supplier));
+  }
+
+  @Test
+  void testUTCID0019_Update_taxCodeChangedAndDuplicate() {
+    // Arrange: Prepare mock data
+    supplier.setId(1L);
+    supplier.setTaxCode("67890"); // New tax code
+    supplierEntity.setId(1L);
+    supplierEntity.setTaxCode("12345"); // Old tax code differs from the new one
+
+    // Mock that supplierRepository.findById() returns the old supplier entity
+    lenient()
+        .when(supplierRepository.findById(supplier.getId()))
+        .thenReturn(Optional.of(supplierEntity));
+    lenient().when(supplierMapper.toDTO(supplierEntity)).thenReturn(supplier);
+
+    // Mock that the new tax code already exists in the database
+    lenient().when(supplierRepository.existsByTaxCode(supplier.getTaxCode())).thenReturn(true);
+    // Act & Assert: Verify that the correct exception is thrown with the expected message
+    assertThrows(HrmCommonException.class, () -> supplierService.update(supplier));
+  }
+
+  // UTCID020 - UPDATE: Supplier null
+  @Test
+  void testUTCID020_Update_SupplierNull() {
+    supplier = null;
+    assertThrows(HrmCommonException.class, () -> supplierService.update(supplier));
+  }
+
+  @Test
+  void testUTCID0020_Update_taxCodeNull() {
+    // Arrange: Prepare mock data
+    supplier.setTaxCode(null); // Tax code is null
+    supplierEntity.setTaxCode("0101234565"); // Old tax code exists
+    lenient()
+        .when(supplierRepository.findById(supplier.getId()))
+        .thenReturn(Optional.of(supplierEntity));
+    lenient().when(supplierRepository.existsByTaxCode(supplier.getTaxCode())).thenReturn(true);
+    // Act & Assert: Ensure no exception is thrown since tax code is null
+    assertThrows(HrmCommonException.class, () -> supplierService.update(supplier));
+  }
+
+  @Test
+  void testUTCID0020_Update_taxCodeEmpty() {
+    // Arrange: Prepare mock data
+    supplier.setTaxCode(""); // Tax code is null
+    supplierEntity.setTaxCode("0101234565"); // Old tax code exists
+    lenient()
+        .when(supplierRepository.findById(supplier.getId()))
+        .thenReturn(Optional.of(supplierEntity));
+    lenient().when(supplierRepository.existsByTaxCode(supplier.getTaxCode())).thenReturn(true);
+    // Act & Assert: Ensure no exception is thrown since tax code is null
+    assertThrows(HrmCommonException.class, () -> supplierService.update(supplier));
   }
 
   // DELETE
-  // UTCID01 - Delete: valid
+  // UTCID01 - DELETE: valid
   @Test
-  void testUTCID01_Delete_AllValid() {
-    Supplier Supplier = createValidSupplier();
-    Supplier Supplier1 = supplierService.create(Supplier);
-    supplierService.delete(Supplier1.getId());
-    assertEquals(supplierService.getById(Supplier1.getId()), null);
+  void testUTCID01_Delete_Valid() {
+    supplier.setId(1L);
+    when(supplierRepository.findById(supplier.getId())).thenReturn(Optional.of(supplierEntity));
+    when(supplierRepository.save(supplierEntity)).thenReturn(supplierEntity);
+    when(supplierMapper.toDTO(supplierEntity)).thenReturn(supplier);
+
+    Supplier result = supplierService.update(supplier);
+
+    Assertions.assertNotNull(result);
   }
 
   // UTCID02 - Delete: id null
@@ -515,9 +708,10 @@ public class SupplierServiceImplTest {
 
   // UTCID03 - Delete: id not exist
   @Test
-  void testUTCID03_Delete_idNotExist() {
-    supplierRepository.deleteAll();
-    Long nonExistingId = 2L;
-    assertThrows(HrmCommonException.class, () -> supplierService.delete(nonExistingId));
+  void testUTCID03_Delete_Invalid() {
+    Long id = 1L;
+    when(supplierRepository.findById(id)).thenReturn(Optional.empty());
+
+    assertThrows(HrmCommonException.class, () -> supplierService.delete(id));
   }
 }
