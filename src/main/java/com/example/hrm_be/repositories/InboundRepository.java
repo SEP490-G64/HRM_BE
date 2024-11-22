@@ -188,10 +188,10 @@ public interface InboundRepository
               + "        DATE_TRUNC('quarter', CAST(i.created_date AS DATE)) AS period_start,\n"
               + // Nhóm theo quý
               "        SUM(i.total_price) AS inbound\n"
-            + "    FROM inbound i\n"
-            + "    WHERE CAST(i.created_date AS DATE) BETWEEN CAST(:startDate AS DATE) AND"
-            + " CAST(:endDate AS DATE)\n"
-            + "    AND (:branchId IS NULL OR i.to_branch_id = :branchId)\n"
+              + "    FROM inbound i\n"
+              + "    WHERE CAST(i.created_date AS DATE) BETWEEN CAST(:startDate AS DATE) AND"
+              + " CAST(:endDate AS DATE)\n"
+              + "    AND (:branchId IS NULL OR i.to_branch_id = :branchId)\n"
               + // Kiểm tra điều kiện branchId
               "    GROUP BY \n"
               + "        DATE_TRUNC('quarter', CAST(i.created_date AS DATE))\n"
@@ -201,10 +201,10 @@ public interface InboundRepository
               + "        DATE_TRUNC('quarter', CAST(o.created_date AS DATE)) AS period_start,\n"
               + // Nhóm theo quý
               "        SUM(o.total_price) AS outbound\n"
-            + "    FROM outbound o\n"
-            + "    WHERE CAST(o.created_date AS DATE) BETWEEN CAST(:startDate AS DATE) AND"
-            + " CAST(:endDate AS DATE)\n"
-            + "    AND (:branchId IS NULL OR o.from_branch_id = :branchId)\n"
+              + "    FROM outbound o\n"
+              + "    WHERE CAST(o.created_date AS DATE) BETWEEN CAST(:startDate AS DATE) AND"
+              + " CAST(:endDate AS DATE)\n"
+              + "    AND (:branchId IS NULL OR o.from_branch_id = :branchId)\n"
               + // Kiểm tra điều kiện branchId
               "    GROUP BY \n"
               + "        DATE_TRUNC('quarter', CAST(o.created_date AS DATE))\n"
