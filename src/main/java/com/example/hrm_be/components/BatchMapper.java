@@ -111,6 +111,7 @@ public class BatchMapper {
                     .build())
         .orElse(null);
   }
+
   // Helper method to map BatchEntity to BatchDTO
   public Batch convertToDtoBasicInfoWithProductBaseDto(BatchEntity entity) {
     return Optional.ofNullable(entity)
