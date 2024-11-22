@@ -681,8 +681,8 @@ public class ProductServiceImpl implements ProductService {
             }
 
             // Check if registration code already exists
-            if (product.getRegistrationCode() != null &&
-                    productRepository.existsByRegistrationCode(product.getRegistrationCode())) {
+            if (product.getRegistrationCode() != null
+                && productRepository.existsByRegistrationCode(product.getRegistrationCode())) {
               rowErrors.add("Registration Code already exists at row " + (rowIndex + 1));
             }
 
@@ -752,7 +752,7 @@ public class ProductServiceImpl implements ProductService {
         // Handle storage location
         if (branchProduct.getStorageLocation() != null) {
           StorageLocation savedStorageLocation =
-                  storageLocationService.save(branchProduct.getStorageLocation());
+              storageLocationService.save(branchProduct.getStorageLocation());
           branchProductEntity.setStorageLocation(savedStorageLocation);
         }
 
