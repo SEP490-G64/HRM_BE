@@ -20,9 +20,9 @@ import java.util.List;
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Dashboard {
-    List<BigDecimal> DashboardItems;
-    List<DashboardPairValue> TopCategories;
-    List<DashboardPairValue> TopTypes;
-    List<DashboardProduct> TopFiveProducts;
-    List<DashboardSupplier> TopFiveSuppliers;
+  List<BigDecimal> DashboardItems;
+  List<DashboardPairValue> TopCategories;
+  List<DashboardPairValue> TopTypes;
+  List<DashboardProduct> TopFiveProducts;
+  List<DashboardSupplier> TopFiveSuppliers;
 }

@@ -7,7 +7,6 @@ import com.example.hrm_be.commons.constants.HrmConstant.ERROR.SUPPLIER;
 import com.example.hrm_be.commons.enums.InboundStatus;
 import com.example.hrm_be.commons.enums.InboundType;
 import com.example.hrm_be.commons.enums.NotificationType;
-import com.example.hrm_be.commons.enums.OutboundStatus;
 import com.example.hrm_be.components.*;
 import com.example.hrm_be.components.BranchMapper;
 import com.example.hrm_be.components.InboundMapper;
@@ -263,16 +262,20 @@ public class InboundServiceImpl implements InboundService {
     }
 
     if (oldinboundEntity.getStatus() != InboundStatus.CHO_DUYET) {
-      throw new HrmCommonException(
-              HrmConstant.ERROR.INBOUND.INVALID);
+      throw new HrmCommonException(HrmConstant.ERROR.INBOUND.INVALID);
     }
 
     String email = userService.getAuthenticatedUserEmail();
     UserEntity userEntity = userMapper.toEntity(userService.findLoggedInfoByEmail(email));
 
     return Optional.ofNullable(oldinboundEntity)
-        .map(op -> op.toBuilder().isApproved(accept).approvedBy(userEntity)
-                .status(accept ? InboundStatus.CHO_HANG : InboundStatus.BAN_NHAP).build())
+        .map(
+            op ->
+                op.toBuilder()
+                    .isApproved(accept)
+                    .approvedBy(userEntity)
+                    .status(accept ? InboundStatus.CHO_HANG : InboundStatus.BAN_NHAP)
+                    .build())
         .map(inboundRepository::save)
         .map(inboundMapper::toDTO)
         .orElse(null);

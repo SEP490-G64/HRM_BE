@@ -19,7 +19,7 @@ import java.math.BigDecimal;
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class DashboardInboundOutboundStream {
-    String Time;
-    BigDecimal Inbound;
-    BigDecimal Outbound;
+  String Time;
+  BigDecimal Inbound;
+  BigDecimal Outbound;
 }

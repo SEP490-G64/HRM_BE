@@ -141,59 +141,64 @@ public interface ProductRepository
   )
   BigDecimal getTotalProductCountByBranchId(@Param("branchId") Long branchId);
 
-  @Query(value =
-          "WITH OutboundProduct AS (\n" +
-                  "    SELECT \n" +
-                  "        od.product_id,\n" +
-                  "        SUM(\n" +
-                  "            CASE \n" +
-                  "                -- Nếu đơn vị đo hiện tại là baseUnit, sử dụng trực tiếp\n" +
-                  "                WHEN od.unit_of_measurement_id = p.base_unit_id THEN od.outbound_quantity \n" +
-                  "                -- Nếu không, chuyển đổi qua factor_conversion\n" +
-                  "                ELSE od.outbound_quantity * uc.factor_conversion \n" +
-                  "            END\n" +
-                  "        ) AS outbound_quantity_converted,\n" +
-                  "        SUM(od.outbound_quantity * od.price) AS outbound_total\n" +
-                  "    FROM outbound_product_details od\n" +
-                  "    JOIN outbound o ON od.outbound_id = o.id\n" +
-                  "    JOIN product p ON od.product_id = p.id\n" +
-                  "    LEFT JOIN unit_conversion uc \n" +
-                  "        ON od.unit_of_measurement_id = uc.smaller_unit \n" +
-                  "        AND p.base_unit_id = uc.larger_unit\n" +
-                  "        AND uc.product_id = p.id -- Đảm bảo chỉ lấy conversion đúng cho sản phẩm\n" +
-                  "    WHERE (:branchId IS NULL OR o.from_branch_id = :branchId)\n" +
-                  "      AND o.created_date > CURRENT_DATE - INTERVAL '30' DAY\n" +
-                  "    GROUP BY od.product_id\n" +
-                  "),\n" +
-                  "InboundProduct AS (\n" +
-                  "    SELECT \n" +
-                  "        id.product_id, \n" +
-                  "        SUM(id.receive_quantity) AS inbound_quantity, \n" +
-                  "        SUM(id.receive_quantity * id.price) AS inbound_total\n" +
-                  "    FROM inbound_details id\n" +
-                  "    JOIN inbound i ON id.inbound_id = i.id\n" +
-                  "    WHERE (:branchId IS NULL OR i.to_branch_id = :branchId)\n" +
-                  "      AND i.created_date > CURRENT_DATE - INTERVAL '30' DAY\n" +
-                  "    GROUP BY id.product_id\n" +
-                  ")\n" +
-                  "SELECT \n" +
-                  "    p.id AS product_id,\n" +
-                  "    p.product_name,\n" +
-                  "\tp.url_image,\n" +
-                  "\tCOALESCE(ip.inbound_quantity, 0) as inbound_quantity,\n" +
-                  "\tCOALESCE(op.outbound_quantity_converted, 0) as outbound_quantity,\n" +
-                  "    COALESCE(ip.inbound_quantity, 0) + COALESCE(op.outbound_quantity_converted, 0) AS total_quantity,\n" +
-                  "\tCOALESCE(ip.inbound_total, 0) AS inbound_transaction,\n" +
-                  "\tCOALESCE(op.outbound_total, 0) AS utbound_transaction,\n" +
-                  "    COALESCE(ip.inbound_total, 0) + COALESCE(op.outbound_total, 0) AS total_transaction,\n" +
-                  "\tuom.unit_name\n" +
-                  "FROM product p\n" +
-                  "LEFT JOIN InboundProduct ip ON p.id = ip.product_id\n" +
-                  "LEFT JOIN OutboundProduct op ON p.id = op.product_id\n" +
-                  "JOIN unit_of_measurement uom ON uom.id = p.base_unit_id\n" +
-                  "WHERE COALESCE(ip.inbound_quantity, 0) + COALESCE(op.outbound_quantity_converted, 0) > 0\n" +
-                  "ORDER BY total_transaction DESC\n" +
-                  "LIMIT 5;\n",
-          nativeQuery = true)
+  @Query(
+      value =
+          "WITH OutboundProduct AS (\n"
+              + "    SELECT \n"
+              + "        od.product_id,\n"
+              + "        SUM(\n"
+              + "            CASE \n"
+              + "                -- Nếu đơn vị đo hiện tại là baseUnit, sử dụng trực tiếp\n"
+              + "                WHEN od.unit_of_measurement_id = p.base_unit_id THEN"
+              + " od.outbound_quantity \n"
+              + "                -- Nếu không, chuyển đổi qua factor_conversion\n"
+              + "                ELSE od.outbound_quantity * uc.factor_conversion \n"
+              + "            END\n"
+              + "        ) AS outbound_quantity_converted,\n"
+              + "        SUM(od.outbound_quantity * od.price) AS outbound_total\n"
+              + "    FROM outbound_product_details od\n"
+              + "    JOIN outbound o ON od.outbound_id = o.id\n"
+              + "    JOIN product p ON od.product_id = p.id\n"
+              + "    LEFT JOIN unit_conversion uc \n"
+              + "        ON od.unit_of_measurement_id = uc.smaller_unit \n"
+              + "        AND p.base_unit_id = uc.larger_unit\n"
+              + "        AND uc.product_id = p.id -- Đảm bảo chỉ lấy conversion đúng cho sản phẩm\n"
+              + "    WHERE (:branchId IS NULL OR o.from_branch_id = :branchId)\n"
+              + "      AND o.created_date > CURRENT_DATE - INTERVAL '30' DAY\n"
+              + "    GROUP BY od.product_id\n"
+              + "),\n"
+              + "InboundProduct AS (\n"
+              + "    SELECT \n"
+              + "        id.product_id, \n"
+              + "        SUM(id.receive_quantity) AS inbound_quantity, \n"
+              + "        SUM(id.receive_quantity * id.price) AS inbound_total\n"
+              + "    FROM inbound_details id\n"
+              + "    JOIN inbound i ON id.inbound_id = i.id\n"
+              + "    WHERE (:branchId IS NULL OR i.to_branch_id = :branchId)\n"
+              + "      AND i.created_date > CURRENT_DATE - INTERVAL '30' DAY\n"
+              + "    GROUP BY id.product_id\n"
+              + ")\n"
+              + "SELECT \n"
+              + "    p.id AS product_id,\n"
+              + "    p.product_name,\n"
+              + "\tp.url_image,\n"
+              + "\tCOALESCE(ip.inbound_quantity, 0) as inbound_quantity,\n"
+              + "\tCOALESCE(op.outbound_quantity_converted, 0) as outbound_quantity,\n"
+              + "    COALESCE(ip.inbound_quantity, 0) + COALESCE(op.outbound_quantity_converted, 0)"
+              + " AS total_quantity,\n"
+              + "\tCOALESCE(ip.inbound_total, 0) AS inbound_transaction,\n"
+              + "\tCOALESCE(op.outbound_total, 0) AS utbound_transaction,\n"
+              + "    COALESCE(ip.inbound_total, 0) + COALESCE(op.outbound_total, 0) AS"
+              + " total_transaction,\n"
+              + "\tuom.unit_name\n"
+              + "FROM product p\n"
+              + "LEFT JOIN InboundProduct ip ON p.id = ip.product_id\n"
+              + "LEFT JOIN OutboundProduct op ON p.id = op.product_id\n"
+              + "JOIN unit_of_measurement uom ON uom.id = p.base_unit_id\n"
+              + "WHERE COALESCE(ip.inbound_quantity, 0) + COALESCE(op.outbound_quantity_converted,"
+              + " 0) > 0\n"
+              + "ORDER BY total_transaction DESC\n"
+              + "LIMIT 5;\n",
+      nativeQuery = true)
   List<Object[]> getTopProduct(@Param("branchId") Long branchId);
 }

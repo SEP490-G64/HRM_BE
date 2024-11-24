@@ -33,6 +33,8 @@ public interface OutboundRepository
   @Query("UPDATE OutboundEntity i SET i.status = :status WHERE i.id = :id")
   void updateOutboundStatus(@Param("status") OutboundStatus status, @Param("id") Long id);
 
-  @Query("SELECT SUM(COALESCE(o.totalPrice, 0.0)) FROM OutboundEntity o WHERE (:branchId IS NULL OR o.fromBranch.id = :branchId)")
+  @Query(
+      "SELECT SUM(COALESCE(o.totalPrice, 0.0)) FROM OutboundEntity o WHERE (:branchId IS NULL OR"
+          + " o.fromBranch.id = :branchId)")
   BigDecimal getTotalOutboundValue(@Param("branchId") Long branchId);
 }

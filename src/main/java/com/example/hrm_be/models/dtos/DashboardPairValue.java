@@ -19,7 +19,7 @@ import java.math.BigDecimal;
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class DashboardPairValue {
-   String name;
-   BigDecimal value1;
-   BigDecimal value2;
+  String name;
+  BigDecimal value1;
+  BigDecimal value2;
 }

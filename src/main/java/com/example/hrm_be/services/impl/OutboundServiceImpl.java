@@ -239,16 +239,20 @@ public class OutboundServiceImpl implements OutboundService {
     }
 
     if (oldOutboundEntity.getStatus() != OutboundStatus.CHO_DUYET) {
-      throw new HrmCommonException(
-              HrmConstant.ERROR.OUTBOUND.INVALID);
+      throw new HrmCommonException(HrmConstant.ERROR.OUTBOUND.INVALID);
     }
 
     String email = userService.getAuthenticatedUserEmail();
     UserEntity userEntity = userMapper.toEntity(userService.findLoggedInfoByEmail(email));
 
     return Optional.ofNullable(oldOutboundEntity)
-        .map(op -> op.toBuilder().isApproved(accept).approvedBy(userEntity)
-                .status(accept ? OutboundStatus.KIEM_HANG : OutboundStatus.BAN_NHAP).build())
+        .map(
+            op ->
+                op.toBuilder()
+                    .isApproved(accept)
+                    .approvedBy(userEntity)
+                    .status(accept ? OutboundStatus.KIEM_HANG : OutboundStatus.BAN_NHAP)
+                    .build())
         .map(outboundRepository::save)
         .map(outboundMapper::toDTO)
         .orElse(null);
