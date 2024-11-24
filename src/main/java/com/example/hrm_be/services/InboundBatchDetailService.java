@@ -18,7 +18,7 @@ public interface InboundBatchDetailService {
 
   void saveAll(List<InboundBatchDetail> inboundBatchDetailEntities);
 
-  void updateAverageInboundPricesForBatches(BatchEntity batch);
+  void updateAverageInboundPricesForBatches(Long batchId);
 
   Integer findTotalQuantityByInboundAndProduct(Long inboundId, ProductEntity product);
 

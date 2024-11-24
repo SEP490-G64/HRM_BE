@@ -336,6 +336,24 @@ public class StaffProductController {
     return ResponseEntity.ok(response);
   }
 
+  @GetMapping("/branchProducts/{branchId}")
+  public ResponseEntity<BaseOutput<List<ProductBaseDTO>>> getBranchProduct(
+          @PathVariable("branchId") Long branchId,
+          @RequestParam(defaultValue = "") String keyword,
+          @RequestParam(required = false) Boolean checkValid,
+          @RequestParam(required = false) Long supplierId) {
+    List<ProductBaseDTO> products =
+            productService.getBranchProduct(branchId, keyword, checkValid, supplierId);
+
+    BaseOutput<List<ProductBaseDTO>> response =
+            BaseOutput.<List<ProductBaseDTO>>builder()
+                    .data(products)
+                    .message(HttpStatus.OK.toString())
+                    .status(ResponseStatus.SUCCESS)
+                    .build();
+    return ResponseEntity.ok(response);
+  }
+
   @GetMapping("/products-inventory-check/{branchId}")
   public ResponseEntity<BaseOutput<List<ProductBatchDTO>>> getProductInBranchForInventoryCheck(
       @PathVariable("branchId") Long branchId) {

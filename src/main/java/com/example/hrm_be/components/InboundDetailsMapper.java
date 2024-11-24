@@ -33,6 +33,7 @@ public class InboundDetailsMapper {
                     .requestQuantity(d.getRequestQuantity())
                     .receiveQuantity(d.getReceiveQuantity())
                     .inboundPrice(d.getInboundPrice())
+                    .taxRate(d.getTaxRate())
                     .build())
         .orElse(null);
   }

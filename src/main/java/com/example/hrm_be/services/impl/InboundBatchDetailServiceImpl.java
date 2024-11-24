@@ -5,6 +5,7 @@ import com.example.hrm_be.commons.enums.InboundStatus;
 import com.example.hrm_be.components.BatchMapper;
 import com.example.hrm_be.components.InboundBatchDetailMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
+import com.example.hrm_be.models.dtos.Batch;
 import com.example.hrm_be.models.dtos.InboundBatchDetail;
 import com.example.hrm_be.models.entities.BatchEntity;
 import com.example.hrm_be.models.entities.InboundBatchDetailEntity;
@@ -79,10 +80,12 @@ public class InboundBatchDetailServiceImpl implements InboundBatchDetailService 
   }
 
   @Override
-  public void updateAverageInboundPricesForBatches(BatchEntity batch) {
+  public void updateAverageInboundPricesForBatches(Long batchId) {
+    Batch batch = batchService.getById(batchId);
+
     // Get all inbound batch details of batch
     List<InboundBatchDetailEntity> allInboundBatchDetails =
-        inboundBatchDetailRepository.findAllByBatchId(batch.getId());
+        inboundBatchDetailRepository.findAllByBatchId(batchId);
 
     BigDecimal totalPrice = BigDecimal.ZERO;
     int totalQuantity = 0;
@@ -102,7 +105,7 @@ public class InboundBatchDetailServiceImpl implements InboundBatchDetailService 
           totalPrice.divide(BigDecimal.valueOf(totalQuantity), 2, RoundingMode.HALF_UP);
       batch.setInboundPrice(averageProductPrice);
     }
-    batchService.update(batchMapper.toDTO(batch));
+    batchService.update(batch);
   }
 
   @Override

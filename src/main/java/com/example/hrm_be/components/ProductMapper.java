@@ -448,7 +448,67 @@ public class ProductMapper {
                 : BigDecimal.ZERO) // Nếu danh sách là null, trả về 0) //
         // Add product
         // quantity
+        .taxRate(entity.getCategory().getTaxRate())
         .build();
+  }
+
+  public ProductBaseDTO convertToBranchProduct(ProductEntity entity, Long branchId) {
+    // Get branch product for the specific branch
+    BranchProductEntity branchProduct =
+            entity.getBranchProducs().stream()
+                    .filter(bp -> bp.getBranch().getId().equals(branchId))
+                    .findFirst()
+                    .orElse(null);
+
+    // Get unit of measurements
+    List<UnitOfMeasurement> unitOfMeasurementList = new ArrayList<>();
+    if (entity.getUnitConversions() != null) {
+      unitOfMeasurementList =
+              entity.getUnitConversions().stream()
+                      .map(unitConversionMapper::toDTO)
+                      .map(UnitConversion::getSmallerUnit)
+                      .collect(Collectors.toList());
+    }
+    if (entity.getBaseUnit() != null) {
+      unitOfMeasurementList.add(unitOfMeasurementMapper.toDTO(entity.getBaseUnit()));
+    }
+
+    // Convert batches with BranchBatch quantities
+    List<Batch> batchDTOs =
+            entity.getBatches() != null
+                    ? entity.getBatches().stream()
+                    .map(
+                            batch -> {
+                              BranchBatchEntity branchBatch =
+                                      batch.getBranchBatches().stream()
+                                              .filter(bb -> bb.getBranch().getId().equals(branchId))
+                                              .findFirst()
+                                              .orElse(null);
+
+                              return batchMapper.convertToDtoForGetProductInBranch(
+                                      batch, branchBatch != null ? branchBatch.getQuantity() : null);
+                            })
+                    .collect(Collectors.toList())
+                    : null;
+
+    return ProductBaseDTO.builder()
+            .id(entity.getId())
+            .productName(entity.getProductName())
+            .registrationCode(entity.getRegistrationCode())
+            .urlImage(entity.getUrlImage())
+            .inboundPrice(entity.getInboundPrice())
+            .sellPrice(entity.getSellPrice())
+            .productBaseUnit(
+                    entity.getBaseUnit() != null
+                            ? unitOfMeasurementMapper.toDTO(entity.getBaseUnit())
+                            : null)
+            .batches(batchDTOs)
+            .productUnits(unitOfMeasurementList)
+            .productQuantity(branchProduct != null ? branchProduct.getQuantity() : BigDecimal.ZERO) //
+            // Add product
+            // quantity
+            .taxRate(entity.getCategory().getTaxRate())
+            .build();
   }
 
   // Helper method to convert ProductEntity to ProductDTO
