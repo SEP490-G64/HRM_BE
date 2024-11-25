@@ -4,13 +4,18 @@ import java.math.BigDecimal;
 import java.text.DecimalFormat;
 
 public class NumberToWordsConverter {
-  private static final String[] tensNames = {
-    "", "mười", "hai mươi", "ba mươi", "bốn mươi",
-    "năm mươi", "sáu mươi", "bảy mươi", "tám mươi", "chín mươi"
-  };
 
   private static final String[] numNames = {
-    "", "một", "hai", "ba", "bốn", "năm", "sáu", "bảy", "tám", "chín"
+          "", "một", "hai", "ba", "bốn", "năm", "sáu", "bảy", "tám", "chín"
+  };
+
+  private static final String[] tensNames = {
+          "", "mười", "hai mươi", "ba mươi", "bốn mươi",
+          "năm mươi", "sáu mươi", "bảy mươi", "tám mươi", "chín mươi"
+  };
+
+  private static final String[] bigUnits = {
+          "", "nghìn", "triệu", "tỷ", "nghìn tỷ", "triệu tỷ", "tỷ tỷ"
   };
 
   public static String convert(BigDecimal number) {
@@ -28,46 +33,43 @@ public class NumberToWordsConverter {
       return "không";
     }
 
-    // Limit the integer part to a maximum of 999 triệu
     BigDecimal integerPart = number.setScale(0, BigDecimal.ROUND_DOWN);
-    if (integerPart.compareTo(new BigDecimal("999999999")) > 0) {
-      throw new IllegalArgumentException("Số quá lớn để chuyển đổi");
-    }
-
-    // Separate integer and fractional parts
     BigDecimal fractionalPart = number.subtract(integerPart);
 
-    // Convert integer part to words
+    // Convert integer part
     String integerInWords = convertIntegerPart(integerPart);
 
-    // Convert fractional part to words if it exists
+    // Convert fractional part
     String fractionalInWords = convertFractionalPart(fractionalPart);
 
     return (integerInWords + fractionalInWords).trim();
   }
 
   private static String convertIntegerPart(BigDecimal integerPart) {
-    String snumber = String.valueOf(integerPart);
+    String snumber = integerPart.toPlainString();
 
-    // Formatting the integer part to a 9-digit string
-    String mask = "000000000";
-    DecimalFormat df = new DecimalFormat(mask);
-    snumber = df.format(integerPart);
+    // Split the number into groups of three digits
+    StringBuilder words = new StringBuilder();
+    int groupCount = 0;
 
-    int millions = Integer.parseInt(snumber.substring(0, 3));
-    int hundredThousands = Integer.parseInt(snumber.substring(3, 6));
-    int thousands = Integer.parseInt(snumber.substring(6, 9));
+    while (snumber.length() > 0) {
+      int groupLength = Math.min(snumber.length(), 3);
+      String group = snumber.substring(snumber.length() - groupLength);
+      snumber = snumber.substring(0, snumber.length() - groupLength);
 
-    String tradMillions = (millions == 0) ? "" : convertLessThanOneThousand(millions) + " triệu ";
-    String tradHundredThousands =
-        (hundredThousands == 0)
-            ? ""
-            : (hundredThousands == 1
-                ? "một nghìn "
-                : convertLessThanOneThousand(hundredThousands) + " nghìn ");
-    String tradThousand = convertLessThanOneThousand(thousands);
+      int groupNumber = Integer.parseInt(group);
+      if (groupNumber > 0) {
+        if (groupCount >= bigUnits.length) {
+          throw new IllegalArgumentException("Số quá lớn để xử lý với các đơn vị hiện tại.");
+        }
 
-    return (tradMillions + tradHundredThousands + tradThousand).replaceAll("\\s+", " ").trim();
+        String groupInWords = convertLessThanOneThousand(groupNumber);
+        words.insert(0, groupInWords + " " + bigUnits[groupCount] + " ");
+      }
+      groupCount++;
+    }
+
+    return words.toString().trim();
   }
 
   private static String convertFractionalPart(BigDecimal fractionalPart) {
@@ -77,16 +79,11 @@ public class NumberToWordsConverter {
 
     StringBuilder fractionalWords = new StringBuilder(" phẩy");
     String fractionalString =
-        fractionalPart.toPlainString().split("\\.")[1]; // Get the decimal part
+            fractionalPart.toPlainString().split("\\.")[1]; // Get the decimal part
 
     for (char digit : fractionalString.toCharArray()) {
       int numericValue = Character.getNumericValue(digit);
-      // Check if the digit is valid for numNames
-      if (numericValue >= 0 && numericValue < numNames.length) {
-        fractionalWords.append(" ").append(numNames[numericValue]);
-      } else {
-        throw new IllegalArgumentException("Invalid digit in fractional part: " + digit);
-      }
+      fractionalWords.append(" ").append(numNames[numericValue]);
     }
 
     return fractionalWords.toString();
@@ -97,25 +94,25 @@ public class NumberToWordsConverter {
       throw new IllegalArgumentException("Number must be between 0 and 999.");
     }
 
-    String current;
+    String current = "";
 
-    if (number % 100 < 10) { // For numbers from 0-9
+    // Lấy hàng đơn vị và giảm số
+    if (number % 10 != 0) { // Nếu có hàng đơn vị
       current = numNames[number % 10];
-      number /= 10;
-    } else { // For numbers from 10-99
-      current = numNames[number % 10]; // Get the unit
-      number /= 10;
+    }
+    number /= 10; // Loại bỏ hàng đơn vị
 
-      current = tensNames[number % 10] + " " + current; // Get the ten
-      number /= 10;
+    // Lấy hàng chục và giảm số
+    if (number % 10 != 0) { // Nếu có hàng chục
+      current = tensNames[number % 10] + (current.isEmpty() ? "" : " " + current);
+    }
+    number /= 10; // Loại bỏ hàng chục
+
+    // Lấy hàng trăm
+    if (number != 0) { // Nếu có hàng trăm
+      current = numNames[number] + " trăm" + (current.isEmpty() ? "" : " " + current);
     }
 
-    // Handle hundreds
-    if (number > 0) {
-      // If there are no tens and units, no need for a space after "trăm"
-      return current.isEmpty() ? numNames[number] + " trăm" : numNames[number] + " trăm " + current;
-    }
-
-    return current.trim(); // Return result
+    return current.trim();
   }
 }

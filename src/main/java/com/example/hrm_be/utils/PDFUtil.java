@@ -1,5 +1,6 @@
 package com.example.hrm_be.utils;
 
+import com.example.hrm_be.commons.enums.InboundType;
 import com.example.hrm_be.commons.enums.OutboundType;
 import com.example.hrm_be.models.dtos.*;
 import com.example.hrm_be.models.responses.InboundDetail;
@@ -103,10 +104,18 @@ public class PDFUtil {
       document.add(titleTable);
       document.add(Chunk.NEWLINE);
 
+      String sender = "";
+      if (inbound.getInboundType() == InboundType.NHAP_TU_NHA_CUNG_CAP) {
+        sender = inbound.getSupplier().getSupplierName();
+      }
+      else {
+        sender = inbound.getFromBranch().getBranchName() + " " + inbound.getFromBranch().getLocation();
+      }
+
       // Supplier and invoice details
       document.add(
           new Paragraph(
-              "- Họ và tên người giao: " + inbound.getSupplier().getSupplierName(), fontSubTitle));
+              "- Họ và tên người giao: " + sender, fontSubTitle));
       document.add(
           new Paragraph(
               "- Theo hóa đơn số "
@@ -115,7 +124,7 @@ public class PDFUtil {
                   // + formatInboundDate(inbound.getInboundDate())
                   + formatInboundDate(dateNow)
                   + " của "
-                  + inbound.getSupplier().getSupplierName(),
+                  + sender,
               fontSubTitle));
 
       // Add location
