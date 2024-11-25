@@ -187,6 +187,8 @@ public class InboundMapper {
         .fromBranch(entity.getFromBranch() != null ? entity.getFromBranch() : null)
         .toBranch(entity.getFromBranch() != null ? entity.getToBranch() : null)
         .note(entity.getNote())
+        .taxable(entity.getTaxable())
+        .totalPrice(entity.getTotalPrice())
         .build();
   }
 }

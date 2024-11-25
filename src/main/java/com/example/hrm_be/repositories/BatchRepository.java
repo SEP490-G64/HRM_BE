@@ -18,8 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 public interface BatchRepository
     extends JpaRepository<BatchEntity, Long>, JpaSpecificationExecutor<BatchEntity> {
-  // Check if a batch exists by its name.
-  boolean existsByBatchCode(String batchCode);
 
   Optional<BatchEntity> findByBatchCode(String batchCode);
 
@@ -32,7 +30,7 @@ public interface BatchRepository
 
   List<BatchEntity> findAllByProductId(Long productId);
 
-  Optional<BatchEntity> findByBatchCodeAndProduct_Id(String code, Long id);
+  Optional<BatchEntity> findByBatchCodeIgnoreCaseAndProduct_Id(String code, Long id);
 
   @Modifying
   @Transactional

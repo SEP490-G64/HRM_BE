@@ -1,7 +1,6 @@
 package com.example.hrm_be.services;
 
 import com.example.hrm_be.models.dtos.InboundBatchDetail;
-import com.example.hrm_be.models.entities.BatchEntity;
 import com.example.hrm_be.models.entities.InboundBatchDetailEntity;
 import com.example.hrm_be.models.entities.ProductEntity;
 import java.time.LocalDateTime;
@@ -18,7 +17,7 @@ public interface InboundBatchDetailService {
 
   void saveAll(List<InboundBatchDetail> inboundBatchDetailEntities);
 
-  void updateAverageInboundPricesForBatches(BatchEntity batch);
+  void updateAverageInboundPricesForBatches(Long batchId);
 
   Integer findTotalQuantityByInboundAndProduct(Long inboundId, ProductEntity product);
 

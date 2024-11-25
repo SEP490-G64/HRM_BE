@@ -54,6 +54,9 @@ public interface ProductService {
   List<ProductBaseDTO> getProductInBranch(
       Long branchId, String keyword, Boolean checkValid, Long supplierId);
 
+  List<ProductBaseDTO> getBranchProduct(
+      Long branchId, String keyword, Boolean checkValid, Long supplierId);
+
   List<ProductBaseDTO> filterProducts(
       Boolean lessThanOrEqual, Integer quantity, Boolean warning, Boolean outOfStock);
 
@@ -71,4 +74,8 @@ public interface ProductService {
   List<ProductBatchDTO> getProductByCateInBranchForInventoryCheck(Long branchId, Long cateId);
 
   List<ProductBatchDTO> getProductByTypeIdInBranchForInventoryCheck(Long branchId, Long typeId);
+
+  void removeCategoryFromProducts(Long cateId);
+
+  void removeTypeFromProducts(Long cateId);
 }

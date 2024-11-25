@@ -21,7 +21,7 @@ public interface InboundDetailsService {
 
   void saveAll(List<InboundDetails> inboundDetailsEntities);
 
-  InboundEntity updateAverageInboundPricesForProductsAndInboundTotalPrice(InboundEntity inbound);
+  void updateAverageInboundPricesForProducts(InboundEntity inbound);
 
   void deleteAllByInboundId(Long inboundId);
 

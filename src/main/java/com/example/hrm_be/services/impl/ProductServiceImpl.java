@@ -423,7 +423,7 @@ public class ProductServiceImpl implements ProductService {
   @Override
   public Product updateInboundPrice(Product product) {
     ProductEntity unsavedProduct = productRepository.findById(product.getId()).orElse(null);
-
+    assert unsavedProduct != null;
     unsavedProduct.setInboundPrice(product.getInboundPrice());
     ProductEntity saved = productRepository.save(unsavedProduct);
     return productMapper.toDTO(saved);
@@ -876,6 +876,19 @@ public class ProductServiceImpl implements ProductService {
         .collect(Collectors.toList());
   }
 
+  @Override
+  public List<ProductBaseDTO> getBranchProduct(
+      Long branchId, String keyword, Boolean checkValid, Long supplierId) {
+    return productRepository
+        .searchProductByBranchId(branchId, keyword, checkValid, supplierId)
+        .stream()
+        .map(
+            entity ->
+                productMapper.convertToBranchProduct(
+                    entity, branchId)) // Pass branchId to the mapper
+        .collect(Collectors.toList());
+  }
+
   private List<ProductBatchDTO> processProductData(List<ProductBaseDTO> products) {
     List<ProductBatchDTO> allProductBatches = new ArrayList<>();
     for (ProductBaseDTO product : products) {
@@ -955,6 +968,16 @@ public class ProductServiceImpl implements ProductService {
                         entity, branchId)) // Pass branchId to the mapper
             .toList();
     return processProductData(products);
+  }
+
+  @Override
+  public void removeCategoryFromProducts(Long cateId) {
+    productRepository.removeCategoryFromProducts(cateId);
+  }
+
+  @Override
+  public void removeTypeFromProducts(Long typeId) {
+    productRepository.removeTypeFromProducts(typeId);
   }
 
   public List<ProductBaseDTO> filterProducts(
