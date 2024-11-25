@@ -957,6 +957,16 @@ public class ProductServiceImpl implements ProductService {
     return processProductData(products);
   }
 
+  @Override
+  public void removeCategoryFromProducts(Long cateId) {
+    productRepository.removeCategoryFromProducts(cateId);
+  }
+
+  @Override
+  public void removeTypeFromProducts(Long typeId) {
+    productRepository.removeTypeFromProducts(typeId);
+  }
+
   public List<ProductBaseDTO> filterProducts(
       Boolean lessThanOrEqual, Integer quantity, Boolean warning, Boolean outOfStock) {
     Set<ProductBaseDTO> resultSet = new HashSet<>();

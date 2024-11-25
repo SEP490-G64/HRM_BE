@@ -48,6 +48,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -57,6 +58,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @Service
 @Transactional
@@ -85,6 +87,7 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
   @Autowired private InventoryCheckProductDetailsService inventoryCheckProductDetailsService;
 
   @Autowired private UserMapper userMapper;
+  private final CopyOnWriteArrayList<SseEmitter> emitters = new CopyOnWriteArrayList<>();
 
   @Override
   public InventoryCheck getById(Long id) {
@@ -417,11 +420,18 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
         InventoryCheckDetails inventoryCheckDetail;
         if (existingBatchDetail != null) {
           inventoryCheckDetail = existingBatchDetail;
-          inventoryCheckDetail.setReason(productDetail.getReason());
-          inventoryCheckDetail.setSystemQuantity(productDetail.getSystemQuantity());
-          inventoryCheckDetail.setCountedQuantity(productDetail.getCountedQuantity());
+          inventoryCheckDetail.setReason(
+              productDetail.getReason() != null ? productDetail.getReason() : null);
+          inventoryCheckDetail.setSystemQuantity(
+              productDetail.getSystemQuantity() != null ? productDetail.getSystemQuantity() : null);
+          inventoryCheckDetail.setCountedQuantity(
+              productDetail.getCountedQuantity() != null
+                  ? productDetail.getCountedQuantity()
+                  : null);
           inventoryCheckDetail.setDifference(
-              productDetail.getSystemQuantity() - productDetail.getCountedQuantity());
+              productDetail.getCountedQuantity() != null
+                  ? productDetail.getSystemQuantity() - productDetail.getCountedQuantity()
+                  : null);
           // Update existing batch detail with new quantity
           inventoryCheckDetailsService.update(inventoryCheckDetail);
         } else {
@@ -430,11 +440,19 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
               InventoryCheckDetails.builder()
                   .inventoryCheck(unsavedInventoryCheck)
                   .batch(unsavedBatch)
-                  .countedQuantity(productDetail.getCountedQuantity())
-                  .systemQuantity(productDetail.getSystemQuantity())
-                  .reason(productDetail.getReason())
+                  .countedQuantity(
+                      productDetail.getCountedQuantity() != null
+                          ? productDetail.getCountedQuantity()
+                          : null)
+                  .systemQuantity(
+                      productDetail.getSystemQuantity() != null
+                          ? productDetail.getSystemQuantity()
+                          : null)
+                  .reason(productDetail.getReason() != null ? productDetail.getReason() : null)
                   .difference(
-                      productDetail.getSystemQuantity() - productDetail.getCountedQuantity())
+                      productDetail.getCountedQuantity() != null
+                          ? productDetail.getSystemQuantity() - productDetail.getCountedQuantity()
+                          : null)
                   .build();
           inventoryCheckDetailsService.create(inventoryCheckDetail);
         }
@@ -455,11 +473,18 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
         if (existingProductDetail != null) {
           // Update existing product detail with new quantity
           inventoryCheckProductDetail = existingProductDetail;
-          inventoryCheckProductDetail.setCountedQuantity(productDetail.getCountedQuantity());
-          inventoryCheckProductDetail.setSystemQuantity(productDetail.getSystemQuantity());
+          inventoryCheckProductDetail.setCountedQuantity(
+              productDetail.getCountedQuantity() != null
+                  ? productDetail.getCountedQuantity()
+                  : null);
+          inventoryCheckProductDetail.setSystemQuantity(
+              productDetail.getSystemQuantity() != null ? productDetail.getSystemQuantity() : null);
           inventoryCheckProductDetail.setDifference(
-              productDetail.getSystemQuantity() - productDetail.getCountedQuantity());
-          inventoryCheckProductDetail.setReason(productDetail.getReason());
+              productDetail.getCountedQuantity() != null
+                  ? productDetail.getSystemQuantity() - productDetail.getCountedQuantity()
+                  : null);
+          inventoryCheckProductDetail.setReason(
+              productDetail.getReason() != null ? productDetail.getReason() : null);
           inventoryCheckProductDetailsService.update(inventoryCheckProductDetail);
         } else {
           // Create a new product detail
@@ -467,11 +492,19 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
               InventoryCheckProductDetails.builder()
                   .inventoryCheck(unsavedInventoryCheck)
                   .product(product)
-                  .countedQuantity(productDetail.getCountedQuantity())
-                  .systemQuantity(productDetail.getSystemQuantity())
+                  .countedQuantity(
+                      productDetail.getCountedQuantity() != null
+                          ? productDetail.getCountedQuantity()
+                          : null)
+                  .systemQuantity(
+                      productDetail.getSystemQuantity() != null
+                          ? productDetail.getCountedQuantity()
+                          : null)
                   .difference(
-                      productDetail.getSystemQuantity() - productDetail.getCountedQuantity())
-                  .reason(productDetail.getReason())
+                      productDetail.getDifference() != null
+                          ? productDetail.getSystemQuantity() - productDetail.getCountedQuantity()
+                          : null)
+                  .reason(productDetail.getReason() != null ? productDetail.getReason() : null)
                   .build();
         }
         inventoryCheckProductDetailsService.create(inventoryCheckProductDetail);
@@ -596,5 +629,19 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
           notification, userService.findAllManagerByBranchId(inventoryCheck.getBranch().getId()));
     }
     inventoryCheckRepository.updateInboundStatus(status, id);
+  }
+
+  public void notifySubscribers(Long noteId, String message) {
+    emitters.forEach(
+        emitter -> {
+          try {
+            emitter.send(
+                SseEmitter.event()
+                    .name("quantity-change")
+                    .data("Note ID: " + noteId + " - " + message));
+          } catch (Exception e) {
+            emitters.remove(emitter);
+          }
+        });
   }
 }
