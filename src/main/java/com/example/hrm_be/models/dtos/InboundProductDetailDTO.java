@@ -32,5 +32,6 @@ public class InboundProductDetailDTO {
   private Integer requestQuantity;
   private Integer receiveQuantity;
   private BigDecimal price;
+  private BigDecimal taxRate;
   private List<Batch> batches; // Associated batches for this product
 }

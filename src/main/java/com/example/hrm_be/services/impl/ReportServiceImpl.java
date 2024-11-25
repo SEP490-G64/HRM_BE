@@ -12,9 +12,7 @@ import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -240,17 +238,38 @@ public class ReportServiceImpl implements ReportService {
         };
     // Pass correct parameters to the repository
 
+    String finalTimeRange = timeRange;
     List<DashboardInboundOutboundStream> result =
         rawResult.stream()
             .map(
-                row ->
-                    new DashboardInboundOutboundStream(
-                        row[0] != null
-                            ? new SimpleDateFormat("dd-MM-yyyy").format((Date) row[0])
-                            : null, // time
-                        row[1] != null ? (BigDecimal) row[1] : BigDecimal.ZERO, // inbound
-                        row[2] != null ? (BigDecimal) row[2] : BigDecimal.ZERO // outbound
-                        ))
+                row -> {
+                  // Parse the date from row[0] (assuming it's a Date object)
+                  Date date = row[0] != null ? (Date) row[0] : null;
+                  BigDecimal inbound = row[1] != null ? (BigDecimal) row[1] : BigDecimal.ZERO;
+                  BigDecimal outbound = row[2] != null ? (BigDecimal) row[2] : BigDecimal.ZERO;
+
+                  String formattedDate = null;
+                  if (date != null) {
+                    // Format the date according to the timeRange
+                    if ("Ngày".equals(finalTimeRange)) { // Correctly use equals to compare strings
+                      formattedDate = new SimpleDateFormat("dd-MM-yyyy").format(date); // Day
+                    } else if ("Tuần".equals(finalTimeRange)) {
+                      formattedDate =
+                          new SimpleDateFormat("dd-MM-yyyy")
+                              .format(date); // Week number of the year
+                    } else if ("Tháng".equals(finalTimeRange)) {
+                      formattedDate = new SimpleDateFormat("MM-yyyy").format(date); // Month
+                    } else if ("Quý".equals(finalTimeRange)) {
+                      formattedDate =
+                          new SimpleDateFormat("MM-yyyy")
+                              .format(date); // Format as "Year-Q{quarter}"
+                    } else if ("Năm".equals(finalTimeRange)) {
+                      formattedDate = new SimpleDateFormat("yyyy").format(date); // Year
+                    }
+                  }
+
+                  return new DashboardInboundOutboundStream(formattedDate, inbound, outbound);
+                })
             .collect(Collectors.toList());
 
     return result;

@@ -98,28 +98,27 @@ public class StaffInboundController {
   // Approve an Inbound by Manager
   @PutMapping("/approve/{id}")
   protected ResponseEntity<BaseOutput<Inbound>> approve(
-      @PathVariable("id") Long id, @RequestParam boolean accept) {
-    // Validate the path variable ID
-    if (id <= 0 || id == null) {
-      BaseOutput<Inbound> response =
-          BaseOutput.<Inbound>builder()
-              .status(ResponseStatus.FAILED)
-              .errors(List.of(HrmConstant.ERROR.REQUEST.INVALID_PATH_VARIABLE))
-              .build();
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+      @PathVariable("id") Long id, @RequestParam(name = "accept") boolean accept) {
+    // Kiểm tra giá trị null hoặc id không hợp lệ
+    if (id == null || id <= 0) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body(
+              BaseOutput.<Inbound>builder()
+                  .status(ResponseStatus.FAILED)
+                  .errors(List.of(HrmConstant.ERROR.REQUEST.INVALID_PATH_VARIABLE))
+                  .build());
     }
 
-    // Update the Inbound
+    // Gọi service để xử lý logic phê duyệt
     Inbound updateInbound = inboundService.approve(id, accept);
 
-    // Build the response with the updated Inbound data
-    BaseOutput<Inbound> response =
+    // Trả về kết quả
+    return ResponseEntity.ok(
         BaseOutput.<Inbound>builder()
             .message(HttpStatus.OK.toString())
             .data(updateInbound)
             .status(ResponseStatus.SUCCESS)
-            .build();
-    return ResponseEntity.ok(response);
+            .build());
   }
 
   // DELETE: /api/v1/staff/inbound/{id}

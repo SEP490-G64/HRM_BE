@@ -45,6 +45,9 @@ public class InboundDetailsEntity extends CommonEntity {
   @Column(name = "discount")
   Double discount;
 
+  @Column(name = "tax_rate")
+  BigDecimal taxRate;
+
   @Column(name = "price")
   BigDecimal inboundPrice;
 }
