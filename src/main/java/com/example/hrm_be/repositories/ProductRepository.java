@@ -33,8 +33,8 @@ public interface ProductRepository
   Page<ProductEntity> findProductByPagingAndTypeId(Long typeId, Pageable pageable);
 
   @Query(
-      "SELECT COUNT(p) > 0 FROM ProductEntity p WHERE p.registrationCode = :code AND p.status !="
-          + " 'DA_XOA'")
+      "SELECT COUNT(p) > 0 FROM ProductEntity p WHERE p.registrationCode = :code "
+          + "AND (p.status != 'DA_XOA' OR p.status IS NULL)")
   boolean existsByRegistrationCode(String code);
 
   @Query(
@@ -133,6 +133,16 @@ public interface ProductRepository
           + "WHERE (p.sellPrice = :sellPrice) AND bp.branch.id = :id")
   List<ProductEntity> findProductsBySellPrice(
       @Param("sellPrice") BigDecimal sellPrice, @Param("id") Long id);
+
+  @Modifying
+  @Transactional
+  @Query("UPDATE ProductEntity p SET p.category = null WHERE p.category.id = :categoryId")
+  void removeCategoryFromProducts(Long categoryId);
+
+  @Modifying
+  @Transactional
+  @Query("UPDATE ProductEntity p SET p.type = null WHERE p.type.id = :typeId")
+  void removeTypeFromProducts(Long typeId);
 
   @Query(
           "SELECT COUNT(DISTINCT p) FROM ProductEntity p " +

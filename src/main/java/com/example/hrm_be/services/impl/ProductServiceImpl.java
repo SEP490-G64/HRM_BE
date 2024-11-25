@@ -670,13 +670,45 @@ public class ProductServiceImpl implements ProductService {
 
             List<String> rowErrors = new ArrayList<>();
 
-            // Validate the Product object
+            // Validate product name
             if (product.getProductName() == null || product.getProductName().isEmpty()) {
               rowErrors.add("Product name is missing at row " + (rowIndex + 1));
             }
 
-            if (productRepository.existsByRegistrationCode(product.getRegistrationCode())) {
-              rowErrors.add("Registration Code exists at row " + (rowIndex + 1));
+            // Validate registration name
+            if (product.getRegistrationCode() == null || product.getRegistrationCode().isEmpty()) {
+              rowErrors.add("Registration Code is missing at row " + (rowIndex + 1));
+            }
+
+            // Check if registration code already exists
+            if (product.getRegistrationCode() != null
+                && productRepository.existsByRegistrationCode(product.getRegistrationCode())) {
+              rowErrors.add("Registration Code already exists at row " + (rowIndex + 1));
+            }
+
+            // Validate category
+            if (product.getCategory() == null) {
+              rowErrors.add("Category is missing at row " + (rowIndex + 1));
+            }
+
+            // Validate type
+            if (product.getType() == null) {
+              rowErrors.add("Type is missing at row " + (rowIndex + 1));
+            }
+
+            // Validate base unit
+            if (product.getBaseUnit() == null) {
+              rowErrors.add("Base Unit is missing at row " + (rowIndex + 1));
+            }
+
+            // Validate manufacturer
+            if (product.getManufacturer() == null) {
+              rowErrors.add("Manufacturer is missing at row " + (rowIndex + 1));
+            }
+
+            // Validate branch products
+            if (product.getBranchProducts() == null || product.getBranchProducts().isEmpty()) {
+              rowErrors.add("Branch Products are missing at row " + (rowIndex + 1));
             }
 
             if (rowErrors.isEmpty()) {
@@ -692,13 +724,48 @@ public class ProductServiceImpl implements ProductService {
     } catch (IOException e) {
       errors.add("Failed to parse Excel file: " + e.getMessage());
     }
-
     // Save all valid products to the database if no errors occurred
     try {
       for (Product product : productsToSave) {
-        create(product);
-      }
+        // Convert product to entity and save it
+        product.setStatus(ProductStatus.CON_HANG);
+        ProductEntity savedProduct = productRepository.save(productMapper.toEntity(product));
 
+        // Get the branch of the current authenticated user
+        String email = userService.getAuthenticatedUserEmail();
+        Branch userBranch = userService.findLoggedInfoByEmail(email).getBranch();
+        if (userBranch == null) {
+          throw new HrmCommonException(HrmConstant.ERROR.BRANCH.NOT_EXIST);
+        }
+
+        // Retrieve the first BranchProduct
+        List<BranchProduct> branchProducts = product.getBranchProducts();
+        if (branchProducts == null || branchProducts.isEmpty()) {
+          throw new HrmCommonException(BRANCHPRODUCT.NOT_EXIST);
+        }
+
+        BranchProduct branchProduct = branchProducts.get(0);
+        BranchProduct branchProductEntity = new BranchProduct();
+
+        // Set branch information
+        branchProductEntity.setBranch(userBranch);
+
+        // Handle storage location
+        if (branchProduct.getStorageLocation() != null) {
+          StorageLocation savedStorageLocation =
+              storageLocationService.save(branchProduct.getStorageLocation());
+          branchProductEntity.setStorageLocation(savedStorageLocation);
+        }
+
+        // Set other attributes
+        branchProductEntity.setMinQuantity(branchProduct.getMinQuantity());
+        branchProductEntity.setMaxQuantity(branchProduct.getMaxQuantity());
+        branchProductEntity.setQuantity(branchProduct.getQuantity());
+        branchProductEntity.setProduct(productMapper.toDTO(savedProduct));
+
+        // Save the BranchProduct entity
+        branchProductService.save(branchProductEntity);
+      }
     } catch (Exception e) {
       errors.add("Error saving products: " + e.getMessage());
       throw new RuntimeException(
@@ -900,6 +967,16 @@ public class ProductServiceImpl implements ProductService {
                         entity, branchId)) // Pass branchId to the mapper
             .toList();
     return processProductData(products);
+  }
+
+  @Override
+  public void removeCategoryFromProducts(Long cateId) {
+    productRepository.removeCategoryFromProducts(cateId);
+  }
+
+  @Override
+  public void removeTypeFromProducts(Long typeId) {
+    productRepository.removeTypeFromProducts(typeId);
   }
 
   public List<ProductBaseDTO> filterProducts(

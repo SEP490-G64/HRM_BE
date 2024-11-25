@@ -74,4 +74,8 @@ public interface ProductService {
   List<ProductBatchDTO> getProductByCateInBranchForInventoryCheck(Long branchId, Long cateId);
 
   List<ProductBatchDTO> getProductByTypeIdInBranchForInventoryCheck(Long branchId, Long typeId);
+
+  void removeCategoryFromProducts(Long cateId);
+
+  void removeTypeFromProducts(Long cateId);
 }
