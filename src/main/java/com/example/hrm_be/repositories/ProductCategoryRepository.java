@@ -18,4 +18,6 @@ public interface ProductCategoryRepository extends JpaRepository<ProductCategory
       String categoryName, Pageable pageable);
 
   Optional<ProductCategoryEntity> findByCategoryName(String name);
+
+
 }

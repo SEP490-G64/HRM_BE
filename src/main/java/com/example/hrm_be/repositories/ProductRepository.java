@@ -133,4 +133,14 @@ public interface ProductRepository
           + "WHERE (p.sellPrice = :sellPrice) AND bp.branch.id = :id")
   List<ProductEntity> findProductsBySellPrice(
       @Param("sellPrice") BigDecimal sellPrice, @Param("id") Long id);
+
+  @Modifying
+  @Transactional
+  @Query("UPDATE ProductEntity p SET p.category = null WHERE p.category.id = :categoryId")
+  void removeCategoryFromProducts(Long categoryId);
+
+  @Modifying
+  @Transactional
+  @Query("UPDATE ProductEntity p SET p.type = null WHERE p.type.id = :typeId")
+  void removeTypeFromProducts(Long typeId);
 }

@@ -6,13 +6,16 @@ import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.ProductCategory;
 import com.example.hrm_be.models.entities.ProductCategoryEntity;
 import com.example.hrm_be.repositories.ProductCategoryRepository;
+import com.example.hrm_be.repositories.ProductRepository;
 import com.example.hrm_be.services.ProductCategoryService;
+import com.example.hrm_be.services.ProductService;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -26,6 +29,9 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
 
   // Injects the repository to interact with the database
   @Autowired private ProductCategoryRepository categoryRepository;
+
+  @Lazy
+  @Autowired private ProductService productService;
   // Injects the mapper to convert between DTO and Entity objects
   @Autowired private ProductCategoryMapper categoryMapper;
 
@@ -153,6 +159,7 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
     if (!this.existById(id)) {
       throw new HrmCommonException(HrmConstant.ERROR.CATEGORY.NOT_EXIST);
     }
+    productService.removeCategoryFromProducts(id);
 
     // Delete the category by ID
     categoryRepository.deleteById(id);

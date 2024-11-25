@@ -6,12 +6,14 @@ import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.ProductType;
 import com.example.hrm_be.models.entities.ProductTypeEntity;
 import com.example.hrm_be.repositories.ProductTypeRepository;
+import com.example.hrm_be.services.ProductService;
 import com.example.hrm_be.services.ProductTypeService;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -24,6 +26,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class ProductTypeServiceImpl implements ProductTypeService {
   // Injects the repository to interact with the database
   @Autowired private ProductTypeRepository productTypeRepository;
+
+  @Lazy
+  @Autowired private ProductService productService;
   // Injects the mapper to convert between DTO and Entity objects
   @Autowired private ProductTypeMapper productTypeMapper;
 
@@ -148,7 +153,7 @@ public class ProductTypeServiceImpl implements ProductTypeService {
     if (!this.existById(id)) {
       throw new HrmCommonException(HrmConstant.ERROR.TYPE.NOT_EXIST);
     }
-
+    productService.removeTypeFromProducts(id);
     // Delete the type by ID
     productTypeRepository.deleteById(id);
   }
