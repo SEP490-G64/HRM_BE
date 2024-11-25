@@ -38,7 +38,18 @@ jobs:
         run: docker push registry.digitalocean.com/capstone-registry/${{ env.IMAGE_NAME }}:latest
 
       - name: Trigger garbage collection
-        run: doctl registry garbage-collection start -f --include-untagged-manifests
+        run: |
+          doctl registry garbage-collection get-active -o json >info.json
+          GB_UUID=$(jq -r '.[0].uuid' info.json 2>/dev/null || echo "")
+          if [[ -z "$GB_UUID" ]]; then
+            echo "There is no garbage collection action currently running"
+          else
+          echo "There is a garbage collection action currently running, UUID: ${GB_UUID}. Cancel it now"
+            doctl registry garbage-collection cancel "${GB_UUID}"
+            sleep 15
+          fi
+          echo "Trigger a new garbage collection action"
+          doctl registry garbage-collection start -f --include-untagged-manifests
 
   Trigger-Redeploy:
     needs: Push-To-Image-Repo
