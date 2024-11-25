@@ -27,8 +27,7 @@ import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
 public class TypeServiceImplTest {
-  @Mock
-  private ProductService productService;
+  @Mock private ProductService productService;
   @Mock private ProductTypeMapper typeMapper;
   @Mock private ProductTypeRepository typeRepository;
   @InjectMocks private ProductTypeServiceImpl typeService;
@@ -302,8 +301,10 @@ public class TypeServiceImplTest {
     type.setId(1L);
     when(typeService.existById(type.getId())).thenReturn(true);
     typeService.delete(type.getId());
-    verify(productService, times(1)).removeTypeFromProducts(type.getId()); // Ensure product removal was called
-    verify(typeRepository, times(1)).deleteById(type.getId()); // Ensure the repository delete method was called
+    verify(productService, times(1))
+        .removeTypeFromProducts(type.getId()); // Ensure product removal was called
+    verify(typeRepository, times(1))
+        .deleteById(type.getId()); // Ensure the repository delete method was called
   }
 
   // UTCID02 - Delete: id null
