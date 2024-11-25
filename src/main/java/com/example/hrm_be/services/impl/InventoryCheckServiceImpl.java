@@ -183,14 +183,16 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
     List<InventoryCheckProductDetails> combinedProducts = new ArrayList<>();
     combinedProducts.addAll(productDetails);
     combinedProducts.addAll(batchDetails);
-    combinedProducts.sort(Comparator.comparing((InventoryCheckProductDetails detail) -> detail.getProduct().getId())
-        .thenComparing(detail -> {
-          // Handle batch ID for tie-breaking
-          if (detail.getBatch() != null) {
-            return detail.getBatch().getId();
-          }
-          return Long.MIN_VALUE; // Non-batch items get the lowest priority
-        }));
+    combinedProducts.sort(
+        Comparator.comparing((InventoryCheckProductDetails detail) -> detail.getProduct().getId())
+            .thenComparing(
+                detail -> {
+                  // Handle batch ID for tie-breaking
+                  if (detail.getBatch() != null) {
+                    return detail.getBatch().getId();
+                  }
+                  return Long.MIN_VALUE; // Non-batch items get the lowest priority
+                }));
     // Set details in the InventoryCheckDTO
     inventoryCheckDTO.setInventoryCheckProductDetails(combinedProducts);
 
