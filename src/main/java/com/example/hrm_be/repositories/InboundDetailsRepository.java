@@ -27,13 +27,6 @@ public interface InboundDetailsRepository extends JpaRepository<InboundDetailsEn
           + " id.product.id = :productId")
   BigDecimal findTotalPriceForProduct(Long productId);
 
-  @Query(
-      "SELECT id FROM InboundDetailsEntity id "
-          + "JOIN FETCH id.product p "
-          + "LEFT JOIN FETCH p.category pc "
-          + "WHERE id.inbound.id = :inboundId")
-  List<InboundDetailsEntity> findInboundDetailsWithCategoryByInboundId(Long inboundId);
-
   List<InboundDetailsEntity> findByInbound_Id(Long id);
 
   @Modifying

@@ -49,5 +49,7 @@ public class ProductBaseDTO {
   private List<UnitOfMeasurement> productUnits;
   private UnitOfMeasurement productBaseUnit;
 
+  private BigDecimal taxRate;
+
   private BranchProduct branchProduct;
 }

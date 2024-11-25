@@ -44,7 +44,7 @@ public interface ProductRepository
           + " '%')) AND bp.branch.id = :branchId AND bp.quantity > 0 AND (b IS NULL OR bb.quantity"
           + " > 0) AND (:checkValid IS NULL OR :checkValid = FALSE OR (b IS NOT NULL AND"
           + " b.expireDate >= CURRENT_TIMESTAMP)) AND (:supplierId IS NULL OR ps.supplier.id ="
-          + " :supplierId)")
+          + " :supplierId) AND p.status != 'DA_XOA'")
   List<ProductEntity> searchProductByBranchId(
       Long branchId, String searchStr, Boolean checkValid, Long supplierId);
 
@@ -55,7 +55,7 @@ public interface ProductRepository
           + " LOWER(CONCAT('%', :searchStr, '%'))) AND bp.branch.id = :branchId AND bp.quantity > 0"
           + " AND (b IS NULL OR bb.quantity > 0) AND (:checkValid IS NULL OR :checkValid = FALSE OR"
           + " (b IS NOT NULL AND b.expireDate >= CURRENT_TIMESTAMP)) AND (:supplierId IS NULL OR"
-          + " ps.supplier.id = :supplierId)")
+          + " ps.supplier.id = :supplierId) AND p.status != 'DA_XOA'")
   List<ProductEntity> searchAllProductByBranchId(
       Long branchId, String searchStr, Boolean checkValid, Long supplierId);
 
@@ -146,9 +146,8 @@ public interface ProductRepository
 
   @Query(
       "SELECT COUNT(DISTINCT p) FROM ProductEntity p "
-          + "JOIN p.branchProducs bp "
-          + "LEFT JOIN BranchBatchEntity bb ON bb.branch.id = :branchId "
-          + "WHERE (:branchId IS NULL OR bb.branch.id = :branchId)")
+          + "LEFT JOIN p.branchProducs bp "
+          + "WHERE (:branchId IS NULL OR bp.branch.id = :branchId) AND p.status != 'DA_XOA'")
   BigDecimal getTotalProductCountByBranchId(@Param("branchId") Long branchId);
 
   @Query(

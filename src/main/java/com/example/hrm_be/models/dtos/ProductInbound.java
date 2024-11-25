@@ -3,6 +3,7 @@ package com.example.hrm_be.models.dtos;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.io.Serial;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -34,4 +35,5 @@ public class ProductInbound implements Serializable {
   UnitOfMeasurement baseUnit;
   Double discount;
   Double price;
+  BigDecimal taxRate;
 }

@@ -34,4 +34,6 @@ public class InboundDetails {
   Double discount;
 
   BigDecimal inboundPrice;
+
+  BigDecimal taxRate;
 }
