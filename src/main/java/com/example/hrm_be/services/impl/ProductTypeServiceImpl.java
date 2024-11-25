@@ -27,8 +27,7 @@ public class ProductTypeServiceImpl implements ProductTypeService {
   // Injects the repository to interact with the database
   @Autowired private ProductTypeRepository productTypeRepository;
 
-  @Lazy
-  @Autowired private ProductService productService;
+  @Lazy @Autowired private ProductService productService;
   // Injects the mapper to convert between DTO and Entity objects
   @Autowired private ProductTypeMapper productTypeMapper;
 
