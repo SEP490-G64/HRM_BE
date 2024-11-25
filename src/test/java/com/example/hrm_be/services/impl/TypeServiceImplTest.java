@@ -2,6 +2,8 @@ package com.example.hrm_be.services.impl;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.example.hrm_be.components.ProductTypeMapper;
@@ -9,6 +11,7 @@ import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.ProductType;
 import com.example.hrm_be.models.entities.ProductTypeEntity;
 import com.example.hrm_be.repositories.ProductTypeRepository;
+import com.example.hrm_be.services.ProductService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,7 +27,8 @@ import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
 public class TypeServiceImplTest {
-
+  @Mock
+  private ProductService productService;
   @Mock private ProductTypeMapper typeMapper;
   @Mock private ProductTypeRepository typeRepository;
   @InjectMocks private ProductTypeServiceImpl typeService;
@@ -298,6 +302,8 @@ public class TypeServiceImplTest {
     type.setId(1L);
     when(typeService.existById(type.getId())).thenReturn(true);
     typeService.delete(type.getId());
+    verify(productService, times(1)).removeTypeFromProducts(type.getId()); // Ensure product removal was called
+    verify(typeRepository, times(1)).deleteById(type.getId()); // Ensure the repository delete method was called
   }
 
   // UTCID02 - Delete: id null
