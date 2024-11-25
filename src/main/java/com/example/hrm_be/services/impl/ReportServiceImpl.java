@@ -33,19 +33,36 @@ public class ReportServiceImpl implements ReportService {
     items.add(inboundRepository.getTotalInboundValue(branchId));
     items.add(outboundRepository.getTotalOutboundValue(branchId));
     items.add(productRepository.getTotalProductCountByBranchId(branchId));
-    items.add(BigDecimal.valueOf(supplierService.getByPaging(0, Integer.MAX_VALUE, "id", "", null).getTotalElements()));
+    items.add(
+        BigDecimal.valueOf(
+            supplierService.getByPaging(0, Integer.MAX_VALUE, "id", "", null).getTotalElements()));
     dashboard.setDashboardItems(items);
 
     List<Object[]> rawCate = productCategoryRepository.getCategoryWithProductPercentage(branchId);
-    List<DashboardPairValue> topCate = rawCate.stream()
-            .map(row -> new DashboardPairValue(
-                    row[1] != null ? row[1].toString() : null,
-                    row[2] != null ? (row[2] instanceof Long ? BigDecimal.valueOf((Long) row[2]).setScale(2, RoundingMode.HALF_UP) : (BigDecimal) row[2]).setScale(2, RoundingMode.HALF_UP) : BigDecimal.ZERO,
-                    row[3] != null ? (row[3] instanceof Long ? BigDecimal.valueOf((Long) row[3]).setScale(2, RoundingMode.HALF_UP) : (BigDecimal) row[3]).setScale(2, RoundingMode.HALF_UP) : BigDecimal.ZERO
-            ))
+    List<DashboardPairValue> topCate =
+        rawCate.stream()
+            .map(
+                row ->
+                    new DashboardPairValue(
+                        row[1] != null ? row[1].toString() : null,
+                        row[2] != null
+                            ? (row[2] instanceof Long
+                                    ? BigDecimal.valueOf((Long) row[2])
+                                        .setScale(2, RoundingMode.HALF_UP)
+                                    : (BigDecimal) row[2])
+                                .setScale(2, RoundingMode.HALF_UP)
+                            : BigDecimal.ZERO,
+                        row[3] != null
+                            ? (row[3] instanceof Long
+                                    ? BigDecimal.valueOf((Long) row[3])
+                                        .setScale(2, RoundingMode.HALF_UP)
+                                    : (BigDecimal) row[3])
+                                .setScale(2, RoundingMode.HALF_UP)
+                            : BigDecimal.ZERO))
             .collect(Collectors.toList());
     // Tính tổng percentage
-    BigDecimal totalPercentageCate = topCate.stream()
+    BigDecimal totalPercentageCate =
+        topCate.stream()
             .map(DashboardPairValue::getValue2)
             .reduce(BigDecimal.ZERO, BigDecimal::add);
     // Nếu tổng phần trăm khác 100, thêm một mục "Khác"
@@ -56,15 +73,30 @@ public class ReportServiceImpl implements ReportService {
     dashboard.setTopCategories(topCate);
 
     List<Object[]> rawType = productTypeRepository.getTypeWithProductPercentage(branchId);
-    List<DashboardPairValue> topType = rawType.stream()
-            .map(row -> new DashboardPairValue(
-                    row[1] != null ? row[1].toString() : null,
-                    row[2] != null ? (row[2] instanceof Long ? BigDecimal.valueOf((Long) row[2]).setScale(2, RoundingMode.HALF_UP) : (BigDecimal) row[2]).setScale(2, RoundingMode.HALF_UP) : BigDecimal.ZERO,
-                    row[3] != null ? (row[3] instanceof Long ? BigDecimal.valueOf((Long) row[3]).setScale(2, RoundingMode.HALF_UP) : (BigDecimal) row[3]).setScale(2, RoundingMode.HALF_UP) : BigDecimal.ZERO
-            ))
+    List<DashboardPairValue> topType =
+        rawType.stream()
+            .map(
+                row ->
+                    new DashboardPairValue(
+                        row[1] != null ? row[1].toString() : null,
+                        row[2] != null
+                            ? (row[2] instanceof Long
+                                    ? BigDecimal.valueOf((Long) row[2])
+                                        .setScale(2, RoundingMode.HALF_UP)
+                                    : (BigDecimal) row[2])
+                                .setScale(2, RoundingMode.HALF_UP)
+                            : BigDecimal.ZERO,
+                        row[3] != null
+                            ? (row[3] instanceof Long
+                                    ? BigDecimal.valueOf((Long) row[3])
+                                        .setScale(2, RoundingMode.HALF_UP)
+                                    : (BigDecimal) row[3])
+                                .setScale(2, RoundingMode.HALF_UP)
+                            : BigDecimal.ZERO))
             .collect(Collectors.toList());
     // Tính tổng percentage
-    BigDecimal totalPercentage = topType.stream()
+    BigDecimal totalPercentage =
+        topType.stream()
             .map(DashboardPairValue::getValue2)
             .reduce(BigDecimal.ZERO, BigDecimal::add);
     // Nếu tổng phần trăm khác 100, thêm một mục "Khác"
@@ -75,31 +107,71 @@ public class ReportServiceImpl implements ReportService {
     dashboard.setTopTypes(topType);
 
     List<Object[]> rawSupplier = supplierRepository.getTopSuppliers(branchId);
-    List<DashboardSupplier> topSupplier = rawSupplier.stream()
-            .map(row -> new DashboardSupplier(
-                    row[0] != null ? (Long) row[0] : null,
-                    row[1] != null ? row[1].toString() : null,
-                    row[2] != null ? row[2].toString() : null,
-                    row[3] != null ? (Long) row[3] : 0,
-                    row[4] != null ? (BigDecimal) row[4] : BigDecimal.ZERO
-            ))
+    List<DashboardSupplier> topSupplier =
+        rawSupplier.stream()
+            .map(
+                row ->
+                    new DashboardSupplier(
+                        row[0] != null ? (Long) row[0] : null,
+                        row[1] != null ? row[1].toString() : null,
+                        row[2] != null ? row[2].toString() : null,
+                        row[3] != null ? (Long) row[3] : 0,
+                        row[4] != null ? (BigDecimal) row[4] : BigDecimal.ZERO))
             .collect(Collectors.toList());
     dashboard.setTopFiveSuppliers(topSupplier);
 
     List<Object[]> rawProduct = productRepository.getTopProduct(branchId);
-    List<DashboardProduct> topProduct = rawProduct.stream()
-            .map(row -> new DashboardProduct(
-                    row[0] != null ? (Long) row[0] : null,
-                    row[1] != null ? row[1].toString() : null,
-                    row[2] != null ? row[2].toString() : null,
-                    row[3] != null ? (row[3] instanceof Long ? BigDecimal.valueOf((Long) row[3]).setScale(2, RoundingMode.HALF_UP) : (BigDecimal) row[3]).setScale(2, RoundingMode.HALF_UP) : BigDecimal.ZERO,
-                    row[4] != null ? (row[4] instanceof Double ? BigDecimal.valueOf((Double) row[4]).setScale(2, RoundingMode.HALF_UP) : (BigDecimal) row[4]).setScale(2, RoundingMode.HALF_UP) : BigDecimal.ZERO,
-                    row[5] != null ? (row[5] instanceof Double ? BigDecimal.valueOf((Double) row[5]).setScale(2, RoundingMode.HALF_UP) : (BigDecimal) row[5]).setScale(2, RoundingMode.HALF_UP) : BigDecimal.ZERO,
-                    row[6] != null ? (row[6] instanceof Double ? BigDecimal.valueOf((Double) row[6]).setScale(2, RoundingMode.HALF_UP) : (BigDecimal) row[6]).setScale(2, RoundingMode.HALF_UP) : BigDecimal.ZERO,
-                    row[7] != null ? (row[7] instanceof Double ? BigDecimal.valueOf((Double) row[7]).setScale(2, RoundingMode.HALF_UP) : (BigDecimal) row[7]).setScale(2, RoundingMode.HALF_UP) : BigDecimal.ZERO,
-                    row[8] != null ? (row[8] instanceof Double ? BigDecimal.valueOf((Double) row[8]).setScale(2, RoundingMode.HALF_UP) : (BigDecimal) row[8]).setScale(2, RoundingMode.HALF_UP) : BigDecimal.ZERO,
-                    row[9] != null ? row[9].toString() : null
-            ))
+    List<DashboardProduct> topProduct =
+        rawProduct.stream()
+            .map(
+                row ->
+                    new DashboardProduct(
+                        row[0] != null ? (Long) row[0] : null,
+                        row[1] != null ? row[1].toString() : null,
+                        row[2] != null ? row[2].toString() : null,
+                        row[3] != null
+                            ? (row[3] instanceof Long
+                                    ? BigDecimal.valueOf((Long) row[3])
+                                        .setScale(2, RoundingMode.HALF_UP)
+                                    : (BigDecimal) row[3])
+                                .setScale(2, RoundingMode.HALF_UP)
+                            : BigDecimal.ZERO,
+                        row[4] != null
+                            ? (row[4] instanceof Double
+                                    ? BigDecimal.valueOf((Double) row[4])
+                                        .setScale(2, RoundingMode.HALF_UP)
+                                    : (BigDecimal) row[4])
+                                .setScale(2, RoundingMode.HALF_UP)
+                            : BigDecimal.ZERO,
+                        row[5] != null
+                            ? (row[5] instanceof Double
+                                    ? BigDecimal.valueOf((Double) row[5])
+                                        .setScale(2, RoundingMode.HALF_UP)
+                                    : (BigDecimal) row[5])
+                                .setScale(2, RoundingMode.HALF_UP)
+                            : BigDecimal.ZERO,
+                        row[6] != null
+                            ? (row[6] instanceof Double
+                                    ? BigDecimal.valueOf((Double) row[6])
+                                        .setScale(2, RoundingMode.HALF_UP)
+                                    : (BigDecimal) row[6])
+                                .setScale(2, RoundingMode.HALF_UP)
+                            : BigDecimal.ZERO,
+                        row[7] != null
+                            ? (row[7] instanceof Double
+                                    ? BigDecimal.valueOf((Double) row[7])
+                                        .setScale(2, RoundingMode.HALF_UP)
+                                    : (BigDecimal) row[7])
+                                .setScale(2, RoundingMode.HALF_UP)
+                            : BigDecimal.ZERO,
+                        row[8] != null
+                            ? (row[8] instanceof Double
+                                    ? BigDecimal.valueOf((Double) row[8])
+                                        .setScale(2, RoundingMode.HALF_UP)
+                                    : (BigDecimal) row[8])
+                                .setScale(2, RoundingMode.HALF_UP)
+                            : BigDecimal.ZERO,
+                        row[9] != null ? row[9].toString() : null))
             .collect(Collectors.toList());
     dashboard.setTopFiveProducts(topProduct);
 
@@ -109,7 +181,7 @@ public class ReportServiceImpl implements ReportService {
   public static String[] calculateDateRange(String timeRange) {
     // Lấy ngày hiện tại
     LocalDate today = LocalDate.now();
-    LocalDate startDate = today;  // Khởi tạo startDate mặc định là ngày hiện tại
+    LocalDate startDate = today; // Khởi tạo startDate mặc định là ngày hiện tại
 
     // Xử lý dựa trên loại thời gian (timeRange)
     switch (timeRange) {
@@ -138,55 +210,66 @@ public class ReportServiceImpl implements ReportService {
     String startDateStr = startDate.format(formatter);
     String endDateStr = today.format(formatter);
 
-    return new String[]{startDateStr, endDateStr};
+    return new String[] {startDateStr, endDateStr};
   }
 
   @Override
   public List<DashboardInboundOutboundStream> getDashboardChart(Long branchId, String timeRange) {
     // Ensure timeRange is not null before processing
     if (timeRange == null) {
-      timeRange = "Ngày";  // Default value or handle as needed
+      timeRange = "Ngày"; // Default value or handle as needed
     }
 
     String[] dateRange = calculateDateRange(timeRange);
     String startDate = dateRange[0];
     String endDate = dateRange[1];
 
-    List<Object[]> rawResult = switch (timeRange) {
-        case "Năm" -> inboundRepository.getInboundOutboundDataByYear(startDate, endDate, branchId);
-        case "Quý" -> inboundRepository.getInboundOutboundDataByQuarter(startDate, endDate, branchId);
-        case "Tháng" -> inboundRepository.getInboundOutboundDataByMonth(startDate, endDate, branchId);
-        case "Tuần" -> inboundRepository.getInboundOutboundDataByWeek(startDate, endDate, branchId);
-        default -> inboundRepository.getInboundOutboundDataByDay(startDate, endDate, branchId);
-    };
+    List<Object[]> rawResult =
+        switch (timeRange) {
+          case "Năm" ->
+              inboundRepository.getInboundOutboundDataByYear(startDate, endDate, branchId);
+          case "Quý" ->
+              inboundRepository.getInboundOutboundDataByQuarter(startDate, endDate, branchId);
+          case "Tháng" ->
+              inboundRepository.getInboundOutboundDataByMonth(startDate, endDate, branchId);
+          case "Tuần" ->
+              inboundRepository.getInboundOutboundDataByWeek(startDate, endDate, branchId);
+          default -> inboundRepository.getInboundOutboundDataByDay(startDate, endDate, branchId);
+        };
     // Pass correct parameters to the repository
 
     String finalTimeRange = timeRange;
-    List<DashboardInboundOutboundStream> result = rawResult.stream()
-            .map(row -> {
-              // Parse the date from row[0] (assuming it's a Date object)
-              Date date = row[0] != null ? (Date) row[0] : null;
-              BigDecimal inbound = row[1] != null ? (BigDecimal) row[1] : BigDecimal.ZERO;
-              BigDecimal outbound = row[2] != null ? (BigDecimal) row[2] : BigDecimal.ZERO;
+    List<DashboardInboundOutboundStream> result =
+        rawResult.stream()
+            .map(
+                row -> {
+                  // Parse the date from row[0] (assuming it's a Date object)
+                  Date date = row[0] != null ? (Date) row[0] : null;
+                  BigDecimal inbound = row[1] != null ? (BigDecimal) row[1] : BigDecimal.ZERO;
+                  BigDecimal outbound = row[2] != null ? (BigDecimal) row[2] : BigDecimal.ZERO;
 
-              String formattedDate = null;
-              if (date != null) {
-                // Format the date according to the timeRange
-                if ("Ngày".equals(finalTimeRange)) {  // Correctly use equals to compare strings
-                  formattedDate = new SimpleDateFormat("dd-MM-yyyy").format(date);  // Day
-                } else if ("Tuần".equals(finalTimeRange)) {
-                  formattedDate = new SimpleDateFormat("dd-MM-yyyy").format(date);  // Week number of the year
-                } else if ("Tháng".equals(finalTimeRange)) {
-                  formattedDate = new SimpleDateFormat("MM-yyyy").format(date);  // Month
-                } else if ("Quý".equals(finalTimeRange)) {
-                  formattedDate = new SimpleDateFormat("MM-yyyy").format(date);  // Format as "Year-Q{quarter}"
-                } else if ("Năm".equals(finalTimeRange)) {
-                  formattedDate = new SimpleDateFormat("yyyy").format(date);  // Year
-                }
-              }
+                  String formattedDate = null;
+                  if (date != null) {
+                    // Format the date according to the timeRange
+                    if ("Ngày".equals(finalTimeRange)) { // Correctly use equals to compare strings
+                      formattedDate = new SimpleDateFormat("dd-MM-yyyy").format(date); // Day
+                    } else if ("Tuần".equals(finalTimeRange)) {
+                      formattedDate =
+                          new SimpleDateFormat("dd-MM-yyyy")
+                              .format(date); // Week number of the year
+                    } else if ("Tháng".equals(finalTimeRange)) {
+                      formattedDate = new SimpleDateFormat("MM-yyyy").format(date); // Month
+                    } else if ("Quý".equals(finalTimeRange)) {
+                      formattedDate =
+                          new SimpleDateFormat("MM-yyyy")
+                              .format(date); // Format as "Year-Q{quarter}"
+                    } else if ("Năm".equals(finalTimeRange)) {
+                      formattedDate = new SimpleDateFormat("yyyy").format(date); // Year
+                    }
+                  }
 
-              return new DashboardInboundOutboundStream(formattedDate, inbound, outbound);
-            })
+                  return new DashboardInboundOutboundStream(formattedDate, inbound, outbound);
+                })
             .collect(Collectors.toList());
 
     return result;

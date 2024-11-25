@@ -338,19 +338,19 @@ public class StaffProductController {
 
   @GetMapping("/branchProducts/{branchId}")
   public ResponseEntity<BaseOutput<List<ProductBaseDTO>>> getBranchProduct(
-          @PathVariable("branchId") Long branchId,
-          @RequestParam(defaultValue = "") String keyword,
-          @RequestParam(required = false) Boolean checkValid,
-          @RequestParam(required = false) Long supplierId) {
+      @PathVariable("branchId") Long branchId,
+      @RequestParam(defaultValue = "") String keyword,
+      @RequestParam(required = false) Boolean checkValid,
+      @RequestParam(required = false) Long supplierId) {
     List<ProductBaseDTO> products =
-            productService.getBranchProduct(branchId, keyword, checkValid, supplierId);
+        productService.getBranchProduct(branchId, keyword, checkValid, supplierId);
 
     BaseOutput<List<ProductBaseDTO>> response =
-            BaseOutput.<List<ProductBaseDTO>>builder()
-                    .data(products)
-                    .message(HttpStatus.OK.toString())
-                    .status(ResponseStatus.SUCCESS)
-                    .build();
+        BaseOutput.<List<ProductBaseDTO>>builder()
+            .data(products)
+            .message(HttpStatus.OK.toString())
+            .status(ResponseStatus.SUCCESS)
+            .build();
     return ResponseEntity.ok(response);
   }
 

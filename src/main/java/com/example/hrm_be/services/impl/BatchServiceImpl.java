@@ -153,7 +153,9 @@ public class BatchServiceImpl implements BatchService {
     }
 
     // Validation: Ensure the Batch does not already exist at the same batch code
-    if (batchRepository.findByBatchCodeIgnoreCaseAndProduct_Id(batch.getBatchCode(), batch.getProduct().getId()).isPresent()) {
+    if (batchRepository
+        .findByBatchCodeIgnoreCaseAndProduct_Id(batch.getBatchCode(), batch.getProduct().getId())
+        .isPresent()) {
       throw new HrmCommonException(HrmConstant.ERROR.BATCH.EXIST);
     }
 
@@ -180,7 +182,10 @@ public class BatchServiceImpl implements BatchService {
       throw new HrmCommonException(HrmConstant.ERROR.BATCH.NOT_EXIST);
     }
 
-    if (batchRepository.findByBatchCodeIgnoreCaseAndProduct_Id(batch.getBatchCode(), batch.getProduct().getId()).isPresent()
+    if (batchRepository
+            .findByBatchCodeIgnoreCaseAndProduct_Id(
+                batch.getBatchCode(), batch.getProduct().getId())
+            .isPresent()
         && !Objects.equals(batch.getId(), oldBatchEntity.getId())) {
       throw new HrmCommonException(HrmConstant.ERROR.BATCH.EXIST);
     }
@@ -221,7 +226,8 @@ public class BatchServiceImpl implements BatchService {
   public Batch addBatchInInbound(Batch batch, Product product) {
 
     Optional<BatchEntity> existingBatch =
-        batchRepository.findByBatchCodeIgnoreCaseAndProduct_Id(batch.getBatchCode(), product.getId());
+        batchRepository.findByBatchCodeIgnoreCaseAndProduct_Id(
+            batch.getBatchCode(), product.getId());
     batch.setProduct(product);
     BatchEntity savedBatch =
         existingBatch.orElseGet(() -> batchRepository.save(batchMapper.toEntity(batch)));

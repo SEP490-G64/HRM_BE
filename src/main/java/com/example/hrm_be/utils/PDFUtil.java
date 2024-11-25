@@ -107,15 +107,13 @@ public class PDFUtil {
       String sender = "";
       if (inbound.getInboundType() == InboundType.NHAP_TU_NHA_CUNG_CAP) {
         sender = inbound.getSupplier().getSupplierName();
-      }
-      else {
-        sender = inbound.getFromBranch().getBranchName() + " " + inbound.getFromBranch().getLocation();
+      } else {
+        sender =
+            inbound.getFromBranch().getBranchName() + " " + inbound.getFromBranch().getLocation();
       }
 
       // Supplier and invoice details
-      document.add(
-          new Paragraph(
-              "- Họ và tên người giao: " + sender, fontSubTitle));
+      document.add(new Paragraph("- Họ và tên người giao: " + sender, fontSubTitle));
       document.add(
           new Paragraph(
               "- Theo hóa đơn số "

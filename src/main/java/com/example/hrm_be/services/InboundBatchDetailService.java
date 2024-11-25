@@ -1,7 +1,6 @@
 package com.example.hrm_be.services;
 
 import com.example.hrm_be.models.dtos.InboundBatchDetail;
-import com.example.hrm_be.models.entities.BatchEntity;
 import com.example.hrm_be.models.entities.InboundBatchDetailEntity;
 import com.example.hrm_be.models.entities.ProductEntity;
 import java.time.LocalDateTime;
