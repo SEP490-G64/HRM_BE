@@ -134,6 +134,16 @@ public interface ProductRepository
   List<ProductEntity> findProductsBySellPrice(
       @Param("sellPrice") BigDecimal sellPrice, @Param("id") Long id);
 
+  @Modifying
+  @Transactional
+  @Query("UPDATE ProductEntity p SET p.category = null WHERE p.category.id = :categoryId")
+  void removeCategoryFromProducts(Long categoryId);
+
+  @Modifying
+  @Transactional
+  @Query("UPDATE ProductEntity p SET p.type = null WHERE p.type.id = :typeId")
+  void removeTypeFromProducts(Long typeId);
+
   @Query(
       "SELECT COUNT(DISTINCT p) FROM ProductEntity p "
           + "JOIN p.branchProducs bp "
