@@ -6,7 +6,6 @@ import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.ProductCategory;
 import com.example.hrm_be.models.entities.ProductCategoryEntity;
 import com.example.hrm_be.repositories.ProductCategoryRepository;
-import com.example.hrm_be.repositories.ProductRepository;
 import com.example.hrm_be.services.ProductCategoryService;
 import com.example.hrm_be.services.ProductService;
 import java.math.BigDecimal;
@@ -30,8 +29,7 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
   // Injects the repository to interact with the database
   @Autowired private ProductCategoryRepository categoryRepository;
 
-  @Lazy
-  @Autowired private ProductService productService;
+  @Lazy @Autowired private ProductService productService;
   // Injects the mapper to convert between DTO and Entity objects
   @Autowired private ProductCategoryMapper categoryMapper;
 
