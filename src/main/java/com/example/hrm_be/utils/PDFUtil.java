@@ -47,8 +47,15 @@ public class PDFUtil {
       if (fontStream == null) {
         System.err.println("Font file not found!");
       }
-        assert fontStream != null;
-        BaseFont baseFont = BaseFont.createFont("Arial.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED, true, fontStream.readAllBytes(), null);
+      assert fontStream != null;
+      BaseFont baseFont =
+          BaseFont.createFont(
+              "Arial.ttf",
+              BaseFont.IDENTITY_H,
+              BaseFont.EMBEDDED,
+              true,
+              fontStream.readAllBytes(),
+              null);
       // Create different font styles
       Font fontTitle = new Font(baseFont, 18, Font.BOLD, BaseColor.BLACK);
       Font fontSubTitle = new Font(baseFont, 12, Font.NORMAL, BaseColor.BLACK);
