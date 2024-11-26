@@ -68,6 +68,8 @@ public interface UserService {
 
   List<User> findAllByIds(List<Long> id);
 
+  List<User> findAllIsAdmin();
+
   List<User> findAllManagerByBranchId(Long branchId);
 
   List<User> getUserByBranchId(Long branchId);
