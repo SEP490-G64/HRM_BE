@@ -44,7 +44,14 @@ public class PDFUtil {
       // Load the font file as a stream
       InputStream fontStream = PDFUtil.class.getResourceAsStream("/fonts/Arial.ttf");
       // Create the base font object
-      BaseFont baseFont = BaseFont.createFont("Arial.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED, true, fontStream.readAllBytes(), null);
+      BaseFont baseFont =
+          BaseFont.createFont(
+              "Arial.ttf",
+              BaseFont.IDENTITY_H,
+              BaseFont.EMBEDDED,
+              true,
+              fontStream.readAllBytes(),
+              null);
       // Create different font styles
       Font fontTitle = new Font(baseFont, 18, Font.BOLD, BaseColor.BLACK);
       Font fontSubTitle = new Font(baseFont, 12, Font.NORMAL, BaseColor.BLACK);
