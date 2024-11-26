@@ -135,6 +135,7 @@ public class NotificationServiceImpl implements NotificationService {
         user -> {
           NotificationUser notificationRecipient = new NotificationUser();
           notificationRecipient.setNotification(saved);
+          notificationRecipient.setCreatedDate(saved.getCreatedDate());
           notificationRecipient.setUser(user);
           notificationRecipient.setRead(false);
           NotificationUserEntity ne =

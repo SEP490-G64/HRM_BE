@@ -39,6 +39,7 @@ public class NotificationMapper {
         .notiType(entity.getNotiType())
         .notiName(entity.getNotiName())
         .message(entity.getMessage())
+        .createdDate(entity.getCreatedDate())
         .build();
   }
 }
