@@ -7,7 +7,6 @@ import com.example.hrm_be.components.InboundBatchDetailMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.Batch;
 import com.example.hrm_be.models.dtos.InboundBatchDetail;
-import com.example.hrm_be.models.entities.BatchEntity;
 import com.example.hrm_be.models.entities.InboundBatchDetailEntity;
 import com.example.hrm_be.models.entities.ProductEntity;
 import com.example.hrm_be.repositories.InboundBatchDetailRepository;

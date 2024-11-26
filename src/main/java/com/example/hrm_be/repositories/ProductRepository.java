@@ -145,10 +145,9 @@ public interface ProductRepository
   void removeTypeFromProducts(Long typeId);
 
   @Query(
-          "SELECT COUNT(DISTINCT p) FROM ProductEntity p " +
-                  "LEFT JOIN p.branchProducs bp " +
-                  "WHERE (:branchId IS NULL OR bp.branch.id = :branchId) AND p.status != 'DA_XOA'"
-  )
+      "SELECT COUNT(DISTINCT p) FROM ProductEntity p "
+          + "LEFT JOIN p.branchProducs bp "
+          + "WHERE (:branchId IS NULL OR bp.branch.id = :branchId) AND p.status != 'DA_XOA'")
   BigDecimal getTotalProductCountByBranchId(@Param("branchId") Long branchId);
 
   @Query(

@@ -1,21 +1,20 @@
 package com.example.hrm_be.utils;
 
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
 
 public class NumberToWordsConverter {
 
   private static final String[] numNames = {
-          "", "một", "hai", "ba", "bốn", "năm", "sáu", "bảy", "tám", "chín"
+    "", "một", "hai", "ba", "bốn", "năm", "sáu", "bảy", "tám", "chín"
   };
 
   private static final String[] tensNames = {
-          "", "mười", "hai mươi", "ba mươi", "bốn mươi",
-          "năm mươi", "sáu mươi", "bảy mươi", "tám mươi", "chín mươi"
+    "", "mười", "hai mươi", "ba mươi", "bốn mươi",
+    "năm mươi", "sáu mươi", "bảy mươi", "tám mươi", "chín mươi"
   };
 
   private static final String[] bigUnits = {
-          "", "nghìn", "triệu", "tỷ", "nghìn tỷ", "triệu tỷ", "tỷ tỷ"
+    "", "nghìn", "triệu", "tỷ", "nghìn tỷ", "triệu tỷ", "tỷ tỷ"
   };
 
   public static String convert(BigDecimal number) {
@@ -79,7 +78,7 @@ public class NumberToWordsConverter {
 
     StringBuilder fractionalWords = new StringBuilder(" phẩy");
     String fractionalString =
-            fractionalPart.toPlainString().split("\\.")[1]; // Get the decimal part
+        fractionalPart.toPlainString().split("\\.")[1]; // Get the decimal part
 
     for (char digit : fractionalString.toCharArray()) {
       int numericValue = Character.getNumericValue(digit);

@@ -103,8 +103,7 @@ public class InboundDetailsServiceImpl implements InboundDetailsService {
   }
 
   @Override
-  public void updateAverageInboundPricesForProducts(
-      InboundEntity inbound) {
+  public void updateAverageInboundPricesForProducts(InboundEntity inbound) {
     // Get all products with tax rate in inbounds
     List<InboundDetailsEntity> allDetails =
         inboundDetailsRepository.findByInbound_Id(inbound.getId());

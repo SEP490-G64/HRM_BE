@@ -877,15 +877,16 @@ public class ProductServiceImpl implements ProductService {
   }
 
   @Override
-  public List<ProductBaseDTO> getBranchProduct(Long branchId, String keyword, Boolean checkValid, Long supplierId) {
+  public List<ProductBaseDTO> getBranchProduct(
+      Long branchId, String keyword, Boolean checkValid, Long supplierId) {
     return productRepository
-            .searchProductByBranchId(branchId, keyword, checkValid, supplierId)
-            .stream()
-            .map(
-                    entity ->
-                            productMapper.convertToBranchProduct(
-                                    entity, branchId)) // Pass branchId to the mapper
-            .collect(Collectors.toList());
+        .searchProductByBranchId(branchId, keyword, checkValid, supplierId)
+        .stream()
+        .map(
+            entity ->
+                productMapper.convertToBranchProduct(
+                    entity, branchId)) // Pass branchId to the mapper
+        .collect(Collectors.toList());
   }
 
   @Override

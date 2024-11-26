@@ -129,23 +129,26 @@ public class InboundServiceImpl implements InboundService {
                                   batchDTO.setBatchCode(batch.getBatchCode());
                                   batchDTO.setExpireDate(batch.getExpireDate());
 
-                                  BigDecimal price = (BigDecimal) batch.getInboundBatchDetail().stream()
-                                          .filter(
-                                                  Objects::nonNull) // Ensure inboundBatchDetail is not
-                                          // null
-                                          .filter(
+                                  BigDecimal price =
+                                      (BigDecimal)
+                                          batch.getInboundBatchDetail().stream()
+                                              .filter(
+                                                  Objects
+                                                      ::nonNull) // Ensure inboundBatchDetail is not
+                                              // null
+                                              .filter(
                                                   inboundBatchDetail ->
-                                                          inboundBatchDetail
-                                                                  .getInbound()
-                                                                  .getId()
-                                                                  .equals(optionalInbound.getId()))
-                                          .map(
+                                                      inboundBatchDetail
+                                                          .getInbound()
+                                                          .getId()
+                                                          .equals(optionalInbound.getId()))
+                                              .map(
                                                   inboundBatchDetail ->
-                                                          inboundBatchDetail.getInboundPrice() != null
-                                                                  ? inboundBatchDetail.getInboundPrice()
-                                                                  : 0)
-                                          .findFirst()
-                                          .orElse(BigDecimal.ZERO);
+                                                      inboundBatchDetail.getInboundPrice() != null
+                                                          ? inboundBatchDetail.getInboundPrice()
+                                                          : 0)
+                                              .findFirst()
+                                              .orElse(BigDecimal.ZERO);
                                   batchDTO.setInboundPrice(price);
 
                                   // Find the quantity for this product-batch from the
@@ -352,40 +355,42 @@ public class InboundServiceImpl implements InboundService {
               Batch batchEntity = batchService.addBatchInInbound(batch, product);
 
               Optional<InboundBatchDetail> optionalInboundBatchDetail =
-                      existingInboundBatchDetails.stream()
-                              .filter(detail -> detail.getBatch().getId().equals(batchEntity.getId()))
-                              .findFirst();
+                  existingInboundBatchDetails.stream()
+                      .filter(detail -> detail.getBatch().getId().equals(batchEntity.getId()))
+                      .findFirst();
 
               InboundBatchDetail inboundBatchDetail;
               if (optionalInboundBatchDetail.isPresent()) {
                 inboundBatchDetail = optionalInboundBatchDetail.get();
                 inboundBatchDetail.setQuantity(
-                        batch.getInboundBatchQuantity() != null ? batch.getInboundBatchQuantity() : 0);
+                    batch.getInboundBatchQuantity() != null ? batch.getInboundBatchQuantity() : 0);
                 inboundBatchDetail.setInboundPrice(batch.getInboundPrice());
                 existingInboundBatchDetails.remove(
-                        inboundBatchDetail); // Remove from existing list, mark as processed
+                    inboundBatchDetail); // Remove from existing list, mark as processed
               } else {
                 inboundBatchDetail =
-                        InboundBatchDetail.builder()
-                                .inbound(inboundMapper.toDTO(updatedInboundEntity))
-                                .batch(batchEntity)
-                                .quantity(
-                                        batch.getInboundBatchQuantity() != null
-                                                ? batch.getInboundBatchQuantity()
-                                                : 0)
-                                .inboundPrice(batch.getInboundPrice())
-                                .build();
+                    InboundBatchDetail.builder()
+                        .inbound(inboundMapper.toDTO(updatedInboundEntity))
+                        .batch(batchEntity)
+                        .quantity(
+                            batch.getInboundBatchQuantity() != null
+                                ? batch.getInboundBatchQuantity()
+                                : 0)
+                        .inboundPrice(batch.getInboundPrice())
+                        .build();
               }
               totalReceiveQuantity = totalReceiveQuantity + inboundBatchDetail.getQuantity();
-              totalPrice = totalPrice + (inboundBatchDetail.getInboundPrice().doubleValue() * inboundBatchDetail.getQuantity());
+              totalPrice =
+                  totalPrice
+                      + (inboundBatchDetail.getInboundPrice().doubleValue()
+                          * inboundBatchDetail.getQuantity());
               inboundBatchDetailsList.add(inboundBatchDetail);
             }
           }
           // set giá tiền và số lượng nhận được
           productInbound.setPrice(totalPrice / totalReceiveQuantity);
           productInbound.setReceiveQuantity(totalReceiveQuantity);
-        }
-        else {
+        } else {
           productInbound.setPrice(firstBatch.getInboundPrice().doubleValue());
           productInbound.setReceiveQuantity(firstBatch.getInboundBatchQuantity().intValue());
         }
@@ -404,11 +409,11 @@ public class InboundServiceImpl implements InboundService {
         inboundDetails.setDiscount(
             productInbound.getDiscount() != null ? productInbound.getDiscount() : 0);
         inboundDetails.setTaxRate(
-                productInbound.getTaxRate() != null ? productInbound.getTaxRate() : BigDecimal.ZERO);
+            productInbound.getTaxRate() != null ? productInbound.getTaxRate() : BigDecimal.ZERO);
         inboundDetails.setReceiveQuantity(
-                productInbound.getReceiveQuantity() != null ? productInbound.getReceiveQuantity() : 0);
+            productInbound.getReceiveQuantity() != null ? productInbound.getReceiveQuantity() : 0);
         inboundDetails.setInboundPrice(
-                BigDecimal.valueOf(productInbound.getPrice() != null ? productInbound.getPrice() : 0));
+            BigDecimal.valueOf(productInbound.getPrice() != null ? productInbound.getPrice() : 0));
         existingInboundDetails.remove(
             inboundDetails); // Remove from existing list, mark as processed
       } else {
@@ -425,14 +430,18 @@ public class InboundServiceImpl implements InboundService {
                     productInbound.getReceiveQuantity() != null
                         ? productInbound.getReceiveQuantity()
                         : 0)
-               .receiveQuantity(
+                .receiveQuantity(
                     productInbound.getReceiveQuantity() != null
-                         ? productInbound.getReceiveQuantity()
-                         : 0)
-               .inboundPrice(BigDecimal.valueOf(productInbound.getPrice() != null ? productInbound.getPrice() : 0))
-               .taxRate(
-                    productInbound.getTaxRate() != null ? productInbound.getTaxRate() : BigDecimal.ZERO)
-               .build();
+                        ? productInbound.getReceiveQuantity()
+                        : 0)
+                .inboundPrice(
+                    BigDecimal.valueOf(
+                        productInbound.getPrice() != null ? productInbound.getPrice() : 0))
+                .taxRate(
+                    productInbound.getTaxRate() != null
+                        ? productInbound.getTaxRate()
+                        : BigDecimal.ZERO)
+                .build();
       }
       inboundDetailsList.add(inboundDetails);
     }
