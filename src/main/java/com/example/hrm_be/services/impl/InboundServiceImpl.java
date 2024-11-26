@@ -70,6 +70,8 @@ public class InboundServiceImpl implements InboundService {
   @Autowired private BranchProductService branchProductService;
   @Autowired private ProductSupplierService productSupplierService;
 
+  @Autowired private PDFUtil pdfUtil;
+
   @Override
   public InboundDetail getById(Long inboundId) {
     InboundEntity optionalInbound = inboundRepository.findById(inboundId).orElse(null);
@@ -745,7 +747,7 @@ public class InboundServiceImpl implements InboundService {
     if (inbound == null) {
       throw new EntityNotFoundException("Inbound record not found with ID: " + inboundId);
     }
-    ByteArrayOutputStream out = PDFUtil.createReceiptPdf(inbound);
+    ByteArrayOutputStream out = pdfUtil.createReceiptPdf(inbound);
 
     return out;
   }
