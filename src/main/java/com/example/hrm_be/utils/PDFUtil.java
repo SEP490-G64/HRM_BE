@@ -10,7 +10,6 @@ import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -40,6 +39,7 @@ public class PDFUtil {
 
       // Load font file from resources
       String fontPath = getResourcePath(FONT_PATH);
+      log.error("This is fontPath: " + fontPath);
 
       // Create fonts
       Font fontTitle = createFontFromPath(fontPath, 18, Font.BOLD, BaseColor.BLACK);
@@ -976,8 +976,7 @@ public class PDFUtil {
 
   private static String getResourcePath(String relativePath) {
     try {
-      File font = new ClassPathResource(relativePath).getFile();
-      return font.getAbsolutePath();
+      return new ClassPathResource(relativePath).getURL().toString();
     } catch (IOException e) {
       return "";
     }
