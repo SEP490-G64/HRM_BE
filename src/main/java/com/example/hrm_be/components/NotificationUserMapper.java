@@ -20,6 +20,7 @@ public class NotificationUserMapper {
                     .id(e.getId())
                     .user(userMapper.convertToDtoBasicInfo(e.getUser()))
                     .notification(notificationMapper.toDTO(e.getNotification()))
+                    .createdDate(entity.getNotification().getCreatedDate())
                     .read(e.getIsRead())
                     .build())
         .orElse(null);

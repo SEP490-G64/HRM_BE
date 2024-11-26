@@ -1,6 +1,7 @@
 package com.example.hrm_be.models.dtos;
 
 import com.example.hrm_be.commons.enums.BatchStatus;
+import com.example.hrm_be.commons.enums.ProductStatus;
 import com.example.hrm_be.models.entities.CommonEntity;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.math.BigDecimal;
@@ -52,5 +53,20 @@ public class Batch extends CommonEntity {
   Integer outBoundBatchQuantity;
 
   BigDecimal quantity;
+  Long productId;
+  String productName;
+  String productCode;
+  String registrationCode;
+  String urlImage;
+  String activeIngredient;
+  String excipient;
+  String formulation;
+  BigDecimal sellPrice;
+  BigDecimal productQuantity;
+  ProductStatus status;
+  String baseUnit;
+  String categoryName;
+  String typeName;
+  String manufacturerName;
   BigDecimal preQuantity;
 }

@@ -70,6 +70,8 @@ public class InboundServiceImpl implements InboundService {
   @Autowired private BranchProductService branchProductService;
   @Autowired private ProductSupplierService productSupplierService;
 
+  @Autowired private PDFUtil pdfUtil;
+
   @Override
   public InboundDetail getById(Long inboundId) {
     InboundEntity optionalInbound = inboundRepository.findById(inboundId).orElse(null);
@@ -629,7 +631,7 @@ public class InboundServiceImpl implements InboundService {
     Notification notification = new Notification();
     notification.setMessage(message);
     notification.setNotiName("Nhập phiếu vào kho");
-    notification.setNotiType(NotificationType.NHAP_PHIEU_VAO_HE_THONG);
+    notification.setNotiType(NotificationType.NHAP_PHIEU_NHAP_VAO_HE_THONG);
     notification.setCreatedDate(LocalDateTime.now());
 
     notificationService.sendNotification(
@@ -683,14 +685,14 @@ public class InboundServiceImpl implements InboundService {
       String message =
           "🔔 Thông báo: Phiếu nhập "
               + inbound.getInboundCode()
-              + "đang chờ duyệt "
+              + " đang chờ duyệt "
               + "bởi "
               + inbound.getCreatedBy().getUserName();
 
       Notification notification = new Notification();
       notification.setMessage(message);
-      notification.setNotiName(NotificationType.YEU_CAU_DUYET.getDisplayName());
-      notification.setNotiType(NotificationType.YEU_CAU_DUYET);
+      notification.setNotiName(NotificationType.YEU_CAU_DUYET_DON_NHAP.getDisplayName());
+      notification.setNotiType(NotificationType.YEU_CAU_DUYET_DON_NHAP);
       notification.setCreatedDate(LocalDateTime.now());
 
       notificationService.sendNotification(
@@ -707,7 +709,7 @@ public class InboundServiceImpl implements InboundService {
     if (inbound == null) {
       throw new EntityNotFoundException("Inbound record not found with ID: " + inboundId);
     }
-    ByteArrayOutputStream out = PDFUtil.createReceiptPdf(inbound);
+    ByteArrayOutputStream out = pdfUtil.createReceiptPdf(inbound);
 
     return out;
   }

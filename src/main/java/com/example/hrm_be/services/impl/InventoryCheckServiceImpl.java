@@ -169,8 +169,8 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
 
                   batchDetailDTO.setBatch(batchDTO);
                   batchDetailDTO.setProduct(productDTO);
-                  batchDetailDTO.setCountedQuantity(batchDetail.getSystemQuantity());
-                  batchDetailDTO.setSystemQuantity(batchDetail.getCountedQuantity());
+                  batchDetailDTO.setCountedQuantity(batchDetail.getCountedQuantity());
+                  batchDetailDTO.setSystemQuantity(batchDetail.getSystemQuantity());
                   batchDetailDTO.setReason(batchDetail.getReason());
                   // Set difference quantity
                   batchDetailDTO.setDifference(batchDetail.getDifference());
@@ -576,8 +576,8 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
 
     Notification notification = new Notification();
     notification.setMessage(message);
-    notification.setNotiName("Nhập phiếu vào kho");
-    notification.setNotiType(NotificationType.NHAP_PHIEU_VAO_HE_THONG);
+    notification.setNotiName(NotificationType.NHAP_PHIEU_KIEM_VAO_HE_THONG.getDisplayName());
+    notification.setNotiType(NotificationType.NHAP_PHIEU_KIEM_VAO_HE_THONG);
     notification.setCreatedDate(LocalDateTime.now());
     notificationService.sendNotification(
         notification,
@@ -615,14 +615,14 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
       String message =
           "🔔 Thông báo: Phiều kiểm "
               + inventoryCheck.getCode()
-              + "đang chờ duyệt "
+              + " đang chờ duyệt"
               + "bởi "
               + inventoryCheck.getCreatedBy().getUserName();
 
       Notification notification = new Notification();
       notification.setMessage(message);
-      notification.setNotiName(NotificationType.YEU_CAU_DUYET.getDisplayName());
-      notification.setNotiType(NotificationType.YEU_CAU_DUYET);
+      notification.setNotiName(NotificationType.YEU_CAU_DUYET_DON_KIEM.getDisplayName());
+      notification.setNotiType(NotificationType.YEU_CAU_DUYET_DON_KIEM);
       notification.setCreatedDate(LocalDateTime.now());
 
       notificationService.sendNotification(

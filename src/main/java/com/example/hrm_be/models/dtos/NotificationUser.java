@@ -1,6 +1,7 @@
 package com.example.hrm_be.models.dtos;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -28,4 +29,6 @@ public class NotificationUser {
   Notification notification;
 
   Boolean read;
+
+  LocalDateTime createdDate;
 }

@@ -5,41 +5,63 @@ import com.example.hrm_be.commons.enums.OutboundType;
 import com.example.hrm_be.models.dtos.*;
 import com.example.hrm_be.models.responses.InboundDetail;
 import com.itextpdf.text.*;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+
+import java.awt.*;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
+@Slf4j
+@Component
 public class PDFUtil {
 
-  public static ByteArrayOutputStream createReceiptPdf(InboundDetail inbound)
+  public ByteArrayOutputStream createReceiptPdf(InboundDetail inbound)
       throws DocumentException, IOException {
     LocalDateTime dateNow = LocalDateTime.now(); // Initializes with the current date and time
 
     // Create a new PDF document
     com.itextpdf.text.Document document = new com.itextpdf.text.Document();
     ByteArrayOutputStream out = new ByteArrayOutputStream();
+    log.info("This is first sus");
 
     try {
       // Initialize PDF writer
       PdfWriter.getInstance(document, out);
+      log.info("This is second sus");
       document.open();
+      log.info("This is third sus");
 
-      // Load font file from resources
-      String fontPath =
-          Objects.requireNonNull(PDFUtil.class.getResource("/fonts/Arial.ttf")).getPath();
-
-      // Create fonts
-      Font fontTitle = createFontFromPath(fontPath, 18, Font.BOLD, BaseColor.BLACK);
-      Font fontSubTitle = createFontFromPath(fontPath, 12, Font.NORMAL, BaseColor.BLACK);
-      Font fontTableHeader = createFontFromPath(fontPath, 12, Font.BOLD, BaseColor.BLACK);
-      Font fontFooter = createFontFromPath(fontPath, 12, Font.NORMAL, BaseColor.BLACK);
+      InputStream fontStream =
+          Thread.currentThread().getContextClassLoader().getResourceAsStream("fonts/Arial.ttf");
+      if (fontStream == null) {
+        System.err.println("Font file not found!");
+      }
+      assert fontStream != null;
+      BaseFont baseFont =
+          BaseFont.createFont(
+              "Arial.ttf",
+              BaseFont.IDENTITY_H,
+              BaseFont.EMBEDDED,
+              true,
+              fontStream.readAllBytes(),
+              null);
+      // Create different font styles
+      Font fontTitle = new Font(baseFont, 18, Font.BOLD, BaseColor.BLACK);
+      Font fontSubTitle = new Font(baseFont, 12, Font.NORMAL, BaseColor.BLACK);
+      Font fontTableHeader = new Font(baseFont, 12, Font.BOLD, BaseColor.BLACK);
+      Font fontFooter = new Font(baseFont, 12, Font.NORMAL, BaseColor.BLACK);
 
       // Add company information table to the document
       document.add(createCompanyInfoTable(inbound, fontSubTitle, fontTableHeader));
@@ -205,6 +227,8 @@ public class PDFUtil {
       // Footer table
       document.add(createFooterTable(inbound, fontFooter, fontTableHeader));
 
+    } catch (Exception e) {
+      log.error("This is a custom debug: " + e.getMessage());
     } finally {
       document.close();
     }
@@ -348,17 +372,11 @@ public class PDFUtil {
 
       // Initialize the total value for the current detail
       BigDecimal totalDetailAmount = BigDecimal.ZERO;
-      // Initialize the unit price for the current detail (if needed for reference)
-      BigDecimal unitPrice = BigDecimal.ZERO;
 
       // Check if there are any batches
       if (detail.getBatches() != null && !detail.getBatches().isEmpty()) {
         // Loop through each batch to calculate the total value
         for (Batch batch : detail.getBatches()) {
-          // Set the unit price only for the first batch encountered (optional)
-          if (unitPrice.compareTo(BigDecimal.ZERO) == 0) {
-            unitPrice = batch.getInboundPrice();
-          }
 
           // Calculate the total price for the current batch
           BigDecimal batchTotalPrice =
@@ -370,12 +388,11 @@ public class PDFUtil {
       } else {
         totalDetailAmount =
             detail.getPrice().multiply(BigDecimal.valueOf(detail.getReceiveQuantity()));
-        unitPrice = detail.getPrice();
       }
       total = total.add(totalDetailAmount);
 
       table.addCell(
-          new PdfPCell(new Phrase(String.valueOf(unitPrice), fontSubTitle))); // Unit price
+          new PdfPCell(new Phrase(String.valueOf(detail.getPrice()), fontSubTitle))); // Unit price
       // new PdfPCell(new Phrase())); // Unit price
       table.addCell(
           new PdfPCell(new Phrase(totalDetailAmount.toString(), fontSubTitle))); // Total amount

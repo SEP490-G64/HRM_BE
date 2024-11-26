@@ -8,6 +8,7 @@ import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.ProductCategory;
 import com.example.hrm_be.models.entities.ProductCategoryEntity;
 import com.example.hrm_be.repositories.ProductCategoryRepository;
+import com.example.hrm_be.services.ProductService;
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
@@ -26,6 +27,7 @@ import org.springframework.data.domain.*;
 public class CategoryServiceImplTest {
 
   @Mock private ProductCategoryMapper categoryMapper;
+  @Mock private ProductService productService;
   @Mock private ProductCategoryRepository categoryRepository;
   @InjectMocks private ProductCategoryServiceImpl categoryService;
 
