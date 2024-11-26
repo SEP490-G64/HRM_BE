@@ -43,23 +43,23 @@ public class PDFUtil {
       document.open();
       log.info("This is third sus");
 
-      InputStream fontStream =
-          Thread.currentThread().getContextClassLoader().getResourceAsStream("fonts/Arial.ttf");
+      // Load font file from resources
+      InputStream fontStream = getClass().getClassLoader().getResourceAsStream("fonts/Arial.ttf");
+
       if (fontStream == null) {
-        log.info("Font file not found!");
-      } else {
-        log.info("Font file loaded successfully.");
+        log.error("Font file 'Arial.ttf' not found in 'resources/fonts'.");
+        throw new RuntimeException("Font file 'Arial.ttf' not found.");
       }
-      // Create the base font object
-      assert fontStream != null;
-      BaseFont baseFont =
-          BaseFont.createFont(
+
+      // Create BaseFont from InputStream
+      BaseFont baseFont = BaseFont.createFont(
               "Arial.ttf",
               BaseFont.IDENTITY_H,
               BaseFont.EMBEDDED,
               true,
               fontStream.readAllBytes(),
-              null);
+              null
+      );
       // Create different font styles
       Font fontTitle = new Font(baseFont, 18, Font.BOLD, BaseColor.BLACK);
       Font fontSubTitle = new Font(baseFont, 12, Font.NORMAL, BaseColor.BLACK);
