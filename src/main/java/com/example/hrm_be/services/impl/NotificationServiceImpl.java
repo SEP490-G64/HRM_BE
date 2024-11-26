@@ -201,6 +201,11 @@ public class NotificationServiceImpl implements NotificationService {
 
   public List<NotificationUser> getAllNotificationsForUser(Long userId) {
     return notificationUserRepository.findByUser_Id(userId).stream()
+        .sorted(
+            (n1, n2) ->
+                n2.getNotification()
+                    .getCreatedDate()
+                    .compareTo(n1.getNotification().getCreatedDate()))
         .map(notificationUserMapper::toDTO)
         .collect(Collectors.toList());
   }
