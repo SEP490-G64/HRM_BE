@@ -169,8 +169,8 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
 
                   batchDetailDTO.setBatch(batchDTO);
                   batchDetailDTO.setProduct(productDTO);
-                  batchDetailDTO.setCountedQuantity(batchDetail.getSystemQuantity());
-                  batchDetailDTO.setSystemQuantity(batchDetail.getCountedQuantity());
+                  batchDetailDTO.setCountedQuantity(batchDetail.getCountedQuantity());
+                  batchDetailDTO.setSystemQuantity(batchDetail.getSystemQuantity());
                   batchDetailDTO.setReason(batchDetail.getReason());
                   // Set difference quantity
                   batchDetailDTO.setDifference(batchDetail.getDifference());

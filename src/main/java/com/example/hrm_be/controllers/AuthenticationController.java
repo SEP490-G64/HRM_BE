@@ -110,7 +110,8 @@ public class AuthenticationController {
     Notification notification = new Notification();
     notification.setMessage(message);
     notification.setNotiName("Yêu cầu đăng ký tài khoản");
-    notification.setNotiType(NotificationType.YEU_CAU_DANG_KY); // Make sure this enum is defined
+    notification.setNotiType(
+        NotificationType.YEU_CAU_DANG_KY_TAI_KHOAN); // Make sure this enum is defined
     notification.setCreatedDate(LocalDateTime.now());
     notificationService.sendNotification(notification, userService.findAllIsAdmin());
     // Call the user service to register the new user with the provided request
