@@ -15,7 +15,6 @@ import com.itextpdf.text.pdf.PdfWriter;
 import java.awt.*;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -43,23 +42,9 @@ public class PDFUtil {
       document.open();
       log.info("This is third sus");
 
-      // Load font file from resources
-      InputStream fontStream = getClass().getClassLoader().getResourceAsStream("fonts/Arial.ttf");
-
-      if (fontStream == null) {
-        log.error("Font file 'Arial.ttf' not found in 'resources/fonts'.");
-        throw new RuntimeException("Font file 'Arial.ttf' not found.");
-      }
-
-      // Create BaseFont from InputStream
       BaseFont baseFont =
-          BaseFont.createFont(
-              "Arial.ttf",
-              BaseFont.IDENTITY_H,
-              BaseFont.EMBEDDED,
-              true,
-              fontStream.readAllBytes(),
-              null);
+          BaseFont.createFont("fonts/Arial.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+
       // Create different font styles
       Font fontTitle = new Font(baseFont, 18, Font.BOLD, BaseColor.BLACK);
       Font fontSubTitle = new Font(baseFont, 12, Font.NORMAL, BaseColor.BLACK);
