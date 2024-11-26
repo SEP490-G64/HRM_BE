@@ -5,63 +5,47 @@ import com.example.hrm_be.commons.enums.OutboundType;
 import com.example.hrm_be.models.dtos.*;
 import com.example.hrm_be.models.responses.InboundDetail;
 import com.itextpdf.text.*;
-import com.itextpdf.text.Font;
-import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
-
-import java.awt.*;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
 public class PDFUtil {
 
-  public ByteArrayOutputStream createReceiptPdf(InboundDetail inbound)
+  private static String FONT_PATH = "fonts/Arial.TTF";
+
+  public static ByteArrayOutputStream createReceiptPdf(InboundDetail inbound)
       throws DocumentException, IOException {
     LocalDateTime dateNow = LocalDateTime.now(); // Initializes with the current date and time
 
     // Create a new PDF document
     com.itextpdf.text.Document document = new com.itextpdf.text.Document();
     ByteArrayOutputStream out = new ByteArrayOutputStream();
-    log.info("This is first sus");
 
     try {
       // Initialize PDF writer
       PdfWriter.getInstance(document, out);
-      log.info("This is second sus");
       document.open();
-      log.info("This is third sus");
 
-      InputStream fontStream =
-          Thread.currentThread().getContextClassLoader().getResourceAsStream("fonts/Arial.ttf");
-      if (fontStream == null) {
-        System.err.println("Font file not found!");
-      }
-      assert fontStream != null;
-      BaseFont baseFont =
-          BaseFont.createFont(
-              "Arial.ttf",
-              BaseFont.IDENTITY_H,
-              BaseFont.EMBEDDED,
-              true,
-              fontStream.readAllBytes(),
-              null);
-      // Create different font styles
-      Font fontTitle = new Font(baseFont, 18, Font.BOLD, BaseColor.BLACK);
-      Font fontSubTitle = new Font(baseFont, 12, Font.NORMAL, BaseColor.BLACK);
-      Font fontTableHeader = new Font(baseFont, 12, Font.BOLD, BaseColor.BLACK);
-      Font fontFooter = new Font(baseFont, 12, Font.NORMAL, BaseColor.BLACK);
+      // Load font file from resources
+      String fontPath = getResourcePath(FONT_PATH);
+
+      // Create fonts
+      Font fontTitle = createFontFromPath(fontPath, 18, Font.BOLD, BaseColor.BLACK);
+      Font fontSubTitle = createFontFromPath(fontPath, 12, Font.NORMAL, BaseColor.BLACK);
+      Font fontTableHeader = createFontFromPath(fontPath, 12, Font.BOLD, BaseColor.BLACK);
+      Font fontFooter = createFontFromPath(fontPath, 12, Font.NORMAL, BaseColor.BLACK);
 
       // Add company information table to the document
       document.add(createCompanyInfoTable(inbound, fontSubTitle, fontTableHeader));
@@ -521,8 +505,7 @@ public class PDFUtil {
       document.open();
 
       // Load font
-      String fontPath =
-          Objects.requireNonNull(PDFUtil.class.getResource("/fonts/Arial.ttf")).getPath();
+      String fontPath = getResourcePath(FONT_PATH);
       Font fontTitle = createFontFromPath(fontPath, 18, Font.BOLD, BaseColor.BLACK);
       Font fontSubTitle = createFontFromPath(fontPath, 12, Font.NORMAL, BaseColor.BLACK);
       Font fontTableHeader = createFontFromPath(fontPath, 12, Font.BOLD, BaseColor.BLACK);
@@ -709,8 +692,7 @@ public class PDFUtil {
       document.open();
 
       // Load font file from resources
-      String fontPath =
-          Objects.requireNonNull(PDFUtil.class.getResource("/fonts/Arial.ttf")).getPath();
+      String fontPath = getResourcePath(FONT_PATH);
 
       // Create fonts
       Font fontTitle = createFontFromPath(fontPath, 18, Font.BOLD, BaseColor.BLACK);
@@ -990,5 +972,14 @@ public class PDFUtil {
       footerTable.addCell(createCenteredCell("(Ký, họ tên)", fontFooter));
     }
     return footerTable;
+  }
+
+  private static String getResourcePath(String relativePath) {
+    try {
+      File font = new ClassPathResource(relativePath).getFile();
+      return font.getAbsolutePath();
+    } catch (IOException e) {
+      return "";
+    }
   }
 }
