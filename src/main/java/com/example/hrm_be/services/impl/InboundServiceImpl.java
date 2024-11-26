@@ -721,7 +721,7 @@ public class InboundServiceImpl implements InboundService {
       String message =
           "🔔 Thông báo: Phiếu nhập "
               + inbound.getInboundCode()
-              + "đang chờ duyệt "
+              + " đang chờ duyệt "
               + "bởi "
               + inbound.getCreatedBy().getUserName();
 
