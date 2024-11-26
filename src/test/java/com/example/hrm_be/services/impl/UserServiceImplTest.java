@@ -5,7 +5,6 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 import com.example.hrm_be.common.utils.TestUtils;
-import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.commons.enums.BranchType;
 import com.example.hrm_be.commons.enums.RoleType;
 import com.example.hrm_be.commons.enums.UserStatusType;
@@ -26,9 +25,7 @@ import com.example.hrm_be.services.*;
 import java.io.*;
 import java.util.*;
 
-import com.example.hrm_be.utils.ExcelUtility;
 import com.example.hrm_be.utils.ValidateUtil;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.security.core.context.SecurityContext;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -50,41 +47,29 @@ import org.springframework.web.multipart.MultipartFile;
 @ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
 
-  @InjectMocks
-  private UserServiceImpl userService;
+  @InjectMocks private UserServiceImpl userService;
 
-  @Mock
-  private UserRepository userRepository;
+  @Mock private UserRepository userRepository;
 
-  @Mock
-  private UserMapper userMapper;
+  @Mock private UserMapper userMapper;
 
-  @Mock
-  private BranchMapper branchMapper;
+  @Mock private BranchMapper branchMapper;
 
-  @Mock
-  private UserRoleMapServiceImpl userRoleMapService;
+  @Mock private UserRoleMapServiceImpl userRoleMapService;
 
-  @Mock
-  private RoleServiceImpl roleService;
+  @Mock private RoleServiceImpl roleService;
 
-  @Mock
-  private RoleMapper roleMapper;
+  @Mock private RoleMapper roleMapper;
 
-  @Mock
-  private PasswordEncoder passwordEncoder;
+  @Mock private PasswordEncoder passwordEncoder;
 
-  @Mock
-  private EmailService emailService;
+  @Mock private EmailService emailService;
 
-  @Mock
-  private BranchServiceImpl branchService;
+  @Mock private BranchServiceImpl branchService;
 
-  @Mock
-  private SecurityContext securityContext;
+  @Mock private SecurityContext securityContext;
 
-  @Mock
-  private UserRoleMapRepository userRoleMapRepository;  // Mock UserRoleMapRepository
+  @Mock private UserRoleMapRepository userRoleMapRepository; // Mock UserRoleMapRepository
 
   private User user;
   private UserEntity userEntity;
@@ -96,13 +81,12 @@ class UserServiceImplTest {
   private RoleEntity roleEntity;
   private final List<UserRoleMapEntity> userRoleMapEntities = new ArrayList<>();
 
-
-
   @BeforeEach
   void setUp() {
     MockitoAnnotations.openMocks(this);
 
-    branch = new Branch()
+    branch =
+        new Branch()
             .setBranchName("branch")
             .setLocation("location")
             .setBranchType(BranchType.MAIN)
@@ -111,7 +95,8 @@ class UserServiceImplTest {
             .setCapacity(1000)
             .setActiveStatus(true);
 
-    branchEntity = new BranchEntity()
+    branchEntity =
+        new BranchEntity()
             .setBranchName("branch")
             .setLocation("location")
             .setBranchType(BranchType.MAIN)
@@ -120,15 +105,12 @@ class UserServiceImplTest {
             .setCapacity(1000)
             .setActiveStatus(true);
 
-    role = new Role()
-            .setName("role")
-            .setType(RoleType.STAFF);
+    role = new Role().setName("role").setType(RoleType.STAFF);
 
-    roleEntity = new RoleEntity()
-            .setName("role")
-            .setType(RoleType.STAFF);
+    roleEntity = new RoleEntity().setName("role").setType(RoleType.STAFF);
 
-    user = new User()
+    user =
+        new User()
             .setUserName("hrmuser")
             .setBranch(branch)
             .setPassword("test123123")
@@ -139,7 +121,8 @@ class UserServiceImplTest {
             .setRoles(Collections.singletonList(role))
             .setStatus(UserStatusType.ACTIVATE);
 
-    userEntity = new UserEntity()
+    userEntity =
+        new UserEntity()
             .setUserName("hrmuser")
             .setBranch(branchEntity)
             .setPassword("test123123")
@@ -149,7 +132,6 @@ class UserServiceImplTest {
             .setPhone("0981234567")
             .setUserRoleMap(userRoleMapEntities)
             .setStatus(UserStatusType.ACTIVATE);
-
   }
 
   @Test
@@ -166,33 +148,39 @@ class UserServiceImplTest {
   @Test
   void testGetAuthenticatedUserEmail_Failure() {
     // Arrange: Mock user data and simulate the absence of authentication
-    TestUtils.mockAuthenticatedUser("", RoleType.ADMIN); // Assuming this method sets up an invalid or empty user
+    TestUtils.mockAuthenticatedUser(
+        "", RoleType.ADMIN); // Assuming this method sets up an invalid or empty user
 
     // Mock SecurityContextHolder to return a null authentication
     Authentication authentication = mock(Authentication.class);
     when(authentication.isAuthenticated()).thenReturn(false); // Simulate unauthenticated user
-    SecurityContextHolder.getContext().setAuthentication(authentication); // Set this mock in the security context
+    SecurityContextHolder.getContext()
+        .setAuthentication(authentication); // Set this mock in the security context
 
-    // Act & Assert: Ensure that the method throws UsernameNotFoundException when the user is not authenticated
-    Assertions.assertThrows(UsernameNotFoundException.class, () ->
-            userService.getAuthenticatedUserEmail());
+    // Act & Assert: Ensure that the method throws UsernameNotFoundException when the user is not
+    // authenticated
+    Assertions.assertThrows(
+        UsernameNotFoundException.class, () -> userService.getAuthenticatedUserEmail());
   }
 
   @Test
   public void testGetAuthenticatedUserEmail_AuthenticationNull() {
     // Arrange: Mock user data and simulate the absence of authentication
-    TestUtils.mockAuthenticatedUser("", RoleType.ADMIN); // Assuming this method sets up an invalid or empty user
+    TestUtils.mockAuthenticatedUser(
+        "", RoleType.ADMIN); // Assuming this method sets up an invalid or empty user
 
     // Simulate the absence of authentication in the SecurityContext
-    SecurityContext securityContext = mock(SecurityContext.class); // Ensure this is Spring Security's SecurityContext
-    SecurityContextHolder.setContext( securityContext);  // Set it to the SecurityContextHolder
+    SecurityContext securityContext =
+        mock(SecurityContext.class); // Ensure this is Spring Security's SecurityContext
+    SecurityContextHolder.setContext(securityContext); // Set it to the SecurityContextHolder
 
     Authentication authentication = mock(Authentication.class);
     when((securityContext).getAuthentication()).thenReturn(null); // Simulate no authentication
 
-    // Act & Assert: Ensure that the method throws UsernameNotFoundException when the user is not authenticated
-    Assertions.assertThrows(UsernameNotFoundException.class, () ->
-            userService.getAuthenticatedUserEmail());
+    // Act & Assert: Ensure that the method throws UsernameNotFoundException when the user is not
+    // authenticated
+    Assertions.assertThrows(
+        UsernameNotFoundException.class, () -> userService.getAuthenticatedUserEmail());
   }
 
   @Test
@@ -201,17 +189,20 @@ class UserServiceImplTest {
     Authentication authentication = mock(Authentication.class);
 
     // Mock that the authentication is present, but UserDetails is null
-    when(authentication.getPrincipal()).thenReturn(null); // Simulate that no UserDetails are present
-    when(authentication.isAuthenticated()).thenReturn(true); // Simulate that the user is authenticated
+    when(authentication.getPrincipal())
+        .thenReturn(null); // Simulate that no UserDetails are present
+    when(authentication.isAuthenticated())
+        .thenReturn(true); // Simulate that the user is authenticated
 
     // Mock the SecurityContext to return this Authentication
     SecurityContext securityContext = mock(SecurityContext.class);
     when(securityContext.getAuthentication()).thenReturn(authentication);
     SecurityContextHolder.setContext(securityContext);
 
-    // Act & Assert: Ensure that the method throws UsernameNotFoundException when UserDetails is null
-    Assertions.assertThrows(UsernameNotFoundException.class, () ->
-            userService.getAuthenticatedUserEmail());
+    // Act & Assert: Ensure that the method throws UsernameNotFoundException when UserDetails is
+    // null
+    Assertions.assertThrows(
+        UsernameNotFoundException.class, () -> userService.getAuthenticatedUserEmail());
   }
 
   @Test
@@ -220,14 +211,16 @@ class UserServiceImplTest {
     TestUtils.mockAuthenticatedUser("dsdadmin@gmail.com", RoleType.ADMIN);
 
     // Assuming user and userEntity are predefined or set up before the test.
-    when(userRoleMapRepository.existsByEmailAndRole("dsdadmin@gmail.com", RoleType.ADMIN)).thenReturn(true);
+    when(userRoleMapRepository.existsByEmailAndRole("dsdadmin@gmail.com", RoleType.ADMIN))
+        .thenReturn(true);
 
     // Create a Pageable object with sorting by userName ascending
     Pageable pageable = PageRequest.of(0, 10, Sort.by("userName").ascending());
 
     // Create mock data for users (you may need to initialize userEntity and user)
     List<UserEntity> users = Collections.singletonList(userEntity); // Single user entity mock
-    Page<UserEntity> page = new PageImpl<>(users, pageable, users.size()); // Mock Page object with total size
+    Page<UserEntity> page =
+        new PageImpl<>(users, pageable, users.size()); // Mock Page object with total size
 
     // Stub repository method to return the mock page
     when(userRepository.searchUsers("", UserStatusType.ACTIVATE, pageable)).thenReturn(page);
@@ -236,45 +229,50 @@ class UserServiceImplTest {
     when(userMapper.toDTO(userEntity)).thenReturn(user);
 
     // Act: Call the method under test
-    Page<User> result = userService.getByPaging(0, 10, "userName", "asc", "", UserStatusType.ACTIVATE);
+    Page<User> result =
+        userService.getByPaging(0, 10, "userName", "asc", "", UserStatusType.ACTIVATE);
 
     // Assert: Verify the result is not null and contains expected content
     Assertions.assertNotNull(result, "Result should not be null");
     Assertions.assertEquals(1, result.getTotalElements(), "Total elements should be 1");
-    Assertions.assertEquals(user, result.getContent().get(0), "The user DTO should match the expected user");
+    Assertions.assertEquals(
+        user, result.getContent().get(0), "The user DTO should match the expected user");
   }
-
 
   @Test
   void testUTCID02_GetByPaging_InvalidPageNo() {
     TestUtils.mockAuthenticatedUser("dsdadmin@gmail.com", RoleType.ADMIN);
     // Act & Assert: Verify that an exception is thrown when a negative page number is passed
-    Assertions.assertThrows(HrmCommonException.class, () ->
-            userService.getByPaging(-1, 10, "userName", "asc", "", UserStatusType.ACTIVATE));
+    Assertions.assertThrows(
+        HrmCommonException.class,
+        () -> userService.getByPaging(-1, 10, "userName", "asc", "", UserStatusType.ACTIVATE));
   }
 
   // UTCID03 - Get By Paging: pageSize < 1
   @Test
   void testUTCID03_GetByPaging_InvalidPageSize() {
     TestUtils.mockAuthenticatedUser("dsdadmin@gmail.com", RoleType.ADMIN);
-    Assertions.assertThrows(HrmCommonException.class, () ->
-            userService.getByPaging(0, 0, "userName", "asc", "", UserStatusType.ACTIVATE));
+    Assertions.assertThrows(
+        HrmCommonException.class,
+        () -> userService.getByPaging(0, 0, "userName", "asc", "", UserStatusType.ACTIVATE));
   }
 
   // UTCID04 - Get By Paging: sortBy equal null
   @Test
   void testUTCID04_GetByPaging_InvalidSortByNull() {
     TestUtils.mockAuthenticatedUser("dsdadmin@gmail.com", RoleType.ADMIN);
-    Assertions.assertThrows(HrmCommonException.class, () ->
-            userService.getByPaging(0, 10, null, "asc", "", UserStatusType.ACTIVATE));
+    Assertions.assertThrows(
+        HrmCommonException.class,
+        () -> userService.getByPaging(0, 10, null, "asc", "", UserStatusType.ACTIVATE));
   }
 
   // UTCID05 - Get By Paging: sortBy not a field of User class
   @Test
   void testUTCID05_GetByPaging_InvalidSortByFieldClass() {
     TestUtils.mockAuthenticatedUser("dsdadmin@gmail.com", RoleType.ADMIN);
-    Assertions.assertThrows(HrmCommonException.class, () ->
-            userService.getByPaging(0, 10, "userName", "test", "", null));
+    Assertions.assertThrows(
+        HrmCommonException.class,
+        () -> userService.getByPaging(0, 10, "userName", "test", "", null));
   }
 
   @Test
@@ -283,14 +281,16 @@ class UserServiceImplTest {
     TestUtils.mockAuthenticatedUser("dsdadmin@gmail.com", RoleType.ADMIN);
 
     // Assuming user and userEntity are predefined or set up before the test.
-    when(userRoleMapRepository.existsByEmailAndRole("dsdadmin@gmail.com", RoleType.ADMIN)).thenReturn(true);
+    when(userRoleMapRepository.existsByEmailAndRole("dsdadmin@gmail.com", RoleType.ADMIN))
+        .thenReturn(true);
 
     // Create a Pageable object with sorting by userName ascending
     Pageable pageable = PageRequest.of(0, 10, Sort.by("userName").ascending());
 
     // Create mock data for users (you may need to initialize userEntity and user)
     List<UserEntity> users = Collections.singletonList(userEntity); // Single user entity mock
-    Page<UserEntity> page = new PageImpl<>(users, pageable, users.size()); // Mock Page object with total size
+    Page<UserEntity> page =
+        new PageImpl<>(users, pageable, users.size()); // Mock Page object with total size
 
     // Stub repository method to return the mock page
     when(userRepository.searchUsers("", UserStatusType.ACTIVATE, pageable)).thenReturn(page);
@@ -299,12 +299,14 @@ class UserServiceImplTest {
     when(userMapper.toDTO(userEntity)).thenReturn(user);
 
     // Act: Call the method under test
-    Page<User> result = userService.getByPaging(0, 10, "userName", "invalidDirection", "", UserStatusType.ACTIVATE);
+    Page<User> result =
+        userService.getByPaging(0, 10, "userName", "invalidDirection", "", UserStatusType.ACTIVATE);
 
     // Assert: Verify the result is not null and contains expected content
     Assertions.assertNotNull(result, "Result should not be null");
     Assertions.assertEquals(1, result.getTotalElements(), "Total elements should be 1");
-    Assertions.assertEquals(user, result.getContent().get(0), "The user DTO should match the expected user");
+    Assertions.assertEquals(
+        user, result.getContent().get(0), "The user DTO should match the expected user");
   }
 
   @Test
@@ -319,15 +321,14 @@ class UserServiceImplTest {
     // Mock static method ValidateUtil.validateGetByPaging to simulate invalid pagination
     try (MockedStatic<ValidateUtil> mockedValidateUtil = Mockito.mockStatic(ValidateUtil.class)) {
       mockedValidateUtil
-              .when(() -> ValidateUtil.validateGetByPaging(0, 0, "id", User.class))
-              .thenReturn(true);
+          .when(() -> ValidateUtil.validateGetByPaging(0, 0, "id", User.class))
+          .thenReturn(true);
 
       // Act & Assert: Verify that an exception is thrown for invalid pagination
-      HrmCommonException exception = Assertions.assertThrows(
+      HrmCommonException exception =
+          Assertions.assertThrows(
               HrmCommonException.class,
-              () -> mockUserService.getByPaging(0, 0, "id", "ASC", null, null)
-      );
-
+              () -> mockUserService.getByPaging(0, 0, "id", "ASC", null, null));
     }
   }
 
@@ -338,7 +339,8 @@ class UserServiceImplTest {
     // Mock admin user
     TestUtils.mockAuthenticatedUser("dsdadmin@gmail.com", RoleType.ADMIN);
     // Assuming user and userEntity are predefined or set up before the test.
-    when(userRoleMapRepository.existsByEmailAndRole("dsdadmin@gmail.com", RoleType.ADMIN)).thenReturn(true);
+    when(userRoleMapRepository.existsByEmailAndRole("dsdadmin@gmail.com", RoleType.ADMIN))
+        .thenReturn(true);
     user.setId(1L);
     userEntity.setId(1L);
     when(userRepository.findById(user.getId())).thenReturn(Optional.of(userEntity));
@@ -361,7 +363,8 @@ class UserServiceImplTest {
     // Mock admin user
     TestUtils.mockAuthenticatedUser("dsdadmin@gmail.com", RoleType.ADMIN);
     // Assuming user and userEntity are predefined or set up before the test.
-    when(userRoleMapRepository.existsByEmailAndRole("dsdadmin@gmail.com", RoleType.ADMIN)).thenReturn(true);
+    when(userRoleMapRepository.existsByEmailAndRole("dsdadmin@gmail.com", RoleType.ADMIN))
+        .thenReturn(true);
     Long id = 1L;
     user = null;
     userEntity = null;
@@ -376,7 +379,8 @@ class UserServiceImplTest {
     // Mock admin user
     TestUtils.mockAuthenticatedUser("dsdadmin@gmail.com", RoleType.ADMIN);
     // Assuming user and userEntity are predefined or set up before the test.
-    when(userRoleMapRepository.existsByEmailAndRole("dsdadmin@gmail.com", RoleType.ADMIN)).thenReturn(true);
+    when(userRoleMapRepository.existsByEmailAndRole("dsdadmin@gmail.com", RoleType.ADMIN))
+        .thenReturn(true);
     user.setId(1L);
     user.setStatus(UserStatusType.DELETED);
     userEntity.setId(1L);
@@ -390,12 +394,14 @@ class UserServiceImplTest {
   @Test
   void testUTCID05_GetByID_InvalidisAdmin() {
     // Mock admin user
-    TestUtils.mockAuthenticatedUser("dsdadmin@gmail.com", RoleType.STAFF);// Assuming user and userEntity are predefined or set up before the test.
-    when(userRoleMapRepository.existsByEmailAndRole("dsdadmin@gmail.com", RoleType.ADMIN)).thenReturn(false);
+    TestUtils.mockAuthenticatedUser(
+        "dsdadmin@gmail.com",
+        RoleType.STAFF); // Assuming user and userEntity are predefined or set up before the test.
+    when(userRoleMapRepository.existsByEmailAndRole("dsdadmin@gmail.com", RoleType.ADMIN))
+        .thenReturn(false);
 
     Assertions.assertThrows(HrmCommonException.class, () -> userService.getById(1L));
   }
-
 
   // GET USER BY EMAIL
   // UTCID01 - Get by email: valid
@@ -406,8 +412,8 @@ class UserServiceImplTest {
     when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(userEntity));
     when(userMapper.toDTO(userEntity)).thenReturn(user);
     User result;
-      result = userService.getByEmail(user.getEmail());
-      Assertions.assertNotNull(result);
+    result = userService.getByEmail(user.getEmail());
+    Assertions.assertNotNull(result);
   }
 
   // UTCID02 - Get by Email: null
@@ -426,15 +432,14 @@ class UserServiceImplTest {
     Assertions.assertNull(userService.getByEmail("testdsd@gmail.com"));
   }
 
-
-
   // GET REGISTRATION REQUEST
   // UCID01 - Get Registration Request: valid
   @Test
   void testUTC01_GetRegistrationRequest_Valid() {
     TestUtils.mockAuthenticatedUser("dsdadmin@gmail.com", RoleType.ADMIN);
     // Assuming user and userEntity are predefined or set up before the test.
-    when(userRoleMapRepository.existsByEmailAndRole("dsdadmin@gmail.com", RoleType.ADMIN)).thenReturn(true);
+    when(userRoleMapRepository.existsByEmailAndRole("dsdadmin@gmail.com", RoleType.ADMIN))
+        .thenReturn(true);
     user.setStatus(UserStatusType.PENDING);
     userEntity.setStatus(UserStatusType.PENDING);
     Pageable pageable = PageRequest.of(0, 10); // Define a pageable object
@@ -443,8 +448,8 @@ class UserServiceImplTest {
     when(userRepository.findByStatus(UserStatusType.PENDING, pageable)).thenReturn(page);
     when(userMapper.toDTO(userEntity)).thenReturn(user);
     Page<User> requests;
-      requests = userService.getRegistrationRequests();
-      Assertions.assertNotNull(requests);
+    requests = userService.getRegistrationRequests();
+    Assertions.assertNotNull(requests);
   }
 
   // UCID02 - Get Registration Request: Role not allowed
@@ -452,7 +457,8 @@ class UserServiceImplTest {
   void testUTC02_GetRegistrationRequest_RoleNotAllowed() {
     TestUtils.mockAuthenticatedUser("dsdadmin@gmail.com", RoleType.STAFF);
     // Assuming user and userEntity are predefined or set up before the test.
-    when(userRoleMapRepository.existsByEmailAndRole("dsdadmin@gmail.com", RoleType.ADMIN)).thenReturn(false);
+    when(userRoleMapRepository.existsByEmailAndRole("dsdadmin@gmail.com", RoleType.ADMIN))
+        .thenReturn(false);
     Assertions.assertThrows(HrmCommonException.class, () -> userService.getRegistrationRequests());
   }
 
@@ -463,7 +469,8 @@ class UserServiceImplTest {
     // Arrange: Mock authenticated admin user
     TestUtils.mockAuthenticatedUser("dsdadmin@gmail.com", RoleType.ADMIN);
     // Assuming user and userEntity are predefined or set up before the test.
-    when(userRoleMapRepository.existsByEmailAndRole("dsdadmin@gmail.com", RoleType.ADMIN)).thenReturn(true);
+    when(userRoleMapRepository.existsByEmailAndRole("dsdadmin@gmail.com", RoleType.ADMIN))
+        .thenReturn(true);
     // Mock user to entity conversion
     when(userMapper.toEntity(user)).thenReturn(userEntity);
 
@@ -477,7 +484,7 @@ class UserServiceImplTest {
     when(branchMapper.toEntity(branch)).thenReturn(branchEntity);
     when(roleMapper.toEntity(role)).thenReturn(roleEntity);
     doNothing().when(emailService).sendEmail(anyString(), anyString(), anyString());
-    
+
     // Mock entity to DTO conversion
     when(userMapper.toDTO(userEntity)).thenReturn(user);
 
@@ -489,37 +496,38 @@ class UserServiceImplTest {
     Assertions.assertEquals(user.getEmail(), result.getEmail());
   }
 
-//  // Create
-//  // UCID01 - Create: valid
-//  @Test
-//  void testUTCID011_Create_Valid() {
-//    // Arrange: Mock authenticated admin user
-//    TestUtils.mockAuthenticatedUser("dsdadmin@gmail.com", RoleType.ADMIN);
-//    // Assuming user and userEntity are predefined or set up before the test.
-//    when(userRoleMapRepository.existsByEmailAndRole("dsdadmin@gmail.com", RoleType.ADMIN)).thenReturn(true);
-//    user.setId(1L);
-//    user.setRoles(null);
-//    userEntity.setId(1L);
-//    // Mock user to entity conversion
-//    when(userMapper.toEntity(user)).thenReturn(userEntity);
-//    // Mock repository save behavior
-//    when(userRepository.save(userEntity)).thenReturn(userEntity);
-//    doNothing().when(userRoleMapService).setStaffRoleForUser(userEntity.getId());
-//    // Mock password encoding for any password
-//    when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
-//    userEntity.setPassword("encodedPassword"); // Set encoded password
-//    when(branchService.getById(branch.getId())).thenReturn(branch);
-//    when(branchMapper.toEntity(branch)).thenReturn(branchEntity);
-//    //when(roleMapper.toEntity(role)).thenReturn(roleEntity);
-//    doNothing().when(emailService).sendEmail(anyString(), anyString(), anyString());
-//
-//    // Mock entity to DTO conversion
-//    when(userMapper.toDTO(userEntity)).thenReturn(user);
-//
-//    // Act: Call the create method
-//    userService.create(user);
-//
-//  }
+  //  // Create
+  //  // UCID01 - Create: valid
+  //  @Test
+  //  void testUTCID011_Create_Valid() {
+  //    // Arrange: Mock authenticated admin user
+  //    TestUtils.mockAuthenticatedUser("dsdadmin@gmail.com", RoleType.ADMIN);
+  //    // Assuming user and userEntity are predefined or set up before the test.
+  //    when(userRoleMapRepository.existsByEmailAndRole("dsdadmin@gmail.com",
+  // RoleType.ADMIN)).thenReturn(true);
+  //    user.setId(1L);
+  //    user.setRoles(null);
+  //    userEntity.setId(1L);
+  //    // Mock user to entity conversion
+  //    when(userMapper.toEntity(user)).thenReturn(userEntity);
+  //    // Mock repository save behavior
+  //    when(userRepository.save(userEntity)).thenReturn(userEntity);
+  //    doNothing().when(userRoleMapService).setStaffRoleForUser(userEntity.getId());
+  //    // Mock password encoding for any password
+  //    when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
+  //    userEntity.setPassword("encodedPassword"); // Set encoded password
+  //    when(branchService.getById(branch.getId())).thenReturn(branch);
+  //    when(branchMapper.toEntity(branch)).thenReturn(branchEntity);
+  //    //when(roleMapper.toEntity(role)).thenReturn(roleEntity);
+  //    doNothing().when(emailService).sendEmail(anyString(), anyString(), anyString());
+  //
+  //    // Mock entity to DTO conversion
+  //    when(userMapper.toDTO(userEntity)).thenReturn(user);
+  //
+  //    // Act: Call the create method
+  //    userService.create(user);
+  //
+  //  }
   // UTCID02 - Create User: null username
   @Test
   void testUTCID02_Create_NullUserName() {
@@ -561,7 +569,6 @@ class UserServiceImplTest {
     lenient().when(userRepository.existsByUserName(user.getUserName())).thenReturn(true);
     Assertions.assertThrows(HrmCommonException.class, () -> userService.create(user));
   }
-
 
   // UTCID7 - Create User: null email
   @Test
@@ -642,77 +649,79 @@ class UserServiceImplTest {
     // Arrange: Mock authenticated admin user
     TestUtils.mockAuthenticatedUser("dsdadmin@gmail.com", RoleType.ADMIN);
     // Assuming user and userEntity are predefined or set up before the test.
-    when(userRoleMapRepository.existsByEmailAndRole("dsdadmin@gmail.com", RoleType.ADMIN)).thenReturn(true);
+    when(userRoleMapRepository.existsByEmailAndRole("dsdadmin@gmail.com", RoleType.ADMIN))
+        .thenReturn(true);
     // Arrange: Set up a user with an existing email
     User user = new User();
     user.setEmail("existing_user@gmail.com");
     user.setUserName("existing_username");
     // Mock the repository calls to simulate existing user
     lenient().when(userRepository.existsByEmail(user.getEmail())).thenReturn(true);
-    lenient().when(userRepository.existsByUserName(user.getUserName())).thenReturn(false); // Email check fails first
+    lenient()
+        .when(userRepository.existsByUserName(user.getUserName()))
+        .thenReturn(false); // Email check fails first
 
     // Act & Assert: Verify that the exception is thrown
     Assertions.assertThrows(
-            HrmCommonException.class,
-            () -> userService.create(user),
-            "Expected create() to throw HrmCommonException"
-    );
-
+        HrmCommonException.class,
+        () -> userService.create(user),
+        "Expected create() to throw HrmCommonException");
   }
 
   // UPDATE USER
   // UTCID01 - Update User: Valid
-    @Test
-    void testUTCID01_Update_Valid() {
-      // Arrange: Mock the authenticated user as an admin
-      TestUtils.mockAuthenticatedUser("dsdadmin@gmail.com", RoleType.ADMIN);
-      when(userRoleMapRepository.existsByEmailAndRole("dsdadmin@gmail.com", RoleType.ADMIN)).thenReturn(true);
-      // Assuming user and userEntity are predefined or set up before the test.
-      user.setId(1L); // Setting user ID
-      userEntity.setId(1L); // Setting user ID
+  @Test
+  void testUTCID01_Update_Valid() {
+    // Arrange: Mock the authenticated user as an admin
+    TestUtils.mockAuthenticatedUser("dsdadmin@gmail.com", RoleType.ADMIN);
+    when(userRoleMapRepository.existsByEmailAndRole("dsdadmin@gmail.com", RoleType.ADMIN))
+        .thenReturn(true);
+    // Assuming user and userEntity are predefined or set up before the test.
+    user.setId(1L); // Setting user ID
+    userEntity.setId(1L); // Setting user ID
 
-      // Mock finding the user in the repository by ID
-      when(userRepository.findById(user.getId())).thenReturn(Optional.of(userEntity));
+    // Mock finding the user in the repository by ID
+    when(userRepository.findById(user.getId())).thenReturn(Optional.of(userEntity));
 
-      // Mock user to entity conversion
-      when(userMapper.toEntity(user)).thenReturn(userEntity);
+    // Mock user to entity conversion
+    when(userMapper.toEntity(user)).thenReturn(userEntity);
 
-      // Mock repository save behavior (save after update)
-      when(userRepository.save(userEntity)).thenReturn(userEntity);
+    // Mock repository save behavior (save after update)
+    when(userRepository.save(userEntity)).thenReturn(userEntity);
 
-      // Mock service for branch mapping and retrieval
-      when(branchService.getById(branch.getId())).thenReturn(branch);
-      when(branchMapper.toEntity(branch)).thenReturn(branchEntity);
+    // Mock service for branch mapping and retrieval
+    when(branchService.getById(branch.getId())).thenReturn(branch);
+    when(branchMapper.toEntity(branch)).thenReturn(branchEntity);
 
-      // Act: Call the update method on the service
-      User result = userService.update(user, false);
+    // Act: Call the update method on the service
+    User result = userService.update(user, false);
 
-      // Assert: Validate that the result is not null and that it contains the expected user data
-      Assertions.assertNull(result);
-    }
+    // Assert: Validate that the result is not null and that it contains the expected user data
+    Assertions.assertNull(result);
+  }
 
-    // UTCID02 - Update User: null username
-    @Test
-    void testUTCID02_Update_NullUserName() {
-      user.setUserName(null);
-      assertThrows(HrmCommonException.class, () -> userService.update(user, false));
-    }
+  // UTCID02 - Update User: null username
+  @Test
+  void testUTCID02_Update_NullUserName() {
+    user.setUserName(null);
+    assertThrows(HrmCommonException.class, () -> userService.update(user, false));
+  }
 
-    // UTCID03 - Update User: username have length < 5 characters
-    @Test
-    void testUTCID03_Update_UserNameLengthInvalid() {
-      TestUtils.mockAuthenticatedUser("dsdadmin@gmail.com", RoleType.ADMIN);
-      user.setUserName("abcd");
-      assertThrows(HrmCommonException.class, () -> userService.update(user, false));
-    }
+  // UTCID03 - Update User: username have length < 5 characters
+  @Test
+  void testUTCID03_Update_UserNameLengthInvalid() {
+    TestUtils.mockAuthenticatedUser("dsdadmin@gmail.com", RoleType.ADMIN);
+    user.setUserName("abcd");
+    assertThrows(HrmCommonException.class, () -> userService.update(user, false));
+  }
 
-    // UTCID04 - Update User: username have length > 20 characters
-    @Test
-    void testUTCID04_Update_UserNameLengthInvalid() {
-      TestUtils.mockAuthenticatedUser("dsdadmin@gmail.com", RoleType.ADMIN);
-      user.setUserName("a".repeat(21));
-      assertThrows(HrmCommonException.class, () -> userService.update(user, false));
-    }
+  // UTCID04 - Update User: username have length > 20 characters
+  @Test
+  void testUTCID04_Update_UserNameLengthInvalid() {
+    TestUtils.mockAuthenticatedUser("dsdadmin@gmail.com", RoleType.ADMIN);
+    user.setUserName("a".repeat(21));
+    assertThrows(HrmCommonException.class, () -> userService.update(user, false));
+  }
 
   // UTCID05 - Update User: duplicate username
   @Test
@@ -724,7 +733,7 @@ class UserServiceImplTest {
     userEntity.setUserName("old Name");
     lenient().when(userRepository.findById(user.getId())).thenReturn(Optional.of(userEntity));
     lenient().when(userRepository.existsByUserName(user.getUserName())).thenReturn(true);
-    assertThrows(HrmCommonException.class, () -> userService.update(user,false));
+    assertThrows(HrmCommonException.class, () -> userService.update(user, false));
   }
 
   // UTCID08 - Update User: null email
@@ -800,7 +809,9 @@ class UserServiceImplTest {
   @Test
   void testUTCID16_Update_isNotAdmin() {
     TestUtils.mockAuthenticatedUser("dsdadmin@gmail.com", RoleType.STAFF);
-    lenient().when(userRoleMapRepository.existsByEmailAndRole("dsdadmin@gmail.com", RoleType.ADMIN)).thenReturn(false);
+    lenient()
+        .when(userRoleMapRepository.existsByEmailAndRole("dsdadmin@gmail.com", RoleType.ADMIN))
+        .thenReturn(false);
     assertThrows(HrmCommonException.class, () -> userService.update(user, false));
   }
 
@@ -814,6 +825,7 @@ class UserServiceImplTest {
     lenient().when(userRepository.findById(id)).thenReturn(Optional.ofNullable(userEntity));
     assertThrows(HrmCommonException.class, () -> userService.update(user, false));
   }
+
   // UTCID18 - Update User: user is deleted
   @Test
   void testUTCID17_Update_isDelected() {
@@ -860,7 +872,7 @@ class UserServiceImplTest {
     User result = userService.update(user, true);
 
     // Assert
-   Assertions.assertNotNull(result, "Result should not be null");
+    Assertions.assertNotNull(result, "Result should not be null");
   }
 
   // DELETE
@@ -868,7 +880,8 @@ class UserServiceImplTest {
   @Test
   void testUTCID01_Delete_AllValid() {
     TestUtils.mockAuthenticatedUser("dsdadmin@gmail.com", RoleType.ADMIN);
-    when(userRoleMapRepository.existsByEmailAndRole("dsdadmin@gmail.com", RoleType.ADMIN)).thenReturn(true);
+    when(userRoleMapRepository.existsByEmailAndRole("dsdadmin@gmail.com", RoleType.ADMIN))
+        .thenReturn(true);
     user.setId(1L);
     when(userRepository.findById(user.getId())).thenReturn(Optional.of(userEntity));
     userService.delete(user.getId());
@@ -889,7 +902,7 @@ class UserServiceImplTest {
     Long id = 1L;
     user = null;
     userEntity = null;
-   lenient().when(userRepository.findById(id)).thenReturn(Optional.ofNullable(userEntity));
+    lenient().when(userRepository.findById(id)).thenReturn(Optional.ofNullable(userEntity));
     assertThrows(HrmCommonException.class, () -> userService.delete(id));
   }
 
@@ -910,7 +923,8 @@ class UserServiceImplTest {
   @Test
   void testUTCID01_deleteByIds_AllValid() {
     TestUtils.mockAuthenticatedUser("dsdadmin@gmail.com", RoleType.ADMIN);
-    when(userRoleMapRepository.existsByEmailAndRole("dsdadmin@gmail.com", RoleType.ADMIN)).thenReturn(true);
+    when(userRoleMapRepository.existsByEmailAndRole("dsdadmin@gmail.com", RoleType.ADMIN))
+        .thenReturn(true);
     user.setId(1L);
     List<Long> ids = new ArrayList<>();
     ids.add(1L);
@@ -956,19 +970,18 @@ class UserServiceImplTest {
   @Test
   void testDeleteByIds_NullOrEmptyIds_ThrowsException() {
     TestUtils.mockAuthenticatedUser("dsdadmin@gmail.com", RoleType.ADMIN);
-    when(userRoleMapRepository.existsByEmailAndRole("dsdadmin@gmail.com", RoleType.ADMIN)).thenReturn(true);
+    when(userRoleMapRepository.existsByEmailAndRole("dsdadmin@gmail.com", RoleType.ADMIN))
+        .thenReturn(true);
 
     Assertions.assertThrows(
-            HrmCommonException.class,
-            () -> userService.deleteByIds(null),
-            "Expected deleteByIds() to throw HrmCommonException for null IDs"
-    );
+        HrmCommonException.class,
+        () -> userService.deleteByIds(null),
+        "Expected deleteByIds() to throw HrmCommonException for null IDs");
 
     Assertions.assertThrows(
-            HrmCommonException.class,
-            () -> userService.deleteByIds(Collections.emptyList()),
-            "Expected deleteByIds() to throw HrmCommonException for empty IDs"
-    );
+        HrmCommonException.class,
+        () -> userService.deleteByIds(Collections.emptyList()),
+        "Expected deleteByIds() to throw HrmCommonException for empty IDs");
   }
 
   @Test
@@ -1029,9 +1042,7 @@ class UserServiceImplTest {
     User result = userService.findLoggedInfoByEmail(email);
     // Assert
     Assertions.assertNull(result, "Result should be null when no roles are assigned");
-
   }
-
 
   // isAdmin
   // UTCID01 - isAdmin: valid
@@ -1041,7 +1052,8 @@ class UserServiceImplTest {
     TestUtils.mockAuthenticatedUser("dsdadmin@gmail.com", RoleType.ADMIN);
 
     // Mock repository behavior to validate admin role
-    when(userRoleMapRepository.existsByEmailAndRole("dsdadmin@gmail.com", RoleType.ADMIN)).thenReturn(true);
+    when(userRoleMapRepository.existsByEmailAndRole("dsdadmin@gmail.com", RoleType.ADMIN))
+        .thenReturn(true);
 
     // Act: Call the isAdmin method
     boolean result = userService.isAdmin();
@@ -1050,13 +1062,13 @@ class UserServiceImplTest {
     Assertions.assertTrue(result, "User should be an admin");
   }
 
-
   // isAdmin
   // UTCID01 - isManager: valid
   @Test
   void testUTCID01_isManager_AllValid() {
     TestUtils.mockAuthenticatedUser("dsdadmin@gmail.com", RoleType.MANAGER);
-    when(userRoleMapRepository.existsByEmailAndRole("dsdadmin@gmail.com", RoleType.MANAGER)).thenReturn(true);
+    when(userRoleMapRepository.existsByEmailAndRole("dsdadmin@gmail.com", RoleType.MANAGER))
+        .thenReturn(true);
     Assertions.assertTrue(userService.isManager());
   }
 
@@ -1064,7 +1076,8 @@ class UserServiceImplTest {
   @Test
   void testUTCID02_isManager_InValid() {
     TestUtils.mockAuthenticatedUser("dsdadmin@gmail.com", RoleType.ADMIN);
-    when(userRoleMapRepository.existsByEmailAndRole("dsdadmin@gmail.com", RoleType.MANAGER)).thenReturn(false);
+    when(userRoleMapRepository.existsByEmailAndRole("dsdadmin@gmail.com", RoleType.MANAGER))
+        .thenReturn(false);
     Assertions.assertFalse(userService.isManager());
   }
 
@@ -1073,8 +1086,9 @@ class UserServiceImplTest {
   @Test
   void testUTCID01_findRolesByEmail_AllValid() {
     TestUtils.mockAuthenticatedUser("dsdadmin@gmail.com", RoleType.ADMIN);
-    //when(userRoleMapRepository.existsByEmailAndRole("dsdadmin@gmail.com", RoleType.ADMIN)).thenReturn(true);
-   lenient().when(roleMapper.toDTO(roleEntity)).thenReturn(role);
+    // when(userRoleMapRepository.existsByEmailAndRole("dsdadmin@gmail.com",
+    // RoleType.ADMIN)).thenReturn(true);
+    lenient().when(roleMapper.toDTO(roleEntity)).thenReturn(role);
     Assertions.assertNotNull(userService.findRolesByEmail("dsdadmin@gmail.com"));
   }
 
@@ -1083,7 +1097,8 @@ class UserServiceImplTest {
   @Test
   void testUTCID01_register_AllValid() {
     // Arrange: Create a RegisterRequest object with valid data
-    RegisterRequest registerRequest = new RegisterRequest()
+    RegisterRequest registerRequest =
+        new RegisterRequest()
             .setUserName("john_doe")
             .setEmail("john.doe@example.com")
             .setPhone("123456789")
@@ -1093,7 +1108,9 @@ class UserServiceImplTest {
             .setConfirmPassword("securePassword123");
 
     // Mock dependencies
-    lenient().when(userRepository.existsByUserName(registerRequest.getUserName())).thenReturn(false);
+    lenient()
+        .when(userRepository.existsByUserName(registerRequest.getUserName()))
+        .thenReturn(false);
     lenient().when(userRepository.existsByEmail(registerRequest.getEmail())).thenReturn(false);
     lenient().when(userMapper.toEntity(registerRequest)).thenReturn(userEntity);
     lenient().when(userRepository.save(userEntity)).thenReturn(userEntity);
@@ -1111,7 +1128,8 @@ class UserServiceImplTest {
   @Test
   void testUTCID02_register_InValid() {
     // Arrange: Create a RegisterRequest object with valid data
-    RegisterRequest registerRequest = new RegisterRequest()
+    RegisterRequest registerRequest =
+        new RegisterRequest()
             .setUserName("john_doe")
             .setEmail("john.doe@example.com")
             .setPhone("123456789")
@@ -1130,7 +1148,8 @@ class UserServiceImplTest {
   @Test
   void testUTCID03_register_InValid() {
     // Arrange: Create a RegisterRequest object with valid data
-    RegisterRequest registerRequest = new RegisterRequest()
+    RegisterRequest registerRequest =
+        new RegisterRequest()
             .setUserName("john_doe")
             .setEmail("john.doe@example.com")
             .setPhone("123456789")
@@ -1148,7 +1167,8 @@ class UserServiceImplTest {
   @Test
   void testUTCID04_register_PasswordMismatch() {
     // Arrange: Create a RegisterRequest object with mismatched password and confirmPassword
-    RegisterRequest registerRequest = new RegisterRequest()
+    RegisterRequest registerRequest =
+        new RegisterRequest()
             .setUserName("john_doe")
             .setEmail("john.doe@example.com")
             .setPhone("123456789")
@@ -1158,10 +1178,7 @@ class UserServiceImplTest {
             .setConfirmPassword("wrongPassword123");
 
     // Act & Assert: Verify that an HrmCommonException is thrown
-    Assertions.assertThrows(
-            HrmCommonException.class,
-            () -> userService.register(registerRequest)
-    );
+    Assertions.assertThrows(HrmCommonException.class, () -> userService.register(registerRequest));
   }
 
   // verifyUser
@@ -1169,7 +1186,8 @@ class UserServiceImplTest {
   @Test
   void testUTCID01_verifyUser_AllValid() {
     TestUtils.mockAuthenticatedUser("dsdadmin@gmail.com", RoleType.ADMIN);
-    when(userRoleMapRepository.existsByEmailAndRole("dsdadmin@gmail.com", RoleType.ADMIN)).thenReturn(true);
+    when(userRoleMapRepository.existsByEmailAndRole("dsdadmin@gmail.com", RoleType.ADMIN))
+        .thenReturn(true);
     user.setId(1L);
     userEntity.setId(1L);
     when(userRepository.findById(user.getId())).thenReturn(Optional.of(userEntity));
@@ -1184,9 +1202,11 @@ class UserServiceImplTest {
   @Test
   void testUTCID02_verifyUser_inValid() {
     TestUtils.mockAuthenticatedUser("dsdadmin@gmail.com", RoleType.STAFF);
-    when(userRoleMapRepository.existsByEmailAndRole("dsdadmin@gmail.com", RoleType.ADMIN)).thenReturn(false);
+    when(userRoleMapRepository.existsByEmailAndRole("dsdadmin@gmail.com", RoleType.ADMIN))
+        .thenReturn(false);
     user.setId(1L);
-    Assertions.assertThrows(HrmCommonException.class, () -> userService.verifyUser(user.getId(), true));
+    Assertions.assertThrows(
+        HrmCommonException.class, () -> userService.verifyUser(user.getId(), true));
   }
 
   // verifyUser
@@ -1194,11 +1214,13 @@ class UserServiceImplTest {
   @Test
   void testUTCID03_verifyUser_inValid() {
     TestUtils.mockAuthenticatedUser("dsdadmin@gmail.com", RoleType.ADMIN);
-    when(userRoleMapRepository.existsByEmailAndRole("dsdadmin@gmail.com", RoleType.ADMIN)).thenReturn(true);
+    when(userRoleMapRepository.existsByEmailAndRole("dsdadmin@gmail.com", RoleType.ADMIN))
+        .thenReturn(true);
     user.setId(1L);
     userEntity.setId(1L);
     when(userRepository.findById(user.getId())).thenReturn(Optional.empty());
-    Assertions.assertThrows(HrmCommonException.class, () -> userService.verifyUser(user.getId(), true));
+    Assertions.assertThrows(
+        HrmCommonException.class, () -> userService.verifyUser(user.getId(), true));
   }
 
   // verifyUser
@@ -1206,7 +1228,8 @@ class UserServiceImplTest {
   @Test
   void testUTCID04_verifyUser_AllValid() {
     TestUtils.mockAuthenticatedUser("dsdadmin@gmail.com", RoleType.ADMIN);
-    when(userRoleMapRepository.existsByEmailAndRole("dsdadmin@gmail.com", RoleType.ADMIN)).thenReturn(true);
+    when(userRoleMapRepository.existsByEmailAndRole("dsdadmin@gmail.com", RoleType.ADMIN))
+        .thenReturn(true);
     user.setId(1L);
     userEntity.setId(1L);
     when(userRepository.findById(user.getId())).thenReturn(Optional.of(userEntity));
@@ -1221,7 +1244,8 @@ class UserServiceImplTest {
   @Test
   void testUTCID01_activateUser_AllValid() {
     TestUtils.mockAuthenticatedUser("dsdadmin@gmail.com", RoleType.ADMIN);
-    when(userRoleMapRepository.existsByEmailAndRole("dsdadmin@gmail.com", RoleType.ADMIN)).thenReturn(true);
+    when(userRoleMapRepository.existsByEmailAndRole("dsdadmin@gmail.com", RoleType.ADMIN))
+        .thenReturn(true);
     user.setId(1L);
     user.setStatus(UserStatusType.ACTIVATE);
     userEntity.setStatus(UserStatusType.ACTIVATE);
@@ -1238,25 +1262,22 @@ class UserServiceImplTest {
     TestUtils.mockAuthenticatedUser("dsdadmin@gmail.com", RoleType.STAFF);
 
     // Mock repository behavior: User with email "dsdadmin@gmail.com" does not have ADMIN role
-    when(userRoleMapRepository.existsByEmailAndRole("dsdadmin@gmail.com", RoleType.ADMIN)).thenReturn(false);
+    when(userRoleMapRepository.existsByEmailAndRole("dsdadmin@gmail.com", RoleType.ADMIN))
+        .thenReturn(false);
 
     // Set up the user object to activate
     user.setId(1L);
 
     // Act & Assert: Expect HrmCommonException when attempting to activate user
-    Assertions.assertThrows(
-            HrmCommonException.class,
-            () -> userService.activateUser(user.getId())
-    );
-
+    Assertions.assertThrows(HrmCommonException.class, () -> userService.activateUser(user.getId()));
   }
-
 
   // UTCID03 - activateUser: invalid user not found
   @Test
   void testUTCID03_activateUser_inValid() {
     TestUtils.mockAuthenticatedUser("dsdadmin@gmail.com", RoleType.ADMIN);
-    when(userRoleMapRepository.existsByEmailAndRole("dsdadmin@gmail.com", RoleType.ADMIN)).thenReturn(true);
+    when(userRoleMapRepository.existsByEmailAndRole("dsdadmin@gmail.com", RoleType.ADMIN))
+        .thenReturn(true);
     user.setId(1L);
     userEntity.setId(1L);
     when(userRepository.findById(user.getId())).thenReturn(Optional.empty());
@@ -1269,7 +1290,8 @@ class UserServiceImplTest {
     TestUtils.mockAuthenticatedUser("dsdadmin@gmail.com", RoleType.ADMIN);
 
     // Mock repository behavior to validate admin role
-    when(userRoleMapRepository.existsByEmailAndRole("dsdadmin@gmail.com", RoleType.ADMIN)).thenReturn(true);
+    when(userRoleMapRepository.existsByEmailAndRole("dsdadmin@gmail.com", RoleType.ADMIN))
+        .thenReturn(true);
 
     // Prepare user and userEntity objects
     user.setId(1L);
@@ -1287,7 +1309,6 @@ class UserServiceImplTest {
     // Assert: Verify the result
     Assertions.assertNotNull(result); // Ensure result is not null
   }
-
 
   // resetPassword
   // UTCID01 - resetPassword: valid
@@ -1354,7 +1375,6 @@ class UserServiceImplTest {
     // Verify
     Assertions.assertTrue(errors.isEmpty());
   }
-
 
   @Test
   void UTCID02_testImportFile_missingUserName() throws IOException {
@@ -1439,10 +1459,8 @@ class UserServiceImplTest {
   @Test
   void UTCID04_testImportFile_FileIsNull_ThrowsException() {
     // Act & Assert
-    RuntimeException exception = assertThrows(
-            RuntimeException.class,
-            () -> userService.importFile(null)
-    );
+    RuntimeException exception =
+        assertThrows(RuntimeException.class, () -> userService.importFile(null));
     Assertions.assertEquals("Not a valid file", exception.getMessage());
   }
 
@@ -1486,7 +1504,8 @@ class UserServiceImplTest {
     List<String> errors = userService.importFile(mockFile);
 
     // Assert
-    Assertions.assertTrue(errors.stream().anyMatch(e -> e.contains("Invalid role type: INVALID_ROLE")));
+    Assertions.assertTrue(
+        errors.stream().anyMatch(e -> e.contains("Invalid role type: INVALID_ROLE")));
   }
 
   @Test
@@ -1516,7 +1535,8 @@ class UserServiceImplTest {
     List<String> errors = userService.importFile(mockFile);
 
     // Assert
-    Assertions.assertTrue(errors.stream().anyMatch(e -> e.contains("User with email or user name already exists")));
+    Assertions.assertTrue(
+        errors.stream().anyMatch(e -> e.contains("User with email or user name already exists")));
   }
 
   @Test
@@ -1548,9 +1568,8 @@ class UserServiceImplTest {
     // Assert
     Assertions.assertFalse(errors.isEmpty(), "Errors should not be empty");
     Assertions.assertTrue(
-            errors.contains("UserName is missing at row 2"),
-            "Error for missing userName should be present"
-    );
+        errors.contains("UserName is missing at row 2"),
+        "Error for missing userName should be present");
   }
 
   @Test
@@ -1577,7 +1596,7 @@ class UserServiceImplTest {
 
     // Convert the byte array output stream to an input stream
     ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
-   lenient().when(mockFile.getInputStream()).thenReturn(bis);
+    lenient().when(mockFile.getInputStream()).thenReturn(bis);
 
     // Create a mock UserService instance
     UserService mockUserService = Mockito.mock(UserService.class);
@@ -1591,8 +1610,9 @@ class UserServiceImplTest {
     List<String> errors = mockUserService.importFile(mockFile);
 
     // Assert
-    Assertions.assertTrue(errors.contains("Null user found in row 2"),
-            "Expected error message 'Null user found in row 2' but got: " + errors);
+    Assertions.assertTrue(
+        errors.contains("Null user found in row 2"),
+        "Expected error message 'Null user found in row 2' but got: " + errors);
 
     // Verify that the errors list contains the null user warning
     Assertions.assertFalse(errors.isEmpty(), "Errors should not be empty.");
@@ -1604,7 +1624,7 @@ class UserServiceImplTest {
   void UTCID01_testExportFile_successfulExport() throws IOException {
     TestUtils.mockAuthenticatedUser("dsdadmin@gmail.com", RoleType.ADMIN);
     when(userRoleMapRepository.existsByEmailAndRole("dsdadmin@gmail.com", RoleType.ADMIN))
-            .thenReturn(true);
+        .thenReturn(true);
 
     // Mock dữ liệu người dùng
     List<UserEntity> mockUsers = new ArrayList<>();
@@ -1614,8 +1634,9 @@ class UserServiceImplTest {
     Page<UserEntity> mockPage = new PageImpl<>(mockUsers);
 
     // Mock repository trả về mockPage
-    when(userRepository.searchUsers("", null, PageRequest.of(0, Integer.MAX_VALUE, Sort.by("id").ascending())))
-            .thenReturn(mockPage);
+    when(userRepository.searchUsers(
+            "", null, PageRequest.of(0, Integer.MAX_VALUE, Sort.by("id").ascending())))
+        .thenReturn(mockPage);
     when(userMapper.toDTO(userEntity)).thenReturn(user);
     // Thực thi phương thức
     ByteArrayInputStream excelStream = userService.exportFile();
@@ -1670,7 +1691,9 @@ class UserServiceImplTest {
     // Mock the `getByPaging()` method to return the Page
     UserService userService = new UserServiceImpl();
     UserService mockUserService = Mockito.spy(userService);
-    doReturn(pageOfUsers).when(mockUserService).getByPaging(anyInt(), anyInt(), anyString(), anyString(), anyString(), any());
+    doReturn(pageOfUsers)
+        .when(mockUserService)
+        .getByPaging(anyInt(), anyInt(), anyString(), anyString(), anyString(), any());
 
     // Act: Call the method to export the file
     ByteArrayInputStream result = mockUserService.exportFile();
@@ -1701,7 +1724,9 @@ class UserServiceImplTest {
     // Mock the `getByPaging()` method to return the Page
     UserService userService = new UserServiceImpl();
     UserService mockUserService = Mockito.spy(userService);
-    doReturn(pageOfUsers).when(mockUserService).getByPaging(anyInt(), anyInt(), anyString(), anyString(), anyString(), any());
+    doReturn(pageOfUsers)
+        .when(mockUserService)
+        .getByPaging(anyInt(), anyInt(), anyString(), anyString(), anyString(), any());
 
     // Act: Call the method to export the file
     ByteArrayInputStream result = mockUserService.exportFile();
@@ -1720,7 +1745,9 @@ class UserServiceImplTest {
     }
 
     // Assert: Verify that "No roles assigned" is in the content
-    Assertions.assertFalse(foundNoRolesAssigned, "The exported file does not contain 'No roles assigned' for users without roles");
+    Assertions.assertFalse(
+        foundNoRolesAssigned,
+        "The exported file does not contain 'No roles assigned' for users without roles");
   }
 
   // changePassword
@@ -1743,17 +1770,19 @@ class UserServiceImplTest {
     createRequest.setNewPassword("test123125");
     createRequest.setConfirmPassword("test123125");
     when(passwordEncoder.matches(createRequest.getOldPassword(), "test123123")).thenReturn(false);
-    Assertions.assertThrows(HrmCommonException.class, () -> userService.changePassword(user, createRequest));
+    Assertions.assertThrows(
+        HrmCommonException.class, () -> userService.changePassword(user, createRequest));
   }
 
   // UTCID03 - activateUser: invalid confirm password equals to entered new password
   @Test
   void testUTCID03_changePassword_inValid() {
     ChangePasswordRequest createRequest = new ChangePasswordRequest();
-    //createRequest.setOldPassword("test123126");
+    // createRequest.setOldPassword("test123126");
     createRequest.setNewPassword("test123125");
     createRequest.setConfirmPassword("test123111");
-    Assertions.assertThrows(HrmCommonException.class, () -> userService.changePassword(user, createRequest));
+    Assertions.assertThrows(
+        HrmCommonException.class, () -> userService.changePassword(user, createRequest));
   }
 
   @Test
@@ -1769,10 +1798,13 @@ class UserServiceImplTest {
 
     when(passwordEncoder.matches(request.getOldPassword(), user.getPassword())).thenReturn(true);
 
-    assertThrows(HrmCommonException.class, () -> {
-      userService.changePassword(user, request);
-    });
+    assertThrows(
+        HrmCommonException.class,
+        () -> {
+          userService.changePassword(user, request);
+        });
   }
+
   // findAllByIds
   // UTCID01 - findAllByIds: valid
   @Test
@@ -1783,7 +1815,7 @@ class UserServiceImplTest {
     mockUsers.add(userEntity);
     when(userRepository.findByIds(ids)).thenReturn(mockUsers);
     when(userMapper.toDTO(userEntity)).thenReturn(user);
-     userService.findAllByIds(ids);
+    userService.findAllByIds(ids);
   }
 
   // findAllManagerByBranchId
@@ -1796,7 +1828,8 @@ class UserServiceImplTest {
     mockUsers.add(userEntity);
     user.setId(1L);
     branch.setId(1L);
-    when(userRepository.findAllByBranchIdAndRoleType(user.getId(), RoleType.MANAGER)).thenReturn(mockUsers);
+    when(userRepository.findAllByBranchIdAndRoleType(user.getId(), RoleType.MANAGER))
+        .thenReturn(mockUsers);
     when(userMapper.toDTO(userEntity)).thenReturn(user);
     userService.findAllManagerByBranchId(branch.getId());
   }
@@ -1824,4 +1857,3 @@ class UserServiceImplTest {
     userService.findBranchIdByUserEmail(user.getEmail());
   }
 }
-

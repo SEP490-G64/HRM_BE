@@ -315,14 +315,13 @@ public class UserServiceImpl implements UserService {
                 // Handle role assignment if roles exist
                 if (user.getRoles() != null && !user.getRoles().isEmpty()) {
                   // Check if the user's role has changed
-                  if (!finalOldUserEntity.getUserRoleMap().isEmpty() &&
-                          !Objects.equals(
-                                  user.getRoles().get(0).getId(),
-                                  finalOldUserEntity.getUserRoleMap().get(0).getRole().getId()
-                          )) {
+                  if (!finalOldUserEntity.getUserRoleMap().isEmpty()
+                      && !Objects.equals(
+                          user.getRoles().get(0).getId(),
+                          finalOldUserEntity.getUserRoleMap().get(0).getRole().getId())) {
                     // Find existing role mappings for the user
                     List<UserRoleMapEntity> userRoleMapEntities =
-                            userRoleMapRepository.findByUser(finalOldUserEntity);
+                        userRoleMapRepository.findByUser(finalOldUserEntity);
 
                     if (!userRoleMapEntities.isEmpty()) {
                       // Update the role mapping
