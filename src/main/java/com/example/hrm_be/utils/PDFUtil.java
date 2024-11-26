@@ -44,7 +44,7 @@ public class PDFUtil {
       log.info("This is third sus");
 
       InputStream fontStream =
-          this.getClass().getClassLoader().getResourceAsStream("fonts/Arial.ttf");
+          Thread.currentThread().getContextClassLoader().getResourceAsStream("fonts/Arial.ttf");
       if (fontStream == null) {
         log.info("Font file not found!");
       } else {
