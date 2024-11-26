@@ -78,4 +78,6 @@ public interface ProductService {
   void removeCategoryFromProducts(Long cateId);
 
   void removeTypeFromProducts(Long cateId);
+
+  ProductBaseDTO getBranchProducts(Long branchId, Long productId);
 }

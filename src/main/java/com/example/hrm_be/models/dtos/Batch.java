@@ -52,4 +52,5 @@ public class Batch extends CommonEntity {
   Integer outBoundBatchQuantity;
 
   BigDecimal quantity;
+  BigDecimal preQuantity;
 }

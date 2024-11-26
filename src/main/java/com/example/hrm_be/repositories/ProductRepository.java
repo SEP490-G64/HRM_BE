@@ -93,7 +93,7 @@ public interface ProductRepository
 
   @Query(
       "SELECT p FROM ProductEntity p JOIN p.productSuppliers ps WHERE ps.supplier.id = :supplierId"
-          + " AND LOWER(p.productName) LIKE LOWER(CONCAT('%', :productName, '%'))")
+          + " AND LOWER(p.productName) LIKE LOWER(CONCAT('%', :productName, '%')) AND p.status != 'DA_XOA'")
   List<ProductEntity> findProductBySupplierAndName(
       @Param("supplierId") Long supplierId, @Param("productName") String productName);
 
