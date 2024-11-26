@@ -52,14 +52,14 @@ public class PDFUtil {
       }
 
       // Create BaseFont from InputStream
-      BaseFont baseFont = BaseFont.createFont(
+      BaseFont baseFont =
+          BaseFont.createFont(
               "Arial.ttf",
               BaseFont.IDENTITY_H,
               BaseFont.EMBEDDED,
               true,
               fontStream.readAllBytes(),
-              null
-      );
+              null);
       // Create different font styles
       Font fontTitle = new Font(baseFont, 18, Font.BOLD, BaseColor.BLACK);
       Font fontSubTitle = new Font(baseFont, 12, Font.NORMAL, BaseColor.BLACK);
