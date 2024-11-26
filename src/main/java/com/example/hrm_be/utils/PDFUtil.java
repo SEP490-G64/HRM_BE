@@ -21,11 +21,13 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
 @Slf4j
+@Component
 public class PDFUtil {
 
-  public static ByteArrayOutputStream createReceiptPdf(InboundDetail inbound)
+  public ByteArrayOutputStream createReceiptPdf(InboundDetail inbound)
       throws DocumentException, IOException {
     LocalDateTime dateNow = LocalDateTime.now(); // Initializes with the current date and time
 
@@ -41,17 +43,15 @@ public class PDFUtil {
       document.open();
       log.info("This is third sus");
 
-      // Load the font file as a stream
-      InputStream fontStream = PDFUtil.class.getResourceAsStream("/fonts/Arial.ttf");
+      InputStream fontStream = this.getClass().getClassLoader().getResourceAsStream("fonts/Arial.ttf");
+      if (fontStream == null) {
+        log.info("Font file not found!");
+      } else {
+        log.info("Font file loaded successfully.");
+      }
       // Create the base font object
-      BaseFont baseFont =
-          BaseFont.createFont(
-              "Arial.ttf",
-              BaseFont.IDENTITY_H,
-              BaseFont.EMBEDDED,
-              true,
-              fontStream.readAllBytes(),
-              null);
+        assert fontStream != null;
+        BaseFont baseFont = BaseFont.createFont("Arial.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED, true, fontStream.readAllBytes(), null);
       // Create different font styles
       Font fontTitle = new Font(baseFont, 18, Font.BOLD, BaseColor.BLACK);
       Font fontSubTitle = new Font(baseFont, 12, Font.NORMAL, BaseColor.BLACK);
