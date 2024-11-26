@@ -82,5 +82,5 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
           + "JOIN user.userRoleMap urm "
           + "JOIN urm.role role "
           + "WHERE role.type= :roleType")
-  List<UserEntity> findAllByRoleType( RoleType roleType);
+  List<UserEntity> findAllByRoleType(RoleType roleType);
 }
