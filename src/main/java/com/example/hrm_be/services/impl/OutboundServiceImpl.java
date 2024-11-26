@@ -780,7 +780,7 @@ public class OutboundServiceImpl implements OutboundService {
     Notification notification = new Notification();
     notification.setMessage(message);
     notification.setNotiName("Nhập phiếu vào kho");
-    notification.setNotiType(NotificationType.NHAP_PHIEU_VAO_HE_THONG);
+    notification.setNotiType(NotificationType.NHAP_PHIEU_XUAT_VAO_HE_THONG);
     notification.setCreatedDate(LocalDateTime.now());
 
     notificationService.sendNotification(
