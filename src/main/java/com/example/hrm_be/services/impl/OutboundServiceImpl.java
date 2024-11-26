@@ -835,8 +835,8 @@ public class OutboundServiceImpl implements OutboundService {
 
       Notification notification = new Notification();
       notification.setMessage(message);
-      notification.setNotiName(NotificationType.YEU_CAU_DUYET.getDisplayName());
-      notification.setNotiType(NotificationType.YEU_CAU_DUYET);
+      notification.setNotiName(NotificationType.YEU_CAU_DUYET_DON_XUAT.getDisplayName());
+      notification.setNotiType(NotificationType.YEU_CAU_DUYET_DON_XUAT);
       notification.setCreatedDate(LocalDateTime.now());
 
       notificationService.sendNotification(
