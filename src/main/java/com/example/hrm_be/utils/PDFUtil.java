@@ -36,6 +36,7 @@ public class PDFUtil {
       // Load font file from resources
       String fontPath =
           Objects.requireNonNull(PDFUtil.class.getResource("/fonts/Arial.ttf")).getPath();
+      log.info("This is font path: " + fontPath);
 
       // Create fonts
       Font fontTitle = createFontFromPath(fontPath, 18, Font.BOLD, BaseColor.BLACK);
