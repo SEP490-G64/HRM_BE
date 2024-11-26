@@ -4,8 +4,7 @@ import com.example.hrm_be.models.dtos.Batch;
 import com.example.hrm_be.models.dtos.BatchDto;
 import com.example.hrm_be.models.dtos.BranchBatch;
 import com.example.hrm_be.models.entities.BatchEntity;
-
-import java.math.BigDecimal;
+import com.example.hrm_be.models.entities.BranchBatchEntity;
 import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -112,24 +111,60 @@ public class BatchMapper {
         .orElse(null);
   }
 
-  // Helper method to map BatchEntity to BatchDTO
-  public Batch convertToDtoBasicInfoWithProductBaseDto(BatchEntity entity) {
+  public Batch convertToDtoBasicInfoWithProductBaseDto(BatchEntity entity, Long branchId) {
     return Optional.ofNullable(entity)
         .map(
-            e ->
-                Batch.builder()
-                    .id(e.getId())
-                    .batchCode(e.getBatchCode())
-                    .batchStatus(e.getBatchStatus())
-                    .produceDate(e.getProduceDate())
-                    .expireDate(e.getExpireDate())
-                    .inboundPrice(e.getInboundPrice())
-                    .productBaseDTO(
-                        e.getProduct() != null
-                            ? productMapper.convertToProductBaseDTO(e.getProduct())
-                            : null)
-                    .build())
-        .orElse(null);
+            e -> {
+              // Filter and find the BranchBatchInfo by branchId
+              BranchBatchEntity branchBatchInfo =
+                  e.getBranchBatches().stream()
+                      .filter(info -> info.getBranch().getId().equals(branchId))
+                      .findFirst()
+                      .orElse(null); // Default to null if not found
+
+              // Retrieve quantity from the filtered branchBatchInfo, if available
+              BigDecimal quantity =
+                  branchBatchInfo != null ? branchBatchInfo.getQuantity() : BigDecimal.ZERO; //
+              // Default to
+              // 0 if not found
+              // Build and return the BatchDTO with the required information
+              return Batch.builder()
+                  .id(e.getId())
+                  .batchCode(e.getBatchCode())
+                  .batchStatus(e.getBatchStatus())
+                  .produceDate(e.getProduceDate())
+                  .expireDate(e.getExpireDate())
+                  .inboundPrice(e.getInboundPrice())
+                  .productId(e.getProduct().getId())
+                  .productName(e.getProduct().getProductName())
+                  .registrationCode(e.getProduct().getRegistrationCode())
+                  .urlImage(e.getProduct().getUrlImage())
+                  .activeIngredient(e.getProduct().getActiveIngredient())
+                  .excipient(e.getProduct().getExcipient())
+                  .formulation(e.getProduct().getFormulation())
+                  .inboundPrice(e.getProduct().getInboundPrice())
+                  .sellPrice(e.getProduct().getSellPrice())
+                  .status(e.getProduct().getStatus())
+                  .baseUnit(
+                      e.getProduct().getBaseUnit() != null
+                          ? e.getProduct().getBaseUnit().getUnitName()
+                          : null)
+                  .categoryName(
+                      e.getProduct().getCategory() != null
+                          ? e.getProduct().getCategory().getCategoryName()
+                          : null)
+                  .typeName(
+                      e.getProduct().getType() != null
+                          ? e.getProduct().getType().getTypeName()
+                          : null)
+                  .manufacturerName(
+                      e.getProduct().getManufacturer() != null
+                          ? e.getProduct().getManufacturer().getManufacturerName()
+                          : null)
+                  .quantity(quantity) // Set the filtered quantity here
+                  .build();
+            })
+        .orElse(null); // Return null if the entity is null
   }
 
   // Helper method to map BatchEntity to BatchDTO

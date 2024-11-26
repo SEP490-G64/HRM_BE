@@ -282,8 +282,10 @@ public class BatchServiceImpl implements BatchService {
 
   @Override
   public List<Batch> getExpiredBatches(LocalDateTime now) {
+    String userEmail = userService.getAuthenticatedUserEmail();
+    Long branchId = userService.findBranchIdByUserEmail(userEmail).orElse(null);
     return batchRepository.findExpiredBatches(now).stream()
-        .map(batchMapper::convertToDtoBasicInfoWithProductBaseDto)
+        .map(batch -> batchMapper.convertToDtoBasicInfoWithProductBaseDto(batch, branchId))
         .collect(Collectors.toList());
   }
 
@@ -297,7 +299,7 @@ public class BatchServiceImpl implements BatchService {
     return batchRepository.findBatchesExpiringInDays(now, expiryDate, branchId).stream()
         // Map each BatchEntity to the corresponding Product object
         // Convert the Product to the ProductBaseDTO using the mapper
-        .map(batchMapper::convertToDtoBasicInfoWithProductBaseDto)
+        .map(batch -> batchMapper.convertToDtoBasicInfoWithProductBaseDto(batch, branchId))
         // Collect the results into a List
         .collect(Collectors.toList());
   }
