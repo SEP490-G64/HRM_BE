@@ -52,20 +52,20 @@ public class Batch extends CommonEntity {
   Integer inboundBatchQuantity;
   Integer outBoundBatchQuantity;
 
-   BigDecimal quantity;
-   Long productId;
-   String productName;
-   String productCode;
-   String registrationCode;
-   String urlImage;
-   String activeIngredient;
-   String excipient;
-   String formulation;
-   BigDecimal sellPrice;
-   BigDecimal productQuantity;
-   ProductStatus status;
-   String baseUnit;
-   String categoryName;
-   String typeName;
-   String manufacturerName;
+  BigDecimal quantity;
+  Long productId;
+  String productName;
+  String productCode;
+  String registrationCode;
+  String urlImage;
+  String activeIngredient;
+  String excipient;
+  String formulation;
+  BigDecimal sellPrice;
+  BigDecimal productQuantity;
+  ProductStatus status;
+  String baseUnit;
+  String categoryName;
+  String typeName;
+  String manufacturerName;
 }
