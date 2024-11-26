@@ -348,17 +348,11 @@ public class PDFUtil {
 
       // Initialize the total value for the current detail
       BigDecimal totalDetailAmount = BigDecimal.ZERO;
-      // Initialize the unit price for the current detail (if needed for reference)
-      BigDecimal unitPrice = BigDecimal.ZERO;
 
       // Check if there are any batches
       if (detail.getBatches() != null && !detail.getBatches().isEmpty()) {
         // Loop through each batch to calculate the total value
         for (Batch batch : detail.getBatches()) {
-          // Set the unit price only for the first batch encountered (optional)
-          if (unitPrice.compareTo(BigDecimal.ZERO) == 0) {
-            unitPrice = batch.getInboundPrice();
-          }
 
           // Calculate the total price for the current batch
           BigDecimal batchTotalPrice =
@@ -370,12 +364,11 @@ public class PDFUtil {
       } else {
         totalDetailAmount =
             detail.getPrice().multiply(BigDecimal.valueOf(detail.getReceiveQuantity()));
-        unitPrice = detail.getPrice();
       }
       total = total.add(totalDetailAmount);
 
       table.addCell(
-          new PdfPCell(new Phrase(String.valueOf(unitPrice), fontSubTitle))); // Unit price
+          new PdfPCell(new Phrase(String.valueOf(detail.getPrice()), fontSubTitle))); // Unit price
       // new PdfPCell(new Phrase())); // Unit price
       table.addCell(
           new PdfPCell(new Phrase(totalDetailAmount.toString(), fontSubTitle))); // Total amount
