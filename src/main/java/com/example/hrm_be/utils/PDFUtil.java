@@ -15,7 +15,6 @@ import com.itextpdf.text.pdf.PdfWriter;
 import java.awt.*;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -43,11 +42,8 @@ public class PDFUtil {
       document.open();
       log.info("This is third sus");
 
-      BaseFont baseFont = BaseFont.createFont(
-              "fonts/Arial.ttf",
-              BaseFont.IDENTITY_H,
-              BaseFont.EMBEDDED
-      );
+      BaseFont baseFont =
+          BaseFont.createFont("fonts/Arial.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
 
       // Create different font styles
       Font fontTitle = new Font(baseFont, 18, Font.BOLD, BaseColor.BLACK);
