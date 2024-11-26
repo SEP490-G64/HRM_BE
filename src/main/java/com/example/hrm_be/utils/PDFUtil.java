@@ -10,7 +10,6 @@ import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -23,6 +22,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class PDFUtil {
 
+  private static String FONT_PATH = "fonts/Arial.TTF";
+
   public static ByteArrayOutputStream createReceiptPdf(InboundDetail inbound)
       throws DocumentException, IOException {
     LocalDateTime dateNow = LocalDateTime.now(); // Initializes with the current date and time
@@ -30,18 +31,15 @@ public class PDFUtil {
     // Create a new PDF document
     com.itextpdf.text.Document document = new com.itextpdf.text.Document();
     ByteArrayOutputStream out = new ByteArrayOutputStream();
-    log.info("This is first sus");
 
     try {
       // Initialize PDF writer
       PdfWriter.getInstance(document, out);
-      log.info("This is second sus");
       document.open();
-      log.info("This is third sus");
 
       // Load font file from resources
-      String fontPath = getFontPath();
-      log.info("This is font path: " + fontPath);
+      String fontPath = getResourcePath(FONT_PATH);
+      log.error("This is fontPath: " + fontPath);
 
       // Create fonts
       Font fontTitle = createFontFromPath(fontPath, 18, Font.BOLD, BaseColor.BLACK);
@@ -507,7 +505,7 @@ public class PDFUtil {
       document.open();
 
       // Load font
-      String fontPath = getFontPath();
+      String fontPath = getResourcePath(FONT_PATH);
       Font fontTitle = createFontFromPath(fontPath, 18, Font.BOLD, BaseColor.BLACK);
       Font fontSubTitle = createFontFromPath(fontPath, 12, Font.NORMAL, BaseColor.BLACK);
       Font fontTableHeader = createFontFromPath(fontPath, 12, Font.BOLD, BaseColor.BLACK);
@@ -694,7 +692,7 @@ public class PDFUtil {
       document.open();
 
       // Load font file from resources
-      String fontPath = getFontPath();
+      String fontPath = getResourcePath(FONT_PATH);
 
       // Create fonts
       Font fontTitle = createFontFromPath(fontPath, 18, Font.BOLD, BaseColor.BLACK);
@@ -976,11 +974,9 @@ public class PDFUtil {
     return footerTable;
   }
 
-  private static String getFontPath() {
-    String relativePath = "fonts/Arial.TTF";
+  private static String getResourcePath(String relativePath) {
     try {
-      File font = new ClassPathResource(relativePath).getFile();
-      return font.getAbsolutePath();
+      return new ClassPathResource(relativePath).getURL().toString();
     } catch (IOException e) {
       return "";
     }
