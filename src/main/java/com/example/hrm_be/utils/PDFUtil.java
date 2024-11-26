@@ -15,7 +15,9 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class PDFUtil {
 
   public static ByteArrayOutputStream createReceiptPdf(InboundDetail inbound)
@@ -205,6 +207,8 @@ public class PDFUtil {
       // Footer table
       document.add(createFooterTable(inbound, fontFooter, fontTableHeader));
 
+    } catch (Exception e) {
+      log.error("This is a custom debug: " + e.getMessage());
     } finally {
       document.close();
     }
