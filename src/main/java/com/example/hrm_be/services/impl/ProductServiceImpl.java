@@ -423,7 +423,7 @@ public class ProductServiceImpl implements ProductService {
   @Override
   public Product updateInboundPrice(Product product) {
     ProductEntity unsavedProduct = productRepository.findById(product.getId()).orElse(null);
-
+    assert unsavedProduct != null;
     unsavedProduct.setInboundPrice(product.getInboundPrice());
     ProductEntity saved = productRepository.save(unsavedProduct);
     return productMapper.toDTO(saved);
@@ -872,6 +872,19 @@ public class ProductServiceImpl implements ProductService {
         .map(
             entity ->
                 productMapper.convertToProductForSearchInNotes(
+                    entity, branchId)) // Pass branchId to the mapper
+        .collect(Collectors.toList());
+  }
+
+  @Override
+  public List<ProductBaseDTO> getBranchProduct(
+      Long branchId, String keyword, Boolean checkValid, Long supplierId) {
+    return productRepository
+        .searchProductByBranchId(branchId, keyword, checkValid, supplierId)
+        .stream()
+        .map(
+            entity ->
+                productMapper.convertToBranchProduct(
                     entity, branchId)) // Pass branchId to the mapper
         .collect(Collectors.toList());
   }

@@ -1,5 +1,6 @@
 package com.example.hrm_be.utils;
 
+import com.example.hrm_be.commons.enums.InboundType;
 import com.example.hrm_be.commons.enums.OutboundType;
 import com.example.hrm_be.models.dtos.*;
 import com.example.hrm_be.models.responses.InboundDetail;
@@ -103,10 +104,16 @@ public class PDFUtil {
       document.add(titleTable);
       document.add(Chunk.NEWLINE);
 
+      String sender = "";
+      if (inbound.getInboundType() == InboundType.NHAP_TU_NHA_CUNG_CAP) {
+        sender = inbound.getSupplier().getSupplierName();
+      } else {
+        sender =
+            inbound.getFromBranch().getBranchName() + " " + inbound.getFromBranch().getLocation();
+      }
+
       // Supplier and invoice details
-      document.add(
-          new Paragraph(
-              "- Họ và tên người giao: " + inbound.getSupplier().getSupplierName(), fontSubTitle));
+      document.add(new Paragraph("- Họ và tên người giao: " + sender, fontSubTitle));
       document.add(
           new Paragraph(
               "- Theo hóa đơn số "
@@ -115,7 +122,7 @@ public class PDFUtil {
                   // + formatInboundDate(inbound.getInboundDate())
                   + formatInboundDate(dateNow)
                   + " của "
-                  + inbound.getSupplier().getSupplierName(),
+                  + sender,
               fontSubTitle));
 
       // Add location
@@ -341,17 +348,11 @@ public class PDFUtil {
 
       // Initialize the total value for the current detail
       BigDecimal totalDetailAmount = BigDecimal.ZERO;
-      // Initialize the unit price for the current detail (if needed for reference)
-      BigDecimal unitPrice = BigDecimal.ZERO;
 
       // Check if there are any batches
       if (detail.getBatches() != null && !detail.getBatches().isEmpty()) {
         // Loop through each batch to calculate the total value
         for (Batch batch : detail.getBatches()) {
-          // Set the unit price only for the first batch encountered (optional)
-          if (unitPrice.compareTo(BigDecimal.ZERO) == 0) {
-            unitPrice = batch.getInboundPrice();
-          }
 
           // Calculate the total price for the current batch
           BigDecimal batchTotalPrice =
@@ -363,12 +364,11 @@ public class PDFUtil {
       } else {
         totalDetailAmount =
             detail.getPrice().multiply(BigDecimal.valueOf(detail.getReceiveQuantity()));
-        unitPrice = detail.getPrice();
       }
       total = total.add(totalDetailAmount);
 
       table.addCell(
-          new PdfPCell(new Phrase(String.valueOf(unitPrice), fontSubTitle))); // Unit price
+          new PdfPCell(new Phrase(String.valueOf(detail.getPrice()), fontSubTitle))); // Unit price
       // new PdfPCell(new Phrase())); // Unit price
       table.addCell(
           new PdfPCell(new Phrase(totalDetailAmount.toString(), fontSubTitle))); // Total amount

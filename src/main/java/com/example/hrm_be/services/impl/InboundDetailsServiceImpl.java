@@ -103,13 +103,10 @@ public class InboundDetailsServiceImpl implements InboundDetailsService {
   }
 
   @Override
-  public InboundEntity updateAverageInboundPricesForProductsAndInboundTotalPrice(
-      InboundEntity inbound) {
+  public void updateAverageInboundPricesForProducts(InboundEntity inbound) {
     // Get all products with tax rate in inbounds
     List<InboundDetailsEntity> allDetails =
-        inboundDetailsRepository.findInboundDetailsWithCategoryByInboundId(inbound.getId());
-    // Variable to store value for get inbound total price
-    BigDecimal inboundTotalPrice = BigDecimal.ZERO;
+        inboundDetailsRepository.findByInbound_Id(inbound.getId());
 
     for (InboundDetailsEntity inboundDetails : allDetails) {
       // Get all batches of product
@@ -119,22 +116,6 @@ public class InboundDetailsServiceImpl implements InboundDetailsService {
       // Variable to store value for update product average inbound price
       BigDecimal totalPrice = BigDecimal.ZERO;
       BigDecimal totalQuantity = BigDecimal.ZERO;
-
-      // Get product tax rate
-      BigDecimal taxRate = BigDecimal.ZERO;
-      if (inbound.getTaxable() != null && inbound.getTaxable()) {
-        if (inboundDetails.getProduct().getCategory() != null) {
-          if (inboundDetails.getProduct().getCategory().getTaxRate() != null) {
-            taxRate = inboundDetails.getProduct().getCategory().getTaxRate();
-          }
-        }
-      }
-
-      // Get product tax rate
-      double discount = 0.0;
-      if (inboundDetails.getDiscount() != null) {
-        discount = inboundDetails.getDiscount() / 100;
-      }
 
       // Check if product have batches
       if (!allBatches.isEmpty()) {
@@ -151,48 +132,12 @@ public class InboundDetailsServiceImpl implements InboundDetailsService {
               totalQuantity = totalQuantity.add(quantity);
             }
           }
-
-          InboundBatchDetailEntity inboundBatchDetails =
-              inboundBatchDetailService.findByBatchIdAndAndInboundId(
-                  batch.getId(), inbound.getId());
-
-          if (inboundBatchDetails != null) {
-            BigDecimal originalPrice =
-                inboundBatchDetails
-                    .getInboundPrice()
-                    .multiply(BigDecimal.valueOf(inboundBatchDetails.getQuantity()));
-            inboundTotalPrice = inboundTotalPrice.add(originalPrice);
-
-            if (taxRate.compareTo(BigDecimal.ZERO) != 0) {
-              inboundTotalPrice = inboundTotalPrice.add(originalPrice.multiply(taxRate));
-            }
-
-            if (discount != 0.0) {
-              inboundTotalPrice =
-                  inboundTotalPrice.subtract(originalPrice.multiply(BigDecimal.valueOf(discount)));
-            }
-          }
         }
       } else {
         totalPrice =
             inboundDetailsRepository.findTotalPriceForProduct(inboundDetails.getProduct().getId());
         totalQuantity =
             branchProductService.findTotalQuantityForProduct(inboundDetails.getProduct().getId());
-
-        BigDecimal originalPrice =
-            inboundDetails
-                .getInboundPrice()
-                .multiply(BigDecimal.valueOf(inboundDetails.getReceiveQuantity()));
-        inboundTotalPrice = inboundTotalPrice.add(originalPrice);
-
-        if (taxRate.compareTo(BigDecimal.ZERO) != 0) {
-          inboundTotalPrice = inboundTotalPrice.add(originalPrice.multiply(taxRate));
-        }
-
-        if (discount != 0.0) {
-          inboundTotalPrice =
-              inboundTotalPrice.subtract(originalPrice.multiply(BigDecimal.valueOf(discount)));
-        }
       }
       if (totalQuantity.compareTo(BigDecimal.ZERO) > 0) {
         BigDecimal averageProductPrice = totalPrice.divide(totalQuantity, 2, RoundingMode.HALF_UP);
@@ -202,10 +147,6 @@ public class InboundDetailsServiceImpl implements InboundDetailsService {
       }
       productService.updateInboundPrice(productMapper.toDTO(inboundDetails.getProduct()));
     }
-
-    inbound.setTotalPrice(inboundTotalPrice);
-
-    return inbound;
   }
 
   @Override

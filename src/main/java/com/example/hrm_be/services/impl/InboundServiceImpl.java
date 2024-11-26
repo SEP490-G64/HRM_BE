@@ -14,13 +14,7 @@ import com.example.hrm_be.components.UnitOfMeasurementMapper;
 import com.example.hrm_be.components.UserMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.*;
-import com.example.hrm_be.models.entities.BatchEntity;
-import com.example.hrm_be.models.entities.BranchEntity;
-import com.example.hrm_be.models.entities.InboundEntity;
-import com.example.hrm_be.models.entities.ProductEntity;
-import com.example.hrm_be.models.entities.ProductSuppliersEntity;
-import com.example.hrm_be.models.entities.SupplierEntity;
-import com.example.hrm_be.models.entities.UserEntity;
+import com.example.hrm_be.models.entities.*;
 import com.example.hrm_be.models.requests.CreateInboundRequest;
 import com.example.hrm_be.models.responses.InboundDetail;
 import com.example.hrm_be.repositories.InboundRepository;
@@ -100,6 +94,7 @@ public class InboundServiceImpl implements InboundService {
                   productDetailDTO.setBaseUnit(
                       unitOfMeasurementMapper.toDTO(inboundDetail.getProduct().getBaseUnit()));
                   productDetailDTO.setDiscount(inboundDetail.getDiscount());
+                  productDetailDTO.setTaxRate(inboundDetail.getTaxRate());
                   productDetailDTO.setRequestQuantity(inboundDetail.getRequestQuantity());
                   productDetailDTO.setReceiveQuantity(inboundDetail.getReceiveQuantity());
                   productDetailDTO.setPrice(inboundDetail.getInboundPrice());
@@ -131,9 +126,30 @@ public class InboundServiceImpl implements InboundService {
                                 batch -> {
                                   Batch batchDTO = new Batch();
                                   batchDTO.setId(batch.getId());
-                                  batchDTO.setInboundPrice(batch.getInboundPrice());
                                   batchDTO.setBatchCode(batch.getBatchCode());
                                   batchDTO.setExpireDate(batch.getExpireDate());
+
+                                  BigDecimal price =
+                                      (BigDecimal)
+                                          batch.getInboundBatchDetail().stream()
+                                              .filter(
+                                                  Objects
+                                                      ::nonNull) // Ensure inboundBatchDetail is not
+                                              // null
+                                              .filter(
+                                                  inboundBatchDetail ->
+                                                      inboundBatchDetail
+                                                          .getInbound()
+                                                          .getId()
+                                                          .equals(optionalInbound.getId()))
+                                              .map(
+                                                  inboundBatchDetail ->
+                                                      inboundBatchDetail.getInboundPrice() != null
+                                                          ? inboundBatchDetail.getInboundPrice()
+                                                          : 0)
+                                              .findFirst()
+                                              .orElse(BigDecimal.ZERO);
+                                  batchDTO.setInboundPrice(price);
 
                                   // Find the quantity for this product-batch from the
                                   // inboundBatchDetails
@@ -305,6 +321,9 @@ public class InboundServiceImpl implements InboundService {
     Inbound updatedInbound = inboundMapper.convertFromCreateRequest(request);
     updatedInbound.setId(inboundEntity.getId());
     updatedInbound.setToBranch(branchMapper.convertToDTOBasicInfo(inboundEntity.getToBranch()));
+    updatedInbound.setApprovedBy(userMapper.convertToDtoBasicInfo(inboundEntity.getApprovedBy()));
+    updatedInbound.setIsApproved(inboundEntity.getIsApproved());
+    updatedInbound.setStatus(inboundEntity.getStatus());
 
     // Save updated inbound entity
     InboundEntity updatedInboundEntity =
@@ -323,6 +342,59 @@ public class InboundServiceImpl implements InboundService {
     // Process InboundDetails from request
     for (ProductInbound productInbound : request.getProductInbounds()) {
       Product product = productService.addProductInInbound(productInbound);
+      // Process InboundBatchDetails for each batch in the product inbound
+      if (productInbound.getBatches() != null && !productInbound.getBatches().isEmpty()) {
+        Batch firstBatch = productInbound.getBatches().get(0);
+
+        // Kiểm tra firstBatch.getBatchCode() khác null và không rỗng
+        if (firstBatch.getBatchCode() != null && !firstBatch.getBatchCode().trim().isEmpty()) {
+          Double totalPrice = 0.0;
+          Integer totalReceiveQuantity = 0;
+          for (Batch batch : productInbound.getBatches()) {
+            if (batch.getBatchCode() != null && !batch.getBatchCode().trim().isEmpty()) {
+              Batch batchEntity = batchService.addBatchInInbound(batch, product);
+
+              Optional<InboundBatchDetail> optionalInboundBatchDetail =
+                  existingInboundBatchDetails.stream()
+                      .filter(detail -> detail.getBatch().getId().equals(batchEntity.getId()))
+                      .findFirst();
+
+              InboundBatchDetail inboundBatchDetail;
+              if (optionalInboundBatchDetail.isPresent()) {
+                inboundBatchDetail = optionalInboundBatchDetail.get();
+                inboundBatchDetail.setQuantity(
+                    batch.getInboundBatchQuantity() != null ? batch.getInboundBatchQuantity() : 0);
+                inboundBatchDetail.setInboundPrice(batch.getInboundPrice());
+                existingInboundBatchDetails.remove(
+                    inboundBatchDetail); // Remove from existing list, mark as processed
+              } else {
+                inboundBatchDetail =
+                    InboundBatchDetail.builder()
+                        .inbound(inboundMapper.toDTO(updatedInboundEntity))
+                        .batch(batchEntity)
+                        .quantity(
+                            batch.getInboundBatchQuantity() != null
+                                ? batch.getInboundBatchQuantity()
+                                : 0)
+                        .inboundPrice(batch.getInboundPrice())
+                        .build();
+              }
+              totalReceiveQuantity = totalReceiveQuantity + inboundBatchDetail.getQuantity();
+              totalPrice =
+                  totalPrice
+                      + (inboundBatchDetail.getInboundPrice().doubleValue()
+                          * inboundBatchDetail.getQuantity());
+              inboundBatchDetailsList.add(inboundBatchDetail);
+            }
+          }
+          // set giá tiền và số lượng nhận được
+          productInbound.setPrice(totalPrice / totalReceiveQuantity);
+          productInbound.setReceiveQuantity(totalReceiveQuantity);
+        } else {
+          productInbound.setPrice(firstBatch.getInboundPrice().doubleValue());
+          productInbound.setReceiveQuantity(firstBatch.getInboundBatchQuantity().intValue());
+        }
+      }
       // Update or create InboundDetails
       Optional<InboundDetails> optionalInboundDetails =
           existingInboundDetails.stream()
@@ -336,6 +408,8 @@ public class InboundServiceImpl implements InboundService {
             productInbound.getRequestQuantity() != null ? productInbound.getRequestQuantity() : 0);
         inboundDetails.setDiscount(
             productInbound.getDiscount() != null ? productInbound.getDiscount() : 0);
+        inboundDetails.setTaxRate(
+            productInbound.getTaxRate() != null ? productInbound.getTaxRate() : BigDecimal.ZERO);
         inboundDetails.setReceiveQuantity(
             productInbound.getReceiveQuantity() != null ? productInbound.getReceiveQuantity() : 0);
         inboundDetails.setInboundPrice(
@@ -356,43 +430,20 @@ public class InboundServiceImpl implements InboundService {
                     productInbound.getReceiveQuantity() != null
                         ? productInbound.getReceiveQuantity()
                         : 0)
+                .receiveQuantity(
+                    productInbound.getReceiveQuantity() != null
+                        ? productInbound.getReceiveQuantity()
+                        : 0)
+                .inboundPrice(
+                    BigDecimal.valueOf(
+                        productInbound.getPrice() != null ? productInbound.getPrice() : 0))
+                .taxRate(
+                    productInbound.getTaxRate() != null
+                        ? productInbound.getTaxRate()
+                        : BigDecimal.ZERO)
                 .build();
       }
       inboundDetailsList.add(inboundDetails);
-
-      // Process InboundBatchDetails for each batch in the product inbound
-      if (productInbound.getBatches() != null && !productInbound.getBatches().isEmpty()) {
-        for (Batch batch : productInbound.getBatches()) {
-          Batch batchEntity = batchService.addBatchInInbound(batch, product);
-
-          Optional<InboundBatchDetail> optionalInboundBatchDetail =
-              existingInboundBatchDetails.stream()
-                  .filter(detail -> detail.getBatch().getId().equals(batchEntity.getId()))
-                  .findFirst();
-
-          InboundBatchDetail inboundBatchDetail;
-          if (optionalInboundBatchDetail.isPresent()) {
-            inboundBatchDetail = optionalInboundBatchDetail.get();
-            inboundBatchDetail.setQuantity(
-                batch.getInboundBatchQuantity() != null ? batch.getInboundBatchQuantity() : 0);
-            inboundBatchDetail.setInboundPrice(batch.getInboundPrice());
-            existingInboundBatchDetails.remove(
-                inboundBatchDetail); // Remove from existing list, mark as processed
-          } else {
-            inboundBatchDetail =
-                InboundBatchDetail.builder()
-                    .inbound(inboundMapper.toDTO(updatedInboundEntity))
-                    .batch(batchEntity)
-                    .quantity(
-                        batch.getInboundBatchQuantity() != null
-                            ? batch.getInboundBatchQuantity()
-                            : 0)
-                    .inboundPrice(batch.getInboundPrice())
-                    .build();
-          }
-          inboundBatchDetailsList.add(inboundBatchDetail);
-        }
-      }
     }
 
     // Delete remaining unmatched entities in existing lists (entities that are not present in the
@@ -560,9 +611,6 @@ public class InboundServiceImpl implements InboundService {
       branchBatchService.updateBranchBatchInInbound(
           toBranch, batchEntity, BigDecimal.valueOf(quantityDifference));
 
-      // Update average prices for this batch
-      inboundBatchDetailService.updateAverageInboundPricesForBatches(batchEntity);
-
       if (productSupplierService.findByProductAndSupplier(batchEntity.getProduct(), supplier)
           == null) {
         ProductSuppliersEntity productSuppliersEntity = new ProductSuppliersEntity();
@@ -594,19 +642,27 @@ public class InboundServiceImpl implements InboundService {
     // Save the updated inbound entity
     inboundRepository.save(updatedInboundEntity);
 
-    InboundEntity inbound =
-        inboundDetailsService.updateAverageInboundPricesForProductsAndInboundTotalPrice(
-            inboundEntity);
-    inboundRepository.save(inbound);
+    // Tập hợp tất cả batch IDs duy nhất từ oldBatchQuantities và newBatchQuantities
+    Set<Long> allBatchIds = new HashSet<>();
+    allBatchIds.addAll(oldBatchQuantities.keySet());
+    allBatchIds.addAll(newBatchQuantities.keySet());
+
+    // Lặp qua tất cả batch IDs để cập nhật giá trung bình
+    for (Long batchId : allBatchIds) {
+      // Update average prices for this batch
+      inboundBatchDetailService.updateAverageInboundPricesForBatches(batchId);
+    }
+
+    inboundDetailsService.updateAverageInboundPricesForProducts(inboundEntity);
     // Notification for Manager
 
     String message =
         "🔔 Thông báo: Phiếu nhập "
-            + inbound.getInboundCode()
+            + inboundEntity.getInboundCode()
             + " đã được thêm vào hệ"
             + " thống "
             + "bởi "
-            + inbound.getCreatedBy().getUserName();
+            + inboundEntity.getCreatedBy().getUserName();
 
     Notification notification = new Notification();
     notification.setMessage(message);
@@ -615,7 +671,7 @@ public class InboundServiceImpl implements InboundService {
     notification.setCreatedDate(LocalDateTime.now());
 
     notificationService.sendNotification(
-        notification, userService.findAllManagerByBranchId(inbound.getToBranch().getId()));
+        notification, userService.findAllManagerByBranchId(inboundEntity.getToBranch().getId()));
     // Return the updated inbound entity (or any other response you need)
     return inboundMapper.convertToBasicInfo(
         inboundEntity); // You can return a DTO or any other object
@@ -663,7 +719,7 @@ public class InboundServiceImpl implements InboundService {
       // Notification for Manager
 
       String message =
-          "🔔 Thông báo: Phiều nhập "
+          "🔔 Thông báo: Phiếu nhập "
               + inbound.getInboundCode()
               + " đang chờ duyệt "
               + "bởi "
@@ -676,7 +732,7 @@ public class InboundServiceImpl implements InboundService {
       notification.setCreatedDate(LocalDateTime.now());
 
       notificationService.sendNotification(
-          notification, userService.findAllManagerByBranchId(inbound.getFromBranch().getId()));
+          notification, userService.findAllManagerByBranchId(inbound.getToBranch().getId()));
     }
     inboundRepository.updateInboundStatus(status, id);
   }
