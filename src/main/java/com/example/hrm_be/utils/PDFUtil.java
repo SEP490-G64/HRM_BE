@@ -27,11 +27,14 @@ public class PDFUtil {
     // Create a new PDF document
     com.itextpdf.text.Document document = new com.itextpdf.text.Document();
     ByteArrayOutputStream out = new ByteArrayOutputStream();
+    log.info("This is first sus");
 
     try {
       // Initialize PDF writer
       PdfWriter.getInstance(document, out);
+      log.info("This is second sus");
       document.open();
+      log.info("This is third sus");
 
       // Load font file from resources
       String fontPath =
