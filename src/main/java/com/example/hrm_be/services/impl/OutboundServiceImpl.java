@@ -115,14 +115,16 @@ public class OutboundServiceImpl implements OutboundService {
                           outboundProductDetail.getProduct().getBaseUnit()));
                   productDetailDTO.setTaxRate(outboundProductDetail.getTaxRate());
                   if (outboundProductDetail.getProduct() != null) {
-                    ProductBaseDTO productBaseDTO = productService.getBranchProducts(
+                    ProductBaseDTO productBaseDTO =
+                        productService.getBranchProducts(
                             outboundEntity.getFromBranch().getId(),
-                            outboundProductDetail.getProduct().getId()
-                    );
+                            outboundProductDetail.getProduct().getId());
 
                     if (productBaseDTO != null) {
-                      boolean includeAllBatches = outboundEntity.getOutboundType() == OutboundType.TRA_HANG
-                              || outboundEntity.getOutboundType() == OutboundType.HUY_HANG; // Biến boolean để kiểm tra điều kiện
+                      boolean includeAllBatches =
+                          outboundEntity.getOutboundType() == OutboundType.TRA_HANG
+                              || outboundEntity.getOutboundType()
+                                  == OutboundType.HUY_HANG; // Biến boolean để kiểm tra điều kiện
                       List<Batch> filteredBatches;
 
                       if (includeAllBatches) {
@@ -130,9 +132,17 @@ public class OutboundServiceImpl implements OutboundService {
                         filteredBatches = productBaseDTO.getBatches();
                       } else {
                         // Nếu biến boolean là false, áp dụng bộ lọc
-                        filteredBatches = productBaseDTO.getBatches().stream()
-                                .filter(batch -> (batch.getExpireDate() != null && batch.getExpireDate().isAfter(LocalDateTime.now()))
-                                        && (batch.getQuantity() != null && batch.getQuantity().compareTo(BigDecimal.ZERO) > 0))
+                        filteredBatches =
+                            productBaseDTO.getBatches().stream()
+                                .filter(
+                                    batch ->
+                                        (batch.getExpireDate() != null
+                                                && batch
+                                                    .getExpireDate()
+                                                    .isAfter(LocalDateTime.now()))
+                                            && (batch.getQuantity() != null
+                                                && batch.getQuantity().compareTo(BigDecimal.ZERO)
+                                                    > 0))
                                 .collect(Collectors.toList());
                       }
 
@@ -161,14 +171,16 @@ public class OutboundServiceImpl implements OutboundService {
                       outboundDetail.getBatch().getProduct().getRegistrationCode());
 
                   if (outboundDetail.getBatch().getProduct() != null) {
-                    ProductBaseDTO productBaseDTO = productService.getBranchProducts(
+                    ProductBaseDTO productBaseDTO =
+                        productService.getBranchProducts(
                             outboundEntity.getFromBranch().getId(),
-                            outboundDetail.getBatch().getProduct().getId()
-                    );
+                            outboundDetail.getBatch().getProduct().getId());
 
                     if (productBaseDTO != null) {
-                      boolean includeAllBatches = outboundEntity.getOutboundType() == OutboundType.TRA_HANG
-                              || outboundEntity.getOutboundType() == OutboundType.HUY_HANG; // Biến boolean để kiểm tra điều kiện
+                      boolean includeAllBatches =
+                          outboundEntity.getOutboundType() == OutboundType.TRA_HANG
+                              || outboundEntity.getOutboundType()
+                                  == OutboundType.HUY_HANG; // Biến boolean để kiểm tra điều kiện
                       List<Batch> filteredBatches;
 
                       if (includeAllBatches) {
@@ -176,9 +188,17 @@ public class OutboundServiceImpl implements OutboundService {
                         filteredBatches = productBaseDTO.getBatches();
                       } else {
                         // Nếu biến boolean là false, áp dụng bộ lọc
-                        filteredBatches = productBaseDTO.getBatches().stream()
-                                .filter(batch -> (batch.getExpireDate() != null && batch.getExpireDate().isAfter(LocalDateTime.now()))
-                                        && (batch.getQuantity() != null && batch.getQuantity().compareTo(BigDecimal.ZERO) > 0))
+                        filteredBatches =
+                            productBaseDTO.getBatches().stream()
+                                .filter(
+                                    batch ->
+                                        (batch.getExpireDate() != null
+                                                && batch
+                                                    .getExpireDate()
+                                                    .isAfter(LocalDateTime.now()))
+                                            && (batch.getQuantity() != null
+                                                && batch.getQuantity().compareTo(BigDecimal.ZERO)
+                                                    > 0))
                                 .collect(Collectors.toList());
                       }
 
@@ -188,7 +208,8 @@ public class OutboundServiceImpl implements OutboundService {
                     }
                   }
 
-                  productWithBatchDetailDTO.setTaxRate(outboundDetail.getBatch().getProduct().getCategory().getTaxRate());
+                  productWithBatchDetailDTO.setTaxRate(
+                      outboundDetail.getBatch().getProduct().getCategory().getTaxRate());
                   productWithBatchDetailDTO.setProduct(productDTO);
                   // Set Batch details
                   Batch batchDTO = new Batch();
@@ -338,7 +359,10 @@ public class OutboundServiceImpl implements OutboundService {
             .outboundCode(request.getOutboundCode())
             .createdDate(
                 request.getCreatedDate() != null ? request.getCreatedDate() : LocalDateTime.now())
-            .status(request.getOutboundStatus() == null ? OutboundStatus.BAN_NHAP : request.getOutboundStatus())
+            .status(
+                request.getOutboundStatus() == null
+                    ? OutboundStatus.BAN_NHAP
+                    : request.getOutboundStatus())
             .outboundType(request.getOutboundType())
             .createdBy(request.getCreatedBy())
             .toBranch(request.getToBranch())
@@ -370,24 +394,23 @@ public class OutboundServiceImpl implements OutboundService {
             branchBatchService.findQuantityByBatchIdAndBranchId(batch.getId(), fromBranch.getId());
 
         if (updatedOutbound.getStatus().equals(OutboundStatus.KIEM_HANG)
-                || updatedOutbound.getStatus().equals(OutboundStatus.DANG_THANH_TOAN)) {
+            || updatedOutbound.getStatus().equals(OutboundStatus.DANG_THANH_TOAN)) {
           if (realityQuantity.compareTo(outboundQuantity) < 0) {
             throw new HrmCommonException(
-                    "Số lượng hiện tại trong kho của lô "
-                            + batchEntity.getBatchCode()
-                            + " chỉ còn "
-                            + realityQuantity
-                            + ", vui lòng nhập số lượng nhỏ hơn.");
+                "Số lượng hiện tại trong kho của lô "
+                    + batchEntity.getBatchCode()
+                    + " chỉ còn "
+                    + realityQuantity
+                    + ", vui lòng nhập số lượng nhỏ hơn.");
           }
-        }
-        else {
+        } else {
           if (realityQuantity.compareTo(preQuantity) < 0) {
             throw new HrmCommonException(
-                    "Số lượng hiện tại trong kho của lô "
-                            + batchEntity.getBatchCode()
-                            + " chỉ còn "
-                            + realityQuantity
-                            + ", vui lòng nhập số lượng nhỏ hơn.");
+                "Số lượng hiện tại trong kho của lô "
+                    + batchEntity.getBatchCode()
+                    + " chỉ còn "
+                    + realityQuantity
+                    + ", vui lòng nhập số lượng nhỏ hơn.");
           }
         }
 
@@ -425,24 +448,23 @@ public class OutboundServiceImpl implements OutboundService {
                     fromBranch.getId(), productEntity.getId()));
 
         if (outboundEntity.getStatus().equals(OutboundStatus.KIEM_HANG)
-                || outboundEntity.getStatus().equals(OutboundStatus.DANG_THANH_TOAN)) {
+            || outboundEntity.getStatus().equals(OutboundStatus.DANG_THANH_TOAN)) {
           if (branchProduct.getQuantity().compareTo(outboundQuantity) < 0) {
             throw new HrmCommonException(
-                    "Số lượng hiện tại trong kho của sản phẩm "
-                            + productEntity.getProductName()
-                            + " chỉ còn "
-                            + branchProduct.getQuantity()
-                            + ", vui lòng nhập số lượng nhỏ hơn.");
+                "Số lượng hiện tại trong kho của sản phẩm "
+                    + productEntity.getProductName()
+                    + " chỉ còn "
+                    + branchProduct.getQuantity()
+                    + ", vui lòng nhập số lượng nhỏ hơn.");
           }
-        }
-        else {
+        } else {
           if (branchProduct.getQuantity().compareTo(preQuantity) < 0) {
             throw new HrmCommonException(
-                    "Số lượng hiện tại trong kho của sản phẩm "
-                            + productEntity.getProductName()
-                            + " chỉ còn "
-                            + branchProduct.getQuantity()
-                            + ", vui lòng nhập số lượng nhỏ hơn.");
+                "Số lượng hiện tại trong kho của sản phẩm "
+                    + productEntity.getProductName()
+                    + " chỉ còn "
+                    + branchProduct.getQuantity()
+                    + ", vui lòng nhập số lượng nhỏ hơn.");
           }
         }
 
