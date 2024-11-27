@@ -11,80 +11,54 @@ import lombok.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 public class TestUtils {
-  public static UserEntity initTestUserEntity(@NonNull PasswordEncoder passwordEncoder) {
-    return UserEntity.builder()
-        .userName("chuduong1811")
-        .email("duongcdhe176312@gmail.com")
-        .phone("0915435790")
-        .firstName("chu")
-        .lastName("duong")
-        .password(passwordEncoder.encode("Abcd1234"))
-        .build();
-  }
 
-  public static RoleEntity initTestRoleEntity(@NonNull RoleType type) {
-    return RoleEntity.builder().name(type.getValue()).type(type).build();
-  }
+    public static UserEntity initTestUserEntity(@NonNull PasswordEncoder passwordEncoder) {
+        return UserEntity.builder()
+                .userName("chuduong1811")
+                .email("duongcdhe176312@gmail.com")
+                .phone("0915435790")
+                .firstName("chu")
+                .lastName("duong")
+                .password(passwordEncoder.encode("Abcd1234"))
+                .build();
+    }
 
-  public static UserRoleMapEntity initTestUserRoleMapEntity(
-      @NonNull UserEntity user, @NonNull RoleEntity role) {
-    return UserRoleMapEntity.builder().user(user).role(role).build();
-  }
+    public static RoleEntity initTestRoleEntity(@NonNull RoleType type) {
+        return RoleEntity.builder().name(type.getValue()).type(type).build();
+    }
 
-  // Enter email that have been register with its role
-  public static void mockAuthenticatedUser(String email, RoleType roleType) {
-    // Create a mock UserDetails instance with the specified email
-    UserDetails mockUserDetails =
-        new UserDetails() {
-          @Serial private static final long serialVersionUID = 8253328499707309238L;
+    public static UserRoleMapEntity initTestUserRoleMapEntity(@NonNull UserEntity user, @NonNull RoleEntity role) {
+        return UserRoleMapEntity.builder().user(user).role(role).build();
+    }
 
-          @Override
-          public Collection<? extends GrantedAuthority> getAuthorities() {
-            return Collections.singletonList(new SimpleGrantedAuthority(roleType.getValue()));
-          }
+    public static void mockAuthenticatedUser(String email, RoleType roleType) {
+        if (email == null || email.isEmpty()) {
+            throw new IllegalArgumentException("Email cannot be null or empty");
+        }
 
-          @Override
-          public String getPassword() {
-            return null; // Password is not required for this test
-          }
+        UserDetails mockUserDetails = new User(
+                email,
+                "",
+                Collections.singletonList(new SimpleGrantedAuthority(roleType.getValue()))
+        );
 
-          @Override
-          public String getUsername() {
-            return email; // The mock email to be returned by getAuthenticatedUserEmail
-          }
+        UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
+                mockUserDetails,
+                null,
+                mockUserDetails.getAuthorities()
+        );
 
-          @Override
-          public boolean isAccountNonExpired() {
-            return true;
-          }
+        SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
+        securityContext.setAuthentication(auth);
+        SecurityContextHolder.setContext(securityContext);
+    }
 
-          @Override
-          public boolean isAccountNonLocked() {
-            return true;
-          }
-
-          @Override
-          public boolean isCredentialsNonExpired() {
-            return true;
-          }
-
-          @Override
-          public boolean isEnabled() {
-            return true;
-          }
-        };
-
-    // Create an authentication token with the specified user email and authority
-    UsernamePasswordAuthenticationToken auth =
-        new UsernamePasswordAuthenticationToken(
-            mockUserDetails, null, mockUserDetails.getAuthorities());
-
-    // Set the security context to use this authentication
-    SecurityContextHolder.getContext().setAuthentication(auth);
-  }
 }
+
