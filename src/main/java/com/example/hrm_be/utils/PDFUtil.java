@@ -14,9 +14,15 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Objects;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.stereotype.Component;
 
+@Slf4j
+@Component
 public class PDFUtil {
+
+  private static String FONT_PATH = "fonts/Arial.TTF";
 
   public static ByteArrayOutputStream createReceiptPdf(InboundDetail inbound)
       throws DocumentException, IOException {
@@ -32,8 +38,8 @@ public class PDFUtil {
       document.open();
 
       // Load font file from resources
-      String fontPath =
-          Objects.requireNonNull(PDFUtil.class.getResource("/fonts/Arial.ttf")).getPath();
+      String fontPath = getResourcePath(FONT_PATH);
+      log.error("This is fontPath: " + fontPath);
 
       // Create fonts
       Font fontTitle = createFontFromPath(fontPath, 18, Font.BOLD, BaseColor.BLACK);
@@ -205,6 +211,8 @@ public class PDFUtil {
       // Footer table
       document.add(createFooterTable(inbound, fontFooter, fontTableHeader));
 
+    } catch (Exception e) {
+      log.error("This is a custom debug: " + e.getMessage());
     } finally {
       document.close();
     }
@@ -348,17 +356,11 @@ public class PDFUtil {
 
       // Initialize the total value for the current detail
       BigDecimal totalDetailAmount = BigDecimal.ZERO;
-      // Initialize the unit price for the current detail (if needed for reference)
-      BigDecimal unitPrice = BigDecimal.ZERO;
 
       // Check if there are any batches
       if (detail.getBatches() != null && !detail.getBatches().isEmpty()) {
         // Loop through each batch to calculate the total value
         for (Batch batch : detail.getBatches()) {
-          // Set the unit price only for the first batch encountered (optional)
-          if (unitPrice.compareTo(BigDecimal.ZERO) == 0) {
-            unitPrice = batch.getInboundPrice();
-          }
 
           // Calculate the total price for the current batch
           BigDecimal batchTotalPrice =
@@ -370,12 +372,11 @@ public class PDFUtil {
       } else {
         totalDetailAmount =
             detail.getPrice().multiply(BigDecimal.valueOf(detail.getReceiveQuantity()));
-        unitPrice = detail.getPrice();
       }
       total = total.add(totalDetailAmount);
 
       table.addCell(
-          new PdfPCell(new Phrase(String.valueOf(unitPrice), fontSubTitle))); // Unit price
+          new PdfPCell(new Phrase(String.valueOf(detail.getPrice()), fontSubTitle))); // Unit price
       // new PdfPCell(new Phrase())); // Unit price
       table.addCell(
           new PdfPCell(new Phrase(totalDetailAmount.toString(), fontSubTitle))); // Total amount
@@ -504,8 +505,7 @@ public class PDFUtil {
       document.open();
 
       // Load font
-      String fontPath =
-          Objects.requireNonNull(PDFUtil.class.getResource("/fonts/Arial.ttf")).getPath();
+      String fontPath = getResourcePath(FONT_PATH);
       Font fontTitle = createFontFromPath(fontPath, 18, Font.BOLD, BaseColor.BLACK);
       Font fontSubTitle = createFontFromPath(fontPath, 12, Font.NORMAL, BaseColor.BLACK);
       Font fontTableHeader = createFontFromPath(fontPath, 12, Font.BOLD, BaseColor.BLACK);
@@ -692,8 +692,7 @@ public class PDFUtil {
       document.open();
 
       // Load font file from resources
-      String fontPath =
-          Objects.requireNonNull(PDFUtil.class.getResource("/fonts/Arial.ttf")).getPath();
+      String fontPath = getResourcePath(FONT_PATH);
 
       // Create fonts
       Font fontTitle = createFontFromPath(fontPath, 18, Font.BOLD, BaseColor.BLACK);
@@ -973,5 +972,13 @@ public class PDFUtil {
       footerTable.addCell(createCenteredCell("(Ký, họ tên)", fontFooter));
     }
     return footerTable;
+  }
+
+  private static String getResourcePath(String relativePath) {
+    try {
+      return new ClassPathResource(relativePath).getURL().toString();
+    } catch (IOException e) {
+      return "";
+    }
   }
 }

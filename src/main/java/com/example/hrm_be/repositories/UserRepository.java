@@ -76,4 +76,11 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
           + "JOIN urm.role role "
           + "WHERE user.branch.id = :branchId AND role.type= :roleType")
   List<UserEntity> findAllByBranchIdAndRoleType(Long branchId, RoleType roleType);
+
+  @Query(
+      "SELECT user FROM UserEntity user "
+          + "JOIN user.userRoleMap urm "
+          + "JOIN urm.role role "
+          + "WHERE role.type= :roleType")
+  List<UserEntity> findAllByRoleType(RoleType roleType);
 }

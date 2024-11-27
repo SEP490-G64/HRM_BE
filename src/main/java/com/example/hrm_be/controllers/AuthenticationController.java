@@ -1,7 +1,10 @@
 package com.example.hrm_be.controllers;
 
 import com.example.hrm_be.commons.constants.HrmConstant.ERROR.REQUEST;
+import com.example.hrm_be.commons.enums.NotificationType;
 import com.example.hrm_be.commons.enums.UserStatusType;
+import com.example.hrm_be.models.dtos.Notification;
+import com.example.hrm_be.services.NotificationService;
 import com.example.hrm_be.utils.DateUtil;
 import com.example.hrm_be.utils.MailUtil;
 import com.example.hrm_be.models.entities.PasswordResetTokenEntity;
@@ -17,6 +20,7 @@ import com.example.hrm_be.models.responses.AccessToken;
 import com.example.hrm_be.models.responses.BaseOutput;
 import com.example.hrm_be.services.UserService;
 import jakarta.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,6 +45,7 @@ public class AuthenticationController {
   private final AuthenticationManager authenticationManager;
   private final UserDetailsService userDetailsService;
   private final UserService userService;
+  private final NotificationService notificationService;
   private final JwtUtil jwtUtil;
   private final DateUtil dateUtil;
   private final MailUtil mailUtil;
@@ -97,7 +102,18 @@ public class AuthenticationController {
       // Throw an exception for invalid request body
       throw new HrmCommonException(REQUEST.INVALID_BODY);
     }
+    String message =
+        "🔔 Thông báo: Yêu cầu đăng ký tài khoản đã được gửi bởi "
+            + request.getEmail()
+            + " vào hệ thống.";
 
+    Notification notification = new Notification();
+    notification.setMessage(message);
+    notification.setNotiName("Yêu cầu đăng ký tài khoản");
+    notification.setNotiType(
+        NotificationType.YEU_CAU_DANG_KY_TAI_KHOAN); // Make sure this enum is defined
+    notification.setCreatedDate(LocalDateTime.now());
+    notificationService.sendNotification(notification, userService.findAllIsAdmin());
     // Call the user service to register the new user with the provided request
     User newUser = userService.register(request);
 
