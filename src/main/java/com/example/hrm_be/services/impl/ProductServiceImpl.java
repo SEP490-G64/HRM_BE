@@ -225,13 +225,6 @@ public class ProductServiceImpl implements ProductService {
       throw new HrmCommonException(REQUEST.INVALID_BODY);
     }
 
-    // Check only manager allow to decide sell price
-    if (userService.isManager()) {
-      if (product.getSellPrice() != null) {
-        throw new HrmCommonException(HrmConstant.ERROR.ROLE.NOT_ALLOWED);
-      }
-    }
-
     if (productRepository.existsByRegistrationCode(product.getRegistrationCode())
         && !Objects.equals(product.getRegistrationCode(), oldProductEntity.getRegistrationCode())) {
       throw new HrmCommonException(HrmConstant.ERROR.PRODUCT.REGISTRATION_EXIST);
