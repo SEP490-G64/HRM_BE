@@ -889,6 +889,15 @@ public class ProductServiceImpl implements ProductService {
         .collect(Collectors.toList());
   }
 
+  @Override
+  public ProductBaseDTO getBranchProducts(Long branchId, Long productId) {
+    ProductEntity product = productRepository.findById(productId).orElse(null);
+    if (product == null) {
+      return null;
+    }
+    return productMapper.convertToBranchProduct(product, branchId);
+  }
+
   private List<ProductBatchDTO> processProductData(List<ProductBaseDTO> products) {
     List<ProductBatchDTO> allProductBatches = new ArrayList<>();
     for (ProductBaseDTO product : products) {

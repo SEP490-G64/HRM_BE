@@ -32,7 +32,6 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.Predicate;
@@ -478,30 +477,11 @@ public class InboundServiceImpl implements InboundService {
         Optional.ofNullable(inboundEntity.getInboundDetails())
             .orElse(Collections.emptyList())
             .stream()
-            .flatMap(
-                detail -> {
-                  Long productId = detail.getProduct().getId();
-                  int productQuantity =
-                      detail.getReceiveQuantity() != null ? detail.getReceiveQuantity() : 0;
-
-                  // Get batch quantities for the same product and sum them up
-                  int batchQuantitySum =
-                      Optional.ofNullable(inboundEntity.getInboundBatchDetails())
-                          .orElse(Collections.emptyList())
-                          .stream()
-                          .filter(
-                              batchDetail ->
-                                  batchDetail.getBatch().getProduct().getId().equals(productId))
-                          .mapToInt(
-                              batchDetail ->
-                                  batchDetail.getQuantity() != null ? batchDetail.getQuantity() : 0)
-                          .sum();
-
-                  // Combine both product and batch quantities
-                  return Stream.of(
-                      new AbstractMap.SimpleEntry<>(productId, productQuantity + batchQuantitySum));
-                })
-            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+            .collect(
+                Collectors.toMap(
+                    detail -> detail.getProduct().getId(),
+                    detail ->
+                        detail.getReceiveQuantity() != null ? detail.getReceiveQuantity() : 0));
 
     Map<Long, Integer> oldBatchQuantities =
         Optional.ofNullable(inboundEntity.getInboundBatchDetails())
@@ -524,30 +504,11 @@ public class InboundServiceImpl implements InboundService {
         Optional.ofNullable(updatedInboundEntity.getInboundDetails())
             .orElse(Collections.emptyList())
             .stream()
-            .flatMap(
-                detail -> {
-                  Long productId = detail.getProduct().getId();
-                  int productQuantity =
-                      detail.getReceiveQuantity() != null ? detail.getReceiveQuantity() : 0;
-
-                  // Get batch quantities for the same product and sum them up
-                  int batchQuantitySum =
-                      Optional.ofNullable(updatedInboundEntity.getInboundBatchDetails())
-                          .orElse(Collections.emptyList())
-                          .stream()
-                          .filter(
-                              batchDetail ->
-                                  batchDetail.getBatch().getProduct().getId().equals(productId))
-                          .mapToInt(
-                              batchDetail ->
-                                  batchDetail.getQuantity() != null ? batchDetail.getQuantity() : 0)
-                          .sum();
-
-                  // Combine both product and batch quantities
-                  return Stream.of(
-                      new AbstractMap.SimpleEntry<>(productId, productQuantity + batchQuantitySum));
-                })
-            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+            .collect(
+                Collectors.toMap(
+                    detail -> detail.getProduct().getId(),
+                    detail ->
+                        detail.getReceiveQuantity() != null ? detail.getReceiveQuantity() : 0));
 
     Map<Long, Integer> newBatchQuantities =
         Optional.ofNullable(updatedInboundEntity.getInboundBatchDetails())

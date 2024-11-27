@@ -68,4 +68,5 @@ public class Batch extends CommonEntity {
   String categoryName;
   String typeName;
   String manufacturerName;
+  BigDecimal preQuantity;
 }
