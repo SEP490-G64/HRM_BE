@@ -498,7 +498,7 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
                           : null)
                   .systemQuantity(
                       productDetail.getSystemQuantity() != null
-                          ? productDetail.getCountedQuantity()
+                          ? productDetail.getSystemQuantity()
                           : null)
                   .difference(
                       productDetail.getDifference() != null
@@ -616,7 +616,7 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
           "🔔 Thông báo: Phiều kiểm "
               + inventoryCheck.getCode()
               + " đang chờ duyệt"
-              + "bởi "
+              + " bởi "
               + inventoryCheck.getCreatedBy().getUserName();
 
       Notification notification = new Notification();
