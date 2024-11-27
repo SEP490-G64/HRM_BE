@@ -32,7 +32,6 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.Predicate;
@@ -475,14 +474,14 @@ public class InboundServiceImpl implements InboundService {
 
     // Map old and new quantities for comparison
     Map<Long, Integer> oldProductQuantities =
-            Optional.ofNullable(inboundEntity.getInboundDetails())
-                    .orElse(Collections.emptyList())
-                    .stream()
-                    .collect(
-                            Collectors.toMap(
-                                    detail -> detail.getProduct().getId(),
-                                    detail -> detail.getReceiveQuantity() != null
-                                            ? detail.getReceiveQuantity() : 0));
+        Optional.ofNullable(inboundEntity.getInboundDetails())
+            .orElse(Collections.emptyList())
+            .stream()
+            .collect(
+                Collectors.toMap(
+                    detail -> detail.getProduct().getId(),
+                    detail ->
+                        detail.getReceiveQuantity() != null ? detail.getReceiveQuantity() : 0));
 
     Map<Long, Integer> oldBatchQuantities =
         Optional.ofNullable(inboundEntity.getInboundBatchDetails())
@@ -502,14 +501,14 @@ public class InboundServiceImpl implements InboundService {
             .findById(request.getInboundId())
             .orElseThrow(() -> new HrmCommonException(INBOUND.NOT_EXIST));
     Map<Long, Integer> newProductQuantities =
-            Optional.ofNullable(updatedInboundEntity.getInboundDetails())
-                    .orElse(Collections.emptyList())
-                    .stream()
-                    .collect(
-                            Collectors.toMap(
-                                    detail -> detail.getProduct().getId(),
-                                    detail -> detail.getReceiveQuantity() != null
-                                            ? detail.getReceiveQuantity() : 0));
+        Optional.ofNullable(updatedInboundEntity.getInboundDetails())
+            .orElse(Collections.emptyList())
+            .stream()
+            .collect(
+                Collectors.toMap(
+                    detail -> detail.getProduct().getId(),
+                    detail ->
+                        detail.getReceiveQuantity() != null ? detail.getReceiveQuantity() : 0));
 
     Map<Long, Integer> newBatchQuantities =
         Optional.ofNullable(updatedInboundEntity.getInboundBatchDetails())

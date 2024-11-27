@@ -11,7 +11,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.example.hrm_be.models.entities.UnitConversionEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -481,35 +480,43 @@ public class ProductMapper {
                 .collect(Collectors.toList())
             : null;
 
-    BigDecimal totalQuantity = batchDTOs != null
+    BigDecimal totalQuantity =
+        batchDTOs != null
             ? batchDTOs.stream()
-            .map(Batch::getQuantity)               // Lấy BigDecimal quantity từ mỗi BatchDto
-            .filter(Objects::nonNull)                // Loại bỏ giá trị null
-            .reduce(BigDecimal.ZERO, BigDecimal::add) // Tính tổng, khởi tạo từ BigDecimal.ZERO
+                .map(Batch::getQuantity) // Lấy BigDecimal quantity từ mỗi BatchDto
+                .filter(Objects::nonNull) // Loại bỏ giá trị null
+                .reduce(BigDecimal.ZERO, BigDecimal::add) // Tính tổng, khởi tạo từ BigDecimal.ZERO
             : BigDecimal.ZERO;
 
     // Get unit of measurements
-    BigDecimal productQuantity = branchProduct != null ? branchProduct.getQuantity() : BigDecimal.ZERO;
+    BigDecimal productQuantity =
+        branchProduct != null ? branchProduct.getQuantity() : BigDecimal.ZERO;
 
     // Get unit of measurements
     List<UnitOfMeasurement> unitOfMeasurementList = new ArrayList<>();
     if (entity.getUnitConversions() != null) {
       unitOfMeasurementList =
-              entity.getUnitConversions().stream()
-                      .map(unitConversionEntity -> {
-                        UnitConversion unitConversion = unitConversionMapper.toDTO(unitConversionEntity);
-                        UnitOfMeasurement smallerUnit = unitConversion.getSmallerUnit();
-                        // Tính toán quantity cho unit
-                        Double conversionRate = unitConversion.getFactorConversion(); // Hệ số chuyển đổi
-                        if (batchDTOs != null) {
-                          smallerUnit.setProductUnitQuantity(totalQuantity.multiply(BigDecimal.valueOf(conversionRate))); // Tính quantity
-                        }
-                        else {
-                          smallerUnit.setProductUnitQuantity(productQuantity.multiply(BigDecimal.valueOf(conversionRate))); // Tính quantity
-                        }
-                        return smallerUnit;
-                      })
-                      .collect(Collectors.toList());
+          entity.getUnitConversions().stream()
+              .map(
+                  unitConversionEntity -> {
+                    UnitConversion unitConversion =
+                        unitConversionMapper.toDTO(unitConversionEntity);
+                    UnitOfMeasurement smallerUnit = unitConversion.getSmallerUnit();
+                    // Tính toán quantity cho unit
+                    Double conversionRate =
+                        unitConversion.getFactorConversion(); // Hệ số chuyển đổi
+                    if (batchDTOs != null) {
+                      smallerUnit.setProductUnitQuantity(
+                          totalQuantity.multiply(
+                              BigDecimal.valueOf(conversionRate))); // Tính quantity
+                    } else {
+                      smallerUnit.setProductUnitQuantity(
+                          productQuantity.multiply(
+                              BigDecimal.valueOf(conversionRate))); // Tính quantity
+                    }
+                    return smallerUnit;
+                  })
+              .collect(Collectors.toList());
     }
 
     if (entity.getBaseUnit() != null) {
