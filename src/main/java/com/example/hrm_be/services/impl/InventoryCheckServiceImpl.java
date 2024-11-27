@@ -498,7 +498,7 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
                           : null)
                   .systemQuantity(
                       productDetail.getSystemQuantity() != null
-                          ? productDetail.getCountedQuantity()
+                          ? productDetail.getSystemQuantity()
                           : null)
                   .difference(
                       productDetail.getDifference() != null
