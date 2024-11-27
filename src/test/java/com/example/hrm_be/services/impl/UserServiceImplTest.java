@@ -161,19 +161,23 @@ class UserServiceImplTest {
   void testGetAuthenticatedUserEmail_Failure() {
     // Arrange: Mock user data and simulate the absence of authentication
     Authentication authentication = Mockito.mock(Authentication.class);
-    Mockito.when(authentication.isAuthenticated()).thenReturn(false); // Simulate unauthenticated user
-    SecurityContextHolder.getContext().setAuthentication(authentication); // Set this mock in the security context
+    Mockito.when(authentication.isAuthenticated())
+        .thenReturn(false); // Simulate unauthenticated user
+    SecurityContextHolder.getContext()
+        .setAuthentication(authentication); // Set this mock in the security context
 
-    // Act & Assert: Ensure that the method throws UsernameNotFoundException when the user is not authenticated
+    // Act & Assert: Ensure that the method throws UsernameNotFoundException when the user is not
+    // authenticated
     Assertions.assertThrows(
-            UsernameNotFoundException.class, () -> userService.getAuthenticatedUserEmail()
-    );
+        UsernameNotFoundException.class, () -> userService.getAuthenticatedUserEmail());
   }
 
   @Test
   public void testGetAuthenticatedUserEmail_AuthenticationNull() {
     // Arrange: Mock user data and simulate the absence of authentication
-    TestUtils.mockAuthenticatedUser("dsdadmin@gmail.com", RoleType.ADMIN); // Assuming this method sets up an invalid or empty user
+    TestUtils.mockAuthenticatedUser(
+        "dsdadmin@gmail.com",
+        RoleType.ADMIN); // Assuming this method sets up an invalid or empty user
 
     // Simulate the absence of authentication in the SecurityContext
     SecurityContext securityContext = mock(SecurityContext.class);
@@ -181,10 +185,11 @@ class UserServiceImplTest {
 
     when(securityContext.getAuthentication()).thenReturn(null); // Simulate no authentication
 
-    // Act & Assert: Ensure that the method throws UsernameNotFoundException when the user is not authenticated
-    Assertions.assertThrows(UsernameNotFoundException.class, () -> userService.getAuthenticatedUserEmail());
+    // Act & Assert: Ensure that the method throws UsernameNotFoundException when the user is not
+    // authenticated
+    Assertions.assertThrows(
+        UsernameNotFoundException.class, () -> userService.getAuthenticatedUserEmail());
   }
-
 
   @Test
   public void testGetAuthenticatedUserEmail_UserDetailsNull() {
@@ -307,7 +312,6 @@ class UserServiceImplTest {
 
     // Assert: Verify the result is not null and contains expected content
     Assertions.assertNotNull(result);
-
   }
 
   @Test
@@ -837,7 +841,6 @@ class UserServiceImplTest {
     assertThrows(HrmCommonException.class, () -> userService.update(user, false));
   }
 
-
   // UTCID17 - Update User: user is null
   @Test
   void testUTCID17_Update_UserNull() {
@@ -853,7 +856,6 @@ class UserServiceImplTest {
     // Act & Assert: Ensure that the method throws HrmCommonException when the user is null
     assertThrows(HrmCommonException.class, () -> userService.update(user, false));
   }
-
 
   // UTCID18 - Update User: user is deleted
   @Test
@@ -959,7 +961,8 @@ class UserServiceImplTest {
     // Mock repository behavior
     lenient().when(userRepository.findById(id)).thenReturn(Optional.of(userEntity));
 
-    // Act & Assert: Ensure that the method throws HrmCommonException when the user status is DELETED
+    // Act & Assert: Ensure that the method throws HrmCommonException when the user status is
+    // DELETED
     assertThrows(HrmCommonException.class, () -> userService.delete(id));
   }
 
@@ -1098,7 +1101,7 @@ class UserServiceImplTest {
 
     // Mock repository behavior to validate admin role
     when(userRoleMapRepository.existsByEmailAndRole("dsdadmin@gmail.com", RoleType.ADMIN))
-            .thenReturn(true);
+        .thenReturn(true);
 
     // Assert: Verify that the result is true because the user is an admin
     Assertions.assertTrue(userService.isAdmin());
@@ -1948,7 +1951,6 @@ class UserServiceImplTest {
     userRoleMapEntities.add(userRoleMapEntity);
     adminUserEntity2.setUserRoleMap(userRoleMapEntities);
 
-
     User adminUser1 = new User();
     adminUser1.setId(1L);
 
@@ -1966,9 +1968,8 @@ class UserServiceImplTest {
     List<User> adminUsers = userService.findAllIsAdmin();
 
     // Assert: Verify the results
-    List<User> expectedAdminUsers = adminUserEntities.stream()
-            .map(userMapper::toDTO)
-            .collect(Collectors.toList());
+    List<User> expectedAdminUsers =
+        adminUserEntities.stream().map(userMapper::toDTO).collect(Collectors.toList());
     Assertions.assertEquals(expectedAdminUsers, adminUsers);
   }
 }
