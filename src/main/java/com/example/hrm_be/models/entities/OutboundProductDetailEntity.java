@@ -50,4 +50,10 @@ public class OutboundProductDetailEntity extends CommonEntity {
       name = "unit_of_measurement_id",
       foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
   UnitOfMeasurementEntity unitOfMeasurement;
+
+  @Column(name = "tax_rate")
+  BigDecimal taxRate;
+
+  @Column(name = "pre_quantity")
+  BigDecimal preQuantity;
 }

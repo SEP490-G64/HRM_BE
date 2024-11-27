@@ -49,6 +49,12 @@ public class OutboundDetailEntity extends CommonEntity {
   @Column(name = "quantity")
   BigDecimal quantity;
 
+  @Column(name = "pre_quantity")
+  BigDecimal preQuantity;
+
   @Column(name = "price")
   BigDecimal price;
+
+  @Column(name = "tax_rate")
+  BigDecimal taxRate;
 }
