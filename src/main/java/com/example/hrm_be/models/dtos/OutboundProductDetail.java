@@ -48,4 +48,6 @@ public class OutboundProductDetail {
   BigDecimal productQuantity;
 
   BigDecimal preQuantity;
+
+  BigDecimal inboundPrice;
 }

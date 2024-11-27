@@ -120,6 +120,9 @@ public class OutboundServiceImpl implements OutboundService {
                             outboundProductDetail.getProduct().getId()
                     );
 
+                    productDetailDTO.setProductQuantity(productBaseDTO.getProductQuantity());
+                    productDetailDTO.setInboundPrice(productBaseDTO.getInboundPrice());
+
                     if (productBaseDTO != null) {
                       boolean includeAllBatches = outboundEntity.getOutboundType() == OutboundType.TRA_HANG
                               || outboundEntity.getOutboundType() == OutboundType.HUY_HANG; // Biến boolean để kiểm tra điều kiện
