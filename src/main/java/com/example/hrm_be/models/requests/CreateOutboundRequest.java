@@ -1,5 +1,6 @@
 package com.example.hrm_be.models.requests;
 
+import com.example.hrm_be.commons.enums.OutboundStatus;
 import com.example.hrm_be.commons.enums.OutboundType;
 import com.example.hrm_be.models.dtos.Branch;
 import com.example.hrm_be.models.dtos.OutboundProductDetail;
@@ -30,6 +31,7 @@ import lombok.extern.jackson.Jacksonized;
 public class CreateOutboundRequest {
   Long outboundId;
   String outboundCode;
+  OutboundStatus outboundStatus;
   String note;
   LocalDateTime createdDate;
   User createdBy;

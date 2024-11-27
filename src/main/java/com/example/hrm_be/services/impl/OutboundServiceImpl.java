@@ -338,7 +338,7 @@ public class OutboundServiceImpl implements OutboundService {
             .outboundCode(request.getOutboundCode())
             .createdDate(
                 request.getCreatedDate() != null ? request.getCreatedDate() : LocalDateTime.now())
-            .status(OutboundStatus.BAN_NHAP)
+            .status(request.getOutboundStatus() == null ? OutboundStatus.BAN_NHAP : request.getOutboundStatus())
             .outboundType(request.getOutboundType())
             .createdBy(request.getCreatedBy())
             .toBranch(request.getToBranch())
@@ -364,14 +364,13 @@ public class OutboundServiceImpl implements OutboundService {
       BigDecimal outboundQuantity = productDetail.getOutboundQuantity();
 
       // If batch information is provided, process as a batch detail
-      if (batch != null) {
+      if (batch != null && batch.getId() != null) {
         BatchEntity batchEntity = batchMapper.toEntity(batchService.getById(batch.getId()));
         BigDecimal realityQuantity =
             branchBatchService.findQuantityByBatchIdAndBranchId(batch.getId(), fromBranch.getId());
 
-
-        if (outboundEntity.getStatus().equals(OutboundStatus.KIEM_HANG)
-                || outboundEntity.getStatus().equals(OutboundStatus.DANG_THANH_TOAN)) {
+        if (updatedOutbound.getStatus().equals(OutboundStatus.KIEM_HANG)
+                || updatedOutbound.getStatus().equals(OutboundStatus.DANG_THANH_TOAN)) {
           if (realityQuantity.compareTo(outboundQuantity) < 0) {
             throw new HrmCommonException(
                     "Số lượng hiện tại trong kho của lô "
@@ -680,6 +679,8 @@ public class OutboundServiceImpl implements OutboundService {
   @Override
   @Transactional
   public Outbound submitOutboundToSystem(CreateOutboundRequest request) {
+    request.setOutboundStatus(OutboundStatus.KIEM_HANG);
+
     // Fetch the OutboundEntity from the repository
     OutboundEntity outboundEntity =
         outboundRepository

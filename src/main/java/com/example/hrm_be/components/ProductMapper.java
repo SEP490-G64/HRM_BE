@@ -7,8 +7,11 @@ import com.example.hrm_be.models.entities.ProductEntity;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import com.example.hrm_be.models.entities.UnitConversionEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -460,19 +463,6 @@ public class ProductMapper {
             .findFirst()
             .orElse(null);
 
-    // Get unit of measurements
-    List<UnitOfMeasurement> unitOfMeasurementList = new ArrayList<>();
-    if (entity.getUnitConversions() != null) {
-      unitOfMeasurementList =
-          entity.getUnitConversions().stream()
-              .map(unitConversionMapper::toDTO)
-              .map(UnitConversion::getSmallerUnit)
-              .collect(Collectors.toList());
-    }
-    if (entity.getBaseUnit() != null) {
-      unitOfMeasurementList.add(unitOfMeasurementMapper.toDTO(entity.getBaseUnit()));
-    }
-
     // Convert batches with BranchBatch quantities
     List<Batch> batchDTOs =
         entity.getBatches() != null
@@ -490,6 +480,47 @@ public class ProductMapper {
                     })
                 .collect(Collectors.toList())
             : null;
+
+    BigDecimal totalQuantity = batchDTOs != null
+            ? batchDTOs.stream()
+            .map(Batch::getQuantity)               // Lấy BigDecimal quantity từ mỗi BatchDto
+            .filter(Objects::nonNull)                // Loại bỏ giá trị null
+            .reduce(BigDecimal.ZERO, BigDecimal::add) // Tính tổng, khởi tạo từ BigDecimal.ZERO
+            : BigDecimal.ZERO;
+
+    // Get unit of measurements
+    BigDecimal productQuantity = branchProduct != null ? branchProduct.getQuantity() : BigDecimal.ZERO;
+
+    // Get unit of measurements
+    List<UnitOfMeasurement> unitOfMeasurementList = new ArrayList<>();
+    if (entity.getUnitConversions() != null) {
+      unitOfMeasurementList =
+              entity.getUnitConversions().stream()
+                      .map(unitConversionEntity -> {
+                        UnitConversion unitConversion = unitConversionMapper.toDTO(unitConversionEntity);
+                        UnitOfMeasurement smallerUnit = unitConversion.getSmallerUnit();
+                        // Tính toán quantity cho unit
+                        Double conversionRate = unitConversion.getFactorConversion(); // Hệ số chuyển đổi
+                        if (batchDTOs != null) {
+                          smallerUnit.setProductUnitQuantity(totalQuantity.multiply(BigDecimal.valueOf(conversionRate))); // Tính quantity
+                        }
+                        else {
+                          smallerUnit.setProductUnitQuantity(productQuantity.multiply(BigDecimal.valueOf(conversionRate))); // Tính quantity
+                        }
+                        return smallerUnit;
+                      })
+                      .collect(Collectors.toList());
+    }
+
+    if (entity.getBaseUnit() != null) {
+      UnitOfMeasurement unitOfMeasurement = unitOfMeasurementMapper.toDTO(entity.getBaseUnit());
+      if (batchDTOs != null) {
+        unitOfMeasurement.setProductUnitQuantity(totalQuantity);
+      } else {
+        unitOfMeasurement.setProductUnitQuantity(productQuantity);
+      }
+      unitOfMeasurementList.add(unitOfMeasurement);
+    }
 
     return ProductBaseDTO.builder()
         .id(entity.getId())
