@@ -49,6 +49,14 @@ public interface ProductRepository
       Long branchId, String searchStr, Boolean checkValid, Long supplierId);
 
   @Query(
+          "SELECT DISTINCT p FROM ProductEntity p JOIN p.branchProducs bp LEFT JOIN FETCH p.batches b"
+                  + " LEFT JOIN BranchBatchEntity bb ON bb.batch = b AND bb.branch.id = :branchId WHERE LOWER(p.productName) LIKE LOWER(CONCAT('%', :searchStr,"
+                  + " '%')) AND bp.branch.id = :branchId AND bp.quantity > 0 AND (b IS NULL OR bb.quantity"
+                  + " > 0) AND (b IS NOT NULL AND"
+                  + " b.expireDate >= CURRENT_TIMESTAMP) AND p.status != 'DA_XOA' AND p.sellPrice IS NOT NULL")
+  List<ProductEntity> searchProductByBranchIdWithSellPrice(Long branchId, String searchStr);
+
+  @Query(
       "SELECT DISTINCT p FROM ProductEntity p JOIN p.branchProducs bp LEFT JOIN FETCH p.batches b"
           + " LEFT JOIN BranchBatchEntity bb ON bb.batch = b AND bb.branch.id = :branchId LEFT JOIN"
           + " p.productSuppliers ps WHERE (:searchStr IS NULL OR LOWER(p.productName) LIKE"
