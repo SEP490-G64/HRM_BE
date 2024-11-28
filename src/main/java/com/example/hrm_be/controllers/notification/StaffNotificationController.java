@@ -177,7 +177,7 @@ public class StaffNotificationController {
   // SSE Endpoint for Real-Time Notifications
   @GetMapping(value = "/{userId}/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
   public Flux<ServerSentEvent<NotificationUser>> streamNotificationsForUser(
-      @PathVariable Long userId) {
+      @PathVariable Long userId,@RequestParam("authToken") String authToken) {
     return notificationService
         .streamNotificationsForUser(userId)
         .map(notification -> ServerSentEvent.builder(notification).build());

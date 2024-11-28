@@ -1,7 +1,9 @@
 package com.example.hrm_be.repositories;
 
 import com.example.hrm_be.commons.enums.InventoryCheckStatus;
+import com.example.hrm_be.models.dtos.InventoryCheck;
 import com.example.hrm_be.models.entities.InventoryCheckEntity;
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
@@ -21,4 +23,10 @@ public interface InventoryCheckRepository
   @Transactional
   @Query("UPDATE InventoryCheckEntity i SET i.status = :status WHERE i.id = :id")
   void updateInboundStatus(@Param("status") InventoryCheckStatus status, @Param("id") Long id);
-}
+
+  @Query(
+      "SELECT b FROM InventoryCheckEntity b LEFT JOIN FETCH b.branch brb WHERE brb.id = :branchId"
+          + " AND b.status = :status")
+  List<InventoryCheckEntity> findInventoryCheckEntitiesByStatusAndBranchId(
+      @Param("status") InventoryCheckStatus status, @Param("branchId") Long branchId);
+  }

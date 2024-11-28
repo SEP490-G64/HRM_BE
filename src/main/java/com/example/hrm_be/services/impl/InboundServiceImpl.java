@@ -6,6 +6,7 @@ import com.example.hrm_be.commons.constants.HrmConstant.ERROR.INBOUND;
 import com.example.hrm_be.commons.constants.HrmConstant.ERROR.SUPPLIER;
 import com.example.hrm_be.commons.enums.InboundStatus;
 import com.example.hrm_be.commons.enums.InboundType;
+import com.example.hrm_be.commons.enums.InventoryCheckStatus;
 import com.example.hrm_be.commons.enums.NotificationType;
 import com.example.hrm_be.components.*;
 import com.example.hrm_be.components.BranchMapper;
@@ -18,6 +19,7 @@ import com.example.hrm_be.models.entities.*;
 import com.example.hrm_be.models.requests.CreateInboundRequest;
 import com.example.hrm_be.models.responses.InboundDetail;
 import com.example.hrm_be.repositories.InboundRepository;
+import com.example.hrm_be.repositories.InventoryCheckRepository;
 import com.example.hrm_be.services.*;
 import com.example.hrm_be.services.InboundService;
 import com.example.hrm_be.services.UserService;
@@ -51,6 +53,7 @@ public class InboundServiceImpl implements InboundService {
   @PersistenceContext private EntityManager entityManager;
 
   @Autowired private InboundRepository inboundRepository;
+  @Autowired private InventoryCheckService inventoryCheckService;
 
   @Autowired private InboundMapper inboundMapper;
   @Autowired private BranchMapper branchMapper;
@@ -609,6 +612,10 @@ public class InboundServiceImpl implements InboundService {
     Set<Long> allBatchIds = new HashSet<>();
     allBatchIds.addAll(oldBatchQuantities.keySet());
     allBatchIds.addAll(newBatchQuantities.keySet());
+    // Tập hợp tất cả batch IDs duy nhất từ oldBatchQuantities và newBatchQuantities
+    Set<Long> allProductIds = new HashSet<>();
+    allProductIds.addAll(oldProductQuantities.keySet());
+    allProductIds.addAll(newProductQuantities.keySet());
 
     // Lặp qua tất cả batch IDs để cập nhật giá trung bình
     for (Long batchId : allBatchIds) {
@@ -632,7 +639,10 @@ public class InboundServiceImpl implements InboundService {
     notification.setNotiName("Nhập phiếu vào kho");
     notification.setNotiType(NotificationType.NHAP_PHIEU_NHAP_VAO_HE_THONG);
     notification.setCreatedDate(LocalDateTime.now());
-
+    // Fetch InventoryCheck entities for the branch
+    // Notify inventory checks via SSE
+    inventoryCheckService.broadcastToInventoryChecksInBranch(
+        updatedInboundEntity.getToBranch().getId(), allProductIds, allBatchIds);
     notificationService.sendNotification(
         notification, userService.findAllManagerByBranchId(inboundEntity.getToBranch().getId()));
     // Return the updated inbound entity (or any other response you need)

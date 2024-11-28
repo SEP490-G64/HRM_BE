@@ -1,7 +1,7 @@
 package com.example.hrm_be.configs.filters;
 
-import com.example.hrm_be.utils.JwtUtil;
 import com.example.hrm_be.services.impl.JwtUserDetailsServiceImpl;
+import com.example.hrm_be.utils.JwtUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -42,7 +42,10 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     final String requestTokenHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
     String email = null;
     String jwtToken = null;
-
+    if (requestTokenHeader == null) {
+      jwtToken =request.getParameter("authToken");
+      email = jwtUtil.extractEmail(jwtToken);
+    }
     // JWT Token is in the form "Bearer token". Remove Bearer word and get only the Token
     if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
       jwtToken = requestTokenHeader.substring(7);

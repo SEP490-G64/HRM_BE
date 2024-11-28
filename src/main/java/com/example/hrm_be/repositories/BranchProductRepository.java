@@ -3,6 +3,7 @@ package com.example.hrm_be.repositories;
 import com.example.hrm_be.commons.enums.ProductStatus;
 import com.example.hrm_be.models.entities.*;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -42,4 +43,11 @@ public interface BranchProductRepository
   @Transactional
   @Query("UPDATE BranchProductEntity i SET i.productStatus = :status WHERE i.id = :id")
   void updateBranchProductStatus(@Param("status") ProductStatus status, @Param("id") Long id);
+
+
+  @Query("SELECT bp.lastUpdated FROM BranchProductEntity bp WHERE bp.branch.id = :branchId AND bp"
+      + ".product.id ="
+      + " :productId")
+  LocalDateTime getLastUpdatedByBranchIdAndProductId(
+      @Param("branchId") Long branchId,@Param("productId") Long productId);
 }

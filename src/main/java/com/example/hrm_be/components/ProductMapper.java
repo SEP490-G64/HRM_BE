@@ -5,6 +5,7 @@ import com.example.hrm_be.models.entities.BranchBatchEntity;
 import com.example.hrm_be.models.entities.BranchProductEntity;
 import com.example.hrm_be.models.entities.ProductEntity;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -171,6 +172,65 @@ public class ProductMapper {
                 ? manufacturerMapper.toDTO(entity.getManufacturer())
                 : null)
         .build();
+  }
+
+  // Helper method to convert ProductEntity to ProductDTO by branchId
+  public Product convertToDTOByBranchId(ProductEntity entity, Long branchId) {
+    return Optional.ofNullable(entity).map(e -> {
+      // Find the BranchProductEntity for the specified branchId
+      BranchProductEntity branchBatchInfo = e.getBranchProducs().stream()
+          .filter(info -> info.getBranch().getId().equals(branchId))
+          .findFirst()
+          .orElse(null);
+
+      return Product.builder()
+          .id(e.getId())
+          .productName(e.getProductName())
+          .registrationCode(e.getRegistrationCode())
+          .urlImage(e.getUrlImage())
+          .activeIngredient(e.getActiveIngredient())
+          .excipient(e.getExcipient())
+          .formulation(e.getFormulation())
+          .inboundPrice(e.getInboundPrice())
+          .sellPrice(e.getSellPrice())
+          .lastUpdated(branchBatchInfo != null ? branchBatchInfo.getLastUpdated() : null)
+          .status(e.getStatus())
+          .unitConversions(
+              Optional.ofNullable(e.getUnitConversions())
+                  .map(conversions -> conversions.stream()
+                      .map(unitConversionMapper::toDTO)
+                      .collect(Collectors.toList()))
+                  .orElse(null))
+          .specialConditions(
+              Optional.ofNullable(e.getSpecialConditions())
+                  .map(conditions -> conditions.stream()
+                      .map(specialConditionMapper::toDTO)
+                      .collect(Collectors.toList()))
+                  .orElse(null))
+          .baseUnit(
+              Optional.ofNullable(e.getBaseUnit())
+                  .map(unitOfMeasurementMapper::toDTO)
+                  .orElse(null))
+          .branchProducts(
+              Optional.ofNullable(e.getBranchProducs())
+                  .map(products -> products.stream()
+                      .map(branchProductMapper::toDTO)
+                      .collect(Collectors.toList()))
+                  .orElse(null))
+          .category(
+              Optional.ofNullable(e.getCategory())
+                  .map(productCategoryMapper::toDTO)
+                  .orElse(null))
+          .type(
+              Optional.ofNullable(e.getType())
+                  .map(productTypeMapper::toDTO)
+                  .orElse(null))
+          .manufacturer(
+              Optional.ofNullable(e.getManufacturer())
+                  .map(manufacturerMapper::toDTO)
+                  .orElse(null))
+          .build();
+    }).orElse(null);
   }
 
   // Helper method to convert ProductEntity to ProductDTO
@@ -383,6 +443,7 @@ public class ProductMapper {
                 ? unitOfMeasurementMapper.toDTO(entity.getBaseUnit())
                 : null)
         .batches(batchDTOs)
+        .lastUpdated(branchProduct.getLastUpdated()!=null? LocalDateTime.MIN:null)
         .productUnits(unitOfMeasurementList)
         .productQuantity(branchProduct != null ? branchProduct.getQuantity() : BigDecimal.ZERO) //
         // Add product

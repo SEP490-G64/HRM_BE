@@ -3,10 +3,12 @@ package com.example.hrm_be.services;
 import com.example.hrm_be.commons.enums.InventoryCheckStatus;
 import com.example.hrm_be.models.dtos.InventoryCheck;
 import com.example.hrm_be.models.requests.CreateInventoryCheckRequest;
+import java.util.Set;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @Service
 public interface InventoryCheckService {
@@ -40,4 +42,12 @@ public interface InventoryCheckService {
   void updateInventoryCheckStatus(InventoryCheckStatus status, Long id);
 
   void delete(Long id);
+
+  void registerEmitterForInventoryCheck(Long inventoryCheckId, SseEmitter emitter);
+
+  void removeEmitterForInventoryCheck(Long inventoryCheckId, SseEmitter emitter);
+
+  void broadcastToInventoryChecksInBranch(
+      Long branchId, Set<Long> productIds, Set<Long> batchIds
+  );
 }
