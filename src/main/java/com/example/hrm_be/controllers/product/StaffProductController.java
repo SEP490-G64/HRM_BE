@@ -341,9 +341,10 @@ public class StaffProductController {
       @PathVariable("branchId") Long branchId,
       @RequestParam(defaultValue = "") String keyword,
       @RequestParam(required = false) Boolean checkValid,
-      @RequestParam(required = false) Long supplierId) {
+      @RequestParam(required = false) Long supplierId,
+      @RequestParam(required = false) Boolean withSellPrice) {
     List<ProductBaseDTO> products =
-        productService.getBranchProduct(branchId, keyword, checkValid, supplierId);
+        productService.getBranchProduct(branchId, keyword, checkValid, supplierId, withSellPrice);
 
     BaseOutput<List<ProductBaseDTO>> response =
         BaseOutput.<List<ProductBaseDTO>>builder()

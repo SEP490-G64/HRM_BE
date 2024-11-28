@@ -7,6 +7,8 @@ import com.example.hrm_be.models.dtos.OutboundProductDetail;
 import com.example.hrm_be.models.dtos.Supplier;
 import com.example.hrm_be.models.dtos.User;
 import com.fasterxml.jackson.annotation.JsonInclude;
+
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AccessLevel;
@@ -40,5 +42,6 @@ public class CreateOutboundRequest {
   Branch fromBranch;
   Supplier supplier;
   Boolean taxable;
+  BigDecimal totalPrice;
   List<OutboundProductDetail> outboundProductDetails;
 }
