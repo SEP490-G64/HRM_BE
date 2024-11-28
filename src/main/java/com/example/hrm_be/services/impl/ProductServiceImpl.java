@@ -874,22 +874,20 @@ public class ProductServiceImpl implements ProductService {
       Long branchId, String keyword, Boolean checkValid, Long supplierId, Boolean withSellprice) {
     if (withSellprice == null || !withSellprice) {
       return productRepository
-              .searchProductByBranchId(branchId, keyword, checkValid, supplierId)
-              .stream()
-              .map(
-                      entity ->
-                              productMapper.convertToBranchProduct(
-                                      entity, branchId)) // Pass branchId to the mapper
-              .collect(Collectors.toList());
+          .searchProductByBranchId(branchId, keyword, checkValid, supplierId)
+          .stream()
+          .map(
+              entity ->
+                  productMapper.convertToBranchProduct(
+                      entity, branchId)) // Pass branchId to the mapper
+          .collect(Collectors.toList());
     } else {
-      return productRepository
-              .searchProductByBranchIdWithSellPrice(branchId, keyword)
-              .stream()
-              .map(
-                      entity ->
-                              productMapper.convertToBranchProduct(
-                                      entity, branchId)) // Pass branchId to the mapper
-              .collect(Collectors.toList());
+      return productRepository.searchProductByBranchIdWithSellPrice(branchId, keyword).stream()
+          .map(
+              entity ->
+                  productMapper.convertToBranchProduct(
+                      entity, branchId)) // Pass branchId to the mapper
+          .collect(Collectors.toList());
     }
   }
 
