@@ -559,15 +559,10 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
       if (branchBatch == null) {
         throw new HrmCommonException(BRANCHBATCH.NOT_EXIST);
       }
-      // Find the BranchProduct entity for this product and branch
-      BranchProduct branchProduct =
-          branchProductService.getByBranchIdAndProductId(
-              branch.getId(), branchBatch.getBatch().getProduct().getId());
       // Subtract the quantity
       branchBatch.setQuantity(
           branchBatch.getQuantity().subtract(BigDecimal.valueOf(batchDetail.getDifference())));
       branchBatchService.save(branchBatch);
-      branchProductService.save(branchProduct);
     }
     // Notification for Manager
 
