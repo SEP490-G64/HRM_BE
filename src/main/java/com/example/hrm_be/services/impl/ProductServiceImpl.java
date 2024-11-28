@@ -832,6 +832,9 @@ public class ProductServiceImpl implements ProductService {
 
   @Override
   public List<ProductSupplierDTO> getAllProductsBySupplier(Long supplierId, String productName) {
+    if (supplierId == null || supplierId < 0 || productName == null) {
+      throw new HrmCommonException(REQUEST.INVALID);
+    }
     return productRepository.findProductBySupplierAndName(supplierId, productName).stream()
         .map(productMapper::convertToProductSupplier)
         .collect(Collectors.toList());
