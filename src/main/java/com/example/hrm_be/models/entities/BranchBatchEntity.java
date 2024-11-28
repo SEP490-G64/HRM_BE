@@ -51,6 +51,6 @@ public class BranchBatchEntity extends CommonEntity {
   @OneToMany(mappedBy = "branchBatch")
   List<NotificationEntity> notifications;
 
-  @Column(name= "last_updated")
+  @Column(name = "last_updated")
   LocalDateTime lastUpdated;
 }

@@ -57,6 +57,6 @@ public class BranchProductEntity extends CommonEntity {
   @Column(name = "status")
   ProductStatus productStatus;
 
-  @Column(name= "last_updated")
+  @Column(name = "last_updated")
   LocalDateTime lastUpdated;
 }

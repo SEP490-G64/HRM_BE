@@ -52,13 +52,16 @@ public class InventoryCheckDetailsMapper {
         .reason(entity.getReason())
         .build();
   }
+
   // Helper method to convert InventoryCheckDetailsEntity to InventoryCheckDetailsDTO
-  public InventoryCheckDetails convertToDTOByBranchId(InventoryCheckDetailsEntity entity,
-      Long branchId) {
+  public InventoryCheckDetails convertToDTOByBranchId(
+      InventoryCheckDetailsEntity entity, Long branchId) {
     return InventoryCheckDetails.builder()
         .id(entity.getId())
-        .batch(entity.getBatch() != null ?
-            batchMapper.convertToDtoBasicInfoByBranchId(entity.getBatch(),branchId) : null)
+        .batch(
+            entity.getBatch() != null
+                ? batchMapper.convertToDtoBasicInfoByBranchId(entity.getBatch(), branchId)
+                : null)
         .systemQuantity(entity.getSystemQuantity())
         .countedQuantity(entity.getCountedQuantity())
         .difference(entity.getDifference())

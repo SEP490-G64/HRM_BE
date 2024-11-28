@@ -47,7 +47,5 @@ public interface InventoryCheckService {
 
   void removeEmitterForInventoryCheck(Long inventoryCheckId, SseEmitter emitter);
 
-  void broadcastToInventoryChecksInBranch(
-      Long branchId, Set<Long> productIds, Set<Long> batchIds
-  );
+  void broadcastToInventoryChecksInBranch(Long branchId, Set<Long> productIds, Set<Long> batchIds);
 }

@@ -44,10 +44,10 @@ public interface BranchProductRepository
   @Query("UPDATE BranchProductEntity i SET i.productStatus = :status WHERE i.id = :id")
   void updateBranchProductStatus(@Param("status") ProductStatus status, @Param("id") Long id);
 
-
-  @Query("SELECT bp.lastUpdated FROM BranchProductEntity bp WHERE bp.branch.id = :branchId AND bp"
-      + ".product.id ="
-      + " :productId")
+  @Query(
+      "SELECT bp.lastUpdated FROM BranchProductEntity bp WHERE bp.branch.id = :branchId AND bp"
+          + ".product.id ="
+          + " :productId")
   LocalDateTime getLastUpdatedByBranchIdAndProductId(
-      @Param("branchId") Long branchId,@Param("productId") Long productId);
+      @Param("branchId") Long branchId, @Param("productId") Long productId);
 }
