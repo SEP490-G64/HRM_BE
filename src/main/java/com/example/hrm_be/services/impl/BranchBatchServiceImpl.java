@@ -11,6 +11,7 @@ import com.example.hrm_be.models.entities.BranchEntity;
 import com.example.hrm_be.repositories.BranchBatchRepository;
 import com.example.hrm_be.services.BranchBatchService;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -72,11 +73,13 @@ public class BranchBatchServiceImpl implements BranchBatchService {
           branchBatch.getQuantity() != null
               ? branchBatch.getQuantity().add(quantity)
               : quantity); // Update existing
+      branchBatch.setLastUpdated(LocalDateTime.now());
       // quantity
     } else {
       branchBatch.setBatch(batch);
       branchBatch.setBranch(toBranch);
       branchBatch.setQuantity(quantity);
+      branchBatch.setLastUpdated(LocalDateTime.now());
     }
 
     // Save the BranchBatchEntity

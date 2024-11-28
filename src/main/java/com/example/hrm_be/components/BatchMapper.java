@@ -167,6 +167,63 @@ public class BatchMapper {
         .orElse(null); // Return null if the entity is null
   }
 
+  public Batch convertToDtoBasicInfoByBranchId(BatchEntity entity, Long branchId) {
+    return Optional.ofNullable(entity)
+        .map(
+            e -> {
+              // Filter and find the BranchBatchInfo by branchId
+              BranchBatchEntity branchBatchInfo =
+                  e.getBranchBatches().stream()
+                      .filter(info -> info.getBranch().getId().equals(branchId))
+                      .findFirst()
+                      .orElse(null); // Default to null if not found
+
+              // Retrieve quantity from the filtered branchBatchInfo, if available
+              BigDecimal quantity =
+                  branchBatchInfo != null ? branchBatchInfo.getQuantity() : BigDecimal.ZERO; //
+              // Default to
+              // 0 if not found
+              // Build and return the BatchDTO with the required information
+              return Batch.builder()
+                  .id(e.getId())
+                  .batchCode(e.getBatchCode())
+                  .batchStatus(e.getBatchStatus())
+                  .produceDate(e.getProduceDate())
+                  .expireDate(e.getExpireDate())
+                  .inboundPrice(e.getInboundPrice())
+                  .productId(e.getProduct().getId())
+                  .productName(e.getProduct().getProductName())
+                  .registrationCode(e.getProduct().getRegistrationCode())
+                  .urlImage(e.getProduct().getUrlImage())
+                  .activeIngredient(e.getProduct().getActiveIngredient())
+                  .excipient(e.getProduct().getExcipient())
+                  .formulation(e.getProduct().getFormulation())
+                  .inboundPrice(e.getProduct().getInboundPrice())
+                  .sellPrice(e.getProduct().getSellPrice())
+                  .status(e.getProduct().getStatus())
+                  .lastUpdated(branchBatchInfo != null ? branchBatchInfo.getLastUpdated() : null)
+                  .unitOfMeasurement(
+                      e.getProduct().getBaseUnit() != null
+                          ? unitOfMeasurementMapper.toDTO(e.getProduct().getBaseUnit())
+                          : null)
+                  .categoryName(
+                      e.getProduct().getCategory() != null
+                          ? e.getProduct().getCategory().getCategoryName()
+                          : null)
+                  .typeName(
+                      e.getProduct().getType() != null
+                          ? e.getProduct().getType().getTypeName()
+                          : null)
+                  .manufacturerName(
+                      e.getProduct().getManufacturer() != null
+                          ? e.getProduct().getManufacturer().getManufacturerName()
+                          : null)
+                  .quantity(quantity) // Set the filtered quantity here
+                  .build();
+            })
+        .orElse(null); // Return null if the entity is null
+  }
+
   // Helper method to map BatchEntity to BatchDTO
   public Batch convertToDtoWithCategory(BatchEntity entity) {
     return Optional.ofNullable(entity)

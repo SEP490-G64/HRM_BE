@@ -47,7 +47,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,6 +88,8 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
   @Autowired private BatchService batchService;
   @Autowired private InventoryCheckDetailsService inventoryCheckDetailsService;
   @Autowired private InventoryCheckProductDetailsService inventoryCheckProductDetailsService;
+  // Map to hold SSE emitters for each InventoryCheck
+  private final Map<Long, List<SseEmitter>> inventoryCheckEmitters = new ConcurrentHashMap<>();
 
   @Autowired private UserMapper userMapper;
   private final CopyOnWriteArrayList<SseEmitter> emitters = new CopyOnWriteArrayList<>();
@@ -128,13 +133,13 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
             .map(
                 detail -> {
                   InventoryCheckProductDetails detailDTO = new InventoryCheckProductDetails();
-
                   // Set product details
                   Product productDTO = new Product();
                   productDTO.setId(detail.getProduct().getId());
                   productDTO.setBaseUnit(detail.getProduct().getBaseUnit());
                   productDTO.setProductName(detail.getProduct().getProductName());
                   productDTO.setRegistrationCode(detail.getProduct().getRegistrationCode());
+                  productDTO.setLastUpdated(detail.getProduct().getLastUpdated());
                   detailDTO.setProduct(productDTO);
                   detailDTO.setSystemQuantity(detail.getSystemQuantity());
                   detailDTO.setCountedQuantity(detail.getCountedQuantity());
@@ -161,11 +166,11 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
                   batchDTO.setExpireDate(batchDetail.getBatch().getExpireDate());
 
                   Product productDTO = new Product();
-                  productDTO.setId(batchDetail.getBatch().getProduct().getId());
-                  productDTO.setBaseUnit(batchDetail.getBatch().getProduct().getBaseUnit());
-                  productDTO.setProductName(batchDetail.getBatch().getProduct().getProductName());
-                  productDTO.setRegistrationCode(
-                      batchDetail.getBatch().getProduct().getRegistrationCode());
+                  productDTO.setId(batchDetail.getBatch().getProductId());
+                  productDTO.setBaseUnit(batchDetail.getBatch().getUnitOfMeasurement());
+                  productDTO.setProductName(batchDetail.getBatch().getProductName());
+                  productDTO.setLastUpdated(batchDetail.getBatch().getLastUpdated());
+                  productDTO.setRegistrationCode(batchDetail.getBatch().getRegistrationCode());
 
                   batchDetailDTO.setBatch(batchDTO);
                   batchDetailDTO.setProduct(productDTO);
@@ -601,6 +606,51 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
 
     // Delete the inventory check
     inventoryCheckRepository.deleteById(id);
+  }
+
+  // Register SSE emitter for a specific InventoryCheck ID
+  public void registerEmitterForInventoryCheck(Long inventoryCheckId, SseEmitter emitter) {
+    inventoryCheckEmitters.computeIfAbsent(inventoryCheckId, id -> new ArrayList<>()).add(emitter);
+  }
+
+  // Remove an emitter for a specific InventoryCheck
+  public void removeEmitterForInventoryCheck(Long inventoryCheckId, SseEmitter emitter) {
+    List<SseEmitter> emitters = inventoryCheckEmitters.get(inventoryCheckId);
+    if (emitters != null) {
+      emitters.remove(emitter);
+    }
+  }
+
+  // Broadcast updates to all InventoryChecks in a branch
+  public void broadcastToInventoryChecksInBranch(
+      Long branchId, Set<Long> productIds, Set<Long> batchIds) {
+    // Fetch all InventoryChecks in the branch with a specific status
+    List<InventoryCheckEntity> inventoryChecks =
+        inventoryCheckRepository.findInventoryCheckEntitiesByStatusAndBranchId(
+            InventoryCheckStatus.DANG_KIEM, branchId);
+
+    // Send updates to each InventoryCheck
+    for (InventoryCheckEntity inventoryCheck : inventoryChecks) {
+      Long inventoryCheckId = inventoryCheck.getId();
+      List<SseEmitter> emitters = inventoryCheckEmitters.get(inventoryCheckId);
+
+      if (emitters != null) {
+        Map<String, Object> updatePayload =
+            Map.of(
+                "inventoryCheckId", inventoryCheckId,
+                "productIds", productIds,
+                "batchIds", batchIds);
+
+        // Send updates via SSE
+        for (SseEmitter emitter : emitters) {
+          try {
+            emitter.send(SseEmitter.event().name("inventory-check-update").data(updatePayload));
+          } catch (Exception e) {
+            emitter.complete();
+          }
+        }
+      }
+    }
   }
 
   @Override

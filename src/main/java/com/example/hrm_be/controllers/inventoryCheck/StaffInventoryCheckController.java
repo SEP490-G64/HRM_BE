@@ -18,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -235,5 +236,23 @@ public class StaffInventoryCheckController {
       @RequestParam String type, @PathVariable(name = "id") Long id) {
     inventoryCheckService.updateInventoryCheckStatus(InventoryCheckStatus.valueOf(type), id);
     return ResponseEntity.ok(BaseOutput.<String>builder().status(ResponseStatus.SUCCESS).build());
+  }
+
+  // SSE Endpoint for individual InventoryCheck updates
+  @GetMapping("/{inventoryCheckId}/subscribe")
+  public SseEmitter subscribeToInventoryCheck(
+      @PathVariable Long inventoryCheckId, @RequestParam("authToken") String authToken) {
+    SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
+
+    // Register this emitter for the specific InventoryCheck
+    inventoryCheckService.registerEmitterForInventoryCheck(inventoryCheckId, emitter);
+
+    // Cleanup on completion or timeout
+    emitter.onCompletion(
+        () -> inventoryCheckService.removeEmitterForInventoryCheck(inventoryCheckId, emitter));
+    emitter.onTimeout(
+        () -> inventoryCheckService.removeEmitterForInventoryCheck(inventoryCheckId, emitter));
+
+    return emitter;
   }
 }
