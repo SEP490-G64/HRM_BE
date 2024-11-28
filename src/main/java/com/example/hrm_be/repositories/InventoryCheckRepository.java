@@ -1,7 +1,6 @@
 package com.example.hrm_be.repositories;
 
 import com.example.hrm_be.commons.enums.InventoryCheckStatus;
-import com.example.hrm_be.models.dtos.InventoryCheck;
 import com.example.hrm_be.models.entities.InventoryCheckEntity;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -29,4 +28,4 @@ public interface InventoryCheckRepository
           + " AND b.status = :status")
   List<InventoryCheckEntity> findInventoryCheckEntitiesByStatusAndBranchId(
       @Param("status") InventoryCheckStatus status, @Param("branchId") Long branchId);
-  }
+}

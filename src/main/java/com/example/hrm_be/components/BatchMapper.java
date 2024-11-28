@@ -166,6 +166,7 @@ public class BatchMapper {
             })
         .orElse(null); // Return null if the entity is null
   }
+
   public Batch convertToDtoBasicInfoByBranchId(BatchEntity entity, Long branchId) {
     return Optional.ofNullable(entity)
         .map(
@@ -200,7 +201,7 @@ public class BatchMapper {
                   .inboundPrice(e.getProduct().getInboundPrice())
                   .sellPrice(e.getProduct().getSellPrice())
                   .status(e.getProduct().getStatus())
-                  .lastUpdated(branchBatchInfo!=null? branchBatchInfo.getLastUpdated():null)
+                  .lastUpdated(branchBatchInfo != null ? branchBatchInfo.getLastUpdated() : null)
                   .unitOfMeasurement(
                       e.getProduct().getBaseUnit() != null
                           ? unitOfMeasurementMapper.toDTO(e.getProduct().getBaseUnit())
@@ -222,6 +223,7 @@ public class BatchMapper {
             })
         .orElse(null); // Return null if the entity is null
   }
+
   // Helper method to map BatchEntity to BatchDTO
   public Batch convertToDtoWithCategory(BatchEntity entity) {
     return Optional.ofNullable(entity)

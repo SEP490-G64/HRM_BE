@@ -46,7 +46,7 @@ public class Batch extends CommonEntity {
   List<InboundBatchDetail> inboundBatchDetails;
 
   List<InventoryCheckDetails> inventoryCheckDetails;
- UnitOfMeasurement unitOfMeasurement;
+  UnitOfMeasurement unitOfMeasurement;
   Product product;
   ProductBaseDTO productBaseDTO;
 

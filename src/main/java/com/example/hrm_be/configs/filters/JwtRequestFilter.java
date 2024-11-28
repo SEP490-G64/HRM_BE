@@ -43,7 +43,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     String email = null;
     String jwtToken = null;
     if (requestTokenHeader == null) {
-      jwtToken =request.getParameter("authToken");
+      jwtToken = request.getParameter("authToken");
       email = jwtUtil.extractEmail(jwtToken);
     }
     // JWT Token is in the form "Bearer token". Remove Bearer word and get only the Token
