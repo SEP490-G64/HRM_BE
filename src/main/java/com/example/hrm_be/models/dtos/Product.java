@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -34,6 +35,7 @@ public final class Product implements Serializable {
   String registrationCode;
 
   String urlImage;
+  LocalDateTime lastUpdated;
 
   Manufacturer manufacturer;
 

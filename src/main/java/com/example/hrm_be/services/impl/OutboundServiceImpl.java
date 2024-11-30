@@ -360,6 +360,7 @@ public class OutboundServiceImpl implements OutboundService {
         Outbound.builder()
             .id(outboundEntity.getId()) // Retain the existing ID
             .outboundCode(request.getOutboundCode())
+            .totalPrice(request.getTotalPrice())
             .createdDate(
                 request.getCreatedDate() != null ? request.getCreatedDate() : LocalDateTime.now())
             .status(
@@ -396,17 +397,8 @@ public class OutboundServiceImpl implements OutboundService {
         BigDecimal realityQuantity =
             branchBatchService.findQuantityByBatchIdAndBranchId(batch.getId(), fromBranch.getId());
 
-        if (updatedOutbound.getStatus().equals(OutboundStatus.KIEM_HANG)
-            || updatedOutbound.getStatus().equals(OutboundStatus.DANG_THANH_TOAN)) {
-          if (realityQuantity.compareTo(outboundQuantity) < 0) {
-            throw new HrmCommonException(
-                "Số lượng hiện tại trong kho của lô "
-                    + batchEntity.getBatchCode()
-                    + " chỉ còn "
-                    + realityQuantity
-                    + ", vui lòng nhập số lượng nhỏ hơn.");
-          }
-        } else {
+        if (!updatedOutbound.getStatus().equals(OutboundStatus.KIEM_HANG)
+            && !updatedOutbound.getStatus().equals(OutboundStatus.DANG_THANH_TOAN)) {
           if (realityQuantity.compareTo(preQuantity) < 0) {
             throw new HrmCommonException(
                 "Số lượng hiện tại trong kho của lô "
@@ -450,17 +442,8 @@ public class OutboundServiceImpl implements OutboundService {
                 branchProductService.getByBranchIdAndProductId(
                     fromBranch.getId(), productEntity.getId()));
 
-        if (outboundEntity.getStatus().equals(OutboundStatus.KIEM_HANG)
-            || outboundEntity.getStatus().equals(OutboundStatus.DANG_THANH_TOAN)) {
-          if (branchProduct.getQuantity().compareTo(outboundQuantity) < 0) {
-            throw new HrmCommonException(
-                "Số lượng hiện tại trong kho của sản phẩm "
-                    + productEntity.getProductName()
-                    + " chỉ còn "
-                    + branchProduct.getQuantity()
-                    + ", vui lòng nhập số lượng nhỏ hơn.");
-          }
-        } else {
+        if (!outboundEntity.getStatus().equals(OutboundStatus.KIEM_HANG)
+            && !outboundEntity.getStatus().equals(OutboundStatus.DANG_THANH_TOAN)) {
           if (branchProduct.getQuantity().compareTo(preQuantity) < 0) {
             throw new HrmCommonException(
                 "Số lượng hiện tại trong kho của sản phẩm "
@@ -487,7 +470,7 @@ public class OutboundServiceImpl implements OutboundService {
               OutboundProductDetailEntity.builder()
                   .id(null)
                   .outbound(updatedOutboundEntity)
-                  .price(productDetail.getPrice())
+                  .price(productEntity.getInboundPrice())
                   .product(productEntity)
                   .outboundQuantity(productDetail.getOutboundQuantity())
                   .unitOfMeasurement(productEntity.getBaseUnit())
@@ -597,49 +580,51 @@ public class OutboundServiceImpl implements OutboundService {
           for (BranchBatch branchBatch : productBranchBatches) {
             Batch batchDTO = batchService.getById(branchBatch.getBatch().getId());
 
-            // Check if the current batch has enough quantity to meet the remaining requirement
-            if (branchBatch.getQuantity().compareTo(remainingQuantity) < 0) {
-              // If the current batch is insufficient, issue all of it and update the remaining
-              // quantity
-              BigDecimal priceOutboundDetail = branchBatch.getQuantity().multiply(productPrice);
-              this.addOutboundDetailForSell(
-                  updatedOutboundEntity,
-                  batchDTO,
-                  unitConversionService.convertToUnit(
-                      product.getId(),
-                      productEntity.getBaseUnit().getId(),
-                      branchBatch.getQuantity(),
-                      productDetail.getTargetUnit(),
-                      false),
-                  pricePerUnit,
-                  productDetail.getTargetUnit(),
-                  outboundDetailEntities);
+            if (!Objects.equals(branchBatch.getQuantity(), BigDecimal.ZERO)) {
+              // Check if the current batch has enough quantity to meet the remaining requirement
+              if (branchBatch.getQuantity().compareTo(remainingQuantity) < 0) {
+                // If the current batch is insufficient, issue all of it and update the remaining
+                // quantity
+                BigDecimal priceOutboundDetail = branchBatch.getQuantity().multiply(productPrice);
+                this.addOutboundDetailForSell(
+                    updatedOutboundEntity,
+                    batchDTO,
+                    unitConversionService.convertToUnit(
+                        product.getId(),
+                        productEntity.getBaseUnit().getId(),
+                        branchBatch.getQuantity(),
+                        productDetail.getTargetUnit(),
+                        false),
+                    pricePerUnit,
+                    productDetail.getTargetUnit(),
+                    outboundDetailEntities);
 
-              totalPrice = totalPrice.add(priceOutboundDetail);
-              remainingQuantity = remainingQuantity.subtract(branchBatch.getQuantity());
-              branchBatch.setQuantity(BigDecimal.ZERO);
-              branchBatchService.save(branchBatch);
-            } else {
-              BigDecimal priceOutboundDetail = remainingQuantity.multiply(productPrice);
-              // Issue only the required quantity and deduct it from the batch
-              this.addOutboundDetailForSell(
-                  updatedOutboundEntity,
-                  batchDTO,
-                  unitConversionService.convertToUnit(
-                      product.getId(),
-                      productEntity.getBaseUnit().getId(),
-                      remainingQuantity,
-                      productDetail.getTargetUnit(),
-                      false),
-                  pricePerUnit,
-                  productDetail.getTargetUnit(),
-                  outboundDetailEntities);
+                totalPrice = totalPrice.add(priceOutboundDetail);
+                remainingQuantity = remainingQuantity.subtract(branchBatch.getQuantity());
+                branchBatch.setQuantity(BigDecimal.ZERO);
+                branchBatchService.save(branchBatch);
+              } else {
+                BigDecimal priceOutboundDetail = remainingQuantity.multiply(productPrice);
+                // Issue only the required quantity and deduct it from the batch
+                this.addOutboundDetailForSell(
+                    updatedOutboundEntity,
+                    batchDTO,
+                    unitConversionService.convertToUnit(
+                        product.getId(),
+                        productEntity.getBaseUnit().getId(),
+                        remainingQuantity,
+                        productDetail.getTargetUnit(),
+                        false),
+                    pricePerUnit,
+                    productDetail.getTargetUnit(),
+                    outboundDetailEntities);
 
-              totalPrice = totalPrice.add(priceOutboundDetail);
-              branchBatch.setQuantity(branchBatch.getQuantity().subtract(remainingQuantity));
-              remainingQuantity = BigDecimal.ZERO;
-              branchBatchService.save(branchBatch);
-              break;
+                totalPrice = totalPrice.add(priceOutboundDetail);
+                branchBatch.setQuantity(branchBatch.getQuantity().subtract(remainingQuantity));
+                remainingQuantity = BigDecimal.ZERO;
+                branchBatchService.save(branchBatch);
+                break;
+              }
             }
           }
         } else {

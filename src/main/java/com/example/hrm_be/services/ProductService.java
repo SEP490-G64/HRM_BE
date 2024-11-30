@@ -55,7 +55,7 @@ public interface ProductService {
       Long branchId, String keyword, Boolean checkValid, Long supplierId);
 
   List<ProductBaseDTO> getBranchProduct(
-      Long branchId, String keyword, Boolean checkValid, Long supplierId);
+      Long branchId, String keyword, Boolean checkValid, Long supplierId, Boolean withSellprice);
 
   List<ProductBaseDTO> filterProducts(
       Boolean lessThanOrEqual, Integer quantity, Boolean warning, Boolean outOfStock);

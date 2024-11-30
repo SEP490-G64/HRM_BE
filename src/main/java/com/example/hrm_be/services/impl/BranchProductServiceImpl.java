@@ -9,6 +9,7 @@ import com.example.hrm_be.models.entities.*;
 import com.example.hrm_be.repositories.BranchProductRepository;
 import com.example.hrm_be.services.BranchProductService;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -75,6 +76,7 @@ public class BranchProductServiceImpl implements BranchProductService {
           branchProduct.getQuantity() != null
               ? branchProduct.getQuantity().add(quantity)
               : quantity); // Update existing quantity
+      branchProduct.setLastUpdated(LocalDateTime.now());
     } else {
       branchProduct.setProduct(product);
       branchProduct.setBranch(toBranch);
@@ -83,6 +85,7 @@ public class BranchProductServiceImpl implements BranchProductService {
       // logic
       branchProduct.setMaxQuantity(null); // Set default max quantity, or use business
       // logic
+      branchProduct.setLastUpdated(LocalDateTime.now());
     }
 
     // Save the BranchProductEntity

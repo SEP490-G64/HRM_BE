@@ -53,6 +53,22 @@ public class InventoryCheckDetailsMapper {
         .build();
   }
 
+  // Helper method to convert InventoryCheckDetailsEntity to InventoryCheckDetailsDTO
+  public InventoryCheckDetails convertToDTOByBranchId(
+      InventoryCheckDetailsEntity entity, Long branchId) {
+    return InventoryCheckDetails.builder()
+        .id(entity.getId())
+        .batch(
+            entity.getBatch() != null
+                ? batchMapper.convertToDtoBasicInfoByBranchId(entity.getBatch(), branchId)
+                : null)
+        .systemQuantity(entity.getSystemQuantity())
+        .countedQuantity(entity.getCountedQuantity())
+        .difference(entity.getDifference())
+        .reason(entity.getReason())
+        .build();
+  }
+
   // Helper method to convert InventoryCheckDetailEntity to InventoryCheckDetailDTO with Inventory
   // Check Information
   public InventoryCheckDetails toDTOWithInventoryCheckDetails(InventoryCheckDetailsEntity entity) {

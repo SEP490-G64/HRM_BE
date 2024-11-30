@@ -225,13 +225,6 @@ public class ProductServiceImpl implements ProductService {
       throw new HrmCommonException(REQUEST.INVALID_BODY);
     }
 
-    // Check only manager allow to decide sell price
-    if (userService.isManager()) {
-      if (product.getSellPrice() != null) {
-        throw new HrmCommonException(HrmConstant.ERROR.ROLE.NOT_ALLOWED);
-      }
-    }
-
     if (productRepository.existsByRegistrationCode(product.getRegistrationCode())
         && !Objects.equals(product.getRegistrationCode(), oldProductEntity.getRegistrationCode())) {
       throw new HrmCommonException(HrmConstant.ERROR.PRODUCT.REGISTRATION_EXIST);
@@ -878,15 +871,24 @@ public class ProductServiceImpl implements ProductService {
 
   @Override
   public List<ProductBaseDTO> getBranchProduct(
-      Long branchId, String keyword, Boolean checkValid, Long supplierId) {
-    return productRepository
-        .searchProductByBranchId(branchId, keyword, checkValid, supplierId)
-        .stream()
-        .map(
-            entity ->
-                productMapper.convertToBranchProduct(
-                    entity, branchId)) // Pass branchId to the mapper
-        .collect(Collectors.toList());
+      Long branchId, String keyword, Boolean checkValid, Long supplierId, Boolean withSellprice) {
+    if (withSellprice == null || !withSellprice) {
+      return productRepository
+          .searchProductByBranchId(branchId, keyword, checkValid, supplierId)
+          .stream()
+          .map(
+              entity ->
+                  productMapper.convertToBranchProduct(
+                      entity, branchId)) // Pass branchId to the mapper
+          .collect(Collectors.toList());
+    } else {
+      return productRepository.searchProductByBranchIdWithSellPrice(branchId, keyword).stream()
+          .map(
+              entity ->
+                  productMapper.convertToBranchProduct(
+                      entity, branchId)) // Pass branchId to the mapper
+          .collect(Collectors.toList());
+    }
   }
 
   @Override
