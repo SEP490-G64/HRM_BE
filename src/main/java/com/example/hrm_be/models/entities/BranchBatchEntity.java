@@ -11,6 +11,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -49,4 +50,7 @@ public class BranchBatchEntity extends CommonEntity {
   @ToString.Exclude
   @OneToMany(mappedBy = "branchBatch")
   List<NotificationEntity> notifications;
+
+  @Column(name = "last_updated")
+  LocalDateTime lastUpdated;
 }

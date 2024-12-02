@@ -3,6 +3,7 @@ package com.example.hrm_be.models.dtos;
 import com.example.hrm_be.commons.enums.ProductStatus;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -48,7 +49,7 @@ public class ProductBaseDTO {
   private List<Batch> batches;
   private List<UnitOfMeasurement> productUnits;
   private UnitOfMeasurement productBaseUnit;
-
+  private LocalDateTime lastUpdated;
   private BigDecimal taxRate;
 
   private BranchProduct branchProduct;

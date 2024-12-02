@@ -37,6 +37,7 @@ public class Batch extends CommonEntity {
   BatchStatus batchStatus;
 
   BigDecimal inboundPrice;
+  LocalDateTime lastUpdated;
 
   List<OutboundDetail> outboundDetails; // 1-N with OutboundDetails
 
@@ -45,7 +46,7 @@ public class Batch extends CommonEntity {
   List<InboundBatchDetail> inboundBatchDetails;
 
   List<InventoryCheckDetails> inventoryCheckDetails;
-
+  UnitOfMeasurement unitOfMeasurement;
   Product product;
   ProductBaseDTO productBaseDTO;
 
@@ -68,4 +69,5 @@ public class Batch extends CommonEntity {
   String categoryName;
   String typeName;
   String manufacturerName;
+  BigDecimal preQuantity;
 }

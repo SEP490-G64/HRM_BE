@@ -3,6 +3,7 @@ package com.example.hrm_be.models.dtos;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.math.BigDecimal;
 import java.util.List;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -40,4 +41,12 @@ public class OutboundProductDetail {
   UnitOfMeasurement targetUnit;
 
   UnitOfMeasurement productBaseUnit;
+
+  BigDecimal taxRate;
+
+  BigDecimal productQuantity;
+
+  BigDecimal preQuantity;
+
+  BigDecimal inboundPrice;
 }

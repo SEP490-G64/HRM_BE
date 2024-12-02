@@ -241,6 +241,21 @@
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
         <version>0.8.12</version>
+        <configuration>
+          <includes>
+            <include>com/example/hrm_be/services/impl/BranchServiceImpl.class</include>
+            <include>com/example/hrm_be/services/impl/ProductServiceImpl.class</include>
+            <include>com/example/hrm_be/services/impl/ProductTypeServiceImpl.class</include>
+            <include>com/example/hrm_be/services/impl/ProductCategoryServiceImpl.class</include>
+            <include>com/example/hrm_be/services/impl/SupplierServiceImpl.class</include>
+            <include>com/example/hrm_be/services/impl/ManufacturerServiceImpl.class</include>
+            <include>com/example/hrm_be/services/impl/UnitOfMeasurementServiceImpl.class</include>
+            <include>com/example/hrm_be/services/impl/UserServiceImpl.class</include>
+            <include>com/example/hrm_be/services/impl/InboundServiceImpl.class</include>
+            <include>com/example/hrm_be/services/impl/OutboundServiceImpl.class</include>
+            <include>com/example/hrm_be/services/impl/InventoryCheckServiceImpl.class</include>
+          </includes>
+        </configuration>
         <executions>
           <execution>
             <goals>

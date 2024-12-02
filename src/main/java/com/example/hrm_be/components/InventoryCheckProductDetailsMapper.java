@@ -52,4 +52,20 @@ public class InventoryCheckProductDetailsMapper {
         .reason(entity.getReason())
         .build();
   }
+
+  // Helper method to convert InventoryCheckDetailsEntity to InventoryCheckDetailsDTO
+  public InventoryCheckProductDetails convertToDTOByBranchId(
+      InventoryCheckProductDetailsEntity entity, Long branchId) {
+    return InventoryCheckProductDetails.builder()
+        .id(entity.getId())
+        .product(
+            entity.getProduct() != null
+                ? productMapper.convertToDTOByBranchId(entity.getProduct(), branchId)
+                : null)
+        .systemQuantity(entity.getSystemQuantity())
+        .countedQuantity(entity.getCountedQuantity())
+        .difference(entity.getDifference())
+        .reason(entity.getReason())
+        .build();
+  }
 }

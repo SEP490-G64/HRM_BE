@@ -78,13 +78,19 @@ public class InventoryCheckMapper {
         .inventoryCheckDetails(
             entity.getInventoryCheckDetails() != null
                 ? entity.getInventoryCheckDetails().stream()
-                    .map(inventoryCheckDetailsMapper::toDTO)
+                    .map(
+                        e ->
+                            inventoryCheckDetailsMapper.convertToDTOByBranchId(
+                                e, entity.getBranch().getId()))
                     .collect(Collectors.toList())
                 : null)
         .inventoryCheckProductDetails(
             entity.getInventoryCheckProductDetails() != null
                 ? entity.getInventoryCheckProductDetails().stream()
-                    .map(inventoryCheckProductDetailsMapper::toDTO)
+                    .map(
+                        e ->
+                            inventoryCheckProductDetailsMapper.convertToDTOByBranchId(
+                                e, entity.getBranch().getId()))
                     .collect(Collectors.toList())
                 : null)
         .build();

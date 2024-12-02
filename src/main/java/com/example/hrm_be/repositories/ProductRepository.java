@@ -50,10 +50,20 @@ public interface ProductRepository
 
   @Query(
       "SELECT DISTINCT p FROM ProductEntity p JOIN p.branchProducs bp LEFT JOIN FETCH p.batches b"
+          + " LEFT JOIN BranchBatchEntity bb ON bb.batch = b AND bb.branch.id = :branchId WHERE"
+          + " LOWER(p.productName) LIKE LOWER(CONCAT('%', :searchStr, '%')) AND bp.branch.id ="
+          + " :branchId AND bp.quantity > 0 AND (b IS NULL OR bb.quantity > 0) AND (b IS NOT NULL"
+          + " AND b.expireDate >= CURRENT_TIMESTAMP) AND p.status != 'DA_XOA' AND p.sellPrice IS"
+          + " NOT NULL")
+  List<ProductEntity> searchProductByBranchIdWithSellPrice(Long branchId, String searchStr);
+
+  @Query(
+      "SELECT DISTINCT p FROM ProductEntity p JOIN p.branchProducs bp LEFT JOIN FETCH p.batches b"
           + " LEFT JOIN BranchBatchEntity bb ON bb.batch = b AND bb.branch.id = :branchId LEFT JOIN"
           + " p.productSuppliers ps WHERE (:searchStr IS NULL OR LOWER(p.productName) LIKE"
           + " LOWER(CONCAT('%', :searchStr, '%'))) AND bp.branch.id = :branchId AND bp.quantity > 0"
-          + " AND (b IS NULL OR bb.quantity > 0) AND (:checkValid IS NULL OR :checkValid = FALSE OR"
+          + " AND (b IS NULL OR bb.quantity >= 0) AND (:checkValid IS NULL OR :checkValid = FALSE"
+          + " OR"
           + " (b IS NOT NULL AND b.expireDate >= CURRENT_TIMESTAMP)) AND (:supplierId IS NULL OR"
           + " ps.supplier.id = :supplierId) AND p.status != 'DA_XOA'")
   List<ProductEntity> searchAllProductByBranchId(
@@ -68,7 +78,7 @@ public interface ProductRepository
           + " JOIN p.category c" // Join the Category entity
           + " WHERE (:searchStr IS NULL OR LOWER(p.productName) LIKE LOWER(CONCAT('%', :searchStr,"
           + " '%'))) AND (:categoryId IS NULL OR c.id = :categoryId)" // Add filter for categoryId
-          + " AND bp.branch.id = :branchId AND bp.quantity > 0 AND (b IS NULL OR bb.quantity > 0)"
+          + " AND bp.branch.id = :branchId AND bp.quantity > 0 AND (b IS NULL OR bb.quantity >= 0)"
           + " AND (:checkValid IS NULL OR :checkValid = FALSE OR (b IS NOT NULL AND b.expireDate >="
           + " CURRENT_TIMESTAMP)) AND (:supplierId IS NULL OR ps.supplier.id = :supplierId)")
   List<ProductEntity> searchAllProductByBranchIdAndCateId(
@@ -83,7 +93,7 @@ public interface ProductRepository
           + " JOIN p.type c" // Join the Category entity
           + " WHERE (:searchStr IS NULL OR LOWER(p.productName) LIKE LOWER(CONCAT('%', :searchStr,"
           + " '%'))) AND (:typeId IS NULL OR c.id = :typeId)" // Add filter for categoryId
-          + " AND bp.branch.id = :branchId AND bp.quantity > 0 AND (b IS NULL OR bb.quantity > 0)"
+          + " AND bp.branch.id = :branchId AND bp.quantity > 0 AND (b IS NULL OR bb.quantity >= 0)"
           + " AND (:checkValid IS NULL OR :checkValid = FALSE OR (b IS NOT NULL AND b.expireDate >="
           + " CURRENT_TIMESTAMP)) AND (:supplierId IS NULL OR ps.supplier.id = :supplierId)")
   List<ProductEntity> searchAllProductByBranchIdAndTypeId(
@@ -93,7 +103,8 @@ public interface ProductRepository
 
   @Query(
       "SELECT p FROM ProductEntity p JOIN p.productSuppliers ps WHERE ps.supplier.id = :supplierId"
-          + " AND LOWER(p.productName) LIKE LOWER(CONCAT('%', :productName, '%'))")
+          + " AND LOWER(p.productName) LIKE LOWER(CONCAT('%', :productName, '%')) AND p.status !="
+          + " 'DA_XOA'")
   List<ProductEntity> findProductBySupplierAndName(
       @Param("supplierId") Long supplierId, @Param("productName") String productName);
 
