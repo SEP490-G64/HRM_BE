@@ -116,9 +116,11 @@ public class TypeServiceImplTest {
     String keyword = " ";
 
     // Act & Assert
-    assertThrows(HrmCommonException.class, () -> {
-      typeService.getByPaging(pageNo, pageSize, invalidSortBy, keyword);
-    });
+    assertThrows(
+        HrmCommonException.class,
+        () -> {
+          typeService.getByPaging(pageNo, pageSize, invalidSortBy, keyword);
+        });
   }
 
   // UTCID05 - getByPaging: All valid
@@ -269,7 +271,7 @@ public class TypeServiceImplTest {
   void testUTCID05_Update_nameDuplicate() {
     type.setTypeName("new Name");
     typeEntity.setTypeName("Old Name");
-   // Arrange
+    // Arrange
     lenient().when(typeRepository.findById(type.getId())).thenReturn(Optional.of(typeEntity));
     lenient().when(typeRepository.existsByTypeName(type.getTypeName())).thenReturn(true);
 

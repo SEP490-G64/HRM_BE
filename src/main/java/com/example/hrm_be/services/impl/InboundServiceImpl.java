@@ -35,7 +35,6 @@ import java.util.stream.Collectors;
 
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.Predicate;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -78,77 +77,110 @@ public class InboundServiceImpl implements InboundService {
       throw new HrmCommonException("Inbound id must not be null.");
     }
 
-    InboundEntity inboundEntity = inboundRepository.findById(inboundId)
+    InboundEntity inboundEntity =
+        inboundRepository
+            .findById(inboundId)
             .orElseThrow(() -> new HrmCommonException("Inbound not found with id: " + inboundId));
 
     InboundDetail inboundDetail = inboundMapper.convertToInboundDetail(inboundEntity);
 
-    List<InboundProductDetailDTO> productDetails = inboundEntity.getInboundDetails().stream()
+    List<InboundProductDetailDTO> productDetails =
+        inboundEntity.getInboundDetails().stream()
             .filter(Objects::nonNull)
-            .map(inboundDetailEntity -> {
-              InboundProductDetailDTO productDetailDTO = new InboundProductDetailDTO();
-              productDetailDTO.setId(inboundDetailEntity.getId());
+            .map(
+                inboundDetailEntity -> {
+                  InboundProductDetailDTO productDetailDTO = new InboundProductDetailDTO();
+                  productDetailDTO.setId(inboundDetailEntity.getId());
 
-              // Handle potential null product
-              if (inboundDetailEntity.getProduct() != null) {
-                ProductEntity product = inboundDetailEntity.getProduct();
-                productDetailDTO.setProductId(product.getId());
-                productDetailDTO.setProductName(product.getProductName());
-                productDetailDTO.setRegistrationCode(product.getRegistrationCode());
-                productDetailDTO.setBaseUnit(unitOfMeasurementMapper.toDTO(product.getBaseUnit()));
+                  // Handle potential null product
+                  if (inboundDetailEntity.getProduct() != null) {
+                    ProductEntity product = inboundDetailEntity.getProduct();
+                    productDetailDTO.setProductId(product.getId());
+                    productDetailDTO.setProductName(product.getProductName());
+                    productDetailDTO.setRegistrationCode(product.getRegistrationCode());
+                    productDetailDTO.setBaseUnit(
+                        unitOfMeasurementMapper.toDTO(product.getBaseUnit()));
 
-                // Handle potential null batches
-                List<Batch> batches = Optional.ofNullable(product.getBatches())
-                        .orElse(Collections.emptyList())
-                        .stream()
-                        .filter(Objects::nonNull)
-                        .filter(batch -> batch.getInboundBatchDetail() != null &&
-                                batch.getInboundBatchDetail().stream()
-                                        .anyMatch(inboundBatchDetail -> inboundBatchDetail.getInbound().getId().equals(inboundId)))
-                        .map(batch -> {
-                          Batch batchDTO = new Batch();
-                          batchDTO.setId(batch.getId());
-                          batchDTO.setBatchCode(batch.getBatchCode());
-                          batchDTO.setExpireDate(batch.getExpireDate());
+                    // Handle potential null batches
+                    List<Batch> batches =
+                        Optional.ofNullable(product.getBatches())
+                            .orElse(Collections.emptyList())
+                            .stream()
+                            .filter(Objects::nonNull)
+                            .filter(
+                                batch ->
+                                    batch.getInboundBatchDetail() != null
+                                        && batch.getInboundBatchDetail().stream()
+                                            .anyMatch(
+                                                inboundBatchDetail ->
+                                                    inboundBatchDetail
+                                                        .getInbound()
+                                                        .getId()
+                                                        .equals(inboundId)))
+                            .map(
+                                batch -> {
+                                  Batch batchDTO = new Batch();
+                                  batchDTO.setId(batch.getId());
+                                  batchDTO.setBatchCode(batch.getBatchCode());
+                                  batchDTO.setExpireDate(batch.getExpireDate());
 
-                          // Safely map batch details
-                          BigDecimal inboundPrice = batch.getInboundBatchDetail().stream()
-                                  .filter(Objects::nonNull)
-                                  .filter(inboundBatchDetail -> inboundBatchDetail.getInbound().getId().equals(inboundId))
-                                  .map(inboundBatchDetail -> inboundBatchDetail.getInboundPrice() != null ? inboundBatchDetail.getInboundPrice() : BigDecimal.ZERO)
-                                  .findFirst()
-                                  .orElse(BigDecimal.ZERO);
-                          batchDTO.setInboundPrice(inboundPrice);
+                                  // Safely map batch details
+                                  BigDecimal inboundPrice =
+                                      batch.getInboundBatchDetail().stream()
+                                          .filter(Objects::nonNull)
+                                          .filter(
+                                              inboundBatchDetail ->
+                                                  inboundBatchDetail
+                                                      .getInbound()
+                                                      .getId()
+                                                      .equals(inboundId))
+                                          .map(
+                                              inboundBatchDetail ->
+                                                  inboundBatchDetail.getInboundPrice() != null
+                                                      ? inboundBatchDetail.getInboundPrice()
+                                                      : BigDecimal.ZERO)
+                                          .findFirst()
+                                          .orElse(BigDecimal.ZERO);
+                                  batchDTO.setInboundPrice(inboundPrice);
 
-                          Integer quantity = batch.getInboundBatchDetail().stream()
-                                  .filter(Objects::nonNull)
-                                  .filter(inboundBatchDetail -> inboundBatchDetail.getInbound().getId().equals(inboundId))
-                                  .map(inboundBatchDetail -> inboundBatchDetail.getQuantity() != null ? inboundBatchDetail.getQuantity() : 0)
-                                  .findFirst()
-                                  .orElse(0);
-                          batchDTO.setInboundBatchQuantity(quantity);
+                                  Integer quantity =
+                                      batch.getInboundBatchDetail().stream()
+                                          .filter(Objects::nonNull)
+                                          .filter(
+                                              inboundBatchDetail ->
+                                                  inboundBatchDetail
+                                                      .getInbound()
+                                                      .getId()
+                                                      .equals(inboundId))
+                                          .map(
+                                              inboundBatchDetail ->
+                                                  inboundBatchDetail.getQuantity() != null
+                                                      ? inboundBatchDetail.getQuantity()
+                                                      : 0)
+                                          .findFirst()
+                                          .orElse(0);
+                                  batchDTO.setInboundBatchQuantity(quantity);
 
-                          return batchDTO;
-                        })
-                        .collect(Collectors.toList());
-                productDetailDTO.setBatches(batches);
-              }
+                                  return batchDTO;
+                                })
+                            .collect(Collectors.toList());
+                    productDetailDTO.setBatches(batches);
+                  }
 
-              // Other product detail mappings
-              productDetailDTO.setDiscount(inboundDetailEntity.getDiscount());
-              productDetailDTO.setTaxRate(inboundDetailEntity.getTaxRate());
-              productDetailDTO.setRequestQuantity(inboundDetailEntity.getRequestQuantity());
-              productDetailDTO.setReceiveQuantity(inboundDetailEntity.getReceiveQuantity());
-              productDetailDTO.setPrice(inboundDetailEntity.getInboundPrice());
+                  // Other product detail mappings
+                  productDetailDTO.setDiscount(inboundDetailEntity.getDiscount());
+                  productDetailDTO.setTaxRate(inboundDetailEntity.getTaxRate());
+                  productDetailDTO.setRequestQuantity(inboundDetailEntity.getRequestQuantity());
+                  productDetailDTO.setReceiveQuantity(inboundDetailEntity.getReceiveQuantity());
+                  productDetailDTO.setPrice(inboundDetailEntity.getInboundPrice());
 
-              return productDetailDTO;
-            })
+                  return productDetailDTO;
+                })
             .collect(Collectors.toList());
 
     inboundDetail.setProductBatchDetails(productDetails);
     return inboundDetail;
   }
-
 
   @Override
   public Page<Inbound> getByPaging(
@@ -249,8 +281,7 @@ public class InboundServiceImpl implements InboundService {
   @Override
   public void delete(Long id) {
     if (id == null) {
-      throw new HrmCommonException(
-              INBOUND.INVALID);
+      throw new HrmCommonException(INBOUND.INVALID);
     }
 
     InboundEntity oldinboundEntity = inboundRepository.findById(id).orElse(null);
@@ -288,11 +319,14 @@ public class InboundServiceImpl implements InboundService {
     updatedInbound.setStatus(inboundEntity.getStatus());
 
     // Save updated inbound entity
-    InboundEntity updatedInboundEntity = inboundRepository.save(inboundMapper.toEntity(updatedInbound));
+    InboundEntity updatedInboundEntity =
+        inboundRepository.save(inboundMapper.toEntity(updatedInbound));
 
     // Fetch existing InboundDetails and InboundBatchDetails
-    List<InboundDetails> existingInboundDetails = inboundDetailsService.findByInboundId(inboundEntity.getId());
-    List<InboundBatchDetail> existingInboundBatchDetails = inboundBatchDetailService.findByInboundId(inboundEntity.getId());
+    List<InboundDetails> existingInboundDetails =
+        inboundDetailsService.findByInboundId(inboundEntity.getId());
+    List<InboundBatchDetail> existingInboundBatchDetails =
+        inboundBatchDetailService.findByInboundId(inboundEntity.getId());
 
     // Lists for new/updated entities
     List<InboundDetails> inboundDetailsList = new ArrayList<>();
@@ -311,65 +345,106 @@ public class InboundServiceImpl implements InboundService {
             if (batch.getBatchCode() != null && !batch.getBatchCode().trim().isEmpty()) {
               Batch batchEntity = batchService.addBatchInInbound(batch, product);
 
-              Optional<InboundBatchDetail> optionalInboundBatchDetail = existingInboundBatchDetails.stream()
+              Optional<InboundBatchDetail> optionalInboundBatchDetail =
+                  existingInboundBatchDetails.stream()
                       .filter(detail -> detail.getBatch().getId().equals(batchEntity.getId()))
                       .findFirst();
 
               InboundBatchDetail inboundBatchDetail;
               if (optionalInboundBatchDetail.isPresent()) {
                 inboundBatchDetail = optionalInboundBatchDetail.get();
-                inboundBatchDetail.setQuantity(batch.getInboundBatchQuantity() != null ? batch.getInboundBatchQuantity() : 0);
-                inboundBatchDetail.setInboundPrice(batch.getInboundPrice() != null ? batch.getInboundPrice() : BigDecimal.ZERO);
-                existingInboundBatchDetails.remove(inboundBatchDetail); // Remove from existing list, mark as processed
+                inboundBatchDetail.setQuantity(
+                    batch.getInboundBatchQuantity() != null ? batch.getInboundBatchQuantity() : 0);
+                inboundBatchDetail.setInboundPrice(
+                    batch.getInboundPrice() != null ? batch.getInboundPrice() : BigDecimal.ZERO);
+                existingInboundBatchDetails.remove(
+                    inboundBatchDetail); // Remove from existing list, mark as processed
               } else {
-                inboundBatchDetail = InboundBatchDetail.builder()
+                inboundBatchDetail =
+                    InboundBatchDetail.builder()
                         .inbound(inboundMapper.toDTO(updatedInboundEntity))
                         .batch(batchEntity)
-                        .quantity(batch.getInboundBatchQuantity() != null ? batch.getInboundBatchQuantity() : 0)
-                        .inboundPrice(batch.getInboundPrice() != null ? batch.getInboundPrice() : BigDecimal.ZERO)
+                        .quantity(
+                            batch.getInboundBatchQuantity() != null
+                                ? batch.getInboundBatchQuantity()
+                                : 0)
+                        .inboundPrice(
+                            batch.getInboundPrice() != null
+                                ? batch.getInboundPrice()
+                                : BigDecimal.ZERO)
                         .build();
               }
               totalReceiveQuantity += inboundBatchDetail.getQuantity();
-              totalPrice += inboundBatchDetail.getInboundPrice().doubleValue() * inboundBatchDetail.getQuantity();
+              totalPrice +=
+                  inboundBatchDetail.getInboundPrice().doubleValue()
+                      * inboundBatchDetail.getQuantity();
               inboundBatchDetailsList.add(inboundBatchDetail);
             }
           }
-          productInbound.setPrice(totalReceiveQuantity != 0 ? totalPrice / totalReceiveQuantity : 0.0);
+          productInbound.setPrice(
+              totalReceiveQuantity != 0 ? totalPrice / totalReceiveQuantity : 0.0);
           productInbound.setReceiveQuantity(totalReceiveQuantity);
         } else {
-          productInbound.setPrice(firstBatch.getInboundPrice() != null ? firstBatch.getInboundPrice().doubleValue() : 0.0);
-          productInbound.setReceiveQuantity(firstBatch.getInboundBatchQuantity() != null ? firstBatch.getInboundBatchQuantity() : 0);
+          productInbound.setPrice(
+              firstBatch.getInboundPrice() != null
+                  ? firstBatch.getInboundPrice().doubleValue()
+                  : 0.0);
+          productInbound.setReceiveQuantity(
+              firstBatch.getInboundBatchQuantity() != null
+                  ? firstBatch.getInboundBatchQuantity()
+                  : 0);
         }
       }
 
-      Optional<InboundDetails> optionalInboundDetails = existingInboundDetails.stream()
+      Optional<InboundDetails> optionalInboundDetails =
+          existingInboundDetails.stream()
               .filter(detail -> detail.getProduct().getId().equals(product.getId()))
               .findFirst();
 
       InboundDetails inboundDetails;
       if (optionalInboundDetails.isPresent()) {
         inboundDetails = optionalInboundDetails.get();
-        inboundDetails.setRequestQuantity(productInbound.getRequestQuantity() != null ? productInbound.getRequestQuantity() : 0);
-        inboundDetails.setDiscount(productInbound.getDiscount() != null ? productInbound.getDiscount() : 0);
-        inboundDetails.setTaxRate(productInbound.getTaxRate() != null ? productInbound.getTaxRate() : BigDecimal.ZERO);
-        inboundDetails.setReceiveQuantity(productInbound.getReceiveQuantity() != null ? productInbound.getReceiveQuantity() : 0);
-        inboundDetails.setInboundPrice(BigDecimal.valueOf(productInbound.getPrice() != null ? productInbound.getPrice() : 0.0));
-        existingInboundDetails.remove(inboundDetails); // Remove from existing list, mark as processed
+        inboundDetails.setRequestQuantity(
+            productInbound.getRequestQuantity() != null ? productInbound.getRequestQuantity() : 0);
+        inboundDetails.setDiscount(
+            productInbound.getDiscount() != null ? productInbound.getDiscount() : 0);
+        inboundDetails.setTaxRate(
+            productInbound.getTaxRate() != null ? productInbound.getTaxRate() : BigDecimal.ZERO);
+        inboundDetails.setReceiveQuantity(
+            productInbound.getReceiveQuantity() != null ? productInbound.getReceiveQuantity() : 0);
+        inboundDetails.setInboundPrice(
+            BigDecimal.valueOf(
+                productInbound.getPrice() != null ? productInbound.getPrice() : 0.0));
+        existingInboundDetails.remove(
+            inboundDetails); // Remove from existing list, mark as processed
       } else {
-        inboundDetails = InboundDetails.builder()
+        inboundDetails =
+            InboundDetails.builder()
                 .inbound(inboundMapper.toDTO(updatedInboundEntity))
                 .product(product)
-                .requestQuantity(productInbound.getRequestQuantity() != null ? productInbound.getRequestQuantity() : 0)
+                .requestQuantity(
+                    productInbound.getRequestQuantity() != null
+                        ? productInbound.getRequestQuantity()
+                        : 0)
                 .discount(productInbound.getDiscount() != null ? productInbound.getDiscount() : 0)
-                .receiveQuantity(productInbound.getReceiveQuantity() != null ? productInbound.getReceiveQuantity() : 0)
-                .inboundPrice(BigDecimal.valueOf(productInbound.getPrice() != null ? productInbound.getPrice() : 0.0))
-                .taxRate(productInbound.getTaxRate() != null ? productInbound.getTaxRate() : BigDecimal.ZERO)
+                .receiveQuantity(
+                    productInbound.getReceiveQuantity() != null
+                        ? productInbound.getReceiveQuantity()
+                        : 0)
+                .inboundPrice(
+                    BigDecimal.valueOf(
+                        productInbound.getPrice() != null ? productInbound.getPrice() : 0.0))
+                .taxRate(
+                    productInbound.getTaxRate() != null
+                        ? productInbound.getTaxRate()
+                        : BigDecimal.ZERO)
                 .build();
       }
       inboundDetailsList.add(inboundDetails);
     }
 
-    // Delete remaining unmatched entities in existing lists (entities that are not present in the request anymore)
+    // Delete remaining unmatched entities in existing lists (entities that are not present in the
+    // request anymore)
     inboundDetailsService.deleteAll(existingInboundDetails);
     inboundBatchDetailService.deleteAll(existingInboundBatchDetails);
 
@@ -379,7 +454,6 @@ public class InboundServiceImpl implements InboundService {
 
     return Optional.ofNullable(inboundEntity).map(inboundMapper::toDTO).orElse(null);
   }
-
 
   @Override
   @Transactional
@@ -641,5 +715,4 @@ public class InboundServiceImpl implements InboundService {
 
     return out;
   }
-
 }
