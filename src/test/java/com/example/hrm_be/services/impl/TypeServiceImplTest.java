@@ -108,8 +108,19 @@ public class TypeServiceImplTest {
 
   // UTCID04 - getByPaging: sortBy invalid
   @Test
-  void testUTCID04_GetByPaging_sortByInvalid() {
-    assertThrows(HrmCommonException.class, () -> typeService.getByPaging(0, 0, "a", ""));
+  void testGetByPaging_InvalidSortBy() {
+    // Arrange
+    int pageNo = 0;
+    int pageSize = 10;
+    String invalidSortBy = "invalidField";
+    String keyword = " ";
+
+    // Act & Assert
+    assertThrows(
+        HrmCommonException.class,
+        () -> {
+          typeService.getByPaging(pageNo, pageSize, invalidSortBy, keyword);
+        });
   }
 
   // UTCID05 - getByPaging: All valid
@@ -260,8 +271,11 @@ public class TypeServiceImplTest {
   void testUTCID05_Update_nameDuplicate() {
     type.setTypeName("new Name");
     typeEntity.setTypeName("Old Name");
-
+    // Arrange
+    lenient().when(typeRepository.findById(type.getId())).thenReturn(Optional.of(typeEntity));
     lenient().when(typeRepository.existsByTypeName(type.getTypeName())).thenReturn(true);
+
+    // Act & Assert
     assertThrows(HrmCommonException.class, () -> typeService.update(type));
   }
 
