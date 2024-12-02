@@ -74,6 +74,7 @@ public class HrmConstant {
       public static final String REGISTRATION_EXIST = "error.product.registration_exist";
       public static final String NOT_CHILD = "error.product.not_child";
       public static final String NOT_EXIST = "error.product.not_exist";
+      public static final String ID_NULL = "error.product.id_null";
     }
 
     public static class STORAGE_LOCATION {
