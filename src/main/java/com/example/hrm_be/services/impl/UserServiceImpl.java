@@ -309,26 +309,36 @@ public class UserServiceImpl implements UserService {
         .map(
             e -> {
               if (!profile) {
+                // Map user DTO to UserEntity
                 UserEntity userEntity = userMapper.toEntity(user);
+
                 // Handle role assignment if roles exist
                 if (user.getRoles() != null && !user.getRoles().isEmpty()) {
-                  if (!Objects.equals(
-                      user.getRoles().get(0).getId(),
-                      finalOldUserEntity.getUserRoleMap().get(0).getId())) {
+                  // Check if the user's role has changed
+                  if (!finalOldUserEntity.getUserRoleMap().isEmpty()
+                      && !Objects.equals(
+                          user.getRoles().get(0).getId(),
+                          finalOldUserEntity.getUserRoleMap().get(0).getRole().getId())) {
+                    // Find existing role mappings for the user
                     List<UserRoleMapEntity> userRoleMapEntities =
                         userRoleMapRepository.findByUser(finalOldUserEntity);
-                    userRoleMapEntities.get(0).setUser(userEntity);
-                    userRoleMapEntities.get(0).setRole(roleMapper.toEntity(user.getRoles().get(0)));
 
-                    // Save role mappings if necessary
                     if (!userRoleMapEntities.isEmpty()) {
-                      userRoleMapRepository.saveAll(userRoleMapEntities); // Save role mappings
+                      // Update the role mapping
+                      UserRoleMapEntity roleMapEntity = userRoleMapEntities.get(0);
+                      roleMapEntity.setUser(userEntity);
+                      roleMapEntity.setRole(roleMapper.toEntity(user.getRoles().get(0)));
+
+                      // Save updated role mappings
+                      userRoleMapRepository.saveAll(userRoleMapEntities);
                     }
                   }
                 } else {
-                  userRoleMapService.setStaffRoleForUser(e.getId());
+                  // Assign a default staff role if no roles are provided
+                  userRoleMapService.setStaffRoleForUser(userEntity.getId());
                 }
               }
+
               return e;
             })
         .map(userRepository::save)
@@ -628,7 +638,11 @@ public class UserServiceImpl implements UserService {
     // Save all valid users to the database
     if (!usersToSave.isEmpty()) {
       for (User user : usersToSave) {
-        create(user);
+        if (user != null) {
+          user.setStatus(UserStatusType.ACTIVATE);
+        } else {
+          System.out.println("Found null UserEntity in list.");
+        }
       }
     }
 
