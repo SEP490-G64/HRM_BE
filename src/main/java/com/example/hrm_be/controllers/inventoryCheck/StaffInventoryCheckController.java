@@ -4,21 +4,29 @@ import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.commons.enums.InventoryCheckStatus;
 import com.example.hrm_be.commons.enums.ResponseStatus;
 import com.example.hrm_be.models.dtos.InventoryCheck;
+import com.example.hrm_be.models.dtos.NotificationUser;
 import com.example.hrm_be.models.requests.CreateInventoryCheckRequest;
 import com.example.hrm_be.models.responses.BaseOutput;
+import com.example.hrm_be.models.responses.InventoryUpdate;
 import com.example.hrm_be.services.InventoryCheckService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Sinks;
+import reactor.core.publisher.Sinks.Many;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -238,21 +246,35 @@ public class StaffInventoryCheckController {
     return ResponseEntity.ok(BaseOutput.<String>builder().status(ResponseStatus.SUCCESS).build());
   }
 
-  // SSE Endpoint for individual InventoryCheck updates
-  @GetMapping("/{inventoryCheckId}/subscribe")
-  public SseEmitter subscribeToInventoryCheck(
-      @PathVariable Long inventoryCheckId, @RequestParam("authToken") String authToken) {
-    SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
+  @GetMapping(value = "/{inventoryCheckId}/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+  public Flux<InventoryUpdate> streamInventoryCheckUpdates(
+      @PathVariable Long inventoryCheckId,
+      @RequestParam("authToken") String authToken) {
 
-    // Register this emitter for the specific InventoryCheck
-    inventoryCheckService.registerEmitterForInventoryCheck(inventoryCheckId, emitter);
+    log.info("Starting stream for inventoryCheckId: {}", inventoryCheckId);
 
-    // Cleanup on completion or timeout
-    emitter.onCompletion(
-        () -> inventoryCheckService.removeEmitterForInventoryCheck(inventoryCheckId, emitter));
-    emitter.onTimeout(
-        () -> inventoryCheckService.removeEmitterForInventoryCheck(inventoryCheckId, emitter));
+    return inventoryCheckService
+        .streamInventoryCheckUpdates(inventoryCheckId)
+        .doOnSubscribe(subscription -> {
+          log.info("New subscription for inventoryCheckId: {}", inventoryCheckId);
+        })
+        .doOnCancel(() -> {
+          log.info("Stream cancelled for inventoryCheckId: {}", inventoryCheckId);
+          inventoryCheckService.cleanupSinkIfNoSubscribers(inventoryCheckId);
+        })
+        .doFinally(signalType -> {
+          log.info("Stream terminated for inventoryCheckId: {} with signal: {}", inventoryCheckId, signalType);
+          inventoryCheckService.cleanupSinkIfNoSubscribers(inventoryCheckId);
+        })
+        .onErrorResume(e -> {
+          log.error("Error in SSE stream for inventoryCheckId: {}", inventoryCheckId, e);
+          return Flux.empty(); // Prevent propagation of errors to the client
+        });
 
-    return emitter;
+  }
+  // Endpoint to list all active connections (optional, for debugging purposes)
+  @GetMapping("/list-connections")
+  public Map<Long, Many<InventoryUpdate>>  listConnections() {
+    return inventoryCheckService.listClients();
   }
 }

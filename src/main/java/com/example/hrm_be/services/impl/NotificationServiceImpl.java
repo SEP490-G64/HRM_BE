@@ -6,6 +6,7 @@ import com.example.hrm_be.components.NotificationMapper;
 import com.example.hrm_be.components.NotificationUserMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.Branch;
+import com.example.hrm_be.models.dtos.Notice;
 import com.example.hrm_be.models.dtos.Notification;
 import com.example.hrm_be.models.dtos.NotificationUser;
 import com.example.hrm_be.models.dtos.Product;
@@ -19,14 +20,22 @@ import com.example.hrm_be.services.BatchService;
 import com.example.hrm_be.services.BranchProductService;
 import com.example.hrm_be.services.NotificationService;
 import com.example.hrm_be.services.UserService;
+import com.google.firebase.messaging.BatchResponse;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.FirebaseMessagingException;
+import com.google.firebase.messaging.MulticastMessage;
+import com.google.firebase.messaging.SendResponse;
 import io.micrometer.common.util.StringUtils;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -40,17 +49,22 @@ import reactor.core.publisher.Sinks.Many;
 
 @Service
 @Transactional
+@Slf4j
 public class NotificationServiceImpl implements NotificationService {
 
   private final Map<Long, Many<NotificationUser>> userNotificationSinks = new ConcurrentHashMap<>();
+  @Autowired private final FirebaseMessaging firebaseMessaging;
   @Autowired private NotificationRepository notificationRepository;
   @Autowired private NotificationUserRepository notificationUserRepository;
-
   @Autowired private NotificationMapper notificationMapper;
   @Autowired private NotificationUserMapper notificationUserMapper;
   @Autowired private UserService userService;
   @Autowired private BatchService batchService;
   @Autowired private BranchProductService branchProductService;
+
+  public NotificationServiceImpl(FirebaseMessaging firebaseMessaging) {
+    this.firebaseMessaging = firebaseMessaging;
+  }
 
   @Override
   public Notification getById(Long id) {
@@ -131,6 +145,7 @@ public class NotificationServiceImpl implements NotificationService {
     notification.setCreatedDate(LocalDateTime.now());
     Notification saved = create(notification);
 
+    List<String> listDeviceToken = new ArrayList<>();
     recipients.forEach(
         user -> {
           NotificationUser notificationRecipient = new NotificationUser();
@@ -138,16 +153,25 @@ public class NotificationServiceImpl implements NotificationService {
           notificationRecipient.setCreatedDate(saved.getCreatedDate());
           notificationRecipient.setUser(user);
           notificationRecipient.setRead(false);
+          if(user.getFirebaseToken()!=null)
+          {
+            listDeviceToken.add(user.getFirebaseToken().getDeviceToken());
+          }
           NotificationUserEntity ne =
               notificationUserRepository.save(
                   notificationUserMapper.toEntity(notificationRecipient));
-
-          // Emit the notification to the user's sink
-          Sinks.Many<NotificationUser> sink =
-              userNotificationSinks.computeIfAbsent(
-                  user.getId(), id -> Sinks.many().multicast().onBackpressureBuffer());
-          sink.tryEmitNext(notificationUserMapper.toDTO(ne));
         });
+
+    Map<String, String> dataAttributes = new HashMap<>();
+    dataAttributes.put("notificationId", String.valueOf(saved.getId()));
+    dataAttributes.put("notiType", String.valueOf(saved.getNotiType()));
+    Notice notice =Notice.builder()
+        .subject(notification.getNotiName())
+        .registrationTokens(listDeviceToken)
+        .data(dataAttributes)
+        .content(notification.getMessage())
+        .build();
+    if (!listDeviceToken.isEmpty()) {sendNotification(notice);}
   }
 
   @Override
@@ -268,5 +292,38 @@ public class NotificationServiceImpl implements NotificationService {
     List<User> users = userService.getUserByBranchId(branchId);
     sendNotification(notification, users);
     return alertResponse;
+  }
+
+  public BatchResponse sendNotification(Notice notice) {
+    List<String> registrationTokens=notice.getRegistrationTokens();
+    com.google.firebase.messaging.Notification notification =  com.google.firebase.messaging.Notification.builder()
+        .setTitle(notice.getSubject())
+        .setBody(notice.getContent())
+        .setImage(notice.getImage()!=null ? notice.getImage():null)
+        .build();
+
+    MulticastMessage message = MulticastMessage.builder()
+        .addAllTokens(registrationTokens)
+        .setNotification(notification)
+        .putAllData(notice.getData()!=null?notice.getData():null)
+        .build();
+
+    BatchResponse batchResponse = null;
+    try {
+      batchResponse = firebaseMessaging.sendEachForMulticast(message);
+    } catch (FirebaseMessagingException e) {
+      log.info("Firebase error {}", e.getMessage());
+    }
+    if (batchResponse.getFailureCount() > 0) {
+      List<SendResponse> responses = batchResponse.getResponses();
+      List<String> failedTokens = new ArrayList<>();
+      for (int i = 0; i < responses.size(); i++) {
+        if (!responses.get(i).isSuccessful()) {
+          failedTokens.add(registrationTokens.get(i));
+        }
+      }
+      log.info("List of tokens that caused failures: " + failedTokens);
+    }
+    return batchResponse;
   }
 }

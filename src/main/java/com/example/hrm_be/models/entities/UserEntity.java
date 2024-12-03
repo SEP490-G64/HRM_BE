@@ -54,4 +54,7 @@ public class UserEntity extends CommonEntity {
 
   @OneToMany(mappedBy = "user")
   List<NotificationUserEntity> notifications;
+
+  @OneToOne(mappedBy = "user")
+   FirebaseTokenEntity firebaseToken;
 }
