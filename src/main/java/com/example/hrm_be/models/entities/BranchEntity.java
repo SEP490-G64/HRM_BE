@@ -56,6 +56,9 @@ public class BranchEntity extends CommonEntity {
   @Column(name = "active_status")
   Boolean activeStatus;
 
+  @Column(name = "is_deleted")
+  Boolean isDeleted;
+
   @ToString.Exclude
   @OneToMany(mappedBy = "branch")
   List<BranchBatchEntity> branchBatches; // 1-N with BranchBatch
