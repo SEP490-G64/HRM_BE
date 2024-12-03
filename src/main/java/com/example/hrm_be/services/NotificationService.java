@@ -1,11 +1,13 @@
 package com.example.hrm_be.services;
 
 import com.example.hrm_be.models.dtos.Branch;
+import com.example.hrm_be.models.dtos.Notice;
 import com.example.hrm_be.models.dtos.Notification;
 import com.example.hrm_be.models.dtos.NotificationUser;
 import com.example.hrm_be.models.dtos.Product;
 import com.example.hrm_be.models.dtos.User;
 import com.example.hrm_be.models.responses.NotificationAlertResponse;
+import com.google.firebase.messaging.BatchResponse;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -40,4 +42,6 @@ public interface NotificationService {
   void sendQuantityNotification(Branch branch, Product product, int quantity, String type);
 
   NotificationAlertResponse createAlertProductNotification(Long branchId);
+
+  BatchResponse sendNotification(Notice notice);
 }

@@ -2,6 +2,7 @@ package com.example.hrm_be.controllers.notification;
 
 import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.commons.enums.ResponseStatus;
+import com.example.hrm_be.models.dtos.Notice;
 import com.example.hrm_be.models.dtos.Notification;
 import com.example.hrm_be.models.dtos.NotificationUser;
 import com.example.hrm_be.models.dtos.User;
@@ -9,6 +10,7 @@ import com.example.hrm_be.models.responses.BaseOutput;
 import com.example.hrm_be.repositories.UserRepository;
 import com.example.hrm_be.services.NotificationService;
 import com.example.hrm_be.services.UserService;
+import com.google.firebase.messaging.BatchResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotNull;
@@ -222,6 +224,16 @@ public class StaffNotificationController {
       return ResponseEntity.notFound().build();
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+  }
+
+  @PostMapping("/send")
+  public ResponseEntity<?> sendNotification(@RequestBody Notice notice) {
+    try {
+      BatchResponse response = notificationService.sendNotification(notice);
+      return ResponseEntity.ok(response);
+    } catch (Exception e) {
+      return ResponseEntity.status(500).body("Failed to send notification: " + e.getMessage());
     }
   }
 }

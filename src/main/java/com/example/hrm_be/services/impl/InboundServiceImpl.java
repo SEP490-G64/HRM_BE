@@ -635,8 +635,8 @@ public class InboundServiceImpl implements InboundService {
     notification.setCreatedDate(LocalDateTime.now());
     // Fetch InventoryCheck entities for the branch
     // Notify inventory checks via SSE
-    inventoryCheckService.broadcastToInventoryChecksInBranch(
-        updatedInboundEntity.getToBranch().getId(), allProductIds, allBatchIds);
+    inventoryCheckService.broadcastInventoryCheckUpdates(
+        allProductIds, allBatchIds, updatedInboundEntity.getToBranch().getId());
     notificationService.sendNotification(
         notification, userService.findAllManagerByBranchId(inboundEntity.getToBranch().getId()));
     // Return the updated inbound entity (or any other response you need)

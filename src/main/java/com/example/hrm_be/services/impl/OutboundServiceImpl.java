@@ -931,7 +931,7 @@ public class OutboundServiceImpl implements OutboundService {
       // Notification for Manager
 
       String message =
-          "🔔 Thông báo: Phiếu nhập "
+          "🔔 Thông báo: Phiếu xuất "
               + outbound.getOutboundCode()
               + "đang chờ duyệt "
               + "bởi "

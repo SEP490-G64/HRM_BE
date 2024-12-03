@@ -3,22 +3,23 @@ package com.example.hrm_be.controllers;
 import com.example.hrm_be.commons.constants.HrmConstant.ERROR.REQUEST;
 import com.example.hrm_be.commons.enums.NotificationType;
 import com.example.hrm_be.commons.enums.UserStatusType;
-import com.example.hrm_be.models.dtos.Notification;
-import com.example.hrm_be.services.NotificationService;
-import com.example.hrm_be.utils.DateUtil;
-import com.example.hrm_be.utils.MailUtil;
-import com.example.hrm_be.models.entities.PasswordResetTokenEntity;
-import com.example.hrm_be.models.requests.ResetPasswordRequest;
-import com.example.hrm_be.services.PasswordTokenService;
-import com.example.hrm_be.utils.JwtUtil;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.configs.exceptions.JwtAuthenticationException;
+import com.example.hrm_be.models.dtos.Notification;
 import com.example.hrm_be.models.dtos.User;
+import com.example.hrm_be.models.entities.PasswordResetTokenEntity;
 import com.example.hrm_be.models.requests.AuthRequest;
 import com.example.hrm_be.models.requests.RegisterRequest;
+import com.example.hrm_be.models.requests.ResetPasswordRequest;
 import com.example.hrm_be.models.responses.AccessToken;
 import com.example.hrm_be.models.responses.BaseOutput;
+import com.example.hrm_be.services.FirebaseTokenService;
+import com.example.hrm_be.services.NotificationService;
+import com.example.hrm_be.services.PasswordTokenService;
 import com.example.hrm_be.services.UserService;
+import com.example.hrm_be.utils.DateUtil;
+import com.example.hrm_be.utils.JwtUtil;
+import com.example.hrm_be.utils.MailUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -50,6 +51,7 @@ public class AuthenticationController {
   private final DateUtil dateUtil;
   private final MailUtil mailUtil;
   private final PasswordTokenService passwordTokenService;
+  private final FirebaseTokenService firebaseTokenService;
 
   // POST: /api/v1/auth/login
   // Allow user to login into the system
@@ -82,7 +84,7 @@ public class AuthenticationController {
     // Generate JWT token for authenticated user
     String jwt = jwtUtil.generateToken(userDetails);
     AccessToken accessToken = AccessToken.builder().accessToken(jwt).build();
-
+    firebaseTokenService.saveOrUpdateToken(userDetails, request.getDeviceToken());
     // Return successful response with AccessToken
     BaseOutput<AccessToken> response =
         BaseOutput.<AccessToken>builder()

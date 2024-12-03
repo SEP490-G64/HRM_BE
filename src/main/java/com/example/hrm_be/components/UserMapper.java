@@ -22,6 +22,7 @@ public class UserMapper {
   @Autowired @Lazy private RoleMapper roleMapper;
   @Autowired @Lazy private BranchMapper branchMapper;
   @Autowired @Lazy private BranchRepository branchRepository;
+  @Autowired @Lazy private FirebaseTokenMapper firebaseTokenMapper;
 
   public User toDTO(UserEntity entity) {
     return Optional.ofNullable(entity).map(this::convertToDto).orElse(null);
@@ -71,6 +72,7 @@ public class UserMapper {
                             ? branchMapper.convertToDTOBasicInfo(
                                 e.getBranch()) // If branch is a single entity
                             : null)
+                    .firebaseToken(firebaseTokenMapper.toDTO(e.getFirebaseToken()))
                     .status(e.getStatus())
                     .build())
         .orElse(null);
