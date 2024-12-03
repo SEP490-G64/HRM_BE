@@ -12,25 +12,19 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Notice  implements Serializable {
-  /**
-   * Subject notification on firebase
-   */
+public class Notice implements Serializable {
+  /** Subject notification on firebase */
   private String subject;
-  /**
-   * Content notification on firebase
-   */
+
+  /** Content notification on firebase */
   private String content;
-  /**
-   * url ảnh đại diện đơn hàng
-   */
+
+  /** url ảnh đại diện đơn hàng */
   private String image;
-  /**
-   * Map các data
-   */
+
+  /** Map các data */
   private Map<String, String> data;
-  /**
-   * FCM registration token
-   */
+
+  /** FCM registration token */
   private List<String> registrationTokens;
 }

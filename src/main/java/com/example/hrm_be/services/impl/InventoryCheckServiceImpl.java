@@ -44,7 +44,6 @@ import com.example.hrm_be.utils.WplUtil;
 import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.criteria.Predicate;
 import java.math.BigDecimal;
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -62,7 +61,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -76,7 +74,7 @@ import reactor.core.publisher.Sinks.Many;
 @Slf4j
 public class InventoryCheckServiceImpl implements InventoryCheckService {
 
-  private  Map<Long, Many<InventoryUpdate>> inventoryUpdateSinks = new ConcurrentHashMap<>();
+  private Map<Long, Many<InventoryUpdate>> inventoryUpdateSinks = new ConcurrentHashMap<>();
   private final Map<Long, Disposable> fluxSubscriptions = new ConcurrentHashMap<>();
 
   private final CopyOnWriteArrayList<SseEmitter> emitters = new CopyOnWriteArrayList<>();
@@ -678,20 +676,25 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
     return inventoryUpdateSinks
         .computeIfAbsent(inventoryCheckId, id -> Sinks.many().multicast().onBackpressureBuffer())
         .asFlux()
-        .doOnCancel(() -> {
-          log.info("Cleaning up sink for inventoryCheckId: {}", inventoryCheckId);
-          Sinks.Many<InventoryUpdate> sink = inventoryUpdateSinks.remove(inventoryCheckId);
-          if (sink != null) {
-            sink.tryEmitComplete(); // Gracefully complete the sink
-          }
-        })
-        .doFinally(signalType -> {
-          log.info("Stream terminated with signal {} for inventoryCheckId: {}", signalType, inventoryCheckId);
-          Sinks.Many<InventoryUpdate> sink = inventoryUpdateSinks.remove(inventoryCheckId);
-          if (sink != null) {
-            sink.tryEmitComplete(); // Ensure sink is completed
-          }
-        });
+        .doOnCancel(
+            () -> {
+              log.info("Cleaning up sink for inventoryCheckId: {}", inventoryCheckId);
+              Sinks.Many<InventoryUpdate> sink = inventoryUpdateSinks.remove(inventoryCheckId);
+              if (sink != null) {
+                sink.tryEmitComplete(); // Gracefully complete the sink
+              }
+            })
+        .doFinally(
+            signalType -> {
+              log.info(
+                  "Stream terminated with signal {} for inventoryCheckId: {}",
+                  signalType,
+                  inventoryCheckId);
+              Sinks.Many<InventoryUpdate> sink = inventoryUpdateSinks.remove(inventoryCheckId);
+              if (sink != null) {
+                sink.tryEmitComplete(); // Ensure sink is completed
+              }
+            });
   }
 
   public void cleanupSinkIfNoSubscribers(Long inventoryCheckId) {
@@ -704,7 +707,7 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
     if (disposable != null && !disposable.isDisposed()) {
       disposable.dispose(); // Dispose the subscription
     }
-    }
+  }
 
   @Override
   public Map<Long, Many<InventoryUpdate>> listClients() {

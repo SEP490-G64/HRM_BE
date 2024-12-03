@@ -17,13 +17,13 @@ public class FirebaseConfig {
   @Bean
   public FirebaseMessaging firebaseMessaging() throws IOException {
     // Load the service account key JSON file
-    try (InputStream serviceAccount = new ClassPathResource("firebase-service-account.json").getInputStream()) {
+    try (InputStream serviceAccount =
+        new ClassPathResource("firebase-service-account.json").getInputStream()) {
       GoogleCredentials googleCredentials = GoogleCredentials.fromStream(serviceAccount);
 
       // Initialize Firebase options
-      FirebaseOptions firebaseOptions = FirebaseOptions.builder()
-          .setCredentials(googleCredentials)
-          .build();
+      FirebaseOptions firebaseOptions =
+          FirebaseOptions.builder().setCredentials(googleCredentials).build();
 
       // Initialize FirebaseApp if not already initialized
       FirebaseApp app;

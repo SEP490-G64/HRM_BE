@@ -29,8 +29,7 @@ import lombok.experimental.SuperBuilder;
 public class FirebaseTokenEntity extends CommonEntity {
   @OneToOne()
   @JoinColumn(name = "user_id", referencedColumnName = "id")
-   UserEntity user;
-
+  UserEntity user;
 
   @Column(name = "device_token")
   String deviceToken;

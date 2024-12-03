@@ -7,13 +7,10 @@ import com.example.hrm_be.models.responses.InventoryUpdate;
 import java.util.Map;
 import java.util.Set;
 import org.springframework.data.domain.Page;
-import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Sinks;
 import reactor.core.publisher.Sinks.Many;
 
 @Service
@@ -49,7 +46,7 @@ public interface InventoryCheckService {
 
   void delete(Long id);
 
-  void broadcastInventoryCheckUpdates( Set<Long> productIds, Set<Long> batchIds, Long branchId);
+  void broadcastInventoryCheckUpdates(Set<Long> productIds, Set<Long> batchIds, Long branchId);
 
   Flux<InventoryUpdate> streamInventoryCheckUpdates(Long inventoryCheckId);
 

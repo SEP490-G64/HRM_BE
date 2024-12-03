@@ -13,8 +13,6 @@ public class FirebaseTokenServiceImpl implements FirebaseTokenService {
   private final FirebaseTokenRepository repository;
   private final UserMapper userMapper;
 
-
-
   public FirebaseTokenServiceImpl(FirebaseTokenRepository repository, UserMapper userMapper) {
     this.repository = repository;
     this.userMapper = userMapper;
