@@ -1767,7 +1767,7 @@ class UserServiceImplTest {
     UserService mockUserService = Mockito.spy(userService);
     doReturn(pageOfUsers)
         .when(mockUserService)
-        .getByPaging(anyInt(), anyInt(), anyString(), anyString(), anyString(), anyLong(), any());
+        .getByPaging(anyInt(), anyInt(), anyString(), anyString(), anyString(), any(), any());
 
     // Act: Call the method to export the file
     ByteArrayInputStream result = mockUserService.exportFile();
@@ -1800,7 +1800,7 @@ class UserServiceImplTest {
     UserService mockUserService = Mockito.spy(userService);
     doReturn(pageOfUsers)
         .when(mockUserService)
-        .getByPaging(anyInt(), anyInt(), anyString(), anyString(), anyString(), anyLong(), any());
+        .getByPaging(anyInt(), anyInt(), anyString(), anyString(), anyString(), any(), any());
 
     // Act: Call the method to export the file
     ByteArrayInputStream result = mockUserService.exportFile();

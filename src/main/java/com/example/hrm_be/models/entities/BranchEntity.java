@@ -90,4 +90,8 @@ public class BranchEntity extends CommonEntity {
   @ToString.Exclude
   @OneToMany(mappedBy = "branch")
   List<UserEntity> users;
+
+  @ToString.Exclude
+  @OneToMany(mappedBy = "branch")
+  List<StorageLocationEntity> storageLocationEntities;
 }
