@@ -27,15 +27,14 @@ public class StorageLocationMapper {
                 StorageLocationEntity.builder()
                     .id(d.getId())
                     .shelfName(d.getShelfName())
-                        .aisle(d.getAisle())
-                        .zone(d.getZone())
-                        .active(d.getActive())
-                        .locationType(d.getLocationType())
-                        .rowNumber(d.getRowNumber())
-                        .shelfLevel(d.getShelfLevel())
-                        .specialCondition(d.getSpecialCondition())
-                        .branch(d.getBranch() != null
-                        ? branchMapper.toEntity(d.getBranch()) : null)
+                    .aisle(d.getAisle())
+                    .zone(d.getZone())
+                    .active(d.getActive())
+                    .locationType(d.getLocationType())
+                    .rowNumber(d.getRowNumber())
+                    .shelfLevel(d.getShelfLevel())
+                    .specialCondition(d.getSpecialCondition())
+                    .branch(d.getBranch() != null ? branchMapper.toEntity(d.getBranch()) : null)
                     .branchProducts(
                         d.getBranchProducts() != null
                             ? d.getBranchProducts().stream()
