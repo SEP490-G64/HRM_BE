@@ -174,6 +174,7 @@ public class HrmConstant {
       public static final String EXIST = "error.inventory_check.exist";
       public static final String NOT_CHILD = "error.inventory_check.not_child";
       public static final String NOT_EXIST = "error.inventory_check.not_exist";
+      public static final String INVALID = "error.inventory_check.invalid";
     }
 
     public static class INBOUND_BATCH_DETAIL {
