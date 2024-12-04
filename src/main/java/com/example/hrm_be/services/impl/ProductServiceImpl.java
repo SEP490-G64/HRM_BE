@@ -97,27 +97,25 @@ public class ProductServiceImpl implements ProductService {
 
   @Override
   public Product getById(Long id) {
-    return Optional.ofNullable(id)
-        .flatMap(
-            e ->
-                productRepository
-                    .findById(e)
-                    .filter(
-                        product ->
-                            !product.getStatus().equals(ProductStatus.DA_XOA)) // Kiểm tra status
-                    .map(b -> productMapper.convertToDTOWithoutProductInBranchProduct(b)))
-        .orElse(null);
+    if (id == null) {
+      throw new HrmCommonException(HrmConstant.ERROR.PRODUCT.ID_NULL);
+    }
+    ProductEntity productEntity = productRepository.findById(id).orElse(null);
+    if (productEntity == null || productEntity.getStatus() == ProductStatus.DA_XOA) {
+      throw new HrmCommonException(HrmConstant.ERROR.PRODUCT.NOT_EXIST);
+    }
+    return productMapper.convertToDTOWithoutProductInBranchProduct(productEntity);
   }
 
   @Override
   @Transactional
   public Product create(Product product) {
-    if (product == null) {
+    if (product == null || !commonValidate(product)) {
       throw new HrmCommonException(REQUEST.INVALID_BODY);
     }
 
     // Check only manager allow to sell price
-    if (userService.isManager()) {
+    if (!userService.isManager()) {
       if (product.getSellPrice() != null) {
         throw new HrmCommonException(HrmConstant.ERROR.ROLE.NOT_ALLOWED);
       }
@@ -216,13 +214,12 @@ public class ProductServiceImpl implements ProductService {
 
   @Override
   public Product update(Product product) {
+    if (product == null || !commonValidate(product)) {
+      throw new HrmCommonException(REQUEST.INVALID_BODY);
+    }
     ProductEntity oldProductEntity = productRepository.findById(product.getId()).orElse(null);
     if (oldProductEntity == null) {
       throw new HrmCommonException(HrmConstant.ERROR.PRODUCT.NOT_EXIST);
-    }
-
-    if (product == null) {
-      throw new HrmCommonException(REQUEST.INVALID_BODY);
     }
 
     if (productRepository.existsByRegistrationCode(product.getRegistrationCode())
@@ -253,6 +250,9 @@ public class ProductServiceImpl implements ProductService {
     // Handle SpecialConditions
     List<SpecialCondition> newSpecialConditions = product.getSpecialConditions();
     List<SpecialConditionEntity> oldSpecialConditions = oldProductEntity.getSpecialConditions();
+    if (oldSpecialConditions == null) {
+      oldSpecialConditions = new ArrayList<>();
+    }
 
     if (newSpecialConditions != null && !newSpecialConditions.isEmpty()) {
       // Prepare for add/update/delete
@@ -424,8 +424,9 @@ public class ProductServiceImpl implements ProductService {
 
   @Override
   public void delete(Long id) {
-    Product productEntity = getById(id);
-    if (productEntity == null) {
+    Optional<ProductEntity> productEntityOpt = productRepository.findById(id);
+    if (!productEntityOpt.isPresent()
+        || productEntityOpt.get().getStatus() == ProductStatus.DA_XOA) {
       throw new HrmCommonException(HrmConstant.ERROR.PRODUCT.NOT_EXIST);
     }
     productRepository.updateProductStatus(ProductStatus.DA_XOA, id);
@@ -809,18 +810,10 @@ public class ProductServiceImpl implements ProductService {
 
     // Fetch product data
     List<ProductBaseDTO> products =
-        searchProducts(
-                0,
-                Integer.MAX_VALUE,
-                "id",
-                "ASC",
-                Optional.ofNullable(null),
-                Optional.ofNullable(null),
-                Optional.ofNullable(null),
-                Optional.ofNullable(null),
-                Optional.ofNullable(null))
-            .stream()
-            .toList();
+        productRepository.findAll().stream()
+            .filter(product -> !ProductStatus.DA_XOA.equals(product.getStatus()))
+            .map(productMapper::convertToProductBaseDTO)
+            .collect(Collectors.toList());
 
     // Export data using utility
     try {
@@ -900,7 +893,7 @@ public class ProductServiceImpl implements ProductService {
     return productMapper.convertToBranchProduct(product, branchId);
   }
 
-  private List<ProductBatchDTO> processProductData(List<ProductBaseDTO> products) {
+  List<ProductBatchDTO> processProductData(List<ProductBaseDTO> products) {
     List<ProductBatchDTO> allProductBatches = new ArrayList<>();
     for (ProductBaseDTO product : products) {
       ProductBatchDTO productBaseDTO =
@@ -1088,5 +1081,54 @@ public class ProductServiceImpl implements ProductService {
         .flatMap(Collection::stream)
         .sorted(Comparator.comparing(AuditHistory::getCreatedAt))
         .collect(Collectors.toList());
+  }
+
+  boolean commonValidate(Product product) {
+    // Validate ProductName (required, non-empty, max length 50)
+    if (product.getProductName() == null
+        || product.getProductName().trim().isEmpty()
+        || product.getProductName().length() > 50) {
+      return false;
+    }
+
+    // Validate Registration Code (required, non-empty, max length 30)
+    if (product.getRegistrationCode() == null
+        || product.getRegistrationCode().trim().isEmpty()
+        || product.getRegistrationCode().length() > 30) {
+      return false;
+    }
+
+    // Validate Active Ingredient (required, non-empty, max length 255)
+    if (product.getActiveIngredient() == null
+        || product.getActiveIngredient().trim().isEmpty()
+        || product.getActiveIngredient().length() > 255) {
+      return false;
+    }
+
+    // Validate Excipient (required, non-empty, max length 255)
+    if (product.getExcipient() != null && product.getExcipient().length() > 255) {
+      return false;
+    }
+
+    // Validate Formulation (required, non-empty, max length 255)
+    if (product.getFormulation() == null
+        || product.getFormulation().trim().isEmpty()
+        || product.getFormulation().length() > 255) {
+      return false;
+    }
+
+    // Validate Inbound Price (max value 1,000,000,000)
+    if (product.getInboundPrice() != null
+        && product.getInboundPrice().compareTo(new BigDecimal("1000000000")) > 0) {
+      return false;
+    }
+
+    // Validate Sell Price (max value 1,000,000,000)
+    if (product.getSellPrice() != null
+        && product.getSellPrice().compareTo(new BigDecimal("1000000000")) > 0) {
+      return false;
+    }
+
+    return true;
   }
 }
