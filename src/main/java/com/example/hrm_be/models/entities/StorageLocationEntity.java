@@ -1,8 +1,6 @@
 package com.example.hrm_be.models.entities;
 
 import com.example.hrm_be.commons.enums.LocationType;
-import com.example.hrm_be.models.dtos.Branch;
-import com.example.hrm_be.models.dtos.BranchProduct;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;

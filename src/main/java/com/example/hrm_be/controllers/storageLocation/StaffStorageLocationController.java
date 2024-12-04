@@ -3,7 +3,6 @@ package com.example.hrm_be.controllers.storageLocation;
 import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.commons.enums.ResponseStatus;
 import com.example.hrm_be.models.dtos.StorageLocation;
-import com.example.hrm_be.models.dtos.UnitOfMeasurement;
 import com.example.hrm_be.models.responses.BaseOutput;
 import com.example.hrm_be.services.StorageLocationService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -103,19 +102,19 @@ public class StaffStorageLocationController {
   // Create new UnitOfMeasurement
   @PostMapping()
   protected ResponseEntity<BaseOutput<StorageLocation>> create(
-          @RequestBody @NotNull(message = "error.request.body.invalid")
+      @RequestBody @NotNull(message = "error.request.body.invalid")
           StorageLocation storageLocation) {
 
     // Check if the unitOfMeasurement object is null
     if (storageLocation == null) {
       // Create response indicating invalid request body
       BaseOutput<StorageLocation> response =
-              BaseOutput.<StorageLocation>builder()
-                      .errors(List.of(HrmConstant.ERROR.REQUEST.INVALID_BODY))
-                      .status(ResponseStatus.FAILED) // Set response status to FAILED
-                      .build();
+          BaseOutput.<StorageLocation>builder()
+              .errors(List.of(HrmConstant.ERROR.REQUEST.INVALID_BODY))
+              .status(ResponseStatus.FAILED) // Set response status to FAILED
+              .build();
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-              .body(response); // Return BAD_REQUEST response
+          .body(response); // Return BAD_REQUEST response
     }
 
     // Call service to create a new unitOfMeasurement
@@ -123,11 +122,11 @@ public class StaffStorageLocationController {
 
     // Construct response object with created unitOfMeasurement data
     BaseOutput<StorageLocation> response =
-            BaseOutput.<StorageLocation>builder()
-                    .message(HttpStatus.OK.toString())
-                    .data(createdStorageLocation) // Attach newly created unitOfMeasurement data
-                    .status(ResponseStatus.SUCCESS) // Set response status to SUCCESS
-                    .build();
+        BaseOutput.<StorageLocation>builder()
+            .message(HttpStatus.OK.toString())
+            .data(createdStorageLocation) // Attach newly created unitOfMeasurement data
+            .status(ResponseStatus.SUCCESS) // Set response status to SUCCESS
+            .build();
 
     // Return response with status OK
     return ResponseEntity.ok(response);
@@ -137,20 +136,20 @@ public class StaffStorageLocationController {
   // Update UnitOfMeasurement
   @PutMapping("/{id}")
   protected ResponseEntity<BaseOutput<StorageLocation>> update(
-          @PathVariable("id") Long id,
-          @RequestBody @NotNull(message = "error.request.body.invalid")
+      @PathVariable("id") Long id,
+      @RequestBody @NotNull(message = "error.request.body.invalid")
           StorageLocation storageLocation) {
 
     // Check if the provided ID is less than or equal to zero
     if (id <= 0 || id == null) {
       // Create response indicating invalid path variable
       BaseOutput<StorageLocation> response =
-              BaseOutput.<StorageLocation>builder()
-                      .status(ResponseStatus.FAILED)
-                      .errors(List.of(HrmConstant.ERROR.REQUEST.INVALID_PATH_VARIABLE))
-                      .build();
+          BaseOutput.<StorageLocation>builder()
+              .status(ResponseStatus.FAILED)
+              .errors(List.of(HrmConstant.ERROR.REQUEST.INVALID_PATH_VARIABLE))
+              .build();
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-              .body(response); // Return BAD_REQUEST response
+          .body(response); // Return BAD_REQUEST response
     }
 
     storageLocation.setId(id); // Set the ID of the unitOfMeasurement to update
@@ -159,11 +158,11 @@ public class StaffStorageLocationController {
 
     // Construct response object with updated unitOfMeasurement data
     BaseOutput<StorageLocation> response =
-            BaseOutput.<StorageLocation>builder()
-                    .message(HttpStatus.OK.toString())
-                    .data(updatedStorageLocation) // Attach updated unitOfMeasurement data
-                    .status(ResponseStatus.SUCCESS) // Set response status to SUCCESS
-                    .build();
+        BaseOutput.<StorageLocation>builder()
+            .message(HttpStatus.OK.toString())
+            .data(updatedStorageLocation) // Attach updated unitOfMeasurement data
+            .status(ResponseStatus.SUCCESS) // Set response status to SUCCESS
+            .build();
 
     // Return response with status OK
     return ResponseEntity.ok(response);

@@ -15,19 +15,16 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.example.hrm_be.commons.constants.HrmConstant;
-import com.example.hrm_be.commons.enums.ConditionType;
 import com.example.hrm_be.commons.enums.ProductStatus;
 import com.example.hrm_be.components.*;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.*;
 import com.example.hrm_be.models.entities.*;
 import com.example.hrm_be.models.responses.AuditHistory;
-import com.example.hrm_be.models.responses.InboundDetail;
 import com.example.hrm_be.repositories.AllowedProductRepository;
 import com.example.hrm_be.repositories.ProductRepository;
 import com.example.hrm_be.services.*;
 import com.example.hrm_be.utils.ExcelUtility;
-import com.nimbusds.openid.connect.sdk.claims.UserInfo;
 import jakarta.persistence.criteria.*;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -51,89 +48,61 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
-
 @ExtendWith(MockitoExtension.class)
 public class ProductServiceImplTest {
 
-  @Mock
-  private ProductRepository productRepository;
+  @Mock private ProductRepository productRepository;
 
-  @Mock
-  private ProductMapper productMapper;
+  @Mock private ProductMapper productMapper;
 
-  @InjectMocks
-  private ProductServiceImpl productService;
+  @InjectMocks private ProductServiceImpl productService;
 
-  @Mock
-  private UserService userService;
+  @Mock private UserService userService;
 
-  @Mock
-  private ProductTypeService productTypeService;
+  @Mock private ProductTypeService productTypeService;
 
-  @Mock
-  private ProductCategoryService productCategoryService;
+  @Mock private ProductCategoryService productCategoryService;
 
-  @Mock
-  private UnitOfMeasurementService unitOfMeasurementService;
+  @Mock private UnitOfMeasurementService unitOfMeasurementService;
 
-  @Mock
-  private ManufacturerService manufacturerService;
+  @Mock private ManufacturerService manufacturerService;
 
-  @Mock
-  private SpecialConditionMapper specialConditionMapper;
+  @Mock private SpecialConditionMapper specialConditionMapper;
 
-  @Mock
-  private SpecialConditionService specialConditionService;
+  @Mock private SpecialConditionService specialConditionService;
 
-  @Mock
-  private UnitConversionMapper unitConversionMapper;
+  @Mock private UnitConversionMapper unitConversionMapper;
 
-  @Mock
-  private UnitConversionService unitConversionService;
+  @Mock private UnitConversionService unitConversionService;
 
-  @Mock
-  private BranchProductService branchProductService;
+  @Mock private BranchProductService branchProductService;
 
-  @Mock
-  private BranchMapper branchMapper; // Add this mock
+  @Mock private BranchMapper branchMapper; // Add this mock
 
-  @Mock
-  private StorageLocationMapper storageLocationMapper; // Add this mock if it is used
+  @Mock private StorageLocationMapper storageLocationMapper; // Add this mock if it is used
 
-  @Mock
-  private StorageLocationService storageLocationService;
+  @Mock private StorageLocationService storageLocationService;
 
-  @Mock
-  private InboundDetailsService inboundDetailsService;
+  @Mock private InboundDetailsService inboundDetailsService;
 
-  @Mock
-  private InboundDetailsMapper inboundDetailsMapper;
+  @Mock private InboundDetailsMapper inboundDetailsMapper;
 
-  @Mock
-  private InboundBatchDetailService inboundBatchDetailService;
+  @Mock private InboundBatchDetailService inboundBatchDetailService;
 
-  @Mock
-  private InboundBatchDetailMapper inboundBatchDetailMapper;
+  @Mock private InboundBatchDetailMapper inboundBatchDetailMapper;
 
-  @Mock
-  private OutboundDetailService outboundDetailService;
+  @Mock private OutboundDetailService outboundDetailService;
 
-  @Mock
-  private OutboundDetailMapper outboundDetailMapper;
+  @Mock private OutboundDetailMapper outboundDetailMapper;
 
-  @Mock
-  private OutboundProductDetailService outboundProductDetailService;
+  @Mock private OutboundProductDetailService outboundProductDetailService;
 
-  @Mock
-  private OutboundProductDetailMapper outboundProductDetailMapper;
+  @Mock private OutboundProductDetailMapper outboundProductDetailMapper;
 
-  @Mock
-  private AllowedProductRepository allowedProductRepository;
+  @Mock private AllowedProductRepository allowedProductRepository;
 
-  @Mock
-  private AllowedProductService allowedProductService;
-  @Mock
-  private ProductEntity oldProductEntity;
+  @Mock private AllowedProductService allowedProductService;
+  @Mock private ProductEntity oldProductEntity;
   private List<Map<String, Object>> productJsonList;
   private AllowedProductEntity allowedProductEntity;
   private Product product;
@@ -166,8 +135,6 @@ public class ProductServiceImplTest {
   private List<OutboundProductDetail> productOutboundDetailEntities;
   private List<AuditHistory> auditHistories;
   private List<AllowedProductEntity> allowedProductEntities;
-
-
 
   @BeforeEach
   void setUp() throws IOException {
@@ -219,7 +186,7 @@ public class ProductServiceImplTest {
     product.setProductName("Valid Product");
     product.setActiveIngredient("Active Ingredient");
     product.setFormulation("Formulation");
-    //product.setSellPrice(new BigDecimal("50"));
+    // product.setSellPrice(new BigDecimal("50"));
     product.setBaseUnit(unitOfMeasurement);
     product.setType(productType);
     product.setCategory(productCategory);
@@ -234,8 +201,10 @@ public class ProductServiceImplTest {
     productEntity.setRegistrationCode("ABC123");
     productEntity.setActiveIngredient("Ingredient");
     productEntity.setStatus(ProductStatus.CON_HANG);
-    productEntity.setSpecialConditions(new ArrayList<>(List.of(specialConditionEntity)));  // Initialize special conditions
-    productEntity.setBranchProducs(new ArrayList<>(List.of(branchProductEntity)));  // Initialize branch products
+    productEntity.setSpecialConditions(
+        new ArrayList<>(List.of(specialConditionEntity))); // Initialize special conditions
+    productEntity.setBranchProducs(
+        new ArrayList<>(List.of(branchProductEntity))); // Initialize branch products
 
     productBaseDTO = new ProductBaseDTO();
     productBaseDTO.setId(1L);
@@ -272,7 +241,12 @@ public class ProductServiceImplTest {
     ByteArrayOutputStream bos = new ByteArrayOutputStream();
     workbook.write(bos);
     workbook.close();
-    file = new MockMultipartFile("file", "products.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", bos.toByteArray());
+    file =
+        new MockMultipartFile(
+            "file",
+            "products.xlsx",
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            bos.toByteArray());
     productEntities = new ArrayList<>();
     productDTOs = new ArrayList<>();
     productSupplierDTOs = new ArrayList<>();
@@ -325,16 +299,16 @@ public class ProductServiceImplTest {
     allowedProductEntities.add(entity);
 
     oldProductEntity = new ProductEntity();
-
   }
 
-  //Get By Id
+  // Get By Id
   // UTCID01 -Get By Id: Valid
   @Test
   public void UTCID01_testGetById_ProductExistsAndNotDeleted() {
     // Arrange
     when(productRepository.findById(anyLong())).thenReturn(Optional.of(productEntity));
-    when(productMapper.convertToDTOWithoutProductInBranchProduct(productEntity)).thenReturn(product);
+    when(productMapper.convertToDTOWithoutProductInBranchProduct(productEntity))
+        .thenReturn(product);
 
     // Act
     Product result = productService.getById(1L);
@@ -347,7 +321,7 @@ public class ProductServiceImplTest {
   @Test
   public void UTCID02_testGetById_ProductExistsButDeleted() {
     // Arrange
-    productEntity.setStatus(ProductStatus.DA_XOA);  // DA_XOA indicates the product is deleted
+    productEntity.setStatus(ProductStatus.DA_XOA); // DA_XOA indicates the product is deleted
     when(productRepository.findById(anyLong())).thenReturn(Optional.of(productEntity));
 
     Assertions.assertThrows(HrmCommonException.class, () -> productService.getById(1L));
@@ -359,19 +333,20 @@ public class ProductServiceImplTest {
     // Arrange
     when(productRepository.findById(anyLong())).thenReturn(null);
     Assertions.assertThrows(NullPointerException.class, () -> productService.getById(1L));
-
   }
 
   // UTCID04 -Get By Id: inValid Null Id
   @Test
   public void UTCID04_testGetById_NullId() {
     // Act & Assert
-    Assertions.assertThrows(HrmCommonException.class, () -> {
-      productService.getById(null);
-    });
+    Assertions.assertThrows(
+        HrmCommonException.class,
+        () -> {
+          productService.getById(null);
+        });
   }
 
-  //CreateProduct
+  // CreateProduct
   // UTCID01: CreateProduct - Valid
   @Test
   public void UTCID01_testCreateProduct_Success() {
@@ -391,7 +366,8 @@ public class ProductServiceImplTest {
     when(productMapper.toDTO(any(ProductEntity.class))).thenReturn(product);
     when(userService.getAuthenticatedUserEmail()).thenReturn("user@example.com");
     when(userService.findLoggedInfoByEmail(anyString())).thenReturn(user);
-    when(specialConditionMapper.toEntity(any(SpecialCondition.class))).thenReturn(specialConditionEntity);
+    when(specialConditionMapper.toEntity(any(SpecialCondition.class)))
+        .thenReturn(specialConditionEntity);
     when(unitConversionMapper.toEntity(any(UnitConversion.class))).thenReturn(unitConversionEntity);
 
     // Act
@@ -598,7 +574,7 @@ public class ProductServiceImplTest {
     assertThrows(HrmCommonException.class, () -> productService.create(product));
   }
 
-  //SearchProducts
+  // SearchProducts
   // UTCID01: SearchProducts - Valid
   @Test
   public void UTCID01_testSearchProducts_WithKeyword_DefaultSorting() {
@@ -616,12 +592,22 @@ public class ProductServiceImplTest {
     Page<ProductEntity> productEntities = new PageImpl<>(List.of(productEntity));
     Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Direction.ASC, sortBy));
 
-    when(productRepository.findAll(any(Specification.class), eq(pageable))).thenReturn(productEntities);
+    when(productRepository.findAll(any(Specification.class), eq(pageable)))
+        .thenReturn(productEntities);
     when(productMapper.convertToProductBaseDTO(productEntity)).thenReturn(productBaseDTO);
 
     // Act
-    Page<ProductBaseDTO> result = productService.searchProducts(
-            pageNo, pageSize, sortBy, sortDirection, keyword, manufacturerId, categoryId, typeId, status);
+    Page<ProductBaseDTO> result =
+        productService.searchProducts(
+            pageNo,
+            pageSize,
+            sortBy,
+            sortDirection,
+            keyword,
+            manufacturerId,
+            categoryId,
+            typeId,
+            status);
 
     // Assert
     assertNotNull(result);
@@ -646,12 +632,22 @@ public class ProductServiceImplTest {
     Page<ProductEntity> productEntities = new PageImpl<>(List.of(productEntity));
     Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Direction.ASC, sortBy));
 
-    when(productRepository.findAll(any(Specification.class), eq(pageable))).thenReturn(productEntities);
+    when(productRepository.findAll(any(Specification.class), eq(pageable)))
+        .thenReturn(productEntities);
     when(productMapper.convertToProductBaseDTO(productEntity)).thenReturn(productBaseDTO);
 
     // Act
-    Page<ProductBaseDTO> result = productService.searchProducts(
-            pageNo, pageSize, sortBy, sortDirection, keyword, manufacturerId, categoryId, typeId, status);
+    Page<ProductBaseDTO> result =
+        productService.searchProducts(
+            pageNo,
+            pageSize,
+            sortBy,
+            sortDirection,
+            keyword,
+            manufacturerId,
+            categoryId,
+            typeId,
+            status);
 
     // Assert
     assertNotNull(result);
@@ -676,12 +672,22 @@ public class ProductServiceImplTest {
     Page<ProductEntity> productEntities = new PageImpl<>(List.of(productEntity));
     Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Direction.ASC, sortBy));
 
-    when(productRepository.findAll(any(Specification.class), eq(pageable))).thenReturn(productEntities);
+    when(productRepository.findAll(any(Specification.class), eq(pageable)))
+        .thenReturn(productEntities);
     when(productMapper.convertToProductBaseDTO(productEntity)).thenReturn(productBaseDTO);
 
     // Act
-    Page<ProductBaseDTO> result = productService.searchProducts(
-            pageNo, pageSize, sortBy, sortDirection, keyword, manufacturerId, categoryId, typeId, status);
+    Page<ProductBaseDTO> result =
+        productService.searchProducts(
+            pageNo,
+            pageSize,
+            sortBy,
+            sortDirection,
+            keyword,
+            manufacturerId,
+            categoryId,
+            typeId,
+            status);
 
     // Assert
     assertNotNull(result);
@@ -706,12 +712,22 @@ public class ProductServiceImplTest {
     Page<ProductEntity> productEntities = new PageImpl<>(List.of(productEntity));
     Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Direction.ASC, sortBy));
 
-    when(productRepository.findAll(any(Specification.class), eq(pageable))).thenReturn(productEntities);
+    when(productRepository.findAll(any(Specification.class), eq(pageable)))
+        .thenReturn(productEntities);
     when(productMapper.convertToProductBaseDTO(productEntity)).thenReturn(productBaseDTO);
 
     // Act
-    Page<ProductBaseDTO> result = productService.searchProducts(
-            pageNo, pageSize, sortBy, sortDirection, keyword, manufacturerId, categoryId, typeId, status);
+    Page<ProductBaseDTO> result =
+        productService.searchProducts(
+            pageNo,
+            pageSize,
+            sortBy,
+            sortDirection,
+            keyword,
+            manufacturerId,
+            categoryId,
+            typeId,
+            status);
 
     // Assert
     assertNotNull(result);
@@ -736,12 +752,22 @@ public class ProductServiceImplTest {
     Page<ProductEntity> productEntities = new PageImpl<>(List.of(productEntity));
     Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Direction.ASC, sortBy));
 
-    when(productRepository.findAll(any(Specification.class), eq(pageable))).thenReturn(productEntities);
+    when(productRepository.findAll(any(Specification.class), eq(pageable)))
+        .thenReturn(productEntities);
     when(productMapper.convertToProductBaseDTO(productEntity)).thenReturn(productBaseDTO);
 
     // Act
-    Page<ProductBaseDTO> result = productService.searchProducts(
-            pageNo, pageSize, sortBy, sortDirection, keyword, manufacturerId, categoryId, typeId, status);
+    Page<ProductBaseDTO> result =
+        productService.searchProducts(
+            pageNo,
+            pageSize,
+            sortBy,
+            sortDirection,
+            keyword,
+            manufacturerId,
+            categoryId,
+            typeId,
+            status);
 
     // Assert
     assertNotNull(result);
@@ -770,15 +796,35 @@ public class ProductServiceImplTest {
     Pageable pageableAsc = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Direction.ASC, sortBy));
     Pageable pageableDesc = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Direction.DESC, sortBy));
 
-    when(productRepository.findAll(any(Specification.class), eq(pageableAsc))).thenReturn(productEntitiesAsc);
-    when(productRepository.findAll(any(Specification.class), eq(pageableDesc))).thenReturn(productEntitiesDesc);
+    when(productRepository.findAll(any(Specification.class), eq(pageableAsc)))
+        .thenReturn(productEntitiesAsc);
+    when(productRepository.findAll(any(Specification.class), eq(pageableDesc)))
+        .thenReturn(productEntitiesDesc);
     when(productMapper.convertToProductBaseDTO(productEntity)).thenReturn(productBaseDTO);
 
     // Act
-    Page<ProductBaseDTO> resultAsc = productService.searchProducts(
-            pageNo, pageSize, sortBy, sortDirectionAsc, keyword, manufacturerId, categoryId, typeId, status);
-    Page<ProductBaseDTO> resultDesc = productService.searchProducts(
-            pageNo, pageSize, sortBy, sortDirectionDesc, keyword, manufacturerId, categoryId, typeId, status);
+    Page<ProductBaseDTO> resultAsc =
+        productService.searchProducts(
+            pageNo,
+            pageSize,
+            sortBy,
+            sortDirectionAsc,
+            keyword,
+            manufacturerId,
+            categoryId,
+            typeId,
+            status);
+    Page<ProductBaseDTO> resultDesc =
+        productService.searchProducts(
+            pageNo,
+            pageSize,
+            sortBy,
+            sortDirectionDesc,
+            keyword,
+            manufacturerId,
+            categoryId,
+            typeId,
+            status);
 
     // Assert
     assertNotNull(resultAsc);
@@ -802,12 +848,25 @@ public class ProductServiceImplTest {
     Optional<Long> typeId = Optional.empty();
     Optional<String> status = Optional.empty();
 
-    Page<ProductEntity> productPage = new PageImpl<>(Stream.of(productEntity).collect(Collectors.toList()));
-    when(productRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(productPage);
-    when(productMapper.convertToProductBaseDTO(any(ProductEntity.class))).thenReturn(new ProductBaseDTO());
+    Page<ProductEntity> productPage =
+        new PageImpl<>(Stream.of(productEntity).collect(Collectors.toList()));
+    when(productRepository.findAll(any(Specification.class), any(Pageable.class)))
+        .thenReturn(productPage);
+    when(productMapper.convertToProductBaseDTO(any(ProductEntity.class)))
+        .thenReturn(new ProductBaseDTO());
 
     // Act
-    Page<ProductBaseDTO> result = productService.searchProducts(pageNo, pageSize, sortBy, sortDirection, keyword, manufacturerId, categoryId, typeId, status);
+    Page<ProductBaseDTO> result =
+        productService.searchProducts(
+            pageNo,
+            pageSize,
+            sortBy,
+            sortDirection,
+            keyword,
+            manufacturerId,
+            categoryId,
+            typeId,
+            status);
 
     // Assert
     assertNotNull(result);
@@ -827,12 +886,25 @@ public class ProductServiceImplTest {
     Optional<Long> typeId = Optional.empty();
     Optional<String> status = Optional.empty();
 
-    Page<ProductEntity> productPage = new PageImpl<>(Stream.of(productEntity).collect(Collectors.toList()));
-    when(productRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(productPage);
-    when(productMapper.convertToProductBaseDTO(any(ProductEntity.class))).thenReturn(new ProductBaseDTO());
+    Page<ProductEntity> productPage =
+        new PageImpl<>(Stream.of(productEntity).collect(Collectors.toList()));
+    when(productRepository.findAll(any(Specification.class), any(Pageable.class)))
+        .thenReturn(productPage);
+    when(productMapper.convertToProductBaseDTO(any(ProductEntity.class)))
+        .thenReturn(new ProductBaseDTO());
 
     // Act
-    Page<ProductBaseDTO> result = productService.searchProducts(pageNo, pageSize, sortBy, sortDirection, keyword, manufacturerId, categoryId, typeId, status);
+    Page<ProductBaseDTO> result =
+        productService.searchProducts(
+            pageNo,
+            pageSize,
+            sortBy,
+            sortDirection,
+            keyword,
+            manufacturerId,
+            categoryId,
+            typeId,
+            status);
 
     // Assert
     assertNotNull(result);
@@ -853,12 +925,25 @@ public class ProductServiceImplTest {
     Optional<Long> typeId = Optional.empty();
     Optional<String> status = Optional.empty();
 
-    Page<ProductEntity> productPage = new PageImpl<>(Stream.of(productEntity).collect(Collectors.toList()));
-    when(productRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(productPage);
-    when(productMapper.convertToProductBaseDTO(any(ProductEntity.class))).thenReturn(new ProductBaseDTO());
+    Page<ProductEntity> productPage =
+        new PageImpl<>(Stream.of(productEntity).collect(Collectors.toList()));
+    when(productRepository.findAll(any(Specification.class), any(Pageable.class)))
+        .thenReturn(productPage);
+    when(productMapper.convertToProductBaseDTO(any(ProductEntity.class)))
+        .thenReturn(new ProductBaseDTO());
 
     // Act
-    Page<ProductBaseDTO> result = productService.searchProducts(pageNo, pageSize, sortBy, sortDirection, keyword, manufacturerId, categoryId, typeId, status);
+    Page<ProductBaseDTO> result =
+        productService.searchProducts(
+            pageNo,
+            pageSize,
+            sortBy,
+            sortDirection,
+            keyword,
+            manufacturerId,
+            categoryId,
+            typeId,
+            status);
 
     // Assert
     assertNotNull(result);
@@ -896,14 +981,27 @@ public class ProductServiceImplTest {
     Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Direction.ASC, sortBy));
     Page<ProductEntity> productPage = new PageImpl<>(List.of(productEntity), pageable, 1);
 
-    when(productRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(productPage);
-    when(productMapper.convertToProductBaseDTO(any(ProductEntity.class))).thenReturn(productBaseDTO);
+    when(productRepository.findAll(any(Specification.class), any(Pageable.class)))
+        .thenReturn(productPage);
+    when(productMapper.convertToProductBaseDTO(any(ProductEntity.class)))
+        .thenReturn(productBaseDTO);
 
     // Capture the Specification argument
-    ArgumentCaptor<Specification<ProductEntity>> specCaptor = ArgumentCaptor.forClass(Specification.class);
+    ArgumentCaptor<Specification<ProductEntity>> specCaptor =
+        ArgumentCaptor.forClass(Specification.class);
 
     // Act
-    Page<ProductBaseDTO> result = productService.searchProducts(pageNo, pageSize, sortBy, sortDirection, keyword, manufacturerId, categoryId, typeId, status);
+    Page<ProductBaseDTO> result =
+        productService.searchProducts(
+            pageNo,
+            pageSize,
+            sortBy,
+            sortDirection,
+            keyword,
+            manufacturerId,
+            categoryId,
+            typeId,
+            status);
 
     // Assert
     assertNotNull(result);
@@ -935,7 +1033,7 @@ public class ProductServiceImplTest {
     assertNull(predicate);
   }
 
-  //UpdateProduct
+  // UpdateProduct
   // UTCID01: UpdateProduct - Valid
   @Test
   public void UTCID01testUpdateProduct_Success() {
@@ -949,13 +1047,19 @@ public class ProductServiceImplTest {
     when(productMapper.toEntity(any(Product.class))).thenReturn(productEntity);
     when(productRepository.save(any(ProductEntity.class))).thenReturn(productEntity);
     when(productMapper.toDTO(any(ProductEntity.class))).thenReturn(product);
-    when(specialConditionMapper.toEntity(any(SpecialCondition.class))).thenReturn(specialConditionEntity);
+    when(specialConditionMapper.toEntity(any(SpecialCondition.class)))
+        .thenReturn(specialConditionEntity);
     when(unitConversionMapper.toEntity(any(UnitConversion.class))).thenReturn(unitConversionEntity);
     lenient().when(userService.getAuthenticatedUserEmail()).thenReturn("user@example.com");
     lenient().when(userService.findLoggedInfoByEmail(anyString())).thenReturn(user);
-    lenient().when(branchMapper.toEntity(any(Branch.class))).thenReturn(new BranchEntity()); // Mock branchMapper
-    lenient().when(storageLocationMapper.toEntity(any(StorageLocation.class))).thenReturn(new StorageLocationEntity()); // Mock storageLocationMapper if used
-    when(unitConversionService.getByProductId(anyLong())).thenReturn(List.of(unitConversionEntity)); // Ensure the return value is set
+    lenient()
+        .when(branchMapper.toEntity(any(Branch.class)))
+        .thenReturn(new BranchEntity()); // Mock branchMapper
+    lenient()
+        .when(storageLocationMapper.toEntity(any(StorageLocation.class)))
+        .thenReturn(new StorageLocationEntity()); // Mock storageLocationMapper if used
+    when(unitConversionService.getByProductId(anyLong()))
+        .thenReturn(List.of(unitConversionEntity)); // Ensure the return value is set
 
     // Act
     Product result = productService.update(product);
@@ -1019,13 +1123,13 @@ public class ProductServiceImplTest {
     updatedProduct.setFormulation("Formulation");
     updatedProduct.setRegistrationCode("NEW_REG123");
 
-
     // Mock product retrieval
     lenient().when(productRepository.findById(anyLong())).thenReturn(Optional.of(productEntity));
     lenient().when(productRepository.existsByRegistrationCode("NEW_REG123")).thenReturn(true);
 
     // Act & Assert
-    HrmCommonException exception = assertThrows(HrmCommonException.class, () -> productService.update(updatedProduct));
+    HrmCommonException exception =
+        assertThrows(HrmCommonException.class, () -> productService.update(updatedProduct));
     assertEquals(HrmConstant.ERROR.PRODUCT.REGISTRATION_EXIST, exception.getMessage());
   }
 
@@ -1137,7 +1241,7 @@ public class ProductServiceImplTest {
     assertThrows(HrmCommonException.class, () -> productService.update(product));
   }
 
-  //UpdateInboundPrice
+  // UpdateInboundPrice
   // UTCID01: UpdateProduct - valid
   @Test
   public void UTCID01_testUpdateInboundPrice_Success() {
@@ -1169,7 +1273,8 @@ public class ProductServiceImplTest {
     verify(productRepository, times(0)).save(any(ProductEntity.class));
     verify(productMapper, times(0)).toDTO(any(ProductEntity.class));
   }
-  //DeleteProduct
+
+  // DeleteProduct
   // UTCID01: DeleteProduct - Valid
   @Test
   public void UTCID01_testDeleteProduct_Success() {
@@ -1210,7 +1315,7 @@ public class ProductServiceImplTest {
     verify(productRepository, times(0)).updateProductStatus(any(ProductStatus.class), anyLong());
   }
 
-  //ImportFile
+  // ImportFile
   // UTCID01: ImportFile - Valid
   @Test
   public void testImportFile_Success() throws IOException {
@@ -1290,7 +1395,12 @@ public class ProductServiceImplTest {
     ByteArrayOutputStream bos = new ByteArrayOutputStream();
     workbook.write(bos);
     workbook.close();
-    file = new MockMultipartFile("file", "invalid_products.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", bos.toByteArray());
+    file =
+        new MockMultipartFile(
+            "file",
+            "invalid_products.xlsx",
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            bos.toByteArray());
 
     // Act
     List<String> errors = productService.importFile(file);
@@ -1302,18 +1412,20 @@ public class ProductServiceImplTest {
     verify(productRepository, times(0)).save(any(ProductEntity.class));
   }
 
-//  @Test
-//  public void testImportFile_IOException() throws IOException {
-//    // Arrange
-//    MultipartFile invalidFile = new MockMultipartFile("file", "products.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", new byte[0]);
-//
-//    // Act
-//    List<String> errors = productService.importFile(invalidFile);
-//
-//    // Assert
-//    assertFalse(errors.isEmpty());
-//    assertTrue(errors.contains("Failed to parse Excel file: The supplied file was empty (zero bytes long)"));
-//  }
+  //  @Test
+  //  public void testImportFile_IOException() throws IOException {
+  //    // Arrange
+  //    MultipartFile invalidFile = new MockMultipartFile("file", "products.xlsx",
+  // "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", new byte[0]);
+  //
+  //    // Act
+  //    List<String> errors = productService.importFile(invalidFile);
+  //
+  //    // Assert
+  //    assertFalse(errors.isEmpty());
+  //    assertTrue(errors.contains("Failed to parse Excel file: The supplied file was empty (zero
+  // bytes long)"));
+  //  }
 
   // UTCID03: ImportFile - inValid data
   @Test
@@ -1325,7 +1437,9 @@ public class ProductServiceImplTest {
     allowedProductEntity.setActiveIngredient("Ingredient");
     allowedProductEntity.setExcipient("Excipient");
     allowedProductEntity.setFormulation("Formulation");
-    lenient().when(allowedProductRepository.findByProductCode("REG123")).thenReturn(allowedProductEntity);
+    lenient()
+        .when(allowedProductRepository.findByProductCode("REG123"))
+        .thenReturn(allowedProductEntity);
 
     ProductCategory category = new ProductCategory();
     lenient().when(productCategoryService.findByCategoryName("CategoryName")).thenReturn(category);
@@ -1339,7 +1453,9 @@ public class ProductServiceImplTest {
     Manufacturer manufacturer = new Manufacturer();
     lenient().when(manufacturerService.getByName("ManufacturerName")).thenReturn(manufacturer);
 
-    lenient().when(productRepository.save(any(ProductEntity.class))).thenThrow(new RuntimeException("Database error"));
+    lenient()
+        .when(productRepository.save(any(ProductEntity.class)))
+        .thenThrow(new RuntimeException("Database error"));
 
     lenient().when(productRepository.existsByRegistrationCode(anyString())).thenReturn(false);
     lenient().when(userService.getAuthenticatedUserEmail()).thenReturn("user@example.com");
@@ -1357,7 +1473,7 @@ public class ProductServiceImplTest {
     assertFalse(errors.isEmpty());
   }
 
-  //ExportFile
+  // ExportFile
   // UTCID01: ExportFile - Valid
   @Test
   public void UTCID01_testExportFile_Success() throws IOException {
@@ -1393,7 +1509,8 @@ public class ProductServiceImplTest {
     productDTOs.add(dto);
     // Arrange
     when(productRepository.findAll()).thenReturn(productEntities);
-    when(productMapper.convertToProductBaseDTO(any(ProductEntity.class))).thenReturn(productDTOs.get(0));
+    when(productMapper.convertToProductBaseDTO(any(ProductEntity.class)))
+        .thenReturn(productDTOs.get(0));
 
     // Act
     ByteArrayInputStream result = productService.exportFile();
@@ -1433,15 +1550,21 @@ public class ProductServiceImplTest {
     productEntities.add(productEntity);
 
     when(productRepository.findAll()).thenReturn(productEntities);
-    when(productMapper.convertToProductBaseDTO(any(ProductEntity.class))).thenReturn(productBaseDTO);
+    when(productMapper.convertToProductBaseDTO(any(ProductEntity.class)))
+        .thenReturn(productBaseDTO);
 
     try (MockedStatic<ExcelUtility> utilities = Mockito.mockStatic(ExcelUtility.class)) {
-      utilities.when(() -> ExcelUtility.exportToExcelWithErrors(anyList(), any(), any())).thenThrow(IOException.class);
+      utilities
+          .when(() -> ExcelUtility.exportToExcelWithErrors(anyList(), any(), any()))
+          .thenThrow(IOException.class);
 
       // Act & Assert
-      Exception exception = assertThrows(RuntimeException.class, () -> {
-        productService.exportFile();
-      });
+      Exception exception =
+          assertThrows(
+              RuntimeException.class,
+              () -> {
+                productService.exportFile();
+              });
 
       String expectedMessage = "Error exporting product data to Excel";
       String actualMessage = exception.getMessage();
@@ -1470,9 +1593,9 @@ public class ProductServiceImplTest {
     productSupplierDTOs.add(dto);
     // Arrange
     when(productRepository.findProductBySupplierAndName(anyLong(), anyString()))
-            .thenReturn(productEntities);
+        .thenReturn(productEntities);
     when(productMapper.convertToProductSupplier(any(ProductEntity.class)))
-            .thenReturn(productSupplierDTOs.get(0));
+        .thenReturn(productSupplierDTOs.get(0));
 
     // Act
     List<ProductSupplierDTO> result = productService.getAllProductsBySupplier(1L, "Product 1");
@@ -1486,7 +1609,7 @@ public class ProductServiceImplTest {
     verify(productMapper, times(1)).convertToProductSupplier(any(ProductEntity.class));
   }
 
-  //AddProductInInbound
+  // AddProductInInbound
   // UTCID01: AddProductInInbound - Valid
   @Test
   public void UTCID01_testAddProductInInbound_ProductExists() {
@@ -1505,7 +1628,8 @@ public class ProductServiceImplTest {
     productInbound.setProductName("New Product");
     productInbound.setBaseUnit(new UnitOfMeasurement());
     // Arrange
-    when(productRepository.findByRegistrationCode(anyString())).thenReturn(Optional.of(productEntity));
+    when(productRepository.findByRegistrationCode(anyString()))
+        .thenReturn(Optional.of(productEntity));
     when(productMapper.convertToBaseInfo(any(ProductEntity.class))).thenReturn(product);
 
     // Act
@@ -1559,7 +1683,7 @@ public class ProductServiceImplTest {
     verify(productRepository, times(1)).save(any(ProductEntity.class));
   }
 
-  //GetProductInBranch
+  // GetProductInBranch
   // UTCID01: GetProductInBranch - Valid
   @Test
   public void UTCID01_testGetProductInBranch_Success() {
@@ -1576,9 +1700,9 @@ public class ProductServiceImplTest {
     productBaseDTOs.add(dto);
     // Arrange
     when(productRepository.searchProductByBranchId(anyLong(), anyString(), anyBoolean(), anyLong()))
-            .thenReturn(productEntities);
+        .thenReturn(productEntities);
     when(productMapper.convertToProductForSearchInNotes(any(ProductEntity.class), anyLong()))
-            .thenReturn(productBaseDTOs.get(0));
+        .thenReturn(productBaseDTOs.get(0));
 
     // Act
     List<ProductBaseDTO> result = productService.getProductInBranch(1L, "Product 1", true, 1L);
@@ -1588,11 +1712,13 @@ public class ProductServiceImplTest {
     assertEquals(1, result.size());
     assertEquals(productBaseDTOs.get(0), result.get(0));
 
-    verify(productRepository, times(1)).searchProductByBranchId(anyLong(), anyString(), anyBoolean(), anyLong());
-    verify(productMapper, times(1)).convertToProductForSearchInNotes(any(ProductEntity.class), anyLong());
+    verify(productRepository, times(1))
+        .searchProductByBranchId(anyLong(), anyString(), anyBoolean(), anyLong());
+    verify(productMapper, times(1))
+        .convertToProductForSearchInNotes(any(ProductEntity.class), anyLong());
   }
 
-  //GetBranchProduct
+  // GetBranchProduct
   // UTCID01: GetBranchProduct - Valid
   @Test
   public void UTCID01_testGetBranchProduct_WithoutSellPrice() { // Initialize ProductEntity
@@ -1609,9 +1735,9 @@ public class ProductServiceImplTest {
 
     // Arrange
     when(productRepository.searchProductByBranchId(anyLong(), anyString(), anyBoolean(), anyLong()))
-            .thenReturn(productEntities);
+        .thenReturn(productEntities);
     when(productMapper.convertToBranchProduct(any(ProductEntity.class), anyLong()))
-            .thenReturn(productBaseDTOs.get(0));
+        .thenReturn(productBaseDTOs.get(0));
 
     // Act
     List<ProductBaseDTO> result = productService.getBranchProduct(1L, "Product 1", true, 1L, false);
@@ -1621,8 +1747,10 @@ public class ProductServiceImplTest {
     assertEquals(1, result.size());
     assertEquals(productBaseDTOs.get(0), result.get(0));
 
-    verify(productRepository, times(1)).searchProductByBranchId(anyLong(), anyString(), anyBoolean(), anyLong());
-    verify(productRepository, times(0)).searchProductByBranchIdWithSellPrice(anyLong(), anyString());
+    verify(productRepository, times(1))
+        .searchProductByBranchId(anyLong(), anyString(), anyBoolean(), anyLong());
+    verify(productRepository, times(0))
+        .searchProductByBranchIdWithSellPrice(anyLong(), anyString());
     verify(productMapper, times(1)).convertToBranchProduct(any(ProductEntity.class), anyLong());
   }
 
@@ -1642,9 +1770,9 @@ public class ProductServiceImplTest {
     productBaseDTOs.add(dto);
     // Arrange
     when(productRepository.searchProductByBranchIdWithSellPrice(anyLong(), anyString()))
-            .thenReturn(productEntities);
+        .thenReturn(productEntities);
     when(productMapper.convertToBranchProduct(any(ProductEntity.class), anyLong()))
-            .thenReturn(productBaseDTOs.get(0));
+        .thenReturn(productBaseDTOs.get(0));
 
     // Act
     List<ProductBaseDTO> result = productService.getBranchProduct(1L, "Product 1", true, 1L, true);
@@ -1654,8 +1782,10 @@ public class ProductServiceImplTest {
     assertEquals(1, result.size());
     assertEquals(productBaseDTOs.get(0), result.get(0));
 
-    verify(productRepository, times(0)).searchProductByBranchId(anyLong(), anyString(), anyBoolean(), anyLong());
-    verify(productRepository, times(1)).searchProductByBranchIdWithSellPrice(anyLong(), anyString());
+    verify(productRepository, times(0))
+        .searchProductByBranchId(anyLong(), anyString(), anyBoolean(), anyLong());
+    verify(productRepository, times(1))
+        .searchProductByBranchIdWithSellPrice(anyLong(), anyString());
     verify(productMapper, times(1)).convertToBranchProduct(any(ProductEntity.class), anyLong());
   }
 
@@ -1672,7 +1802,7 @@ public class ProductServiceImplTest {
     // Arrange
     when(productRepository.findById(anyLong())).thenReturn(Optional.of(productEntity));
     when(productMapper.convertToBranchProduct(any(ProductEntity.class), anyLong()))
-            .thenReturn(productBaseDTO);
+        .thenReturn(productBaseDTO);
 
     // Act
     ProductBaseDTO result = productService.getBranchProducts(1L, 1L);
@@ -1708,7 +1838,7 @@ public class ProductServiceImplTest {
     verify(productMapper, times(0)).convertToBranchProduct(any(ProductEntity.class), anyLong());
   }
 
-  //ProcessProductData
+  // ProcessProductData
   // UTCID01: ProcessProductData - Valid
   @Test
   public void UTCID01_testProcessProductData_Success() {
@@ -1756,7 +1886,7 @@ public class ProductServiceImplTest {
     assertEquals(BigDecimal.valueOf(5), productBatch2.getSystemQuantity());
   }
 
-  //GetProductInBranchForInventoryCheck
+  // GetProductInBranchForInventoryCheck
   // UTCID01: GetProductInBranchForInventoryCheck - Valid
   @Test
   public void UTCID01_testGetProductInBranchForInventoryCheck_Success() {
@@ -1770,13 +1900,13 @@ public class ProductServiceImplTest {
     ProductBaseDTO dto = new ProductBaseDTO();
     dto.setId(1L);
     dto.setProductName("Product 1");
-    dto.setBatches(new ArrayList<>());  // Ensure batches is initialized
+    dto.setBatches(new ArrayList<>()); // Ensure batches is initialized
     productBaseDTOs.add(dto);
     // Arrange
     when(productRepository.searchAllProductByBranchId(anyLong(), anyString(), any(), any()))
-            .thenReturn(productEntities);
+        .thenReturn(productEntities);
     when(productMapper.convertToProductForSearchInNotes(any(ProductEntity.class), anyLong()))
-            .thenReturn(productBaseDTOs.get(0));
+        .thenReturn(productBaseDTOs.get(0));
 
     // Act
     List<ProductBatchDTO> result = productService.getProductInBranchForInventoryCheck(1L);
@@ -1787,12 +1917,14 @@ public class ProductServiceImplTest {
     assertEquals(1L, result.get(0).getProduct().getId());
     assertEquals("Product 1", result.get(0).getProduct().getProductName());
 
-    verify(productRepository, times(1)).searchAllProductByBranchId(anyLong(), anyString(), any(), any());
-    verify(productMapper, times(1)).convertToProductForSearchInNotes(any(ProductEntity.class), anyLong());
+    verify(productRepository, times(1))
+        .searchAllProductByBranchId(anyLong(), anyString(), any(), any());
+    verify(productMapper, times(1))
+        .convertToProductForSearchInNotes(any(ProductEntity.class), anyLong());
     // No need to verify processProductData, as it's called internally
   }
 
-  //GetProductByTypeIdInBranchForInventoryCheck
+  // GetProductByTypeIdInBranchForInventoryCheck
   // UTCID01: GetProductByTypeIdInBranchForInventoryCheck - Valid
   @Test
   public void UTCID01_testGetProductByTypeIdInBranchForInventoryCheck_Success() {
@@ -1810,13 +1942,15 @@ public class ProductServiceImplTest {
     dto.setBatches(new ArrayList<>()); // Ensure batches is initialized
     productBaseDTOs.add(dto);
     // Arrange
-    when(productRepository.searchAllProductByBranchIdAndTypeId(anyLong(), anyLong(), anyString(), any(), any()))
-            .thenReturn(productEntities);
+    when(productRepository.searchAllProductByBranchIdAndTypeId(
+            anyLong(), anyLong(), anyString(), any(), any()))
+        .thenReturn(productEntities);
     when(productMapper.convertToProductForSearchInNotes(any(ProductEntity.class), anyLong()))
-            .thenReturn(productBaseDTOs.get(0));
+        .thenReturn(productBaseDTOs.get(0));
 
     // Act
-    List<ProductBatchDTO> result = productService.getProductByTypeIdInBranchForInventoryCheck(1L, 1L);
+    List<ProductBatchDTO> result =
+        productService.getProductByTypeIdInBranchForInventoryCheck(1L, 1L);
 
     // Assert
     assertNotNull(result);
@@ -1824,12 +1958,14 @@ public class ProductServiceImplTest {
     assertEquals(1L, result.get(0).getProduct().getId());
     assertEquals("Product 1", result.get(0).getProduct().getProductName());
 
-    verify(productRepository, times(1)).searchAllProductByBranchIdAndTypeId(anyLong(), anyLong(), anyString(), any(), any());
-    verify(productMapper, times(1)).convertToProductForSearchInNotes(any(ProductEntity.class), anyLong());
+    verify(productRepository, times(1))
+        .searchAllProductByBranchIdAndTypeId(anyLong(), anyLong(), anyString(), any(), any());
+    verify(productMapper, times(1))
+        .convertToProductForSearchInNotes(any(ProductEntity.class), anyLong());
     // No need to verify processProductData, as it's called internally
   }
 
-  //RemoveCategoryFromProducts
+  // RemoveCategoryFromProducts
   // UTCID01: RemoveCategoryFromProducts - Valid
   @Test
   public void UTCID01_testRemoveCategoryFromProducts() {
@@ -1843,7 +1979,7 @@ public class ProductServiceImplTest {
     verify(productRepository, times(1)).removeCategoryFromProducts(cateId);
   }
 
-  //RemoveTypeFromProducts
+  // RemoveTypeFromProducts
   // UTCID01: RemoveTypeFromProducts - Valid
   @Test
   public void UTCID01_testRemoveTypeFromProducts() {
@@ -1857,7 +1993,7 @@ public class ProductServiceImplTest {
     verify(productRepository, times(1)).removeTypeFromProducts(typeId);
   }
 
-  //FilterProducts
+  // FilterProducts
   // UTCID01: FilterProducts - Valid
   @Test
   public void UTCID01_testFilterProducts_LessThanOrEqual() {
@@ -1880,9 +2016,9 @@ public class ProductServiceImplTest {
     when(userService.findBranchIdByUserEmail(userEmail)).thenReturn(Optional.of(branchId));
 
     when(productRepository.findByQuantityLessThanEqualInBranch(anyInt(), anyLong()))
-            .thenReturn(productEntities);
+        .thenReturn(productEntities);
     when(productMapper.convertToProductBaseDTO(any(ProductEntity.class)))
-            .thenReturn(productBaseDTOs.get(0));
+        .thenReturn(productBaseDTOs.get(0));
 
     // Act
     List<ProductBaseDTO> result = productService.filterProducts(true, 10, false, false);
@@ -1920,9 +2056,9 @@ public class ProductServiceImplTest {
     when(userService.findBranchIdByUserEmail(userEmail)).thenReturn(Optional.of(branchId));
 
     when(productRepository.findByQuantityLessThanMinQuantityInBranch(anyLong()))
-            .thenReturn(productEntities);
+        .thenReturn(productEntities);
     when(productMapper.convertToProductBaseDTO(any(ProductEntity.class)))
-            .thenReturn(productBaseDTOs.get(0));
+        .thenReturn(productBaseDTOs.get(0));
 
     // Act
     List<ProductBaseDTO> result = productService.filterProducts(false, null, true, false);
@@ -1960,10 +2096,9 @@ public class ProductServiceImplTest {
     when(userService.getAuthenticatedUserEmail()).thenReturn(userEmail);
     when(userService.findBranchIdByUserEmail(userEmail)).thenReturn(Optional.of(branchId));
 
-    when(productRepository.findByQuantityInBranch(anyInt(), anyLong()))
-            .thenReturn(productEntities);
+    when(productRepository.findByQuantityInBranch(anyInt(), anyLong())).thenReturn(productEntities);
     when(productMapper.convertToProductBaseDTO(any(ProductEntity.class)))
-            .thenReturn(productBaseDTOs.get(0));
+        .thenReturn(productBaseDTOs.get(0));
 
     // Act
     List<ProductBaseDTO> result = productService.filterProducts(false, null, false, true);
@@ -1986,14 +2121,14 @@ public class ProductServiceImplTest {
     ProductEntity entity = new ProductEntity();
     entity.setId(1L);
     entity.setProductName("Product 1");
-    //entity.setProductQuantity(BigDecimal.valueOf(5));
+    // entity.setProductQuantity(BigDecimal.valueOf(5));
     productEntities.add(entity);
 
     // Initialize ProductBaseDTO
     ProductBaseDTO dto = new ProductBaseDTO();
     dto.setId(1L);
     dto.setProductName("Product 1");
-    //dto.setProductQuantity(BigDecimal.valueOf(5));
+    // dto.setProductQuantity(BigDecimal.valueOf(5));
     productBaseDTOs.add(dto);
     // Arrange
     String userEmail = "test@example.com";
@@ -2002,30 +2137,30 @@ public class ProductServiceImplTest {
     when(userService.findBranchIdByUserEmail(userEmail)).thenReturn(Optional.of(branchId));
 
     when(productRepository.findByQuantityLessThanEqualInBranch(anyInt(), anyLong()))
-            .thenReturn(productEntities);
+        .thenReturn(productEntities);
     when(productRepository.findByQuantityLessThanMinQuantityInBranch(anyLong()))
-            .thenReturn(productEntities);
-    when(productRepository.findByQuantityInBranch(anyInt(), anyLong()))
-            .thenReturn(productEntities);
+        .thenReturn(productEntities);
+    when(productRepository.findByQuantityInBranch(anyInt(), anyLong())).thenReturn(productEntities);
     when(productMapper.convertToProductBaseDTO(any(ProductEntity.class)))
-            .thenReturn(productBaseDTOs.get(0));
+        .thenReturn(productBaseDTOs.get(0));
 
     // Act
     List<ProductBaseDTO> result = productService.filterProducts(true, 10, true, true);
 
     // Assert
     assertNotNull(result);
-    assertEquals(1, result.size());  // Only one unique product added despite multiple filters
+    assertEquals(1, result.size()); // Only one unique product added despite multiple filters
 
     verify(userService, times(1)).getAuthenticatedUserEmail();
     verify(userService, times(1)).findBranchIdByUserEmail(userEmail);
     verify(productRepository, times(1)).findByQuantityLessThanEqualInBranch(anyInt(), anyLong());
     verify(productRepository, times(1)).findByQuantityLessThanMinQuantityInBranch(anyLong());
     verify(productRepository, times(1)).findByQuantityInBranch(anyInt(), anyLong());
-    verify(productMapper, times(3)).convertToProductBaseDTO(any(ProductEntity.class)); // Expecting 3 calls
+    verify(productMapper, times(3))
+        .convertToProductBaseDTO(any(ProductEntity.class)); // Expecting 3 calls
   }
 
-  //GetProductsWithLossOrNoSellPriceInBranch
+  // GetProductsWithLossOrNoSellPriceInBranch
   // UTCID01: GetProductsWithLossOrNoSellPriceInBranch - Valid
   @Test
   public void UTCID01_testGetProductsWithLossOrNoSellPriceInBranch() {
@@ -2047,9 +2182,9 @@ public class ProductServiceImplTest {
     when(userService.findBranchIdByUserEmail(userEmail)).thenReturn(Optional.of(branchId));
 
     when(productRepository.findProductsWithLossOrNoSellPriceInBranch(anyLong()))
-            .thenReturn(productEntities);
+        .thenReturn(productEntities);
     when(productMapper.convertToProductBaseDTO(any(ProductEntity.class)))
-            .thenReturn(productBaseDTOs.get(0));
+        .thenReturn(productBaseDTOs.get(0));
 
     // Act
     List<ProductBaseDTO> result = productService.getProductsWithLossOrNoSellPriceInBranch();
@@ -2065,7 +2200,7 @@ public class ProductServiceImplTest {
     verify(productMapper, times(1)).convertToProductBaseDTO(any(ProductEntity.class));
   }
 
-  //GetProductsBySellPrice
+  // GetProductsBySellPrice
   // UTCID01: GetProductsBySellPrice - Valid
   @Test
   public void UTCID01_testGetProductsBySellPrice() {
@@ -2090,9 +2225,9 @@ public class ProductServiceImplTest {
     when(userService.getAuthenticatedUserEmail()).thenReturn(userEmail);
     when(userService.findBranchIdByUserEmail(userEmail)).thenReturn(Optional.of(branchId));
     when(productRepository.findProductsBySellPrice(sellPrice, branchId))
-            .thenReturn(productEntities);
+        .thenReturn(productEntities);
     when(productMapper.convertToProductBaseDTO(any(ProductEntity.class)))
-            .thenReturn(productBaseDTOs.get(0));
+        .thenReturn(productBaseDTOs.get(0));
 
     // Act
     List<ProductBaseDTO> result = productService.getProductsBySellPrice(sellPrice);
@@ -2108,7 +2243,7 @@ public class ProductServiceImplTest {
     verify(productMapper, times(1)).convertToProductBaseDTO(any(ProductEntity.class));
   }
 
-  //GetProductByCateInBranchForInventoryCheck
+  // GetProductByCateInBranchForInventoryCheck
   // UTCID01: GetProductByCateInBranchForInventoryCheck - Valid
   @Test
   public void UTCID01_testGetProductByCateInBranchForInventoryCheck() {
@@ -2132,24 +2267,29 @@ public class ProductServiceImplTest {
     List<ProductBaseDTO> productBaseDTOs = new ArrayList<>();
     productBaseDTOs.add(productBaseDTO);
 
-    when(productRepository.searchAllProductByBranchIdAndCateId(eq(branchId), eq(cateId), eq(""), isNull(), isNull())).thenReturn(productEntities);
-    when(productMapper.convertToProductForSearchInNotes(any(ProductEntity.class), eq(branchId))).thenReturn(productBaseDTO);
+    when(productRepository.searchAllProductByBranchIdAndCateId(
+            eq(branchId), eq(cateId), eq(""), isNull(), isNull()))
+        .thenReturn(productEntities);
+    when(productMapper.convertToProductForSearchInNotes(any(ProductEntity.class), eq(branchId)))
+        .thenReturn(productBaseDTO);
     doReturn(new ArrayList<ProductBatchDTO>()).when(productService).processProductData(anyList());
 
     // Act
-    List<ProductBatchDTO> result = productService.getProductByCateInBranchForInventoryCheck(branchId, cateId);
+    List<ProductBatchDTO> result =
+        productService.getProductByCateInBranchForInventoryCheck(branchId, cateId);
 
     // Assert
     assertNotNull(result);
     assertEquals(0, result.size()); // Assuming processProductData returns an empty list
 
-    verify(productRepository, times(1)).searchAllProductByBranchIdAndCateId(eq(branchId), eq(cateId), eq(""), isNull(), isNull());
-    verify(productMapper, times(1)).convertToProductForSearchInNotes(any(ProductEntity.class), eq(branchId));
+    verify(productRepository, times(1))
+        .searchAllProductByBranchIdAndCateId(eq(branchId), eq(cateId), eq(""), isNull(), isNull());
+    verify(productMapper, times(1))
+        .convertToProductForSearchInNotes(any(ProductEntity.class), eq(branchId));
     verify(productService, times(1)).processProductData(anyList());
-
   }
 
-  //GetByKeyword
+  // GetByKeyword
   // UTCID01: GetByKeyword - Valid
   @Test
   public void UTCID01_testGetByKeyword() {
@@ -2168,9 +2308,9 @@ public class ProductServiceImplTest {
     String keyword = "product";
 
     when(productRepository.findProductEntitiesByProductNameIgnoreCase(anyString()))
-            .thenReturn(productEntities);
+        .thenReturn(productEntities);
     when(productMapper.convertToProductDto(any(ProductEntity.class)))
-            .thenReturn(productBaseDTOs.get(0));
+        .thenReturn(productBaseDTOs.get(0));
 
     // Act
     List<ProductBaseDTO> result = productService.getByKeyword(keyword);
@@ -2184,7 +2324,7 @@ public class ProductServiceImplTest {
     verify(productMapper, times(1)).convertToProductDto(any(ProductEntity.class));
   }
 
-  //GetProductDetailsInPeriod
+  // GetProductDetailsInPeriod
   // UTCID01: GetProductDetailsInPeriod - Valid
   @Test
   public void UTCID01_testGetProductDetailsInPeriod() {
@@ -2194,19 +2334,22 @@ public class ProductServiceImplTest {
     LocalDateTime endDate = LocalDateTime.now();
 
     when(inboundDetailsService.getInboundDetailsByProductIdAndPeriod(anyLong(), any(), any()))
-            .thenReturn(inboundDetailEntities);
+        .thenReturn(inboundDetailEntities);
     when(inboundDetailsMapper.toAudit(any())).thenReturn(auditHistories.get(0));
 
     // Mock other services to return empty lists
-    when(inboundBatchDetailService.getInboundBatchDetailsByProductIdAndPeriod(anyLong(), any(), any()))
-            .thenReturn(batchInboundDetailEntities);
+    when(inboundBatchDetailService.getInboundBatchDetailsByProductIdAndPeriod(
+            anyLong(), any(), any()))
+        .thenReturn(batchInboundDetailEntities);
     when(outboundDetailService.getOutboundDetailsByProductIdAndPeriod(anyLong(), any(), any()))
-            .thenReturn(batchOutboundDetailEntities);
-    when(outboundProductDetailService.getOutboundProductDetailsByProductIdAndPeriod(anyLong(), any(), any()))
-            .thenReturn(productOutboundDetailEntities);
+        .thenReturn(batchOutboundDetailEntities);
+    when(outboundProductDetailService.getOutboundProductDetailsByProductIdAndPeriod(
+            anyLong(), any(), any()))
+        .thenReturn(productOutboundDetailEntities);
 
     // Act
-    List<AuditHistory> result = productService.getProductDetailsInPeriod(productId, startDate, endDate);
+    List<AuditHistory> result =
+        productService.getProductDetailsInPeriod(productId, startDate, endDate);
 
     // Assert
     assertNotNull(result);
@@ -2214,20 +2357,24 @@ public class ProductServiceImplTest {
     assertEquals(auditHistories.get(0), result.get(0));
 
     // Verify only the necessary interactions
-    verify(inboundDetailsService, times(1)).getInboundDetailsByProductIdAndPeriod(anyLong(), any(), any());
+    verify(inboundDetailsService, times(1))
+        .getInboundDetailsByProductIdAndPeriod(anyLong(), any(), any());
     verify(inboundDetailsMapper, times(1)).toAudit(any());
-    verify(inboundBatchDetailService, times(1)).getInboundBatchDetailsByProductIdAndPeriod(anyLong(), any(), any());
-    verify(outboundDetailService, times(1)).getOutboundDetailsByProductIdAndPeriod(anyLong(), any(), any());
-    verify(outboundProductDetailService, times(1)).getOutboundProductDetailsByProductIdAndPeriod(anyLong(), any(), any());
-
+    verify(inboundBatchDetailService, times(1))
+        .getInboundBatchDetailsByProductIdAndPeriod(anyLong(), any(), any());
+    verify(outboundDetailService, times(1))
+        .getOutboundDetailsByProductIdAndPeriod(anyLong(), any(), any());
+    verify(outboundProductDetailService, times(1))
+        .getOutboundProductDetailsByProductIdAndPeriod(anyLong(), any(), any());
   }
 
-  //AddProductFromJson
+  // AddProductFromJson
   // UTCID01: AddProductFromJson - Valid
   @Test
   public void UTCID01_testAddProductFromJson() {
     // Arrange
-    when(allowedProductRepository.save(any(AllowedProductEntity.class))).thenReturn(allowedProductEntity);
+    when(allowedProductRepository.save(any(AllowedProductEntity.class)))
+        .thenReturn(allowedProductEntity);
 
     // Act
     List<AllowedProductEntity> result = productService.addProductFromJson(productJsonList);
@@ -2240,7 +2387,7 @@ public class ProductServiceImplTest {
     verify(allowedProductRepository, times(1)).save(any(AllowedProductEntity.class));
   }
 
-  //GetAllowProducts
+  // GetAllowProducts
   // UTCID01: GetAllowProducts - Valid
   @Test
   public void UTCID01_testGetAllowProducts() {
@@ -2248,7 +2395,7 @@ public class ProductServiceImplTest {
     String searchStr = "Test";
 
     when(allowedProductRepository.findAllByProductNameContainsIgnoreCase(anyString()))
-            .thenReturn(allowedProductEntities);
+        .thenReturn(allowedProductEntities);
 
     // Act
     List<AllowedProductEntity> result = productService.getAllowProducts(searchStr);
@@ -2261,5 +2408,3 @@ public class ProductServiceImplTest {
     verify(allowedProductRepository, times(1)).findAllByProductNameContainsIgnoreCase(searchStr);
   }
 }
-
-

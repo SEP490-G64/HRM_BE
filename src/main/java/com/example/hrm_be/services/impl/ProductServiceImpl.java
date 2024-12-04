@@ -97,11 +97,11 @@ public class ProductServiceImpl implements ProductService {
 
   @Override
   public Product getById(Long id) {
-    if(id == null) {
+    if (id == null) {
       throw new HrmCommonException(HrmConstant.ERROR.PRODUCT.ID_NULL);
     }
     ProductEntity productEntity = productRepository.findById(id).orElse(null);
-    if(productEntity == null || productEntity.getStatus() == ProductStatus.DA_XOA) {
+    if (productEntity == null || productEntity.getStatus() == ProductStatus.DA_XOA) {
       throw new HrmCommonException(HrmConstant.ERROR.PRODUCT.NOT_EXIST);
     }
     return productMapper.convertToDTOWithoutProductInBranchProduct(productEntity);
@@ -223,7 +223,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     if (productRepository.existsByRegistrationCode(product.getRegistrationCode())
-            && !Objects.equals(product.getRegistrationCode(), oldProductEntity.getRegistrationCode())) {
+        && !Objects.equals(product.getRegistrationCode(), oldProductEntity.getRegistrationCode())) {
       throw new HrmCommonException(HrmConstant.ERROR.PRODUCT.REGISTRATION_EXIST);
     }
 
@@ -232,15 +232,15 @@ public class ProductServiceImpl implements ProductService {
       throw new HrmCommonException(TYPE.NOT_EXIST);
     }
     if (product.getCategory() != null
-            && !productCategoryService.existById(product.getCategory().getId())) {
+        && !productCategoryService.existById(product.getCategory().getId())) {
       throw new HrmCommonException(CATEGORY.NOT_EXIST);
     }
     if (product.getBaseUnit() != null
-            && !unitOfMeasurementService.existById(product.getBaseUnit().getId())) {
+        && !unitOfMeasurementService.existById(product.getBaseUnit().getId())) {
       throw new HrmCommonException(UNIT_OF_MEASUREMENT.NOT_EXIST);
     }
     if (product.getManufacturer() != null
-            && !manufacturerService.existById(product.getManufacturer().getId())) {
+        && !manufacturerService.existById(product.getManufacturer().getId())) {
       throw new HrmCommonException(MANUFACTURER.NOT_EXIST);
     }
 
@@ -261,17 +261,17 @@ public class ProductServiceImpl implements ProductService {
 
       // Create a map of old special conditions by ID for easier comparison
       Map<Long, SpecialConditionEntity> oldSpecialConditionsMap =
-              oldSpecialConditions.stream()
-                      .collect(Collectors.toMap(SpecialConditionEntity::getId, sc -> sc));
+          oldSpecialConditions.stream()
+              .collect(Collectors.toMap(SpecialConditionEntity::getId, sc -> sc));
 
       // Process new special conditions
       for (SpecialCondition newCondition : newSpecialConditions) {
         if (newCondition.getId() == null
-                || oldSpecialConditionsMap.containsKey(newCondition.getId())) {
+            || oldSpecialConditionsMap.containsKey(newCondition.getId())) {
           // New condition -> add
           // Old condition -> update
           SpecialConditionEntity specialConditionEntity =
-                  specialConditionMapper.toEntity(newCondition);
+              specialConditionMapper.toEntity(newCondition);
           specialConditionEntity.setProduct(savedProduct);
           specialConditionsToAddOrUpdate.add(specialConditionEntity);
         }
@@ -279,15 +279,15 @@ public class ProductServiceImpl implements ProductService {
 
       // Identify old conditions to delete (those that are not in the new list)
       List<Long> newConditionIds =
-              newSpecialConditions.stream()
-                      .filter(sc -> sc.getId() != null)
-                      .map(SpecialCondition::getId)
-                      .collect(Collectors.toList());
+          newSpecialConditions.stream()
+              .filter(sc -> sc.getId() != null)
+              .map(SpecialCondition::getId)
+              .collect(Collectors.toList());
 
       specialConditionsToDelete =
-              oldSpecialConditions.stream()
-                      .filter(oldCondition -> !newConditionIds.contains(oldCondition.getId()))
-                      .collect(Collectors.toList());
+          oldSpecialConditions.stream()
+              .filter(oldCondition -> !newConditionIds.contains(oldCondition.getId()))
+              .collect(Collectors.toList());
 
       // Perform the database operations for add/update/delete
       if (!specialConditionsToAddOrUpdate.isEmpty()) {
@@ -306,7 +306,7 @@ public class ProductServiceImpl implements ProductService {
     // Handle Unit Conversions
     List<UnitConversion> newUnitConversions = product.getUnitConversions();
     List<UnitConversionEntity> oldUnitConversions =
-            unitConversionService.getByProductId(savedProduct.getId());
+        unitConversionService.getByProductId(savedProduct.getId());
 
     if (newUnitConversions != null && !newUnitConversions.isEmpty()) {
       // Prepare for add/update/delete
@@ -315,13 +315,13 @@ public class ProductServiceImpl implements ProductService {
 
       // Create a map of old unit conversions by ID for easier comparison
       Map<Long, UnitConversionEntity> oldUnitConversionsMap =
-              oldUnitConversions.stream()
-                      .collect(Collectors.toMap(UnitConversionEntity::getId, uc -> uc));
+          oldUnitConversions.stream()
+              .collect(Collectors.toMap(UnitConversionEntity::getId, uc -> uc));
 
       // Process new unit conversions
       for (UnitConversion newConversion : newUnitConversions) {
         if (newConversion.getId() == null
-                || oldUnitConversionsMap.containsKey(newConversion.getId())) {
+            || oldUnitConversionsMap.containsKey(newConversion.getId())) {
           // New conversion -> add
           UnitConversionEntity unitConversionEntity = unitConversionMapper.toEntity(newConversion);
           unitConversionEntity.setLargerUnit(savedProduct.getBaseUnit());
@@ -332,15 +332,15 @@ public class ProductServiceImpl implements ProductService {
 
       // Identify old unit conversions to delete (those that are not in the new list)
       List<Long> newConversionIds =
-              newUnitConversions.stream()
-                      .filter(sc -> sc.getId() != null)
-                      .map(UnitConversion::getId)
-                      .collect(Collectors.toList());
+          newUnitConversions.stream()
+              .filter(sc -> sc.getId() != null)
+              .map(UnitConversion::getId)
+              .collect(Collectors.toList());
 
       unitConversionsToDelete =
-              oldUnitConversions.stream()
-                      .filter(oldCondition -> !newConversionIds.contains(oldCondition.getId()))
-                      .collect(Collectors.toList());
+          oldUnitConversions.stream()
+              .filter(oldCondition -> !newConversionIds.contains(oldCondition.getId()))
+              .collect(Collectors.toList());
 
       // Perform the database operations for add/update/delete
       if (!unitConversionsToAddOrUpdate.isEmpty()) {
@@ -358,9 +358,9 @@ public class ProductServiceImpl implements ProductService {
 
     List<BranchProductEntity> oldBranchProducts = oldProductEntity.getBranchProducs();
     List<Long> oldBranchProductsIds =
-            oldBranchProducts.stream()
-                    .map(branchProduct -> branchProduct.getBranch().getId())
-                    .collect(Collectors.toList());
+        oldBranchProducts.stream()
+            .map(branchProduct -> branchProduct.getBranch().getId())
+            .collect(Collectors.toList());
 
     BranchProduct branchProduct = product.getBranchProducts().get(0);
     if (branchProduct == null) {
@@ -397,9 +397,9 @@ public class ProductServiceImpl implements ProductService {
       branchProductEntity.setBranch(branchMapper.toEntity(branch));
       if (branchProduct.getStorageLocation() != null) {
         StorageLocation savedStorageLocation =
-                storageLocationService.save(branchProduct.getStorageLocation());
+            storageLocationService.save(branchProduct.getStorageLocation());
         branchProductEntity.setStorageLocation(
-                storageLocationMapper.toEntity(savedStorageLocation));
+            storageLocationMapper.toEntity(savedStorageLocation));
       }
 
       branchProductEntity.setMinQuantity(branchProduct.getMinQuantity());
@@ -413,7 +413,6 @@ public class ProductServiceImpl implements ProductService {
     return productMapper.toDTO(savedProduct);
   }
 
-
   @Override
   public Product updateInboundPrice(Product product) {
     ProductEntity unsavedProduct = productRepository.findById(product.getId()).orElse(null);
@@ -426,7 +425,8 @@ public class ProductServiceImpl implements ProductService {
   @Override
   public void delete(Long id) {
     Optional<ProductEntity> productEntityOpt = productRepository.findById(id);
-    if (!productEntityOpt.isPresent() || productEntityOpt.get().getStatus() == ProductStatus.DA_XOA) {
+    if (!productEntityOpt.isPresent()
+        || productEntityOpt.get().getStatus() == ProductStatus.DA_XOA) {
       throw new HrmCommonException(HrmConstant.ERROR.PRODUCT.NOT_EXIST);
     }
     productRepository.updateProductStatus(ProductStatus.DA_XOA, id);
@@ -810,11 +810,10 @@ public class ProductServiceImpl implements ProductService {
 
     // Fetch product data
     List<ProductBaseDTO> products =
-            productRepository.findAll().stream()
-                    .filter(product -> !ProductStatus.DA_XOA.equals(product.getStatus()))
-                    .map(productMapper::convertToProductBaseDTO)
-                    .collect(Collectors.toList());
-
+        productRepository.findAll().stream()
+            .filter(product -> !ProductStatus.DA_XOA.equals(product.getStatus()))
+            .map(productMapper::convertToProductBaseDTO)
+            .collect(Collectors.toList());
 
     // Export data using utility
     try {
@@ -1087,52 +1086,49 @@ public class ProductServiceImpl implements ProductService {
   boolean commonValidate(Product product) {
     // Validate ProductName (required, non-empty, max length 50)
     if (product.getProductName() == null
-            || product.getProductName().trim().isEmpty()
-            || product.getProductName().length() > 50) {
+        || product.getProductName().trim().isEmpty()
+        || product.getProductName().length() > 50) {
       return false;
     }
 
     // Validate Registration Code (required, non-empty, max length 30)
     if (product.getRegistrationCode() == null
-            || product.getRegistrationCode().trim().isEmpty()
-            || product.getRegistrationCode().length() > 30) {
+        || product.getRegistrationCode().trim().isEmpty()
+        || product.getRegistrationCode().length() > 30) {
       return false;
     }
 
     // Validate Active Ingredient (required, non-empty, max length 255)
     if (product.getActiveIngredient() == null
-            || product.getActiveIngredient().trim().isEmpty()
-            || product.getActiveIngredient().length() > 255) {
+        || product.getActiveIngredient().trim().isEmpty()
+        || product.getActiveIngredient().length() > 255) {
       return false;
     }
 
     // Validate Excipient (required, non-empty, max length 255)
-    if (product.getExcipient() != null
-            && product.getExcipient().length() > 255) {
+    if (product.getExcipient() != null && product.getExcipient().length() > 255) {
       return false;
     }
 
     // Validate Formulation (required, non-empty, max length 255)
     if (product.getFormulation() == null
-            || product.getFormulation().trim().isEmpty()
-            || product.getFormulation().length() > 255) {
+        || product.getFormulation().trim().isEmpty()
+        || product.getFormulation().length() > 255) {
       return false;
     }
 
     // Validate Inbound Price (max value 1,000,000,000)
     if (product.getInboundPrice() != null
-            && product.getInboundPrice().compareTo(new BigDecimal("1000000000")) > 0) {
+        && product.getInboundPrice().compareTo(new BigDecimal("1000000000")) > 0) {
       return false;
     }
 
     // Validate Sell Price (max value 1,000,000,000)
     if (product.getSellPrice() != null
-            && product.getSellPrice().compareTo(new BigDecimal("1000000000")) > 0) {
+        && product.getSellPrice().compareTo(new BigDecimal("1000000000")) > 0) {
       return false;
     }
 
     return true;
   }
-
-
 }
