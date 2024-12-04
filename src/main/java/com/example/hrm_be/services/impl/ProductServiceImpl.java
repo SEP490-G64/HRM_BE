@@ -115,7 +115,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     // Check only manager allow to sell price
-    if (userService.isManager()) {
+    if (!userService.isManager()) {
       if (product.getSellPrice() != null) {
         throw new HrmCommonException(HrmConstant.ERROR.ROLE.NOT_ALLOWED);
       }
@@ -894,7 +894,7 @@ public class ProductServiceImpl implements ProductService {
     return productMapper.convertToBranchProduct(product, branchId);
   }
 
-  private List<ProductBatchDTO> processProductData(List<ProductBaseDTO> products) {
+  List<ProductBatchDTO> processProductData(List<ProductBaseDTO> products) {
     List<ProductBatchDTO> allProductBatches = new ArrayList<>();
     for (ProductBaseDTO product : products) {
       ProductBatchDTO productBaseDTO =
@@ -1084,7 +1084,7 @@ public class ProductServiceImpl implements ProductService {
         .collect(Collectors.toList());
   }
 
-  private boolean commonValidate(Product product) {
+  boolean commonValidate(Product product) {
     // Validate ProductName (required, non-empty, max length 50)
     if (product.getProductName() == null
             || product.getProductName().trim().isEmpty()
