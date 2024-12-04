@@ -46,6 +46,7 @@ public class BranchServiceImplTest {
             .phoneNumber("0912345678")
             .capacity(500)
             .activeStatus(true)
+            .isDeleted(false)
             .build();
 
     branchEntity =
