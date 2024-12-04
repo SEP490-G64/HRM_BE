@@ -1,5 +1,6 @@
 package com.example.hrm_be.models.dtos;
 
+import com.example.hrm_be.commons.enums.LocationType;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.util.List;
 import lombok.AccessLevel;
@@ -24,6 +25,13 @@ import lombok.extern.jackson.Jacksonized;
 public class StorageLocation {
   Long id;
   String shelfName;
-
+  Integer aisle;
+  Integer rowNumber;
+  Integer shelfLevel;
+  String zone;
+  LocationType locationType;
+  String specialCondition;
+  Boolean active;
+  Branch branch;
   List<BranchProduct> branchProducts;
 }

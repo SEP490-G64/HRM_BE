@@ -3,22 +3,20 @@ package com.example.hrm_be.controllers.storageLocation;
 import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.commons.enums.ResponseStatus;
 import com.example.hrm_be.models.dtos.StorageLocation;
+import com.example.hrm_be.models.dtos.UnitOfMeasurement;
 import com.example.hrm_be.models.responses.BaseOutput;
 import com.example.hrm_be.services.StorageLocationService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
+
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -37,11 +35,12 @@ public class StaffStorageLocationController {
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size,
       @RequestParam(required = false, defaultValue = "id") String sortBy,
-      @RequestParam(defaultValue = "") String name) {
+      @RequestParam(defaultValue = "") String name,
+      @RequestParam(defaultValue = "") Long branchId) {
 
     // Retrieve paginated list of storageLocations from the service
     Page<StorageLocation> storageLocationPage =
-        storageLocationService.getByPaging(page, size, sortBy, name);
+        storageLocationService.getByPaging(page, size, branchId, sortBy, name);
 
     // Construct response object with storageLocation data and pagination details
     BaseOutput<List<StorageLocation>> response =
@@ -95,6 +94,76 @@ public class StaffStorageLocationController {
             .data(storageLocation) // Attach storageLocation data
             .status(ResponseStatus.SUCCESS) // Set response status to SUCCESS
             .build();
+
+    // Return response with status OK
+    return ResponseEntity.ok(response);
+  }
+
+  // POST: /api/v1/staff/storageLocation
+  // Create new UnitOfMeasurement
+  @PostMapping()
+  protected ResponseEntity<BaseOutput<StorageLocation>> create(
+          @RequestBody @NotNull(message = "error.request.body.invalid")
+          StorageLocation storageLocation) {
+
+    // Check if the unitOfMeasurement object is null
+    if (storageLocation == null) {
+      // Create response indicating invalid request body
+      BaseOutput<StorageLocation> response =
+              BaseOutput.<StorageLocation>builder()
+                      .errors(List.of(HrmConstant.ERROR.REQUEST.INVALID_BODY))
+                      .status(ResponseStatus.FAILED) // Set response status to FAILED
+                      .build();
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+              .body(response); // Return BAD_REQUEST response
+    }
+
+    // Call service to create a new unitOfMeasurement
+    StorageLocation createdStorageLocation = storageLocationService.create(storageLocation);
+
+    // Construct response object with created unitOfMeasurement data
+    BaseOutput<StorageLocation> response =
+            BaseOutput.<StorageLocation>builder()
+                    .message(HttpStatus.OK.toString())
+                    .data(createdStorageLocation) // Attach newly created unitOfMeasurement data
+                    .status(ResponseStatus.SUCCESS) // Set response status to SUCCESS
+                    .build();
+
+    // Return response with status OK
+    return ResponseEntity.ok(response);
+  }
+
+  // PUT: /api/v1/staff/storageLocation/{id}
+  // Update UnitOfMeasurement
+  @PutMapping("/{id}")
+  protected ResponseEntity<BaseOutput<StorageLocation>> update(
+          @PathVariable("id") Long id,
+          @RequestBody @NotNull(message = "error.request.body.invalid")
+          StorageLocation storageLocation) {
+
+    // Check if the provided ID is less than or equal to zero
+    if (id <= 0 || id == null) {
+      // Create response indicating invalid path variable
+      BaseOutput<StorageLocation> response =
+              BaseOutput.<StorageLocation>builder()
+                      .status(ResponseStatus.FAILED)
+                      .errors(List.of(HrmConstant.ERROR.REQUEST.INVALID_PATH_VARIABLE))
+                      .build();
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+              .body(response); // Return BAD_REQUEST response
+    }
+
+    storageLocation.setId(id); // Set the ID of the unitOfMeasurement to update
+    // Call service to update the unitOfMeasurement
+    StorageLocation updatedStorageLocation = storageLocationService.update(storageLocation);
+
+    // Construct response object with updated unitOfMeasurement data
+    BaseOutput<StorageLocation> response =
+            BaseOutput.<StorageLocation>builder()
+                    .message(HttpStatus.OK.toString())
+                    .data(updatedStorageLocation) // Attach updated unitOfMeasurement data
+                    .status(ResponseStatus.SUCCESS) // Set response status to SUCCESS
+                    .build();
 
     // Return response with status OK
     return ResponseEntity.ok(response);

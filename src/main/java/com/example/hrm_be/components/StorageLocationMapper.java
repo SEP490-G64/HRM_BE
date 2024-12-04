@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 public class StorageLocationMapper {
 
   @Autowired @Lazy private BranchProductMapper branchProductMapper;
+  @Autowired @Lazy private BranchMapper branchMapper;
 
   // Convert StorageLocationEntity to StorageLocationDTO
   public StorageLocation toDTO(StorageLocationEntity entity) {
@@ -26,6 +27,15 @@ public class StorageLocationMapper {
                 StorageLocationEntity.builder()
                     .id(d.getId())
                     .shelfName(d.getShelfName())
+                        .aisle(d.getAisle())
+                        .zone(d.getZone())
+                        .active(d.getActive())
+                        .locationType(d.getLocationType())
+                        .rowNumber(d.getRowNumber())
+                        .shelfLevel(d.getShelfLevel())
+                        .specialCondition(d.getSpecialCondition())
+                        .branch(d.getBranch() != null
+                        ? branchMapper.toEntity(d.getBranch()) : null)
                     .branchProducts(
                         d.getBranchProducts() != null
                             ? d.getBranchProducts().stream()

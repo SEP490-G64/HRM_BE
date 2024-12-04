@@ -692,7 +692,8 @@ public class UserServiceImpl implements UserService {
         };
 
     // Fetch user data (this would typically come from your database/repository)
-    List<User> users = getByPaging(0, Integer.MAX_VALUE, "id", "ASC", "", null, null).stream().toList();
+    List<User> users =
+        getByPaging(0, Integer.MAX_VALUE, "id", "ASC", "", null, null).stream().toList();
 
     // Call the utility to export data
     try {
