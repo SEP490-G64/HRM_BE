@@ -231,14 +231,14 @@ class UserServiceImplTest {
         new PageImpl<>(users, pageable, users.size()); // Mock Page object with total size
 
     // Stub repository method to return the mock page
-    when(userRepository.searchUsers("", UserStatusType.ACTIVATE, pageable)).thenReturn(page);
+    when(userRepository.searchUsers("", null, UserStatusType.ACTIVATE, pageable)).thenReturn(page);
 
     // Mock conversion from UserEntity to UserDTO
     when(userMapper.toDTO(userEntity)).thenReturn(user);
 
     // Act: Call the method under test
     Page<User> result =
-        userService.getByPaging(0, 10, "userName", "asc", "", UserStatusType.ACTIVATE);
+        userService.getByPaging(0, 10, "userName", "asc", "", null, UserStatusType.ACTIVATE);
 
     // Assert: Verify the result is not null and contains expected content
     Assertions.assertNotNull(result, "Result should not be null");
@@ -253,7 +253,8 @@ class UserServiceImplTest {
     // Act & Assert: Verify that an exception is thrown when a negative page number is passed
     Assertions.assertThrows(
         HrmCommonException.class,
-        () -> userService.getByPaging(-1, 10, "userName", "asc", "", UserStatusType.ACTIVATE));
+        () ->
+            userService.getByPaging(-1, 10, "userName", "asc", "", null, UserStatusType.ACTIVATE));
   }
 
   // UTCID03 - Get By Paging: pageSize < 1
@@ -262,7 +263,7 @@ class UserServiceImplTest {
     TestUtils.mockAuthenticatedUser("dsdadmin@gmail.com", RoleType.ADMIN);
     Assertions.assertThrows(
         HrmCommonException.class,
-        () -> userService.getByPaging(0, 0, "userName", "asc", "", UserStatusType.ACTIVATE));
+        () -> userService.getByPaging(0, 0, "userName", "asc", "", null, UserStatusType.ACTIVATE));
   }
 
   // UTCID04 - Get By Paging: sortBy equal null
@@ -271,7 +272,7 @@ class UserServiceImplTest {
     TestUtils.mockAuthenticatedUser("dsdadmin@gmail.com", RoleType.ADMIN);
     Assertions.assertThrows(
         HrmCommonException.class,
-        () -> userService.getByPaging(0, 10, null, "asc", "", UserStatusType.ACTIVATE));
+        () -> userService.getByPaging(0, 10, null, "asc", "", null, UserStatusType.ACTIVATE));
   }
 
   // UTCID05 - Get By Paging: sortBy not a field of User class
@@ -280,7 +281,7 @@ class UserServiceImplTest {
     TestUtils.mockAuthenticatedUser("dsdadmin@gmail.com", RoleType.ADMIN);
     Assertions.assertThrows(
         HrmCommonException.class,
-        () -> userService.getByPaging(0, 10, "userName", "test", "", null));
+        () -> userService.getByPaging(0, 10, "userName", "test", "", null, null));
   }
 
   @Test
@@ -301,14 +302,15 @@ class UserServiceImplTest {
         new PageImpl<>(users, pageable, users.size()); // Mock Page object with total size
 
     // Stub repository method to return the mock page
-    when(userRepository.searchUsers("", UserStatusType.ACTIVATE, pageable)).thenReturn(page);
+    when(userRepository.searchUsers("", null, UserStatusType.ACTIVATE, pageable)).thenReturn(page);
 
     // Mock conversion from UserEntity to UserDTO
     when(userMapper.toDTO(userEntity)).thenReturn(user);
 
     // Act: Call the method under test
     Page<User> result =
-        userService.getByPaging(0, 10, "userName", "invalidDirection", "", UserStatusType.ACTIVATE);
+        userService.getByPaging(
+            0, 10, "userName", "invalidDirection", "", null, UserStatusType.ACTIVATE);
 
     // Assert: Verify the result is not null and contains expected content
     Assertions.assertNotNull(result);
@@ -333,7 +335,7 @@ class UserServiceImplTest {
       HrmCommonException exception =
           Assertions.assertThrows(
               HrmCommonException.class,
-              () -> mockUserService.getByPaging(0, 0, "id", "ASC", null, null));
+              () -> mockUserService.getByPaging(0, 0, "id", "ASC", null, null, null));
     }
   }
 
@@ -1709,7 +1711,7 @@ class UserServiceImplTest {
 
     // Mock repository trả về mockPage
     when(userRepository.searchUsers(
-            "", null, PageRequest.of(0, Integer.MAX_VALUE, Sort.by("id").ascending())))
+            "", null, null, PageRequest.of(0, Integer.MAX_VALUE, Sort.by("id").ascending())))
         .thenReturn(mockPage);
     when(userMapper.toDTO(userEntity)).thenReturn(user);
     // Thực thi phương thức
@@ -1767,7 +1769,7 @@ class UserServiceImplTest {
     UserService mockUserService = Mockito.spy(userService);
     doReturn(pageOfUsers)
         .when(mockUserService)
-        .getByPaging(anyInt(), anyInt(), anyString(), anyString(), anyString(), any());
+        .getByPaging(anyInt(), anyInt(), anyString(), anyString(), anyString(), any(), any());
 
     // Act: Call the method to export the file
     ByteArrayInputStream result = mockUserService.exportFile();
@@ -1800,7 +1802,7 @@ class UserServiceImplTest {
     UserService mockUserService = Mockito.spy(userService);
     doReturn(pageOfUsers)
         .when(mockUserService)
-        .getByPaging(anyInt(), anyInt(), anyString(), anyString(), anyString(), any());
+        .getByPaging(anyInt(), anyInt(), anyString(), anyString(), anyString(), any(), any());
 
     // Act: Call the method to export the file
     ByteArrayInputStream result = mockUserService.exportFile();

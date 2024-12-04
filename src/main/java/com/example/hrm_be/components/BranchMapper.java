@@ -37,6 +37,7 @@ public class BranchMapper {
                     .phoneNumber(e.getPhoneNumber())
                     .capacity(e.getCapacity())
                     .activeStatus(e.getActiveStatus())
+                    .isDeleted(e.getIsDeleted())
                     .branchBatches(
                         e.getBranchBatches() != null
                             ? e.getBranchBatches().stream()
@@ -79,6 +80,7 @@ public class BranchMapper {
                     .phoneNumber(e.getPhoneNumber())
                     .capacity(e.getCapacity())
                     .activeStatus(e.getActiveStatus())
+                    .isDeleted(e.getIsDeleted())
                     .inventoryChecks(
                         e.getInventoryChecks() != null
                             ? e.getInventoryChecks().stream()
@@ -108,6 +110,7 @@ public class BranchMapper {
                     .phoneNumber(e.getPhoneNumber())
                     .capacity(e.getCapacity())
                     .activeStatus(e.getActiveStatus())
+                    .isDeleted(e.getIsDeleted())
                     .build())
         .orElse(null);
   }

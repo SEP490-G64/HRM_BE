@@ -24,6 +24,7 @@ public interface UserService {
       String sortBy,
       String sortDirection,
       String keyword,
+      Long branchId,
       @Nullable UserStatusType status);
 
   Page<User> getRegistrationRequests();

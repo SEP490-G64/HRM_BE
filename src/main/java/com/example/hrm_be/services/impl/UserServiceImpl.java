@@ -101,6 +101,7 @@ public class UserServiceImpl implements UserService {
       String sortBy,
       String sortDirection,
       String keyword,
+      Long branchId,
       @Nullable UserStatusType status) {
     /** TODO Only allow admin user to call this function */
     // Check if the logged user is an admin
@@ -122,7 +123,7 @@ public class UserServiceImpl implements UserService {
     Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(convertDirection, sortBy));
 
     // Fetch users by keyword and map to DTO
-    return userRepository.searchUsers(keyword, status, pageable).map(userMapper::toDTO);
+    return userRepository.searchUsers(keyword, branchId, status, pageable).map(userMapper::toDTO);
   }
 
   @Override
@@ -691,7 +692,8 @@ public class UserServiceImpl implements UserService {
         };
 
     // Fetch user data (this would typically come from your database/repository)
-    List<User> users = getByPaging(0, Integer.MAX_VALUE, "id", "ASC", "", null).stream().toList();
+    List<User> users =
+        getByPaging(0, Integer.MAX_VALUE, "id", "ASC", "", null, null).stream().toList();
 
     // Call the utility to export data
     try {
