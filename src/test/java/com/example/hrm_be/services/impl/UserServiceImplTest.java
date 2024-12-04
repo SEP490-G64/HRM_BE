@@ -253,7 +253,8 @@ class UserServiceImplTest {
     // Act & Assert: Verify that an exception is thrown when a negative page number is passed
     Assertions.assertThrows(
         HrmCommonException.class,
-        () -> userService.getByPaging(-1, 10, "userName", "asc", "", null, UserStatusType.ACTIVATE));
+        () ->
+            userService.getByPaging(-1, 10, "userName", "asc", "", null, UserStatusType.ACTIVATE));
   }
 
   // UTCID03 - Get By Paging: pageSize < 1
@@ -308,7 +309,8 @@ class UserServiceImplTest {
 
     // Act: Call the method under test
     Page<User> result =
-        userService.getByPaging(0, 10, "userName", "invalidDirection", "", null, UserStatusType.ACTIVATE);
+        userService.getByPaging(
+            0, 10, "userName", "invalidDirection", "", null, UserStatusType.ACTIVATE);
 
     // Assert: Verify the result is not null and contains expected content
     Assertions.assertNotNull(result);

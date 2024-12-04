@@ -37,9 +37,16 @@ public class BranchServiceImpl implements BranchService {
     }
 
     return Optional.ofNullable(id)
-            .flatMap(e -> branchRepository.findById(e)
-                    .map(b -> b.getIsDeleted() ? null : branchMapper.toDTO(b))) // Kiểm tra isDeleted trong map
-            .orElse(null);
+        .flatMap(
+            e ->
+                branchRepository
+                    .findById(e)
+                    .map(
+                        b ->
+                            b.getIsDeleted()
+                                ? null
+                                : branchMapper.toDTO(b))) // Kiểm tra isDeleted trong map
+        .orElse(null);
   }
 
   // Retrieves a paginated list of Branch entities, allowing sorting and searching by name or
