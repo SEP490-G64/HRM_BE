@@ -21,7 +21,8 @@ public interface InventoryCheckRepository
   @Modifying
   @Transactional
   @Query("UPDATE InventoryCheckEntity i SET i.status = :status WHERE i.id = :id")
-  void updateInventoryCheckStatus(@Param("status") InventoryCheckStatus status, @Param("id") Long id);
+  void updateInventoryCheckStatus(
+      @Param("status") InventoryCheckStatus status, @Param("id") Long id);
 
   @Query(
       "SELECT b FROM InventoryCheckEntity b LEFT JOIN FETCH b.branch brb WHERE brb.id = :branchId"

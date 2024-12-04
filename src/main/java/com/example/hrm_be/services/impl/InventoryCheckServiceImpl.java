@@ -336,7 +336,8 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
                 op.toBuilder()
                     .isApproved(accept) // Set approval flag
                     .approvedBy(userEntity) // Set approver
-                    .status(accept ? InventoryCheckStatus.DA_CAN_BANG : InventoryCheckStatus.DANG_KIEM)
+                    .status(
+                        accept ? InventoryCheckStatus.DA_CAN_BANG : InventoryCheckStatus.DANG_KIEM)
                     .build())
         .map(inventoryCheckRepository::save) // Save updated entity
         .map(inventoryCheckMapper::toDTO) // Convert to DTO
@@ -396,7 +397,10 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
                 request.getCreatedDate() != null ? request.getCreatedDate() : LocalDateTime.now())
             .status(InventoryCheckStatus.DANG_KIEM) // Example status
             .createdBy(unsavedInventoryCheck.getCreatedBy())
-            .approvedBy(unsavedInventoryCheck.getApprovedBy() != null ? unsavedInventoryCheck.getApprovedBy() : null) // Default to null for new checks
+            .approvedBy(
+                unsavedInventoryCheck.getApprovedBy() != null
+                    ? unsavedInventoryCheck.getApprovedBy()
+                    : null) // Default to null for new checks
             .branch(unsavedInventoryCheck.getBranch())
             .isApproved(unsavedInventoryCheck.getIsApproved())
             .note(request.getNote())
