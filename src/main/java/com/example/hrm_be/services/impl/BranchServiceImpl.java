@@ -43,7 +43,7 @@ public class BranchServiceImpl implements BranchService {
                     .findById(e)
                     .map(
                         b ->
-                                b.getIsDeleted() != null && b.getIsDeleted()
+                            b.getIsDeleted() != null && b.getIsDeleted()
                                 ? null
                                 : branchMapper.toDTO(b))) // Kiểm tra isDeleted trong map
         .orElse(null);
