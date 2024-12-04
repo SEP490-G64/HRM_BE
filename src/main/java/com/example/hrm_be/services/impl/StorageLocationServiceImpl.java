@@ -5,7 +5,6 @@ import com.example.hrm_be.components.BranchMapper;
 import com.example.hrm_be.components.StorageLocationMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.StorageLocation;
-import com.example.hrm_be.models.entities.SpecialConditionEntity;
 import com.example.hrm_be.models.entities.StorageLocationEntity;
 import com.example.hrm_be.repositories.StorageLocationRepository;
 import com.example.hrm_be.services.StorageLocationService;
@@ -24,8 +23,7 @@ public class StorageLocationServiceImpl implements StorageLocationService {
   @Autowired private StorageLocationRepository storageLocationRepository;
 
   @Autowired private StorageLocationMapper storageLocationMapper;
-    @Autowired
-    private BranchMapper branchMapper;
+  @Autowired private BranchMapper branchMapper;
 
   @Override
   public StorageLocation getById(Long id) {
@@ -36,7 +34,8 @@ public class StorageLocationServiceImpl implements StorageLocationService {
   }
 
   @Override
-  public Page<StorageLocation> getByPaging(int pageNo, int pageSize, Long branchId, String sortBy, String name) {
+  public Page<StorageLocation> getByPaging(
+      int pageNo, int pageSize, Long branchId, String sortBy, String name) {
     Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(sortBy).descending());
 
     // Tìm kiếm theo tên
@@ -54,17 +53,17 @@ public class StorageLocationServiceImpl implements StorageLocationService {
 
     // Convert the DTO to an entity, save it, and then map the saved entity back to a DTO
     return Optional.ofNullable(storageLocation)
-            .map(storageLocationMapper::toEntity)
-            .map(e -> storageLocationRepository.save(e))
-            .map(e -> storageLocationMapper.toDTO(e))
-            .orElse(null);
+        .map(storageLocationMapper::toEntity)
+        .map(e -> storageLocationRepository.save(e))
+        .map(e -> storageLocationMapper.toDTO(e))
+        .orElse(null);
   }
 
   @Override
   public StorageLocation update(StorageLocation storageLocation) {
     // Retrieve the existing StorageLocation entity by its ID
     StorageLocationEntity oldStorageLocationEntity =
-            storageLocationRepository.findById(storageLocation.getId()).orElse(null);
+        storageLocationRepository.findById(storageLocation.getId()).orElse(null);
 
     // If the entity doesn't exist, throw an exception
     if (oldStorageLocationEntity == null) {
@@ -73,24 +72,25 @@ public class StorageLocationServiceImpl implements StorageLocationService {
 
     // Update the existing entity with new values, save it, and map it back to a DTO
     return Optional.ofNullable(oldStorageLocationEntity)
-            .map(
-                    op ->
-                            op.toBuilder()
-                                    .aisle(storageLocation.getAisle())
-                                    .shelfLevel(storageLocation.getShelfLevel())
-                                    .shelfName(storageLocation.getShelfName())
-                                    .rowNumber(storageLocation.getRowNumber())
-                                    .branch(storageLocation.getBranch() != null ?
-                                            branchMapper.toEntity(storageLocation.getBranch()) : null)
-                                    .active(storageLocation.getActive())
-                                    .shelfName(storageLocation.getShelfName())
-                                    .zone(storageLocation.getZone())
-                                    .specialCondition(
-                                            storageLocation.getSpecialCondition())
-                                    .build())
-            .map(storageLocationRepository::save)
-            .map(storageLocationMapper::toDTO)
-            .orElse(null);
+        .map(
+            op ->
+                op.toBuilder()
+                    .aisle(storageLocation.getAisle())
+                    .shelfLevel(storageLocation.getShelfLevel())
+                    .shelfName(storageLocation.getShelfName())
+                    .rowNumber(storageLocation.getRowNumber())
+                    .branch(
+                        storageLocation.getBranch() != null
+                            ? branchMapper.toEntity(storageLocation.getBranch())
+                            : null)
+                    .active(storageLocation.getActive())
+                    .shelfName(storageLocation.getShelfName())
+                    .zone(storageLocation.getZone())
+                    .specialCondition(storageLocation.getSpecialCondition())
+                    .build())
+        .map(storageLocationRepository::save)
+        .map(storageLocationMapper::toDTO)
+        .orElse(null);
   }
 
   @Override

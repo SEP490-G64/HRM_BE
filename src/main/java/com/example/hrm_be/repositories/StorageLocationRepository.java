@@ -9,5 +9,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface StorageLocationRepository extends JpaRepository<StorageLocationEntity, Long> {
 
-  Page<StorageLocationEntity> findByShelfNameContainingIgnoreCaseAndBranchId(String name, Long branchId, Pageable pageable);
+  Page<StorageLocationEntity> findByShelfNameContainingIgnoreCaseAndBranchId(
+      String name, Long branchId, Pageable pageable);
 }
