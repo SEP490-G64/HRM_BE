@@ -2,12 +2,17 @@ package com.example.hrm_be.services.impl;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
 import com.example.hrm_be.commons.enums.BranchType;
 import com.example.hrm_be.components.BranchMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.Branch;
 import com.example.hrm_be.models.entities.BranchEntity;
 import com.example.hrm_be.repositories.BranchRepository;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,11 +22,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.*;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class BranchServiceImplTest {
@@ -46,6 +46,7 @@ public class BranchServiceImplTest {
             .phoneNumber("0912345678")
             .capacity(500)
             .activeStatus(true)
+            .isDeleted(false)
             .build();
 
     branchEntity =
