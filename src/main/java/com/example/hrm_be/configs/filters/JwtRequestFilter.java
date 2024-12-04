@@ -34,10 +34,10 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
   @Override
   protected void doFilterInternal(
-      HttpServletRequest request,
-      @NonNull HttpServletResponse response,
-      @NonNull FilterChain filterChain)
-      throws ServletException, IOException {
+          HttpServletRequest request,
+          @NonNull HttpServletResponse response,
+          @NonNull FilterChain filterChain)
+          throws ServletException, IOException {
 
     final String requestTokenHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
     String email = null;
@@ -64,10 +64,10 @@ public class JwtRequestFilter extends OncePerRequestFilter {
       // if token is valid configure Spring Security to manually set authentication
       if (jwtUtil.validateToken(jwtToken, userDetails)) {
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
-            new UsernamePasswordAuthenticationToken(
-                userDetails, null, userDetails.getAuthorities());
+                new UsernamePasswordAuthenticationToken(
+                        userDetails, null, userDetails.getAuthorities());
         usernamePasswordAuthenticationToken.setDetails(
-            new WebAuthenticationDetailsSource().buildDetails(request));
+                new WebAuthenticationDetailsSource().buildDetails(request));
         // After setting the Authentication in the context, we specify
         // that the current user is authenticated. So it passes the Spring Security Configurations
         // successfully.
