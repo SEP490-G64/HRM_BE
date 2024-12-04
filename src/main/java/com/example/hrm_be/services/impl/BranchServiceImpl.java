@@ -37,7 +37,15 @@ public class BranchServiceImpl implements BranchService {
     }
 
     return Optional.ofNullable(id)
-        .flatMap(e -> branchRepository.findById(e).map(b -> branchMapper.toDTO(b)))
+        .flatMap(
+            e ->
+                branchRepository
+                    .findById(e)
+                    .map(
+                        b ->
+                            b.getIsDeleted() != null && b.getIsDeleted()
+                                ? null
+                                : branchMapper.toDTO(b))) // Kiểm tra isDeleted trong map
         .orElse(null);
   }
 
@@ -156,8 +164,9 @@ public class BranchServiceImpl implements BranchService {
       throw new HrmCommonException(HrmConstant.ERROR.BRANCH.NOT_EXIST);
     }
 
+    oldBranchEntity.setIsDeleted(true);
     // Delete the branch by ID
-    branchRepository.deleteById(id);
+    branchRepository.save(oldBranchEntity);
   }
 
   @Override

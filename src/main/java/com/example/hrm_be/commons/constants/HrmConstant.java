@@ -74,6 +74,7 @@ public class HrmConstant {
       public static final String REGISTRATION_EXIST = "error.product.registration_exist";
       public static final String NOT_CHILD = "error.product.not_child";
       public static final String NOT_EXIST = "error.product.not_exist";
+      public static final String ID_NULL = "error.product.id_null";
     }
 
     public static class STORAGE_LOCATION {
@@ -174,6 +175,7 @@ public class HrmConstant {
       public static final String EXIST = "error.inventory_check.exist";
       public static final String NOT_CHILD = "error.inventory_check.not_child";
       public static final String NOT_EXIST = "error.inventory_check.not_exist";
+      public static final String INVALID = "error.inventory_check.invalid";
     }
 
     public static class INBOUND_BATCH_DETAIL {

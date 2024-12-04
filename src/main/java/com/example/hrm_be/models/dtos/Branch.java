@@ -38,6 +38,8 @@ public class Branch {
 
   Boolean activeStatus;
 
+  Boolean isDeleted;
+
   List<BranchBatch> branchBatches; // 1-N with BranchBatch
 
   List<Inbound> inbounds; // 1-N with Inbound
