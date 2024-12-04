@@ -373,7 +373,15 @@ public class OutboundServiceImpl implements OutboundService {
             .supplier(request.getSupplier())
             .fromBranch(request.getFromBranch())
             .note(request.getNote())
-            .taxable(request.getTaxable())
+            .taxable(
+                outboundEntity.getStatus() == OutboundStatus.KIEM_HANG
+                    ? outboundEntity.getTaxable()
+                    : request.getTaxable())
+            .isApproved(outboundEntity.getIsApproved())
+            .approvedBy(
+                outboundEntity.getApprovedBy() != null
+                    ? userMapper.convertToDtoBasicInfo(outboundEntity.getApprovedBy())
+                    : null)
             .build();
     // Save the updated entity back to the repository
     OutboundEntity updatedOutboundEntity =
@@ -430,7 +438,7 @@ public class OutboundServiceImpl implements OutboundService {
                   .quantity(productDetail.getOutboundQuantity())
                   .batch(batchEntity)
                   .unitOfMeasurement(productEntity.getBaseUnit())
-                  .taxRate(productEntity.getCategory().getTaxRate())
+                  .taxRate(productDetail.getTaxRate())
                   .build();
         }
         outboundDetailEntities.add(outboundDetail);
@@ -474,7 +482,7 @@ public class OutboundServiceImpl implements OutboundService {
                   .product(productEntity)
                   .outboundQuantity(productDetail.getOutboundQuantity())
                   .unitOfMeasurement(productEntity.getBaseUnit())
-                  .taxRate(productEntity.getCategory().getTaxRate())
+                  .taxRate(productDetail.getTaxRate())
                   .preQuantity(productDetail.getPreQuantity())
                   .build();
         }
