@@ -8,7 +8,8 @@ import org.springframework.stereotype.Service;
 public interface StorageLocationService {
   StorageLocation getById(Long id);
 
-  Page<StorageLocation> getByPaging(int pageNo, int pageSize, Long branchId, String sortBy, String name);
+  Page<StorageLocation> getByPaging(
+      int pageNo, int pageSize, Long branchId, String sortBy, String name);
 
   StorageLocation create(StorageLocation storageLocation);
 
