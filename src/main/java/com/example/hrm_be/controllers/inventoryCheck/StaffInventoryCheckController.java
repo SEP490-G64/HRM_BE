@@ -12,8 +12,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -22,7 +20,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
-
 
 @Slf4j
 @RequiredArgsConstructor
@@ -241,7 +238,6 @@ public class StaffInventoryCheckController {
     inventoryCheckService.updateInventoryCheckStatus(InventoryCheckStatus.valueOf(type), id);
     return ResponseEntity.ok(BaseOutput.<String>builder().status(ResponseStatus.SUCCESS).build());
   }
-
 
   @GetMapping(path = "/{inventoryCheckId}/stream")
   public SseEmitter streamInventoryCheckUpdates(

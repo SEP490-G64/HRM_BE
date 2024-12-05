@@ -38,7 +38,6 @@ import jakarta.persistence.criteria.Predicate;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.channels.ClosedChannelException;
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -61,7 +60,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
-import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Sinks;
 import reactor.core.publisher.Sinks.Many;
@@ -70,7 +68,6 @@ import reactor.core.publisher.Sinks.Many;
 @Transactional
 @Slf4j
 public class InventoryCheckServiceImpl implements InventoryCheckService {
-
 
   private final ConcurrentMap<Long, Many<InventoryUpdate>> inventoryUpdateSinks =
       new ConcurrentHashMap<>();
@@ -632,12 +629,10 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
       // Prepare the update payload
       InventoryUpdate updatePayload =
           InventoryUpdate.builder().batchIds(batchIds).productIds(productIds).build();
-if(inventoryCheckEmitters.containsKey(inventoryCheckId))
-{
-  // Emit the payload to all subscribers for this inventoryCheckId
-  emitToSubscribers(inventoryCheckId, updatePayload);
-}
-
+      if (inventoryCheckEmitters.containsKey(inventoryCheckId)) {
+        // Emit the payload to all subscribers for this inventoryCheckId
+        emitToSubscribers(inventoryCheckId, updatePayload);
+      }
     }
   }
 
@@ -711,25 +706,31 @@ if(inventoryCheckEmitters.containsKey(inventoryCheckId))
       List<SseEmitter> emitters = new ArrayList<>(inventoryCheckEmitters.get(inventoryCheckId));
 
       // Execute the closure of emitters asynchronously
-      nonBlockingService.submit(() -> {
-        for (SseEmitter emitter : emitters) {
-          try {
-            emitter.complete();
-          } catch (Exception ex) {
-            log.error("Error while completing emitter for inventoryCheckId: {}", inventoryCheckId, ex);
-            try {
-              emitter.completeWithError(ex);
-            } catch (Exception innerEx) {
-              log.error("Error while handling emitter error for inventoryCheckId: {}", inventoryCheckId, innerEx);
+      nonBlockingService.submit(
+          () -> {
+            for (SseEmitter emitter : emitters) {
+              try {
+                emitter.complete();
+              } catch (Exception ex) {
+                log.error(
+                    "Error while completing emitter for inventoryCheckId: {}",
+                    inventoryCheckId,
+                    ex);
+                try {
+                  emitter.completeWithError(ex);
+                } catch (Exception innerEx) {
+                  log.error(
+                      "Error while handling emitter error for inventoryCheckId: {}",
+                      inventoryCheckId,
+                      innerEx);
+                }
+              }
+              removeEmitter(inventoryCheckId, emitter);
             }
-          }
-          removeEmitter(inventoryCheckId, emitter);
-        }
-      });
+          });
 
       return true;
     }
-
 
     log.warn("No emitters found for inventoryCheckId: {}", inventoryCheckId);
     return false;
@@ -749,25 +750,28 @@ if(inventoryCheckEmitters.containsKey(inventoryCheckId))
 
     log.info("Emitter added to inventoryCheckEmitters for inventoryCheckId: {}", inventoryCheckId);
 
-    emitter.onCompletion(() -> {
-      log.info("SseEmitter completed for inventoryCheckId: {}", inventoryCheckId);
-      removeEmitter(inventoryCheckId, emitter);
-    });
+    emitter.onCompletion(
+        () -> {
+          log.info("SseEmitter completed for inventoryCheckId: {}", inventoryCheckId);
+          removeEmitter(inventoryCheckId, emitter);
+        });
 
-    emitter.onError((throwable) -> {
-      if (throwable instanceof ClosedChannelException) {
-        log.warn("Client disconnected for inventoryCheckId: {}", inventoryCheckId);
-      } else {
-        log.error("Edisconnectedr inventoryCheckId: {}", inventoryCheckId, throwable);
-      }
-      removeEmitter(inventoryCheckId, emitter);
-    });
+    emitter.onError(
+        (throwable) -> {
+          if (throwable instanceof ClosedChannelException) {
+            log.warn("Client disconnected for inventoryCheckId: {}", inventoryCheckId);
+          } else {
+            log.error("Edisconnectedr inventoryCheckId: {}", inventoryCheckId, throwable);
+          }
+          removeEmitter(inventoryCheckId, emitter);
+        });
 
-    emitter.onTimeout(() -> {
-      log.warn("SseEmitter timed out for inventoryCheckId: {}", inventoryCheckId);
-      emitter.complete();
-      removeEmitter(inventoryCheckId, emitter);
-    });
+    emitter.onTimeout(
+        () -> {
+          log.warn("SseEmitter timed out for inventoryCheckId: {}", inventoryCheckId);
+          emitter.complete();
+          removeEmitter(inventoryCheckId, emitter);
+        });
 
     return emitter;
   }
