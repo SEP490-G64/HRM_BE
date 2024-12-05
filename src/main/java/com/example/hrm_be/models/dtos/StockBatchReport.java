@@ -20,9 +20,9 @@ import java.time.LocalDateTime;
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class StockBatchReport {
-    private Long batchId;
-    private String batchCode;
-    private LocalDateTime expireDate;
-    private BigDecimal totalQuantity;
-    private String unit;
+  private Long batchId;
+  private String batchCode;
+  private LocalDateTime expireDate;
+  private BigDecimal totalQuantity;
+  private String unit;
 }
