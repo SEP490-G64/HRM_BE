@@ -1212,35 +1212,36 @@ class InboundServiceImplTest {
     assertTrue(actualMessage.contains(expectedMessage));
   }
 
-//  // Submit Inbound To System
-//  // UTCID01: Submit Inbound To System - Valid
-//  @Test
-//  @Ignore
-//  void UTCID01_testSubmitInboundToSystem_Success() {
-//    // Arrange
-//    request.setSupplier(new Supplier());
-//    when(inboundRepository.findById(request.getInboundId())).thenReturn(Optional.of(inboundEntity));
-//    when(inboundMapper.convertFromCreateRequest(request)).thenReturn(inbound);
-//    when(inboundMapper.toEntity(inbound)).thenReturn(updatedInboundEntity);
-//    when(inboundRepository.save(any(InboundEntity.class))).thenReturn(updatedInboundEntity);
-//    lenient().when(productService.getById(anyLong())).thenReturn(new Product());
-//    lenient()
-//        .doNothing()
-//        .when(branchProductService)
-//        .updateBranchProductInInbound(
-//            any(BranchEntity.class), any(ProductEntity.class), any(BigDecimal.class));
-//    doNothing().when(entityManager).clear();
-//    doNothing()
-//        .when(inventoryCheckService)
-//        .broadcastToInventoryChecksInBranch(
-//            anyLong(), anySet(), anySet()); // Mock the inventoryCheckService method
-//
-//    // Act
-//    Inbound result = inboundService.submitInboundToSystem(request);
-//
-//    // Assert
-//    assertNull(result);
-//  }
+  //  // Submit Inbound To System
+  //  // UTCID01: Submit Inbound To System - Valid
+  //  @Test
+  //  @Ignore
+  //  void UTCID01_testSubmitInboundToSystem_Success() {
+  //    // Arrange
+  //    request.setSupplier(new Supplier());
+  //
+  // when(inboundRepository.findById(request.getInboundId())).thenReturn(Optional.of(inboundEntity));
+  //    when(inboundMapper.convertFromCreateRequest(request)).thenReturn(inbound);
+  //    when(inboundMapper.toEntity(inbound)).thenReturn(updatedInboundEntity);
+  //    when(inboundRepository.save(any(InboundEntity.class))).thenReturn(updatedInboundEntity);
+  //    lenient().when(productService.getById(anyLong())).thenReturn(new Product());
+  //    lenient()
+  //        .doNothing()
+  //        .when(branchProductService)
+  //        .updateBranchProductInInbound(
+  //            any(BranchEntity.class), any(ProductEntity.class), any(BigDecimal.class));
+  //    doNothing().when(entityManager).clear();
+  //    doNothing()
+  //        .when(inventoryCheckService)
+  //        .broadcastToInventoryChecksInBranch(
+  //            anyLong(), anySet(), anySet()); // Mock the inventoryCheckService method
+  //
+  //    // Act
+  //    Inbound result = inboundService.submitInboundToSystem(request);
+  //
+  //    // Assert
+  //    assertNull(result);
+  //  }
 
   // UTCID02: Submit Inbound To System - Valid With Product And Batch Updates
   @Test
@@ -1305,7 +1306,7 @@ class InboundServiceImplTest {
         .when(productSupplierService.save(any(ProductSuppliersEntity.class)))
         .thenReturn(productSuppliers);
     lenient().doNothing().when(entityManager).clear();
- ; // Mock the inventoryCheckService method
+    ; // Mock the inventoryCheckService method
 
     // Act
     Inbound result = inboundService.submitInboundToSystem(request);

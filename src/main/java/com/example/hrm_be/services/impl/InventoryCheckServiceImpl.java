@@ -71,6 +71,7 @@ import reactor.core.publisher.Sinks.Many;
 @Slf4j
 public class InventoryCheckServiceImpl implements InventoryCheckService {
 
+
   private final ConcurrentMap<Long, Many<InventoryUpdate>> inventoryUpdateSinks =
       new ConcurrentHashMap<>();
   private final ConcurrentHashMap<Long, CopyOnWriteArrayList<SseEmitter>> inventoryCheckEmitters =
@@ -680,52 +681,29 @@ if(inventoryCheckEmitters.containsKey(inventoryCheckId))
     inventoryCheckRepository.updateInventoryCheckStatus(status, id);
   }
 
-  public Flux<InventoryUpdate> streamInventoryCheckUpdates(Long inventoryCheckId)
-      throws InterruptedException {
-    // Create the Flux from the sink
-    Sinks.Many<InventoryUpdate> sink =
-        inventoryUpdateSinks.computeIfAbsent(
-            inventoryCheckId, id -> Sinks.many().multicast().onBackpressureBuffer());
-
-    Flux<InventoryUpdate> stream =
-        sink.asFlux()
-            .take(Duration.ofSeconds(1)) // Automatically close the stream after 1 second
-            .doOnComplete(
-                () -> {
-                  log.info("Cleaning up sink for inventoryCheckId: {}", inventoryCheckId);
-                  Sinks.Many<InventoryUpdate> removedSink =
-                      inventoryUpdateSinks.remove(inventoryCheckId);
-                  if (removedSink != null) {
-                    removedSink.tryEmitComplete(); // Gracefully complete the sink
-                  }
-                })
-            .doOnCancel(
-                () -> {
-                  log.info("Cleaning up sink for inventoryCheckId: {}", inventoryCheckId);
-                  Sinks.Many<InventoryUpdate> removedSink =
-                      inventoryUpdateSinks.remove(inventoryCheckId);
-                  if (removedSink != null) {
-                    removedSink.tryEmitComplete(); // Gracefully complete the sink
-                  }
-                })
-            .doFinally(
-                signalType -> {
-                  log.info(
-                      "Stream terminated with signal {} for inventoryCheckId: {}",
-                      signalType,
-                      inventoryCheckId);
-                  Sinks.Many<InventoryUpdate> removedSink =
-                      inventoryUpdateSinks.remove(inventoryCheckId);
-                  if (removedSink != null) {
-                    removedSink.tryEmitComplete(); // Ensure sink is completed
-                  }
-                });
-
-    // Create a Disposable to dispose the subscription after 1 second
-    Disposable disposable = stream.subscribe();
-    Thread.sleep(1000);
-    disposable.dispose();
-    return stream;
+  public Flux<InventoryUpdate> streamInventoryCheckUpdates(Long inventoryCheckId) {
+    return inventoryUpdateSinks
+        .computeIfAbsent(inventoryCheckId, id -> Sinks.many().multicast().onBackpressureBuffer())
+        .asFlux()
+        .doOnCancel(
+            () -> {
+              log.info("Cleaning up sink for inventoryCheckId: {}", inventoryCheckId);
+              Sinks.Many<InventoryUpdate> sink = inventoryUpdateSinks.remove(inventoryCheckId);
+              if (sink != null) {
+                sink.tryEmitComplete(); // Gracefully complete the sink
+              }
+            })
+        .doFinally(
+            signalType -> {
+              log.info(
+                  "Stream terminated with signal {} for inventoryCheckId: {}",
+                  signalType,
+                  inventoryCheckId);
+              Sinks.Many<InventoryUpdate> sink = inventoryUpdateSinks.remove(inventoryCheckId);
+              if (sink != null) {
+                sink.tryEmitComplete(); // Ensure sink is completed
+              }
+            });
   }
 
   public boolean closeInventoryCheck(Long inventoryCheckId) {
@@ -751,6 +729,7 @@ if(inventoryCheckEmitters.containsKey(inventoryCheckId))
 
       return true;
     }
+
 
     log.warn("No emitters found for inventoryCheckId: {}", inventoryCheckId);
     return false;
@@ -805,13 +784,5 @@ if(inventoryCheckEmitters.containsKey(inventoryCheckId))
         log.info("All emitters removed for inventoryCheckId: {}", inventoryCheckId);
       }
     }
-  }
-
-  @Override
-  public
-  ConcurrentHashMap
-      <Long,
-          CopyOnWriteArrayList<SseEmitter>> listClients() {
-    return inventoryCheckEmitters;
   }
 }

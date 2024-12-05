@@ -23,6 +23,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+
 @Slf4j
 @RequiredArgsConstructor
 @Controller
@@ -241,17 +242,12 @@ public class StaffInventoryCheckController {
     return ResponseEntity.ok(BaseOutput.<String>builder().status(ResponseStatus.SUCCESS).build());
   }
 
+
   @GetMapping(path = "/{inventoryCheckId}/stream")
   public SseEmitter streamInventoryCheckUpdates(
       @PathVariable Long inventoryCheckId, @RequestParam("authToken") String authToken) {
     log.info("Starting stream for inventoryCheckId: {}", inventoryCheckId);
     return inventoryCheckService.createEmitter(inventoryCheckId);
-  }
-
-  // Endpoint to list all active connections (optional, for debugging purposes)
-  @GetMapping("/list-connections")
-  public ConcurrentHashMap<Long, CopyOnWriteArrayList<SseEmitter>> listConnections() {
-    return inventoryCheckService.listClients();
   }
 
   @PostMapping("/close/{inventoryCheckId}")

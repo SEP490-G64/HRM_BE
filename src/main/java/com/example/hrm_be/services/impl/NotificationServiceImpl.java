@@ -153,6 +153,7 @@ public class NotificationServiceImpl implements NotificationService {
           notificationRecipient.setCreatedDate(saved.getCreatedDate());
           notificationRecipient.setUser(user);
           notificationRecipient.setRead(false);
+
           if (user.getFirebaseToken() != null && user.getFirebaseToken().getDeviceToken() != null) {
             listDeviceToken.add(user.getFirebaseToken().getDeviceToken());
           }
@@ -164,13 +165,16 @@ public class NotificationServiceImpl implements NotificationService {
     Map<String, String> dataAttributes = new HashMap<>();
     dataAttributes.put("notificationId", String.valueOf(saved.getId()));
     dataAttributes.put("notiType", String.valueOf(saved.getNotiType()));
-    Notice notice =Notice.builder()
-        .subject(notification.getNotiName())
-        .registrationTokens(listDeviceToken)
-        .data(dataAttributes)
-        .content(notification.getMessage())
-        .build();
-    if (!listDeviceToken.isEmpty()) {sendNotification(notice);}
+    Notice notice =
+        Notice.builder()
+            .subject(notification.getNotiName())
+            .registrationTokens(listDeviceToken)
+            .data(dataAttributes)
+            .content(notification.getMessage())
+            .build();
+    if (!listDeviceToken.isEmpty()) {
+      sendNotification(notice);
+    }
   }
 
   @Override
@@ -291,18 +295,20 @@ public class NotificationServiceImpl implements NotificationService {
   }
 
   public BatchResponse sendNotification(Notice notice) {
-    List<String> registrationTokens=notice.getRegistrationTokens();
-    com.google.firebase.messaging.Notification notification =  com.google.firebase.messaging.Notification.builder()
-        .setTitle(notice.getSubject())
-        .setBody(notice.getContent())
-        .setImage(notice.getImage()!=null ? notice.getImage():null)
-        .build();
+    List<String> registrationTokens = notice.getRegistrationTokens();
+    com.google.firebase.messaging.Notification notification =
+        com.google.firebase.messaging.Notification.builder()
+            .setTitle(notice.getSubject())
+            .setBody(notice.getContent())
+            .setImage(notice.getImage() != null ? notice.getImage() : null)
+            .build();
 
-    MulticastMessage message = MulticastMessage.builder()
-        .addAllTokens(registrationTokens)
-        .setNotification(notification)
-        .putAllData(notice.getData()!=null?notice.getData():null)
-        .build();
+    MulticastMessage message =
+        MulticastMessage.builder()
+            .addAllTokens(registrationTokens)
+            .setNotification(notification)
+            .putAllData(notice.getData() != null ? notice.getData() : null)
+            .build();
 
     BatchResponse batchResponse = null;
     try {

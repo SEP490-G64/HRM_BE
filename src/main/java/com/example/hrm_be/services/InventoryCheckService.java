@@ -12,6 +12,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import reactor.core.publisher.Flux;
+import java.util.Map;
+import java.util.Set;
+import org.springframework.data.domain.Page;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Sinks.Many;
 
 @Service
 public interface InventoryCheckService {
@@ -51,7 +59,6 @@ public interface InventoryCheckService {
   Flux<InventoryUpdate> streamInventoryCheckUpdates(Long inventoryCheckId)
       throws InterruptedException;
 
-  ConcurrentHashMap<Long, CopyOnWriteArrayList<SseEmitter>> listClients();
 
   boolean closeInventoryCheck(Long inventoryCheckId);
 
