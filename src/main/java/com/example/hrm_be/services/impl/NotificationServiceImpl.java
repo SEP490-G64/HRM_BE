@@ -43,8 +43,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Sinks;
 import reactor.core.publisher.Sinks.Many;
 
 @Service
@@ -258,7 +256,6 @@ public class NotificationServiceImpl implements NotificationService {
     return notificationUserRepository.countByUser_IdAndIsReadFalse(userId);
   }
 
-
   public NotificationAlertResponse createAlertProductNotification(Long branchId) {
     int nearlyExpiredCount = batchService.getExpiredBatches(LocalDateTime.now()).size();
     int expiredCount = batchService.getExpiredBatchesInDays(LocalDateTime.now(), 30l).size(); //
@@ -287,9 +284,13 @@ public class NotificationServiceImpl implements NotificationService {
     notification.setCreatedDate(LocalDateTime.now());
 
     List<User> users = userService.getUserByBranchId(branchId);
-    List<User> filteredUsers = users.stream()
-        .filter(user -> user.getFirebaseToken() != null && user.getFirebaseToken().getDeviceToken() != null)
-        .collect(Collectors.toList());
+    List<User> filteredUsers =
+        users.stream()
+            .filter(
+                user ->
+                    user.getFirebaseToken() != null
+                        && user.getFirebaseToken().getDeviceToken() != null)
+            .collect(Collectors.toList());
     sendNotification(notification, filteredUsers);
     return alertResponse;
   }
