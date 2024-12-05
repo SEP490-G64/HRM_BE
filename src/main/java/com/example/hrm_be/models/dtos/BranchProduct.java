@@ -3,6 +3,7 @@ package com.example.hrm_be.models.dtos;
 import com.example.hrm_be.commons.enums.ProductStatus;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -37,5 +38,9 @@ public class BranchProduct {
   Integer maxQuantity;
 
   BigDecimal quantity;
+
   ProductStatus productStatus;
+
+  LocalDateTime lastUpdated;
+
 }

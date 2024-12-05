@@ -73,6 +73,7 @@ public class OutboundServiceImpl implements OutboundService {
   @Autowired private ProductService productService;
   @Autowired private NotificationService notificationService;
   @Autowired private UnitConversionService unitConversionService;
+  @Autowired private InventoryCheckService inventoryCheckService;
 
   @Override
   public Outbound getById(Long id) {
@@ -610,6 +611,7 @@ public class OutboundServiceImpl implements OutboundService {
                 totalPrice = totalPrice.add(priceOutboundDetail);
                 remainingQuantity = remainingQuantity.subtract(branchBatch.getQuantity());
                 branchBatch.setQuantity(BigDecimal.ZERO);
+                branchBatch.setLastUpdated(LocalDateTime.now());
                 branchBatchService.save(branchBatch);
               } else {
                 BigDecimal priceOutboundDetail = remainingQuantity.multiply(productPrice);
@@ -629,6 +631,7 @@ public class OutboundServiceImpl implements OutboundService {
 
                 totalPrice = totalPrice.add(priceOutboundDetail);
                 branchBatch.setQuantity(branchBatch.getQuantity().subtract(remainingQuantity));
+                branchBatch.setLastUpdated(LocalDateTime.now());
                 remainingQuantity = BigDecimal.ZERO;
                 branchBatchService.save(branchBatch);
                 break;
@@ -666,6 +669,7 @@ public class OutboundServiceImpl implements OutboundService {
         // save BranchProduct
         branchProduct.setQuantity(branchProduct.getQuantity().subtract(convertedQuantity));
         branchProduct.setProduct(product);
+        branchProduct.setLastUpdated(LocalDateTime.now());
         branchProductService.save(branchProduct);
       } else {
         throw new HrmCommonException(HrmConstant.ERROR.BRANCHPRODUCT.NOT_EXIST);
@@ -804,6 +808,7 @@ public class OutboundServiceImpl implements OutboundService {
 
       // Subtract the converted quantity
       branchProduct.setQuantity(branchProduct.getQuantity().subtract(difference));
+      branchProduct.setLastUpdated(LocalDateTime.now());
       branchProductService.save(branchProduct);
 
       BigDecimal outboundProductDetailPrice =
@@ -856,7 +861,9 @@ public class OutboundServiceImpl implements OutboundService {
 
       // Subtract the converted quantity
       branchBatch.setQuantity(branchBatch.getQuantity().subtract(difference));
+      branchBatch.setLastUpdated(LocalDateTime.now());
       branchProduct.setQuantity(branchProduct.getQuantity().subtract(difference));
+      branchProduct.setLastUpdated(LocalDateTime.now());
       branchBatchService.save(branchBatch);
       branchProductService.save(branchProduct);
 
@@ -894,6 +901,20 @@ public class OutboundServiceImpl implements OutboundService {
     notification.setNotiName("Nhập phiếu vào kho");
     notification.setNotiType(NotificationType.NHAP_PHIEU_XUAT_VAO_HE_THONG);
     notification.setCreatedDate(LocalDateTime.now());
+
+    // Collect all product IDs from outboundProductDetails
+    Set<Long> allProductIds = outboundProductDetails.stream()
+        .map(productDetail -> productDetail.getProduct().getId())
+        .collect(Collectors.toSet());
+
+// Collect all batch IDs from outboundDetails
+    Set<Long> allBatchIds = outboundDetails.stream()
+        .map(batchDetail -> batchDetail.getBatch().getId())
+        .collect(Collectors.toSet());
+
+    // Notify inventory checks via SSE
+    inventoryCheckService.broadcastInventoryCheckUpdates(
+        allProductIds, allBatchIds, outboundEntity.getFromBranch().getId());
 
     notificationService.sendNotification(
         notification, userService.findAllManagerByBranchId(outbound.getFromBranch().getId()));

@@ -3,6 +3,7 @@ package com.example.hrm_be.models.dtos;
 import com.example.hrm_be.commons.enums.BatchStatus;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -34,4 +35,6 @@ public class BranchBatch {
   List<Notification> notifications;
 
   BatchStatus batchStatus;
+
+  LocalDateTime lastUpdated;
 }

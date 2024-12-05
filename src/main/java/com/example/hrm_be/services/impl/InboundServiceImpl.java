@@ -641,7 +641,7 @@ public class InboundServiceImpl implements InboundService {
     inventoryCheckService.broadcastInventoryCheckUpdates(
         allProductIds, allBatchIds, updatedInboundEntity.getToBranch().getId());
     notificationService.sendNotification(
-        notification, userService.findAllManagerByBranchId(inboundEntity.getToBranch().getId()));
+        notification, userService.getUserByBranchId(inboundEntity.getToBranch().getId()));
     // Return the updated inbound entity (or any other response you need)
     return inboundMapper.convertToBasicInfo(
         inboundEntity); // You can return a DTO or any other object

@@ -42,6 +42,7 @@ public class BranchProductMapper {
                     .id(d.getId())
                     .product(d.getProduct() != null ? productMapper.toEntity(d.getProduct()) : null)
                     .branch(d.getBranch() != null ? branchMapper.toEntity(d.getBranch()) : null)
+                    .lastUpdated(d.getLastUpdated())
                     .productStatus(d.getProductStatus())
                     .storageLocation(
                         d.getStorageLocation() != null

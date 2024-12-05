@@ -35,8 +35,6 @@ public interface NotificationService {
 
   Integer getUnreadNotificationQuantity(Long userId);
 
-  Flux<NotificationUser> streamNotificationsForUser(Long userId);
-
   void sendExpirationNotification(Branch branch, Product product);
 
   void sendQuantityNotification(Branch branch, Product product, int quantity, String type);

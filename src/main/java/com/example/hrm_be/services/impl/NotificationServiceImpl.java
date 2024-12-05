@@ -153,8 +153,7 @@ public class NotificationServiceImpl implements NotificationService {
           notificationRecipient.setCreatedDate(saved.getCreatedDate());
           notificationRecipient.setUser(user);
           notificationRecipient.setRead(false);
-          if(user.getFirebaseToken()!=null)
-          {
+          if (user.getFirebaseToken() != null && user.getFirebaseToken().getDeviceToken() != null) {
             listDeviceToken.add(user.getFirebaseToken().getDeviceToken());
           }
           NotificationUserEntity ne =
@@ -255,12 +254,6 @@ public class NotificationServiceImpl implements NotificationService {
     return notificationUserRepository.countByUser_IdAndIsReadFalse(userId);
   }
 
-  public Flux<NotificationUser> streamNotificationsForUser(Long userId) {
-    Sinks.Many<NotificationUser> sink =
-        userNotificationSinks.computeIfAbsent(
-            userId, id -> Sinks.many().multicast().onBackpressureBuffer());
-    return sink.asFlux();
-  }
 
   public NotificationAlertResponse createAlertProductNotification(Long branchId) {
     int nearlyExpiredCount = batchService.getExpiredBatches(LocalDateTime.now()).size();
@@ -290,7 +283,10 @@ public class NotificationServiceImpl implements NotificationService {
     notification.setCreatedDate(LocalDateTime.now());
 
     List<User> users = userService.getUserByBranchId(branchId);
-    sendNotification(notification, users);
+    List<User> filteredUsers = users.stream()
+        .filter(user -> user.getFirebaseToken() != null && user.getFirebaseToken().getDeviceToken() != null)
+        .collect(Collectors.toList());
+    sendNotification(notification, filteredUsers);
     return alertResponse;
   }
 
