@@ -20,15 +20,15 @@ import java.util.List;
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class StockProductReport {
-    private Long productId;
-    private String image;
-    private String registrationCode;
-    private String productName;
-    private Integer minQuantity;
-    private Integer maxQuantity;
-    private BigDecimal totalQuantity;
-    private BigDecimal sellableQuantity;
-    private String storageLocation;
-    private String unit;
-    private List<StockBatchReport> batches;
+  private Long productId;
+  private String image;
+  private String registrationCode;
+  private String productName;
+  private Integer minQuantity;
+  private Integer maxQuantity;
+  private BigDecimal totalQuantity;
+  private BigDecimal sellableQuantity;
+  private String storageLocation;
+  private String unit;
+  private List<StockBatchReport> batches;
 }

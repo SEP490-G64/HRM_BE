@@ -54,9 +54,11 @@ public interface BranchProductRepository
   LocalDateTime getLastUpdatedByBranchIdAndProductId(
       @Param("branchId") Long branchId, @Param("productId") Long productId);
 
-  @Query("SELECT bp FROM BranchProductEntity bp WHERE bp.branch.id = :branchId AND bp.quantity IS NOT NULL "
-          + "AND (LOWER(bp.product.productName) LIKE LOWER(CONCAT('%', :keyword, '%')) "
-          + "OR LOWER(bp.product.registrationCode) LIKE LOWER(CONCAT('%', :keyword, '%'))) order by bp.quantity DESC, bp.product.registrationCode ASC")
+  @Query(
+      "SELECT bp FROM BranchProductEntity bp WHERE bp.branch.id = :branchId AND bp.quantity IS NOT"
+          + " NULL AND (LOWER(bp.product.productName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR"
+          + " LOWER(bp.product.registrationCode) LIKE LOWER(CONCAT('%', :keyword, '%'))) order by"
+          + " bp.quantity DESC, bp.product.registrationCode ASC")
   Page<BranchProductEntity> findByBranchIdAndProductNameOrProductRegistrationCode(
-          Long branchId, String keyword, Pageable pageable);
+      Long branchId, String keyword, Pageable pageable);
 }

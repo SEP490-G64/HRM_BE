@@ -3,7 +3,6 @@ package com.example.hrm_be.controllers.report;
 import com.example.hrm_be.models.dtos.Dashboard;
 import com.example.hrm_be.models.dtos.DashboardInboundOutboundStream;
 import com.example.hrm_be.models.dtos.StockProductReport;
-import com.example.hrm_be.models.dtos.User;
 import com.example.hrm_be.models.responses.BaseOutput;
 import com.example.hrm_be.services.ReportService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -13,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -66,10 +64,10 @@ public class StaffReportController {
   // GET: /api/v1/staff/report/stock
   @GetMapping("/stock")
   public ResponseEntity<BaseOutput<List<StockProductReport>>> getStockReport(
-          @RequestParam(required = false) Long branchId,
-          @RequestParam(defaultValue = "") String keyword,
-          @RequestParam(defaultValue = "0") int page,
-          @RequestParam(defaultValue = "20") int size) {
+      @RequestParam(required = false) Long branchId,
+      @RequestParam(defaultValue = "") String keyword,
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "20") int size) {
 
     // Chuyển đổi tham số sort từ chuỗi thành Pageable
     Pageable pageable = PageRequest.of(page, size);
@@ -79,17 +77,17 @@ public class StaffReportController {
 
     // Create a response object containing the user data and metadata
     BaseOutput<List<StockProductReport>> response =
-            BaseOutput.<List<StockProductReport>>builder()
-                    .message(HttpStatus.OK.toString()) // Set response message to OK
-                    .totalPages(report.getTotalPages()) // Total number of pages
-                    .currentPage(page) // Current page number
-                    .pageSize(size) // Size of the page
-                    .total(report.getTotalElements()) // Total number of users
-                    .data(report.getContent()) // List of users in the current page
-                    .status(
-                            com.example.hrm_be.commons.enums.ResponseStatus
-                                    .SUCCESS) // Set response status to SUCCESS
-                    .build();
+        BaseOutput.<List<StockProductReport>>builder()
+            .message(HttpStatus.OK.toString()) // Set response message to OK
+            .totalPages(report.getTotalPages()) // Total number of pages
+            .currentPage(page) // Current page number
+            .pageSize(size) // Size of the page
+            .total(report.getTotalElements()) // Total number of users
+            .data(report.getContent()) // List of users in the current page
+            .status(
+                com.example.hrm_be.commons.enums.ResponseStatus
+                    .SUCCESS) // Set response status to SUCCESS
+            .build();
 
     // Return the response entity with a status of OK
     return ResponseEntity.ok(response);
