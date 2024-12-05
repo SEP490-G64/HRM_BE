@@ -6,20 +6,16 @@ import com.example.hrm_be.models.requests.CreateInventoryCheckRequest;
 import com.example.hrm_be.models.responses.InventoryUpdate;
 import java.time.LocalDateTime;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import reactor.core.publisher.Flux;
-import java.util.Map;
 import java.util.Set;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Sinks.Many;
 
 @Service
 public interface InventoryCheckService {
@@ -58,7 +54,6 @@ public interface InventoryCheckService {
 
   Flux<InventoryUpdate> streamInventoryCheckUpdates(Long inventoryCheckId)
       throws InterruptedException;
-
 
   boolean closeInventoryCheck(Long inventoryCheckId);
 

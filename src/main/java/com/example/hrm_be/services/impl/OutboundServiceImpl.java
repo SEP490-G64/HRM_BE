@@ -903,14 +903,16 @@ public class OutboundServiceImpl implements OutboundService {
     notification.setCreatedDate(LocalDateTime.now());
 
     // Collect all product IDs from outboundProductDetails
-    Set<Long> allProductIds = outboundProductDetails.stream()
-        .map(productDetail -> productDetail.getProduct().getId())
-        .collect(Collectors.toSet());
+    Set<Long> allProductIds =
+        outboundProductDetails.stream()
+            .map(productDetail -> productDetail.getProduct().getId())
+            .collect(Collectors.toSet());
 
-// Collect all batch IDs from outboundDetails
-    Set<Long> allBatchIds = outboundDetails.stream()
-        .map(batchDetail -> batchDetail.getBatch().getId())
-        .collect(Collectors.toSet());
+    // Collect all batch IDs from outboundDetails
+    Set<Long> allBatchIds =
+        outboundDetails.stream()
+            .map(batchDetail -> batchDetail.getBatch().getId())
+            .collect(Collectors.toSet());
 
     // Notify inventory checks via SSE
     inventoryCheckService.broadcastInventoryCheckUpdates(
