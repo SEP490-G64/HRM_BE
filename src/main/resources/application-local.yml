@@ -40,7 +40,7 @@ spring:
     password: Abcd1234
     driver-class-name: org.postgresql.Driver
     hikari:
-         maximum-pool-size: 5
+         maximum-pool-size: 10
          minimum-idle: 2
          idle-timeout: 30000
          connection-timeout: 30000
