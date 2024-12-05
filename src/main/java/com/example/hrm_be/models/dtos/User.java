@@ -43,4 +43,6 @@ public class User implements Serializable {
   transient List<Role> roles;
 
   Branch branch;
+
+  FirebaseToken firebaseToken;
 }

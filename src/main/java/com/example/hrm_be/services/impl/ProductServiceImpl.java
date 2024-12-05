@@ -932,6 +932,10 @@ public class ProductServiceImpl implements ProductService {
       allProductBatches.add(productBaseDTO);
       allProductBatches.addAll(batches);
     }
+    allProductBatches.sort(
+        Comparator.comparing((ProductBatchDTO dto) -> dto.getProduct().getId())
+            .thenComparing(
+                dto -> dto.getBatch() != null ? dto.getBatch().getId() : Long.MIN_VALUE));
     return allProductBatches;
   }
 

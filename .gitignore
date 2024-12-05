@@ -35,3 +35,4 @@ build/
 docker/postgres_data
 docker/pgadmin-data
 /docker/docker/
+/src/main/resources/firebase-service-account.json

@@ -30,6 +30,7 @@ public class BranchBatchMapper {
                     .batch(e.getBatch() != null ? batchMapper.toEntity(e.getBatch()) : null)
                     .branch(e.getBranch() != null ? branchMapper.toEntity(e.getBranch()) : null)
                     .quantity(e.getQuantity())
+                    .lastUpdated(e.getLastUpdated())
                     .notifications(
                         e.getNotifications() != null
                             ? e.getNotifications().stream()

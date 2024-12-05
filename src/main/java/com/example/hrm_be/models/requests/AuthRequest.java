@@ -33,4 +33,6 @@ public class AuthRequest implements Serializable {
   String password;
 
   Boolean isNotSendingEmail;
+
+  String deviceToken;
 }

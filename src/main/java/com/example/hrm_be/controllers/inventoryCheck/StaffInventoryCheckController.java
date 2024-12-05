@@ -12,17 +12,21 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+
 @Slf4j
 @RequiredArgsConstructor
-@RestController
+@Controller
 @RequestMapping("/api/v1/staff/inventory-check")
 @Tag(name = "Staff-Inventory-Checks API")
 @SecurityRequirement(name = "Authorization")
@@ -238,21 +242,23 @@ public class StaffInventoryCheckController {
     return ResponseEntity.ok(BaseOutput.<String>builder().status(ResponseStatus.SUCCESS).build());
   }
 
-  // SSE Endpoint for individual InventoryCheck updates
-  @GetMapping("/{inventoryCheckId}/subscribe")
-  public SseEmitter subscribeToInventoryCheck(
+
+  @GetMapping(path = "/{inventoryCheckId}/stream")
+  public SseEmitter streamInventoryCheckUpdates(
       @PathVariable Long inventoryCheckId, @RequestParam("authToken") String authToken) {
-    SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
+    log.info("Starting stream for inventoryCheckId: {}", inventoryCheckId);
+    return inventoryCheckService.createEmitter(inventoryCheckId);
+  }
 
-    // Register this emitter for the specific InventoryCheck
-    inventoryCheckService.registerEmitterForInventoryCheck(inventoryCheckId, emitter);
-
-    // Cleanup on completion or timeout
-    emitter.onCompletion(
-        () -> inventoryCheckService.removeEmitterForInventoryCheck(inventoryCheckId, emitter));
-    emitter.onTimeout(
-        () -> inventoryCheckService.removeEmitterForInventoryCheck(inventoryCheckId, emitter));
-
-    return emitter;
+  @PostMapping("/close/{inventoryCheckId}")
+  public ResponseEntity<String> closeInventoryCheckStream(@PathVariable Long inventoryCheckId) {
+    boolean closed = inventoryCheckService.closeInventoryCheck(inventoryCheckId);
+    if (closed) {
+      return ResponseEntity.ok(
+          "Stream closed successfully for inventoryCheckId: " + inventoryCheckId);
+    } else {
+      return ResponseEntity.status(404)
+          .body("No active stream found for inventoryCheckId: " + inventoryCheckId);
+    }
   }
 }
