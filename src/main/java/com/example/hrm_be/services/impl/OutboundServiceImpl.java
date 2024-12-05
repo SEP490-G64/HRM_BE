@@ -4,7 +4,6 @@ import com.example.hrm_be.commons.constants.HrmConstant;
 import com.example.hrm_be.commons.constants.HrmConstant.ERROR.BRANCH;
 import com.example.hrm_be.commons.constants.HrmConstant.ERROR.INBOUND;
 import com.example.hrm_be.commons.constants.HrmConstant.ERROR.OUTBOUND;
-import com.example.hrm_be.commons.enums.InboundStatus;
 import com.example.hrm_be.commons.enums.NotificationType;
 import com.example.hrm_be.commons.enums.OutboundStatus;
 import com.example.hrm_be.commons.enums.OutboundType;
@@ -374,9 +373,15 @@ public class OutboundServiceImpl implements OutboundService {
             .supplier(request.getSupplier())
             .fromBranch(request.getFromBranch())
             .note(request.getNote())
-            .taxable(outboundEntity.getStatus() == OutboundStatus.KIEM_HANG ? outboundEntity.getTaxable() : request.getTaxable())
+            .taxable(
+                outboundEntity.getStatus() == OutboundStatus.KIEM_HANG
+                    ? outboundEntity.getTaxable()
+                    : request.getTaxable())
             .isApproved(outboundEntity.getIsApproved())
-            .approvedBy(outboundEntity.getApprovedBy() != null ? userMapper.convertToDtoBasicInfo(outboundEntity.getApprovedBy()) : null)
+            .approvedBy(
+                outboundEntity.getApprovedBy() != null
+                    ? userMapper.convertToDtoBasicInfo(outboundEntity.getApprovedBy())
+                    : null)
             .build();
     // Save the updated entity back to the repository
     OutboundEntity updatedOutboundEntity =
