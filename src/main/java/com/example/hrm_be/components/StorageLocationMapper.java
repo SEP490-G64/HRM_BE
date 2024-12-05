@@ -48,16 +48,19 @@ public class StorageLocationMapper {
   // Helper method to convert StorageLocationEntity to StorageLocationDTO
   private StorageLocation convertToDTO(StorageLocationEntity entity) {
     return StorageLocation.builder()
-            .id(entity.getId())
-            .shelfName(entity.getShelfName())
-            .aisle(entity.getAisle())
-            .zone(entity.getZone())
-            .active(entity.getActive())
-            .locationType(entity.getLocationType())
-            .rowNumber(entity.getRowNumber())
-            .shelfLevel(entity.getShelfLevel())
-            .specialCondition(entity.getSpecialCondition())
-            .branch(entity.getBranch() != null ? branchMapper.convertToDTOBasicInfo(entity.getBranch()) : null)
-            .build();
+        .id(entity.getId())
+        .shelfName(entity.getShelfName())
+        .aisle(entity.getAisle())
+        .zone(entity.getZone())
+        .active(entity.getActive())
+        .locationType(entity.getLocationType())
+        .rowNumber(entity.getRowNumber())
+        .shelfLevel(entity.getShelfLevel())
+        .specialCondition(entity.getSpecialCondition())
+        .branch(
+            entity.getBranch() != null
+                ? branchMapper.convertToDTOBasicInfo(entity.getBranch())
+                : null)
+        .build();
   }
 }

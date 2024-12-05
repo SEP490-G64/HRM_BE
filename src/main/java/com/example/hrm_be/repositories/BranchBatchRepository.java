@@ -39,6 +39,8 @@ public interface BranchBatchRepository extends JpaRepository<BranchBatchEntity, 
   @Query("UPDATE BranchBatchEntity i SET i.batchStatus = :status WHERE i.id = :id")
   void updateBranchBatchStatus(@Param("status") BatchStatus status, @Param("id") Long id);
 
-  @Query("SELECT b FROM BranchBatchEntity b WHERE b.branch.id = :branchId AND b.batch.product.id = :productId")
+  @Query(
+      "SELECT b FROM BranchBatchEntity b WHERE b.branch.id = :branchId AND b.batch.product.id ="
+          + " :productId")
   List<BranchBatchEntity> findByBranchIdAndProductId(Long branchId, Long productId);
 }
