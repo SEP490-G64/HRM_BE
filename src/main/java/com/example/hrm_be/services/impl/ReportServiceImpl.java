@@ -1,9 +1,15 @@
 package com.example.hrm_be.services.impl;
 
+import com.example.hrm_be.components.ReportMapper;
 import com.example.hrm_be.models.dtos.*;
+import com.example.hrm_be.models.entities.BranchBatchEntity;
+import com.example.hrm_be.models.entities.BranchProductEntity;
 import com.example.hrm_be.repositories.*;
 import com.example.hrm_be.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,6 +17,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -25,6 +32,9 @@ public class ReportServiceImpl implements ReportService {
   @Autowired private ProductCategoryRepository productCategoryRepository;
   @Autowired private ProductTypeRepository productTypeRepository;
   @Autowired private SupplierRepository supplierRepository;
+  @Autowired private BranchProductRepository branchProductRepository;
+  @Autowired private BranchBatchRepository branchBatchRepository;
+  @Autowired private ReportMapper reportMapper;
 
   @Override
   public Dashboard getOverviewDashboard(Long branchId) {
@@ -273,5 +283,47 @@ public class ReportServiceImpl implements ReportService {
             .collect(Collectors.toList());
 
     return result;
+  }
+
+  @Override
+  public Page<StockProductReport> getStockReport(Long branchId, String keyword, Pageable pageable) {
+    Page<BranchProductEntity> branchProducts;
+
+    if (branchId != null) {
+      branchProducts =
+          branchProductRepository.findByBranchIdAndProductNameOrProductRegistrationCode(
+              branchId, keyword, pageable);
+    } else {
+      throw new IllegalArgumentException("Branch ID is required");
+    }
+
+    // Nhóm dữ liệu theo sản phẩm
+    Map<Long, StockProductReport> productReportMap = new HashMap<>();
+
+    for (BranchProductEntity branchProduct : branchProducts) {
+      // Lấy hoặc tạo mới báo cáo cho sản phẩm nếu chưa có trong map
+      StockProductReport productReport =
+          productReportMap.computeIfAbsent(
+              branchProduct.getProduct().getId(),
+              id -> reportMapper.convertToStockProductReport(branchProduct));
+
+      // Lấy thông tin các lô liên quan đến sản phẩm này
+      List<BranchBatchEntity> branchBatches =
+          branchBatchRepository.findByBranchIdAndProductId(branchId, productReport.getProductId());
+
+      // Thêm các lô vào báo cáo sản phẩm
+      for (BranchBatchEntity branchBatch : branchBatches) {
+        StockBatchReport batchReport = reportMapper.convertToStockBatchReport(branchBatch);
+        productReport.getBatches().add(batchReport);
+        if (batchReport.getExpireDate().isBefore(LocalDateTime.now())) {
+          productReport.setSellableQuantity(
+              productReport.getSellableQuantity().subtract(batchReport.getTotalQuantity()));
+        }
+      }
+    }
+
+    // Trả về danh sách các báo cáo sản phẩm dưới dạng phân trang
+    return new PageImpl<>(
+        new ArrayList<>(productReportMap.values()), pageable, branchProducts.getTotalElements());
   }
 }
