@@ -14,15 +14,7 @@ import com.example.hrm_be.components.OutboundDetailMapper;
 import com.example.hrm_be.components.OutboundProductDetailMapper;
 import com.example.hrm_be.components.UserMapper;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
-import com.example.hrm_be.models.dtos.Batch;
-import com.example.hrm_be.models.dtos.Branch;
-import com.example.hrm_be.models.dtos.BranchBatch;
-import com.example.hrm_be.models.dtos.BranchProduct;
-import com.example.hrm_be.models.dtos.InventoryCheck;
-import com.example.hrm_be.models.dtos.InventoryCheckDetails;
-import com.example.hrm_be.models.dtos.InventoryCheckProductDetails;
-import com.example.hrm_be.models.dtos.Notification;
-import com.example.hrm_be.models.dtos.Product;
+import com.example.hrm_be.models.dtos.*;
 import com.example.hrm_be.models.entities.*;
 import com.example.hrm_be.models.requests.CreateInventoryCheckRequest;
 import com.example.hrm_be.models.responses.InventoryUpdate;
@@ -335,6 +327,10 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
           HrmConstant.ERROR.INVENTORY_CHECK.NOT_EXIST); // Throw error if not found
     }
 
+    if (oldInventoryCheckEntity.getStatus() != InventoryCheckStatus.CHO_DUYET) {
+      throw new HrmCommonException(HrmConstant.ERROR.INVENTORY_CHECK.INVALID);
+    }
+
     // Get the email of the authenticated user
     String email = userService.getAuthenticatedUserEmail();
     UserEntity userEntity = userMapper.toEntity(userService.findLoggedInfoByEmail(email));
@@ -346,6 +342,8 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
                 op.toBuilder()
                     .isApproved(accept) // Set approval flag
                     .approvedBy(userEntity) // Set approver
+                    .status(
+                        accept ? InventoryCheckStatus.DA_CAN_BANG : InventoryCheckStatus.DANG_KIEM)
                     .build())
         .map(inventoryCheckRepository::save) // Save updated entity
         .map(inventoryCheckMapper::toDTO) // Convert to DTO
@@ -405,9 +403,12 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
                 request.getCreatedDate() != null ? request.getCreatedDate() : LocalDateTime.now())
             .status(InventoryCheckStatus.DANG_KIEM) // Example status
             .createdBy(unsavedInventoryCheck.getCreatedBy())
-            .approvedBy(null) // Default to null for new checks
+            .approvedBy(
+                unsavedInventoryCheck.getApprovedBy() != null
+                    ? unsavedInventoryCheck.getApprovedBy()
+                    : null) // Default to null for new checks
             .branch(unsavedInventoryCheck.getBranch())
-            .isApproved(false)
+            .isApproved(unsavedInventoryCheck.getIsApproved())
             .note(request.getNote())
             .build();
 
@@ -671,7 +672,7 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
       notificationService.sendNotification(
           notification, userService.findAllManagerByBranchId(inventoryCheck.getBranch().getId()));
     }
-    inventoryCheckRepository.updateInboundStatus(status, id);
+    inventoryCheckRepository.updateInventoryCheckStatus(status, id);
   }
 
   public Flux<InventoryUpdate> streamInventoryCheckUpdates(Long inventoryCheckId) {

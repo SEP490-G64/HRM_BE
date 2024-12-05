@@ -317,6 +317,9 @@ public class InboundServiceImpl implements InboundService {
     updatedInbound.setApprovedBy(userMapper.convertToDtoBasicInfo(inboundEntity.getApprovedBy()));
     updatedInbound.setIsApproved(inboundEntity.getIsApproved());
     updatedInbound.setStatus(inboundEntity.getStatus());
+    if (updatedInbound.getStatus() == InboundStatus.KIEM_HANG) {
+      updatedInbound.setTaxable(inboundEntity.getTaxable());
+    }
 
     // Save updated inbound entity
     InboundEntity updatedInboundEntity =

@@ -7,8 +7,6 @@ import com.example.hrm_be.models.responses.BaseOutput;
 import com.example.hrm_be.services.StorageLocationService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
-
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,13 +15,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v1/staff/storage-location")
+@RequestMapping("/api/v1/admin/storage-location")
 @Tag(name = "Staff-Storage-Location API")
 @SecurityRequirement(name = "Authorization")
-public class StaffStorageLocationController {
+public class AdminStorageLocationController {
   private final StorageLocationService storageLocationService;
 
   // GET: /api/v1/staff/storageLocation

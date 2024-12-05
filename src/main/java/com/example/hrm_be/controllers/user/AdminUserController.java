@@ -47,10 +47,11 @@ public class AdminUserController {
       @RequestParam(required = false, defaultValue = "ASC")
           String sortDirection, // Sort direction (ASC or DESC)
       @RequestParam(required = false, defaultValue = "") String keyword,
-      @RequestParam(required = false) UserStatusType status) { // Search keyword for filtering
+      @RequestParam(required = false) UserStatusType status,
+      @RequestParam(required = false) Long branchId) { // Search keyword for filtering
     // Call the user service to get paginated user data
     Page<User> userPage =
-        userService.getByPaging(page, size, sortBy, sortDirection, keyword, status);
+        userService.getByPaging(page, size, sortBy, sortDirection, keyword, branchId, status);
 
     // Create a response object containing the user data and metadata
     BaseOutput<List<User>> response =
