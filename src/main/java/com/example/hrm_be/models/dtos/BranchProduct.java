@@ -42,5 +42,4 @@ public class BranchProduct {
   ProductStatus productStatus;
 
   LocalDateTime lastUpdated;
-
 }

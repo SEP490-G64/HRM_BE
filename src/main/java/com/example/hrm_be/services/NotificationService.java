@@ -11,7 +11,6 @@ import com.google.firebase.messaging.BatchResponse;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
 
 @Service
 public interface NotificationService {
