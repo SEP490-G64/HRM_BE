@@ -6,20 +6,25 @@ import com.example.hrm_be.commons.enums.ResponseStatus;
 import com.example.hrm_be.models.dtos.InventoryCheck;
 import com.example.hrm_be.models.requests.CreateInventoryCheckRequest;
 import com.example.hrm_be.models.responses.BaseOutput;
+import com.example.hrm_be.models.responses.InventoryUpdate;
 import com.example.hrm_be.services.InventoryCheckService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+import reactor.core.publisher.Flux;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -239,22 +244,26 @@ public class StaffInventoryCheckController {
     return ResponseEntity.ok(BaseOutput.<String>builder().status(ResponseStatus.SUCCESS).build());
   }
 
-  @GetMapping(path = "/{inventoryCheckId}/stream", produces = "text/event-stream")
-  public SseEmitter streamInventoryCheckUpdates(
+  @GetMapping(path = "/{inventoryCheckId}/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+  public Flux<ServerSentEvent<InventoryUpdate>> streamInventoryCheckUpdates(
       @PathVariable Long inventoryCheckId, @RequestParam("authToken") String authToken) {
     log.info("Starting stream for inventoryCheckId: {}", inventoryCheckId);
-    return inventoryCheckService.createEmitter(inventoryCheckId);
+
+    return inventoryCheckService.getInventoryCheckUpdates(inventoryCheckId)
+        .map(update -> ServerSentEvent.<InventoryUpdate>builder()
+            .id(UUID.randomUUID().toString())
+            .event("inventoryUpdate")
+            .data(update)
+            .build())
+        .doOnCancel(() -> log.info("Stream canceled for inventoryCheckId: {}", inventoryCheckId))
+        .doOnComplete(() -> log.info("Stream completed for inventoryCheckId: {}", inventoryCheckId));
+
   }
 
   @PostMapping("/close/{inventoryCheckId}")
   public ResponseEntity<String> closeInventoryCheckStream(@PathVariable Long inventoryCheckId) {
-    boolean closed = inventoryCheckService.closeInventoryCheck(inventoryCheckId);
-    if (closed) {
-      return ResponseEntity.ok(
-          "Stream closed successfully for inventoryCheckId: " + inventoryCheckId);
-    } else {
-      return ResponseEntity.status(404)
-          .body("No active stream found for inventoryCheckId: " + inventoryCheckId);
-    }
+    inventoryCheckService.removeSink(inventoryCheckId);
+    return ResponseEntity.ok(
+        "Stream closed successfully for inventoryCheckId: " + inventoryCheckId);
   }
 }

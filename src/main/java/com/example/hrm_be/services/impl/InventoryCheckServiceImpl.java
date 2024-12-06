@@ -42,6 +42,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -71,6 +72,8 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
 
   private final ConcurrentMap<Long, Many<InventoryUpdate>> inventoryUpdateSinks =
       new ConcurrentHashMap<>();
+  private final Map<Long, Many<InventoryUpdate>> inventoryCheckSinks = new ConcurrentHashMap<>();
+
   private final ConcurrentHashMap<Long, CopyOnWriteArrayList<SseEmitter>> inventoryCheckEmitters =
       new ConcurrentHashMap<>();
   private final CopyOnWriteArrayList<SseEmitter> emitters = new CopyOnWriteArrayList<>();
@@ -614,37 +617,34 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
   }
 
   @Override
-  public void broadcastInventoryCheckUpdates(
-      Set<Long> productIds, Set<Long> batchIds, Long branchId) {
-
+  public void broadcastInventoryCheckUpdates(Set<Long> productIds, Set<Long> batchIds, Long branchId) {
     // Fetch all InventoryChecks based on status and branch ID
     List<InventoryCheckEntity> inventoryChecks =
         inventoryCheckRepository.findInventoryCheckEntitiesByStatusAndBranchId(
             InventoryCheckStatus.DANG_KIEM, branchId);
 
-    // Iterate over each inventoryCheck and emit the update
-    for (InventoryCheckEntity inventoryCheck : inventoryChecks) {
-      Long inventoryCheckId = inventoryCheck.getId();
+    // Prepare the update payload
+    InventoryUpdate updatePayload = InventoryUpdate.builder()
+        .batchIds(batchIds)
+        .productIds(productIds)
+        .build();
 
-      // Prepare the update payload
-      InventoryUpdate updatePayload =
-          InventoryUpdate.builder().batchIds(batchIds).productIds(productIds).build();
-      if (inventoryCheckEmitters.containsKey(inventoryCheckId)) {
-        // Emit the payload to all subscribers for this inventoryCheckId
-        emitToSubscribers(inventoryCheckId, updatePayload);
-      }
-    }
+    // Emit the update to all relevant sinks
+    inventoryChecks.forEach(inventoryCheck -> {
+      Long inventoryCheckId = inventoryCheck.getId();
+      emitToSubscribers(inventoryCheckId, updatePayload);
+    });
   }
 
   private void emitToSubscribers(Long inventoryCheckId, InventoryUpdate payload) {
-    if (inventoryCheckEmitters.containsKey(inventoryCheckId)) {
-      for (SseEmitter emitter : inventoryCheckEmitters.get(inventoryCheckId)) {
-        try {
-          emitter.send(SseEmitter.event().name("inventoryUpdate").data(payload));
-        } catch (IOException e) {
-          removeEmitter(inventoryCheckId, emitter);
-        }
-      }
+    // Check if a sink exists for the given inventoryCheckId
+    Sinks.Many<InventoryUpdate> sink = inventoryCheckSinks.get(inventoryCheckId);
+
+    if (sink != null) {
+      log.info("Emitting update for inventoryCheckId: {}", inventoryCheckId);
+      sink.tryEmitNext(payload); // Emit the payload to all subscribers
+    } else {
+      log.warn("No active subscribers for inventoryCheckId: {}", inventoryCheckId);
     }
   }
 
@@ -676,30 +676,24 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
     inventoryCheckRepository.updateInventoryCheckStatus(status, id);
   }
 
-  public Flux<InventoryUpdate> streamInventoryCheckUpdates(Long inventoryCheckId) {
-    return inventoryUpdateSinks
-        .computeIfAbsent(inventoryCheckId, id -> Sinks.many().multicast().onBackpressureBuffer())
-        .asFlux()
-        .doOnCancel(
-            () -> {
-              log.info("Cleaning up sink for inventoryCheckId: {}", inventoryCheckId);
-              Sinks.Many<InventoryUpdate> sink = inventoryUpdateSinks.remove(inventoryCheckId);
-              if (sink != null) {
-                sink.tryEmitComplete(); // Gracefully complete the sink
-              }
-            })
-        .doFinally(
-            signalType -> {
-              log.info(
-                  "Stream terminated with signal {} for inventoryCheckId: {}",
-                  signalType,
-                  inventoryCheckId);
-              Sinks.Many<InventoryUpdate> sink = inventoryUpdateSinks.remove(inventoryCheckId);
-              if (sink != null) {
-                sink.tryEmitComplete(); // Ensure sink is completed
-              }
-            });
+  public Flux<InventoryUpdate> getInventoryCheckUpdates(Long inventoryCheckId) {
+    log.info("Fetching updates for inventoryCheckId: {}", inventoryCheckId);
+
+    // Create or fetch the sink for the inventory check ID
+    Sinks.Many<InventoryUpdate> sink = inventoryCheckSinks.computeIfAbsent(
+        inventoryCheckId,
+        id -> Sinks.many().multicast().onBackpressureBuffer()
+    );
+
+    // Return a Flux that emits data from the sink
+    return sink.asFlux();
   }
+
+  public void removeSink(Long inventoryCheckId) {
+    inventoryCheckSinks.remove(inventoryCheckId);
+    log.info("Removed sink for inventoryCheckId: {}", inventoryCheckId);
+  }
+
 
   public boolean closeInventoryCheck(Long inventoryCheckId) {
     if (inventoryCheckEmitters.containsKey(inventoryCheckId)) {
