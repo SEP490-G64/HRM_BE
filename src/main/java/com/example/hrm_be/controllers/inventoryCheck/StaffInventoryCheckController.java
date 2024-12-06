@@ -239,7 +239,7 @@ public class StaffInventoryCheckController {
     return ResponseEntity.ok(BaseOutput.<String>builder().status(ResponseStatus.SUCCESS).build());
   }
 
-  @GetMapping(path = "/{inventoryCheckId}/stream")
+  @GetMapping(path = "/{inventoryCheckId}/stream", produces = "text/event-stream")
   public SseEmitter streamInventoryCheckUpdates(
       @PathVariable Long inventoryCheckId, @RequestParam("authToken") String authToken) {
     log.info("Starting stream for inventoryCheckId: {}", inventoryCheckId);
