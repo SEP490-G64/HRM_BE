@@ -23,7 +23,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import reactor.core.publisher.Flux;
 
 @Slf4j
@@ -249,15 +248,18 @@ public class StaffInventoryCheckController {
       @PathVariable Long inventoryCheckId, @RequestParam("authToken") String authToken) {
     log.info("Starting stream for inventoryCheckId: {}", inventoryCheckId);
 
-    return inventoryCheckService.getInventoryCheckUpdates(inventoryCheckId)
-        .map(update -> ServerSentEvent.<InventoryUpdate>builder()
-            .id(UUID.randomUUID().toString())
-            .event("inventoryUpdate")
-            .data(update)
-            .build())
+    return inventoryCheckService
+        .getInventoryCheckUpdates(inventoryCheckId)
+        .map(
+            update ->
+                ServerSentEvent.<InventoryUpdate>builder()
+                    .id(UUID.randomUUID().toString())
+                    .event("inventoryUpdate")
+                    .data(update)
+                    .build())
         .doOnCancel(() -> log.info("Stream canceled for inventoryCheckId: {}", inventoryCheckId))
-        .doOnComplete(() -> log.info("Stream completed for inventoryCheckId: {}", inventoryCheckId));
-
+        .doOnComplete(
+            () -> log.info("Stream completed for inventoryCheckId: {}", inventoryCheckId));
   }
 
   @PostMapping("/close/{inventoryCheckId}")
