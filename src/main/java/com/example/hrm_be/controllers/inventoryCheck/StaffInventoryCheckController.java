@@ -24,7 +24,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import reactor.core.publisher.Flux;
 
 @Slf4j
@@ -258,8 +257,8 @@ public class StaffInventoryCheckController {
             .build())
         .mergeWith(keepAliveEvents())
         .doOnCancel(() -> log.info("Stream canceled for inventoryCheckId: {}", inventoryCheckId))
-        .doOnComplete(() -> log.info("Stream completed for inventoryCheckId: {}", inventoryCheckId));
-
+        .doOnComplete(
+            () -> log.info("Stream completed for inventoryCheckId: {}", inventoryCheckId));
   }
   private Flux<ServerSentEvent<InventoryUpdate>> keepAliveEvents() {
     return Flux.interval(Duration.ofSeconds(15)) // Adjust the interval as needed
