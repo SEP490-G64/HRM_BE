@@ -35,7 +35,6 @@ import com.example.hrm_be.services.UserService;
 import com.example.hrm_be.utils.WplUtil;
 import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.criteria.Predicate;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.channels.ClosedChannelException;
 import java.time.LocalDateTime;
@@ -617,23 +616,23 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
   }
 
   @Override
-  public void broadcastInventoryCheckUpdates(Set<Long> productIds, Set<Long> batchIds, Long branchId) {
+  public void broadcastInventoryCheckUpdates(
+      Set<Long> productIds, Set<Long> batchIds, Long branchId) {
     // Fetch all InventoryChecks based on status and branch ID
     List<InventoryCheckEntity> inventoryChecks =
         inventoryCheckRepository.findInventoryCheckEntitiesByStatusAndBranchId(
             InventoryCheckStatus.DANG_KIEM, branchId);
 
     // Prepare the update payload
-    InventoryUpdate updatePayload = InventoryUpdate.builder()
-        .batchIds(batchIds)
-        .productIds(productIds)
-        .build();
+    InventoryUpdate updatePayload =
+        InventoryUpdate.builder().batchIds(batchIds).productIds(productIds).build();
 
     // Emit the update to all relevant sinks
-    inventoryChecks.forEach(inventoryCheck -> {
-      Long inventoryCheckId = inventoryCheck.getId();
-      emitToSubscribers(inventoryCheckId, updatePayload);
-    });
+    inventoryChecks.forEach(
+        inventoryCheck -> {
+          Long inventoryCheckId = inventoryCheck.getId();
+          emitToSubscribers(inventoryCheckId, updatePayload);
+        });
   }
 
   private void emitToSubscribers(Long inventoryCheckId, InventoryUpdate payload) {
@@ -680,10 +679,9 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
     log.info("Fetching updates for inventoryCheckId: {}", inventoryCheckId);
 
     // Create or fetch the sink for the inventory check ID
-    Sinks.Many<InventoryUpdate> sink = inventoryCheckSinks.computeIfAbsent(
-        inventoryCheckId,
-        id -> Sinks.many().multicast().onBackpressureBuffer()
-    );
+    Sinks.Many<InventoryUpdate> sink =
+        inventoryCheckSinks.computeIfAbsent(
+            inventoryCheckId, id -> Sinks.many().multicast().onBackpressureBuffer());
 
     // Return a Flux that emits data from the sink
     return sink.asFlux();
@@ -693,7 +691,6 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
     inventoryCheckSinks.remove(inventoryCheckId);
     log.info("Removed sink for inventoryCheckId: {}", inventoryCheckId);
   }
-
 
   public boolean closeInventoryCheck(Long inventoryCheckId) {
     if (inventoryCheckEmitters.containsKey(inventoryCheckId)) {
