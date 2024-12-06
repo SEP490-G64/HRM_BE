@@ -11,6 +11,7 @@ import com.example.hrm_be.services.InventoryCheckService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotNull;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -255,11 +256,19 @@ public class StaffInventoryCheckController {
             .event("inventoryUpdate")
             .data(update)
             .build())
+        .mergeWith(keepAliveEvents())
         .doOnCancel(() -> log.info("Stream canceled for inventoryCheckId: {}", inventoryCheckId))
         .doOnComplete(() -> log.info("Stream completed for inventoryCheckId: {}", inventoryCheckId));
 
   }
-
+  private Flux<ServerSentEvent<InventoryUpdate>> keepAliveEvents() {
+    return Flux.interval(Duration.ofSeconds(15)) // Adjust the interval as needed
+        .map(interval -> ServerSentEvent.<InventoryUpdate>builder()
+            .id("keep-alive-" + interval)
+            .event("keepAlive")
+            .data(null)
+            .build());
+  }
   @PostMapping("/close/{inventoryCheckId}")
   public ResponseEntity<String> closeInventoryCheckStream(@PathVariable Long inventoryCheckId) {
     inventoryCheckService.removeSink(inventoryCheckId);
