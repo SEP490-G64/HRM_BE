@@ -249,25 +249,32 @@ public class StaffInventoryCheckController {
       @PathVariable Long inventoryCheckId, @RequestParam("authToken") String authToken) {
     log.info("Starting stream for inventoryCheckId: {}", inventoryCheckId);
 
-    return inventoryCheckService.getInventoryCheckUpdates(inventoryCheckId)
-        .map(update -> ServerSentEvent.<InventoryUpdate>builder()
-            .id(UUID.randomUUID().toString())
-            .event("inventoryUpdate")
-            .data(update)
-            .build())
+    return inventoryCheckService
+        .getInventoryCheckUpdates(inventoryCheckId)
+        .map(
+            update ->
+                ServerSentEvent.<InventoryUpdate>builder()
+                    .id(UUID.randomUUID().toString())
+                    .event("inventoryUpdate")
+                    .data(update)
+                    .build())
         .mergeWith(keepAliveEvents())
         .doOnCancel(() -> log.info("Stream canceled for inventoryCheckId: {}", inventoryCheckId))
         .doOnComplete(
             () -> log.info("Stream completed for inventoryCheckId: {}", inventoryCheckId));
   }
+
   private Flux<ServerSentEvent<InventoryUpdate>> keepAliveEvents() {
     return Flux.interval(Duration.ofSeconds(15)) // Adjust the interval as needed
-        .map(interval -> ServerSentEvent.<InventoryUpdate>builder()
-            .id("keep-alive-" + interval)
-            .event("keepAlive")
-            .data(null)
-            .build());
+        .map(
+            interval ->
+                ServerSentEvent.<InventoryUpdate>builder()
+                    .id("keep-alive-" + interval)
+                    .event("keepAlive")
+                    .data(null)
+                    .build());
   }
+
   @PostMapping("/close/{inventoryCheckId}")
   public ResponseEntity<String> closeInventoryCheckStream(@PathVariable Long inventoryCheckId) {
     inventoryCheckService.removeSink(inventoryCheckId);
