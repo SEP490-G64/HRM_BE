@@ -52,10 +52,14 @@ public interface InventoryCheckService {
 
   void broadcastInventoryCheckUpdates(Set<Long> productIds, Set<Long> batchIds, Long branchId);
 
-  Flux<InventoryUpdate> streamInventoryCheckUpdates(Long inventoryCheckId)
-      throws InterruptedException;
+
 
   boolean closeInventoryCheck(Long inventoryCheckId);
 
   SseEmitter createEmitter(Long userId);
+
+  Flux<InventoryUpdate> getInventoryCheckUpdates(Long inventoryCheckId) ;
+
+  void removeSink(Long inventoryCheckId) ;
+
 }
