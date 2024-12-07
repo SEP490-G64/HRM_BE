@@ -24,6 +24,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import reactor.core.publisher.Flux;
 
 @Slf4j
@@ -244,41 +245,22 @@ public class StaffInventoryCheckController {
     return ResponseEntity.ok(BaseOutput.<String>builder().status(ResponseStatus.SUCCESS).build());
   }
 
-  @GetMapping(path = "/{inventoryCheckId}/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-  public Flux<ServerSentEvent<InventoryUpdate>> streamInventoryCheckUpdates(
+  @GetMapping(path = "/{inventoryCheckId}/stream", produces = "text/event-stream")
+  public SseEmitter streamInventoryCheckUpdates(
       @PathVariable Long inventoryCheckId, @RequestParam("authToken") String authToken) {
     log.info("Starting stream for inventoryCheckId: {}", inventoryCheckId);
-
-    return inventoryCheckService
-        .getInventoryCheckUpdates(inventoryCheckId)
-        .map(
-            update ->
-                ServerSentEvent.<InventoryUpdate>builder()
-                    .id(UUID.randomUUID().toString())
-                    .event("inventoryUpdate")
-                    .data(update)
-                    .build())
-        .mergeWith(keepAliveEvents())
-        .doOnCancel(() -> log.info("Stream canceled for inventoryCheckId: {}", inventoryCheckId))
-        .doOnComplete(
-            () -> log.info("Stream completed for inventoryCheckId: {}", inventoryCheckId));
-  }
-
-  private Flux<ServerSentEvent<InventoryUpdate>> keepAliveEvents() {
-    return Flux.interval(Duration.ofSeconds(15)) // Adjust the interval as needed
-        .map(
-            interval ->
-                ServerSentEvent.<InventoryUpdate>builder()
-                    .id("keep-alive-" + interval)
-                    .event("keepAlive")
-                    .data(null)
-                    .build());
+    return inventoryCheckService.createEmitter(inventoryCheckId);
   }
 
   @PostMapping("/close/{inventoryCheckId}")
   public ResponseEntity<String> closeInventoryCheckStream(@PathVariable Long inventoryCheckId) {
-    inventoryCheckService.removeSink(inventoryCheckId);
-    return ResponseEntity.ok(
-        "Stream closed successfully for inventoryCheckId: " + inventoryCheckId);
+    boolean closed = inventoryCheckService.closeInventoryCheck(inventoryCheckId);
+    if (closed) {
+      return ResponseEntity.ok(
+          "Stream closed successfully for inventoryCheckId: " + inventoryCheckId);
+    } else {
+      return ResponseEntity.status(404)
+          .body("No active stream found for inventoryCheckId: " + inventoryCheckId);
+    }
   }
 }
