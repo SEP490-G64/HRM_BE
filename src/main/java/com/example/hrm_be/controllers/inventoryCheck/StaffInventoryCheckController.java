@@ -6,26 +6,20 @@ import com.example.hrm_be.commons.enums.ResponseStatus;
 import com.example.hrm_be.models.dtos.InventoryCheck;
 import com.example.hrm_be.models.requests.CreateInventoryCheckRequest;
 import com.example.hrm_be.models.responses.BaseOutput;
-import com.example.hrm_be.models.responses.InventoryUpdate;
 import com.example.hrm_be.services.InventoryCheckService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotNull;
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
-import reactor.core.publisher.Flux;
 
 @Slf4j
 @RequiredArgsConstructor
