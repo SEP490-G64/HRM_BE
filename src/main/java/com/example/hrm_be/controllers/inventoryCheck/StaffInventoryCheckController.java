@@ -17,7 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -240,7 +239,6 @@ public class StaffInventoryCheckController {
   }
 
   @GetMapping(path = "/{inventoryCheckId}/stream", produces = "text/event-stream")
-
   public SseEmitter streamInventoryCheckUpdates(
       @PathVariable Long inventoryCheckId, @RequestParam("authToken") String authToken) {
     log.info("Starting stream for inventoryCheckId: {}", inventoryCheckId);
