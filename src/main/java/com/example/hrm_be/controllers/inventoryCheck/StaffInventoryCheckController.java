@@ -23,7 +23,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @Slf4j
 @RequiredArgsConstructor
-@Controller
+@RestController
 @RequestMapping("/api/v1/staff/inventory-check")
 @Tag(name = "Staff-Inventory-Checks API")
 @SecurityRequirement(name = "Authorization")
@@ -240,6 +240,7 @@ public class StaffInventoryCheckController {
   }
 
   @GetMapping(path = "/{inventoryCheckId}/stream", produces = "text/event-stream")
+
   public SseEmitter streamInventoryCheckUpdates(
       @PathVariable Long inventoryCheckId, @RequestParam("authToken") String authToken) {
     log.info("Starting stream for inventoryCheckId: {}", inventoryCheckId);
