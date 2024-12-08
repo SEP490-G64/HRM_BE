@@ -51,12 +51,4 @@ public interface InventoryCheckService {
   void delete(Long id);
 
   void broadcastInventoryCheckUpdates(Set<Long> productIds, Set<Long> batchIds, Long branchId);
-
-  boolean closeInventoryCheck(Long inventoryCheckId);
-
-  SseEmitter createEmitter(Long userId);
-
-  Flux<InventoryUpdate> getInventoryCheckUpdates(Long inventoryCheckId);
-
-  void removeSink(Long inventoryCheckId);
 }
