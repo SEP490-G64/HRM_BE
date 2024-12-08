@@ -10,31 +10,26 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 
 @Configuration
 @EnableWebSocketMessageBroker
-public class WebSocketConfig  implements WebSocketMessageBrokerConfigurer {
-  @Autowired
-  private SecurityProperties securityProperties;
+public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
+  @Autowired private SecurityProperties securityProperties;
   String[] allowedOrigins = {
-      "http://localhost:3000",
-      "http://localhost:4200",
-      "http://localhost:5173",
-      "http://localhost:63342",
-      "https://warehouse.longtam.store",
-      "http://warehouse.longtam.store"
+    "http://localhost:3000",
+    "http://localhost:4200",
+    "http://localhost:5173",
+    "http://localhost:63342",
+    "https://warehouse.longtam.store",
+    "http://warehouse.longtam.store"
   };
+
   @Override
   public void configureMessageBroker(MessageBrokerRegistry config) {
-    config.enableSimpleBroker("/all", "/specific","/topic/inventory-check");
+    config.enableSimpleBroker("/all", "/specific", "/topic/inventory-check");
     config.setApplicationDestinationPrefixes("/app");
   }
 
   @Override
   public void registerStompEndpoints(StompEndpointRegistry registry) {
-    registry
-        .addEndpoint("/ws")
-        .setAllowedOrigins(allowedOrigins)
-        .withSockJS();
-    registry
-        .addEndpoint("/ws")
-        .setAllowedOrigins(allowedOrigins);
+    registry.addEndpoint("/ws").setAllowedOrigins(allowedOrigins).withSockJS();
+    registry.addEndpoint("/ws").setAllowedOrigins(allowedOrigins);
   }
 }

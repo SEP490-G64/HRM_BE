@@ -82,8 +82,12 @@ public class SecurityConfig {
         .authorizeHttpRequests(
             aMRMR ->
                 aMRMR
-                    .requestMatchers("/swagger/**", "/api/v1/auth/**", "/api/v1/public/**","/ws"
-                        + "**","/app/**")
+                    .requestMatchers(
+                        "/swagger/**",
+                        "/api/v1/auth/**",
+                        "/api/v1/public/**",
+                        "/ws" + "**",
+                        "/app/**")
                     .permitAll()
                     .requestMatchers("api/v1/admin/**")
                     .hasAnyAuthority(RoleType.ADMIN.getValue())
