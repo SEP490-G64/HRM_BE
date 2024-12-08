@@ -36,7 +36,6 @@ import com.example.hrm_be.utils.WplUtil;
 import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.criteria.Predicate;
 import java.math.BigDecimal;
-import java.nio.channels.ClosedChannelException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -61,8 +60,6 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Sinks;
 import reactor.core.publisher.Sinks.Many;
 
 @Service
@@ -103,7 +100,6 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
   public InventoryCheckServiceImpl(SimpMessagingTemplate messagingTemplate) {
     this.messagingTemplate = messagingTemplate;
   }
-
 
   @Override
   public InventoryCheck getById(Long id) {
@@ -636,17 +632,17 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
         InventoryUpdate.builder().batchIds(batchIds).productIds(productIds).build();
 
     // Broadcast the update via WebSocket to clients
-    inventoryChecks.forEach(inventoryCheck -> {
-      Long inventoryCheckId = inventoryCheck.getId();
+    inventoryChecks.forEach(
+        inventoryCheck -> {
+          Long inventoryCheckId = inventoryCheck.getId();
 
-      // Broadcast the message to a specific WebSocket destination
-      messagingTemplate.convertAndSend(
-          "/topic/inventory-check/" + inventoryCheckId, // Topic for this inventoryCheck
-          updatePayload // Payload to send
-      );
-    });
+          // Broadcast the message to a specific WebSocket destination
+          messagingTemplate.convertAndSend(
+              "/topic/inventory-check/" + inventoryCheckId, // Topic for this inventoryCheck
+              updatePayload // Payload to send
+              );
+        });
   }
-
 
   @Override
   public void updateInventoryCheckStatus(InventoryCheckStatus status, Long id) {
