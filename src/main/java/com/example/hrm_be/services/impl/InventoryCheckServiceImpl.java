@@ -635,12 +635,13 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
     inventoryChecks.forEach(
         inventoryCheck -> {
           Long inventoryCheckId = inventoryCheck.getId();
-
+          log.info("before sending payload");
           // Broadcast the message to a specific WebSocket destination
           messagingTemplate.convertAndSend(
               "/topic/inventory-check/" + inventoryCheckId, // Topic for this inventoryCheck
               updatePayload // Payload to send
               );
+          log.info("after sending payload");
         });
   }
 
