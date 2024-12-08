@@ -36,6 +36,7 @@ import com.example.hrm_be.utils.WplUtil;
 import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.criteria.Predicate;
 import java.math.BigDecimal;
+import java.nio.channels.ClosedChannelException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -100,6 +101,7 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
   public InventoryCheckServiceImpl(SimpMessagingTemplate messagingTemplate) {
     this.messagingTemplate = messagingTemplate;
   }
+
 
   @Override
   public InventoryCheck getById(Long id) {
@@ -632,17 +634,18 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
         InventoryUpdate.builder().batchIds(batchIds).productIds(productIds).build();
 
     // Broadcast the update via WebSocket to clients
-    inventoryChecks.forEach(
-        inventoryCheck -> {
-          Long inventoryCheckId = inventoryCheck.getId();
-
-          // Broadcast the message to a specific WebSocket destination
-          messagingTemplate.convertAndSend(
-              "/topic/inventory-check/" + inventoryCheckId, // Topic for this inventoryCheck
-              updatePayload // Payload to send
-              );
-        });
+    inventoryChecks.forEach(inventoryCheck -> {
+      Long inventoryCheckId = inventoryCheck.getId();
+      log.info("before sending payload");
+      // Broadcast the message to a specific WebSocket destination
+      messagingTemplate.convertAndSend(
+          "/topic/inventory-check/" + inventoryCheckId, // Topic for this inventoryCheck
+          updatePayload // Payload to send
+      );
+      log.info("after sending payload");
+    });
   }
+
 
   @Override
   public void updateInventoryCheckStatus(InventoryCheckStatus status, Long id) {
