@@ -54,3 +54,4 @@ server:
   servlet:
     session:
       timeout: 3600m
+
