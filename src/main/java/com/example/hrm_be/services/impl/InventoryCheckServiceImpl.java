@@ -36,6 +36,7 @@ import com.example.hrm_be.utils.WplUtil;
 import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.criteria.Predicate;
 import java.math.BigDecimal;
+import java.nio.channels.ClosedChannelException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -100,6 +101,7 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
   public InventoryCheckServiceImpl(SimpMessagingTemplate messagingTemplate) {
     this.messagingTemplate = messagingTemplate;
   }
+
 
   @Override
   public InventoryCheck getById(Long id) {
@@ -643,6 +645,7 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
       log.info("after sending payload");
     });
   }
+
 
   @Override
   public void updateInventoryCheckStatus(InventoryCheckStatus status, Long id) {
