@@ -36,7 +36,6 @@ import com.example.hrm_be.utils.WplUtil;
 import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.criteria.Predicate;
 import java.math.BigDecimal;
-import java.nio.channels.ClosedChannelException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -57,11 +56,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Sinks;
 import reactor.core.publisher.Sinks.Many;
 
 @Service
@@ -96,6 +94,12 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
   @Autowired private InventoryCheckDetailsService inventoryCheckDetailsService;
   @Autowired private InventoryCheckProductDetailsService inventoryCheckProductDetailsService;
   @Autowired private UserMapper userMapper;
+
+  private final SimpMessagingTemplate messagingTemplate;
+
+  public InventoryCheckServiceImpl(SimpMessagingTemplate messagingTemplate) {
+    this.messagingTemplate = messagingTemplate;
+  }
 
   @Override
   public InventoryCheck getById(Long id) {
@@ -627,24 +631,17 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
     InventoryUpdate updatePayload =
         InventoryUpdate.builder().batchIds(batchIds).productIds(productIds).build();
 
-    // Emit the update to all relevant sinks
+    // Broadcast the update via WebSocket to clients
     inventoryChecks.forEach(
         inventoryCheck -> {
           Long inventoryCheckId = inventoryCheck.getId();
-          emitToSubscribers(inventoryCheckId, updatePayload);
+
+          // Broadcast the message to a specific WebSocket destination
+          messagingTemplate.convertAndSend(
+              "/topic/inventory-check/" + inventoryCheckId, // Topic for this inventoryCheck
+              updatePayload // Payload to send
+              );
         });
-  }
-
-  private void emitToSubscribers(Long inventoryCheckId, InventoryUpdate payload) {
-    // Check if a sink exists for the given inventoryCheckId
-    Sinks.Many<InventoryUpdate> sink = inventoryCheckSinks.get(inventoryCheckId);
-
-    if (sink != null) {
-      log.info("Emitting update for inventoryCheckId: {}", inventoryCheckId);
-      sink.tryEmitNext(payload); // Emit the payload to all subscribers
-    } else {
-      log.warn("No active subscribers for inventoryCheckId: {}", inventoryCheckId);
-    }
   }
 
   @Override
@@ -673,111 +670,5 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
           notification, userService.findAllManagerByBranchId(inventoryCheck.getBranch().getId()));
     }
     inventoryCheckRepository.updateInventoryCheckStatus(status, id);
-  }
-
-  public Flux<InventoryUpdate> getInventoryCheckUpdates(Long inventoryCheckId) {
-    log.info("Fetching updates for inventoryCheckId: {}", inventoryCheckId);
-
-    // Create or fetch the sink for the inventory check ID
-    Sinks.Many<InventoryUpdate> sink =
-        inventoryCheckSinks.computeIfAbsent(
-            inventoryCheckId, id -> Sinks.many().multicast().onBackpressureBuffer());
-
-    // Return a Flux that emits data from the sink
-    return sink.asFlux();
-  }
-
-  public void removeSink(Long inventoryCheckId) {
-    inventoryCheckSinks.remove(inventoryCheckId);
-    log.info("Removed sink for inventoryCheckId: {}", inventoryCheckId);
-  }
-
-  public boolean closeInventoryCheck(Long inventoryCheckId) {
-    if (inventoryCheckEmitters.containsKey(inventoryCheckId)) {
-      List<SseEmitter> emitters = new ArrayList<>(inventoryCheckEmitters.get(inventoryCheckId));
-
-      // Execute the closure of emitters asynchronously
-      nonBlockingService.submit(
-          () -> {
-            for (SseEmitter emitter : emitters) {
-              try {
-                emitter.complete();
-              } catch (Exception ex) {
-                log.error(
-                    "Error while completing emitter for inventoryCheckId: {}",
-                    inventoryCheckId,
-                    ex);
-                try {
-                  emitter.completeWithError(ex);
-                } catch (Exception innerEx) {
-                  log.error(
-                      "Error while handling emitter error for inventoryCheckId: {}",
-                      inventoryCheckId,
-                      innerEx);
-                }
-              }
-              removeEmitter(inventoryCheckId, emitter);
-            }
-          });
-
-      return true;
-    }
-
-    log.warn("No emitters found for inventoryCheckId: {}", inventoryCheckId);
-    return false;
-  }
-
-  @Override
-  public SseEmitter createEmitter(Long inventoryCheckId) {
-    log.info("Creating new SseEmitter for inventoryCheckId: {}", inventoryCheckId);
-
-    SseEmitter emitter = new SseEmitter(0l); // No timeout
-    log.debug("SseEmitter created: {}", emitter);
-
-    // Add the emitter to the map for the given inventoryCheckId
-    inventoryCheckEmitters
-        .computeIfAbsent(inventoryCheckId, k -> new CopyOnWriteArrayList<>())
-        .add(emitter);
-
-    log.info("Emitter added to inventoryCheckEmitters for inventoryCheckId: {}", inventoryCheckId);
-
-    emitter.onCompletion(
-        () -> {
-          log.info("SseEmitter completed for inventoryCheckId: {}", inventoryCheckId);
-          removeEmitter(inventoryCheckId, emitter);
-        });
-
-    emitter.onError(
-        (throwable) -> {
-          if (throwable instanceof ClosedChannelException) {
-            log.warn("Client disconnected for inventoryCheckId: {}", inventoryCheckId);
-          } else {
-            log.error("Edisconnectedr inventoryCheckId: {}", inventoryCheckId, throwable);
-          }
-          removeEmitter(inventoryCheckId, emitter);
-        });
-
-    emitter.onTimeout(
-        () -> {
-          log.warn("SseEmitter timed out for inventoryCheckId: {}", inventoryCheckId);
-          emitter.complete();
-          removeEmitter(inventoryCheckId, emitter);
-        });
-
-    return emitter;
-  }
-
-  private void removeEmitter(Long inventoryCheckId, SseEmitter emitter) {
-    List<SseEmitter> emitters = inventoryCheckEmitters.get(inventoryCheckId);
-    if (emitters != null) {
-      emitters.remove(emitter);
-      log.info("Emitter removed for inventoryCheckId: {}", inventoryCheckId);
-
-      // Clean up the map entry if no emitters remain
-      if (emitters.isEmpty()) {
-        inventoryCheckEmitters.remove(inventoryCheckId);
-        log.info("All emitters removed for inventoryCheckId: {}", inventoryCheckId);
-      }
-    }
   }
 }

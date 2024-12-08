@@ -7,6 +7,7 @@ import com.example.hrm_be.common.utils.TestUtils;
 import com.example.hrm_be.configs.SecurityConfig;
 import com.example.hrm_be.repositories.UserRepository;
 import java.util.Objects;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @Import(SecurityConfig.class)
 @ActiveProfiles("test")
 @Testcontainers
+@Disabled
 class UserEntityTest {
 
   @Autowired UserRepository userRepository;

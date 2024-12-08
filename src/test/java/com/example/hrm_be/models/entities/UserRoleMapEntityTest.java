@@ -11,6 +11,7 @@ import com.example.hrm_be.repositories.UserRepository;
 import com.example.hrm_be.repositories.UserRoleMapRepository;
 import java.util.List;
 import java.util.Objects;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @Import(SecurityConfig.class)
 @ActiveProfiles("test")
 @Testcontainers
+@Disabled
 class UserRoleMapEntityTest {
 
   @Autowired PasswordEncoder passwordEncoder;

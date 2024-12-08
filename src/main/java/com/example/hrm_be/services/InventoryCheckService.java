@@ -3,19 +3,15 @@ package com.example.hrm_be.services;
 import com.example.hrm_be.commons.enums.InventoryCheckStatus;
 import com.example.hrm_be.models.dtos.InventoryCheck;
 import com.example.hrm_be.models.requests.CreateInventoryCheckRequest;
-import com.example.hrm_be.models.responses.InventoryUpdate;
 import java.time.LocalDateTime;
 import java.util.Set;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
-import reactor.core.publisher.Flux;
 import java.util.Set;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import reactor.core.publisher.Flux;
 
 @Service
 public interface InventoryCheckService {
@@ -51,12 +47,4 @@ public interface InventoryCheckService {
   void delete(Long id);
 
   void broadcastInventoryCheckUpdates(Set<Long> productIds, Set<Long> batchIds, Long branchId);
-
-  boolean closeInventoryCheck(Long inventoryCheckId);
-
-  SseEmitter createEmitter(Long userId);
-
-  Flux<InventoryUpdate> getInventoryCheckUpdates(Long inventoryCheckId);
-
-  void removeSink(Long inventoryCheckId);
 }
