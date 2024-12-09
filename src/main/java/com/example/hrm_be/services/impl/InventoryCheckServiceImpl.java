@@ -561,8 +561,7 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
       // Subtract the converted quantity
       branchProduct.setQuantity(
           (branchProduct.getQuantity() == null ? BigDecimal.ZERO : branchProduct.getQuantity())
-              .subtract(BigDecimal.valueOf(productDetail.getDifference()))
-      );
+              .subtract(BigDecimal.valueOf(productDetail.getDifference())));
       branchProductService.save(branchProduct);
     }
 
