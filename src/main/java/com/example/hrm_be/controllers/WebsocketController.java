@@ -29,5 +29,4 @@ public class WebsocketController {
     // Handle the message here
     messagingTemplate.convertAndSend("/topic/inventory-check/" + inventoryCheckId, response);
   }
-
 }
