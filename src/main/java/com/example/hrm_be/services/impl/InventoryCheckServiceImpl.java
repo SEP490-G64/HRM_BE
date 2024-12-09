@@ -560,7 +560,9 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
       }
       // Subtract the converted quantity
       branchProduct.setQuantity(
-          branchProduct.getQuantity().subtract(BigDecimal.valueOf(productDetail.getDifference())));
+          (branchProduct.getQuantity() == null ? BigDecimal.ZERO : branchProduct.getQuantity())
+              .subtract(BigDecimal.valueOf(productDetail.getDifference()))
+      );
       branchProductService.save(branchProduct);
     }
 
@@ -576,7 +578,8 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
       }
       // Subtract the quantity
       branchBatch.setQuantity(
-          branchBatch.getQuantity().subtract(BigDecimal.valueOf(batchDetail.getDifference())));
+          (branchBatch.getQuantity() == null ? BigDecimal.ZERO : branchBatch.getQuantity())
+              .subtract(BigDecimal.valueOf(batchDetail.getDifference())));
       branchBatchService.save(branchBatch);
     }
     // Notification for Manager
