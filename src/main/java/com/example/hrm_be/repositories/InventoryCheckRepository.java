@@ -26,7 +26,7 @@ public interface InventoryCheckRepository
 
   @Query(
       "SELECT b FROM InventoryCheckEntity b LEFT JOIN FETCH b.branch brb WHERE brb.id = :branchId"
-          + " AND b.status = :status")
+          + " AND b.status in :status")
   List<InventoryCheckEntity> findInventoryCheckEntitiesByStatusAndBranchId(
-      @Param("status") InventoryCheckStatus status, @Param("branchId") Long branchId);
+      @Param("status") List<InventoryCheckStatus> status, @Param("branchId") Long branchId);
 }
