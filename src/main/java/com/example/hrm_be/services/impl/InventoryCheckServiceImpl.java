@@ -627,7 +627,9 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
     // Fetch all InventoryChecks based on status and branch ID
     List<InventoryCheckEntity> inventoryChecks =
         inventoryCheckRepository.findInventoryCheckEntitiesByStatusAndBranchId(
-            List.of(InventoryCheckStatus.DANG_KIEM,InventoryCheckStatus.BAN_NHAP,
+            List.of(
+                InventoryCheckStatus.DANG_KIEM,
+                InventoryCheckStatus.BAN_NHAP,
                 InventoryCheckStatus.CHUA_LUU),
             branchId);
 
