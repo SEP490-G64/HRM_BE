@@ -696,7 +696,7 @@ public class OutboundServiceImpl implements OutboundService {
     allProductIds.addAll(allProductBatchIds);
 
     inventoryCheckService.broadcastInventoryCheckUpdates(
-        allProductIds, allBatchIds, outboundEntity.getToBranch().getId());
+        allProductIds, allBatchIds, fromBranch.getId());
 
     // Update the Outbound status and save it
     updatedOutboundEntity.setOutboundProductDetails(finalOutboundProductDetailEntities);
@@ -933,7 +933,7 @@ public class OutboundServiceImpl implements OutboundService {
     allProductIds.addAll(allProductIdsFromBatch);
     // Notify inventory checks
     inventoryCheckService.broadcastInventoryCheckUpdates(
-        allProductIds, allBatchIds, outboundEntity.getFromBranch().getId());
+        allProductIds, allBatchIds,fromBranch.getId());
 
     notificationService.sendNotification(
         notification, userService.findAllManagerByBranchId(outbound.getFromBranch().getId()));
