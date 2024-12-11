@@ -687,19 +687,27 @@ public class OutboundServiceImpl implements OutboundService {
             .collect(Collectors.toList());
     outboundProductDetailService.saveAll(outboundProductDetailEntities);
 
-// Extract all product IDs from finalOutboundProductDetailEntities
-    Set<Long> allProductIds = finalOutboundProductDetailEntities.stream()
-        .map(e->e.getProduct().getId()) // Replace with the actual field/method for product ID
-        .collect(Collectors.toSet());
+    // Extract all product IDs from finalOutboundProductDetailEntities
+    Set<Long> allProductIds =
+        finalOutboundProductDetailEntities.stream()
+            .map(e -> e.getProduct().getId()) // Replace with the actual field/method for product ID
+            .collect(Collectors.toSet());
 
-// Extract all batch IDs from finalOutboundProductDetailEntities or finalOutboundDetailEntities as needed
-    Set<Long> allBatchIds = finalOutboundDetailEntities.stream()
-        .map(e->e.getBatch().getId()) // Replace with the actual field/method for batch ID
-        .collect(Collectors.toSet());
+    // Extract all batch IDs from finalOutboundProductDetailEntities or finalOutboundDetailEntities
+    // as needed
+    Set<Long> allBatchIds =
+        finalOutboundDetailEntities.stream()
+            .map(e -> e.getBatch().getId()) // Replace with the actual field/method for batch ID
+            .collect(Collectors.toSet());
 
-    Set<Long> allProductBatchIds = finalOutboundDetailEntities.stream()
-        .map(e->e.getBatch().getProduct().getId()) // Replace with the actual field/method for batch ID
-        .collect(Collectors.toSet());
+    Set<Long> allProductBatchIds =
+        finalOutboundDetailEntities.stream()
+            .map(
+                e ->
+                    e.getBatch()
+                        .getProduct()
+                        .getId()) // Replace with the actual field/method for batch ID
+            .collect(Collectors.toSet());
 
     allProductIds.addAll(allProductBatchIds);
 
