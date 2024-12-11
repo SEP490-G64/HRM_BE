@@ -637,7 +637,7 @@ public class InboundServiceImpl implements InboundService {
     notification.setNotiType(NotificationType.NHAP_PHIEU_NHAP_VAO_HE_THONG);
     notification.setCreatedDate(LocalDateTime.now());
     // Fetch InventoryCheck entities for the branch
-    // Notify inventory checks via SSE
+    // Notify inventory checks
     inventoryCheckService.broadcastInventoryCheckUpdates(
         allProductIds, allBatchIds, updatedInboundEntity.getToBranch().getId());
     notificationService.sendNotification(
