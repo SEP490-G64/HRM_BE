@@ -933,7 +933,7 @@ public class OutboundServiceImpl implements OutboundService {
             .map(batchDetail -> batchDetail.getBatch().getId())
             .collect(Collectors.toSet());
     // Collect all batch IDs from outboundDetails
-    Set<Long> allProductIdsFromBatch=
+    Set<Long> allProductIdsFromBatch =
         outboundDetails.stream()
             .map(batchDetail -> batchDetail.getBatch().getProduct().getId())
             .collect(Collectors.toSet());
