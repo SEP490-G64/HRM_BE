@@ -913,8 +913,14 @@ public class OutboundServiceImpl implements OutboundService {
         outboundDetails.stream()
             .map(batchDetail -> batchDetail.getBatch().getId())
             .collect(Collectors.toSet());
+    // Collect all batch IDs from outboundDetails
+    Set<Long> allProductIdsFromBatch =
+        outboundDetails.stream()
+            .map(batchDetail -> batchDetail.getBatch().getProduct().getId())
+            .collect(Collectors.toSet());
 
-    // Notify inventory checks via SSE
+    allProductIds.addAll(allProductIdsFromBatch);
+    // Notify inventory checks
     inventoryCheckService.broadcastInventoryCheckUpdates(
         allProductIds, allBatchIds, outboundEntity.getFromBranch().getId());
 
