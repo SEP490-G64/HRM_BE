@@ -24,7 +24,6 @@ import com.example.hrm_be.services.*;
 import com.example.hrm_be.utils.PDFUtil;
 import com.example.hrm_be.utils.WplUtil;
 import com.itextpdf.text.DocumentException;
-import io.micrometer.common.util.StringUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -79,131 +78,149 @@ public class OutboundServiceImpl implements OutboundService {
   public Outbound getById(Long id) {
     // Fetch the OutboundEntity by ID
     OutboundEntity outboundEntity =
-            outboundRepository
-                    .findById(id)
-                    .orElseThrow(() -> new HrmCommonException("Outbound not found with id: " + id));
+        outboundRepository
+            .findById(id)
+            .orElseThrow(() -> new HrmCommonException("Outbound not found with id: " + id));
 
     // Map basic OutboundEntity details to OutboundDetailDTO
     Outbound outboundDetailDTO = outboundMapper.convertToDtoBasicInfo(outboundEntity);
 
     // Populate productsWithoutBatch from OutboundProductDetails
     List<OutboundProductDetail> productsWithoutBatch =
-            outboundEntity.getOutboundProductDetails().stream()
-                    .map(
-                            outboundProductDetail -> {
-                              OutboundProductDetail productDetailDTO = new OutboundProductDetail();
+        outboundEntity.getOutboundProductDetails().stream()
+            .map(
+                outboundProductDetail -> {
+                  OutboundProductDetail productDetailDTO = new OutboundProductDetail();
 
-                              // Set Product details
-                              Product productDTO = new Product();
-                              productDTO.setId(outboundProductDetail.getProduct().getId());
-                              productDTO.setProductName(outboundProductDetail.getProduct().getProductName());
-                              productDTO.setRegistrationCode(outboundProductDetail.getProduct().getRegistrationCode());
-                              productDetailDTO.setProduct(productDTO);
+                  // Set Product details
+                  Product productDTO = new Product();
+                  productDTO.setId(outboundProductDetail.getProduct().getId());
+                  productDTO.setProductName(outboundProductDetail.getProduct().getProductName());
+                  productDTO.setRegistrationCode(
+                      outboundProductDetail.getProduct().getRegistrationCode());
+                  productDetailDTO.setProduct(productDTO);
 
-                              // Set outbound quantity and price
-                              productDetailDTO.setPreQuantity(outboundProductDetail.getPreQuantity());
-                              productDetailDTO.setOutboundQuantity(outboundProductDetail.getOutboundQuantity());
-                              productDetailDTO.setPrice(outboundProductDetail.getPrice());
-                              productDetailDTO.setTargetUnit(unitOfMeasurementMapper.toDTO(
-                                      Optional.ofNullable(outboundProductDetail.getUnitOfMeasurement())
-                                              .orElse(outboundProductDetail.getProduct().getBaseUnit())));
-                              productDetailDTO.setProductBaseUnit(unitOfMeasurementMapper.toDTO(
-                                      outboundProductDetail.getProduct().getBaseUnit()));
-                              productDetailDTO.setTaxRate(outboundProductDetail.getTaxRate());
+                  // Set outbound quantity and price
+                  productDetailDTO.setPreQuantity(outboundProductDetail.getPreQuantity());
+                  productDetailDTO.setOutboundQuantity(outboundProductDetail.getOutboundQuantity());
+                  productDetailDTO.setPrice(outboundProductDetail.getPrice());
+                  productDetailDTO.setTargetUnit(
+                      unitOfMeasurementMapper.toDTO(
+                          Optional.ofNullable(outboundProductDetail.getUnitOfMeasurement())
+                              .orElse(outboundProductDetail.getProduct().getBaseUnit())));
+                  productDetailDTO.setProductBaseUnit(
+                      unitOfMeasurementMapper.toDTO(
+                          outboundProductDetail.getProduct().getBaseUnit()));
+                  productDetailDTO.setTaxRate(outboundProductDetail.getTaxRate());
 
-                              ProductBaseDTO productBaseDTO = productService.getBranchProducts(
-                                      outboundEntity.getFromBranch().getId(),
-                                      outboundProductDetail.getProduct().getId());
+                  ProductBaseDTO productBaseDTO =
+                      productService.getBranchProducts(
+                          outboundEntity.getFromBranch().getId(),
+                          outboundProductDetail.getProduct().getId());
 
-                              if (productBaseDTO != null) {
-                                productDetailDTO.setProductQuantity(productBaseDTO.getProductQuantity());
-                                productDetailDTO.setInboundPrice(productBaseDTO.getInboundPrice());
+                  if (productBaseDTO != null) {
+                    productDetailDTO.setProductQuantity(productBaseDTO.getProductQuantity());
+                    productDetailDTO.setInboundPrice(productBaseDTO.getInboundPrice());
 
-                                boolean includeAllBatches = outboundEntity.getOutboundType() == OutboundType.TRA_HANG
-                                        || outboundEntity.getOutboundType() == OutboundType.HUY_HANG;
-                                List<Batch> filteredBatches;
+                    boolean includeAllBatches =
+                        outboundEntity.getOutboundType() == OutboundType.TRA_HANG
+                            || outboundEntity.getOutboundType() == OutboundType.HUY_HANG;
+                    List<Batch> filteredBatches;
 
-                                if (includeAllBatches) {
-                                  filteredBatches = productBaseDTO.getBatches();
-                                } else {
-                                  filteredBatches = productBaseDTO.getBatches().stream()
-                                          .filter(batch -> batch.getExpireDate() != null
-                                                  && batch.getExpireDate().isAfter(LocalDateTime.now())
-                                                  && batch.getQuantity() != null
-                                                  && batch.getQuantity().compareTo(BigDecimal.ZERO) > 0)
-                                          .collect(Collectors.toList());
-                                }
+                    if (includeAllBatches) {
+                      filteredBatches = productBaseDTO.getBatches();
+                    } else {
+                      filteredBatches =
+                          productBaseDTO.getBatches().stream()
+                              .filter(
+                                  batch ->
+                                      batch.getExpireDate() != null
+                                          && batch.getExpireDate().isAfter(LocalDateTime.now())
+                                          && batch.getQuantity() != null
+                                          && batch.getQuantity().compareTo(BigDecimal.ZERO) > 0)
+                              .collect(Collectors.toList());
+                    }
 
-                                productDTO.setBatches(filteredBatches);
-                              } else {
-                                productDTO.setBatches(null);
-                              }
+                    productDTO.setBatches(filteredBatches);
+                  } else {
+                    productDTO.setBatches(null);
+                  }
 
-                              return productDetailDTO;
-                            })
-                    .collect(Collectors.toList());
+                  return productDetailDTO;
+                })
+            .collect(Collectors.toList());
 
     // Populate productsWithBatch from OutboundDetails
     List<OutboundProductDetail> productsWithBatch =
-            outboundEntity.getOutboundDetails().stream()
-                    .map(
-                            outboundDetail -> {
-                              OutboundProductDetail productWithBatchDetailDTO = new OutboundProductDetail();
+        outboundEntity.getOutboundDetails().stream()
+            .map(
+                outboundDetail -> {
+                  OutboundProductDetail productWithBatchDetailDTO = new OutboundProductDetail();
 
-                              // Set Product details
-                              Product productDTO = new Product();
-                              productDTO.setId(outboundDetail.getBatch().getProduct().getId());
-                              productDTO.setProductName(outboundDetail.getBatch().getProduct().getProductName());
-                              productDTO.setRegistrationCode(outboundDetail.getBatch().getProduct().getRegistrationCode());
+                  // Set Product details
+                  Product productDTO = new Product();
+                  productDTO.setId(outboundDetail.getBatch().getProduct().getId());
+                  productDTO.setProductName(
+                      outboundDetail.getBatch().getProduct().getProductName());
+                  productDTO.setRegistrationCode(
+                      outboundDetail.getBatch().getProduct().getRegistrationCode());
 
-                              ProductBaseDTO productBaseDTO = productService.getBranchProducts(
-                                      outboundEntity.getFromBranch().getId(),
-                                      outboundDetail.getBatch().getProduct().getId());
+                  ProductBaseDTO productBaseDTO =
+                      productService.getBranchProducts(
+                          outboundEntity.getFromBranch().getId(),
+                          outboundDetail.getBatch().getProduct().getId());
 
-                              if (productBaseDTO != null) {
-                                boolean includeAllBatches = outboundEntity.getOutboundType() == OutboundType.TRA_HANG
-                                        || outboundEntity.getOutboundType() == OutboundType.HUY_HANG;
-                                List<Batch> filteredBatches;
+                  if (productBaseDTO != null) {
+                    boolean includeAllBatches =
+                        outboundEntity.getOutboundType() == OutboundType.TRA_HANG
+                            || outboundEntity.getOutboundType() == OutboundType.HUY_HANG;
+                    List<Batch> filteredBatches;
 
-                                if (includeAllBatches) {
-                                  filteredBatches = productBaseDTO.getBatches();
-                                } else {
-                                  filteredBatches = productBaseDTO.getBatches().stream()
-                                          .filter(batch -> batch.getExpireDate() != null
-                                                  && batch.getExpireDate().isAfter(LocalDateTime.now())
-                                                  && batch.getQuantity() != null
-                                                  && batch.getQuantity().compareTo(BigDecimal.ZERO) > 0)
-                                          .collect(Collectors.toList());
-                                }
+                    if (includeAllBatches) {
+                      filteredBatches = productBaseDTO.getBatches();
+                    } else {
+                      filteredBatches =
+                          productBaseDTO.getBatches().stream()
+                              .filter(
+                                  batch ->
+                                      batch.getExpireDate() != null
+                                          && batch.getExpireDate().isAfter(LocalDateTime.now())
+                                          && batch.getQuantity() != null
+                                          && batch.getQuantity().compareTo(BigDecimal.ZERO) > 0)
+                              .collect(Collectors.toList());
+                    }
 
-                                productDTO.setBatches(filteredBatches);
-                              } else {
-                                productDTO.setBatches(null);
-                              }
+                    productDTO.setBatches(filteredBatches);
+                  } else {
+                    productDTO.setBatches(null);
+                  }
 
-                              productWithBatchDetailDTO.setTaxRate(outboundDetail.getBatch().getProduct().getCategory().getTaxRate());
-                              productWithBatchDetailDTO.setProduct(productDTO);
+                  productWithBatchDetailDTO.setTaxRate(
+                      outboundDetail.getBatch().getProduct().getCategory().getTaxRate());
+                  productWithBatchDetailDTO.setProduct(productDTO);
 
-                              // Set Batch details
-                              Batch batchDTO = new Batch();
-                              batchDTO.setId(outboundDetail.getBatch().getId());
-                              batchDTO.setBatchCode(outboundDetail.getBatch().getBatchCode());
-                              batchDTO.setExpireDate(outboundDetail.getBatch().getExpireDate());
-                              batchDTO.setInboundPrice(outboundDetail.getPrice());
-                              productWithBatchDetailDTO.setBatch(batchDTO);
+                  // Set Batch details
+                  Batch batchDTO = new Batch();
+                  batchDTO.setId(outboundDetail.getBatch().getId());
+                  batchDTO.setBatchCode(outboundDetail.getBatch().getBatchCode());
+                  batchDTO.setExpireDate(outboundDetail.getBatch().getExpireDate());
+                  batchDTO.setInboundPrice(outboundDetail.getPrice());
+                  productWithBatchDetailDTO.setBatch(batchDTO);
 
-                              // Set outbound quantity and price
-                              productWithBatchDetailDTO.setPreQuantity(outboundDetail.getPreQuantity());
-                              productWithBatchDetailDTO.setOutboundQuantity(outboundDetail.getQuantity());
-                              productWithBatchDetailDTO.setPrice(outboundDetail.getPrice());
-                              productWithBatchDetailDTO.setTargetUnit(unitOfMeasurementMapper.toDTO(
-                                      Optional.ofNullable(outboundDetail.getUnitOfMeasurement())
-                                              .orElse(outboundDetail.getBatch().getProduct().getBaseUnit())));
-                              productWithBatchDetailDTO.setProductBaseUnit(unitOfMeasurementMapper.toDTO(
-                                      outboundDetail.getBatch().getProduct().getBaseUnit()));
-                              return productWithBatchDetailDTO;
-                            })
-                    .collect(Collectors.toList());
+                  // Set outbound quantity and price
+                  productWithBatchDetailDTO.setPreQuantity(outboundDetail.getPreQuantity());
+                  productWithBatchDetailDTO.setOutboundQuantity(outboundDetail.getQuantity());
+                  productWithBatchDetailDTO.setPrice(outboundDetail.getPrice());
+                  productWithBatchDetailDTO.setTargetUnit(
+                      unitOfMeasurementMapper.toDTO(
+                          Optional.ofNullable(outboundDetail.getUnitOfMeasurement())
+                              .orElse(outboundDetail.getBatch().getProduct().getBaseUnit())));
+                  productWithBatchDetailDTO.setProductBaseUnit(
+                      unitOfMeasurementMapper.toDTO(
+                          outboundDetail.getBatch().getProduct().getBaseUnit()));
+                  return productWithBatchDetailDTO;
+                })
+            .collect(Collectors.toList());
 
     // Combine the two lists
     List<OutboundProductDetail> combinedProducts = new ArrayList<>();
@@ -215,7 +232,6 @@ public class OutboundServiceImpl implements OutboundService {
 
     return outboundDetailDTO;
   }
-
 
   @Override
   public Page<Outbound> getByPaging(
@@ -245,12 +261,12 @@ public class OutboundServiceImpl implements OutboundService {
   }
 
   Specification<OutboundEntity> getSpecification(
-          Long branchId,
-          String keyword,
-          LocalDateTime startDate,
-          LocalDateTime endDate,
-          OutboundStatus status,
-          OutboundType type) {
+      Long branchId,
+      String keyword,
+      LocalDateTime startDate,
+      LocalDateTime endDate,
+      OutboundStatus status,
+      OutboundType type) {
     return (root, query, criteriaBuilder) -> {
       List<Predicate> predicates = new ArrayList<>();
 
@@ -958,8 +974,7 @@ public class OutboundServiceImpl implements OutboundService {
   @Override
   public void delete(Long id) {
     if (id == null) {
-      throw new HrmCommonException(
-              "id not exist!");
+      throw new HrmCommonException("id not exist!");
     }
 
     OutboundEntity oldoutboundEntity = outboundRepository.findById(id).orElse(null);
@@ -996,8 +1011,7 @@ public class OutboundServiceImpl implements OutboundService {
   public ByteArrayOutputStream generateOutboundPdf(Long outboundId)
       throws DocumentException, IOException {
     if (outboundId == null) {
-      throw new HrmCommonException(
-              "id not exist!");
+      throw new HrmCommonException("id not exist!");
     }
     // Fetch Inbound and associated details
     Outbound outbound = this.getById(outboundId);
