@@ -7,6 +7,8 @@ import com.example.hrm_be.models.dtos.InventoryCheckProductDetails;
 import com.example.hrm_be.models.entities.InventoryCheckProductDetailsEntity;
 import com.example.hrm_be.repositories.InventoryCheckProductDetailsRepository;
 import com.example.hrm_be.services.InventoryCheckProductDetailsService;
+
+import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -97,5 +99,18 @@ public class InventoryCheckProductDetailsServiceImpl
         .findByInventoryCheck_IdAndProduct_Id(checkId, productId)
         .map(inventoryCheckDetailsMapper::toDTO)
         .orElse(null);
+  }
+
+  @Override
+  public List<InventoryCheckProductDetails> findAllByCheckId(Long checkId) {
+    return inventoryCheckProductDetailsRepository
+            .findByInventoryCheck_Id(checkId)
+            .stream().map(inventoryCheckDetailsMapper::toDTO).toList();
+  }
+
+  @Override
+  public void saveAll(List<InventoryCheckProductDetails> inventoryCheckProductDetails) {
+    inventoryCheckProductDetailsRepository.saveAll(inventoryCheckProductDetails
+            .stream().map(inventoryCheckDetailsMapper::toEntity).toList());
   }
 }

@@ -3,6 +3,8 @@ package com.example.hrm_be.services;
 import com.example.hrm_be.models.dtos.InventoryCheckProductDetails;
 import org.springframework.data.domain.Page;
 
+import java.util.List;
+
 public interface InventoryCheckProductDetailsService {
 
   InventoryCheckProductDetails getById(Long id);
@@ -16,4 +18,8 @@ public interface InventoryCheckProductDetailsService {
   void deleteByInventoryCheckId(Long checkId);
 
   InventoryCheckProductDetails findByCheckIdAndProductId(Long checkId, Long productId);
+
+  List<InventoryCheckProductDetails> findAllByCheckId(Long checkId);
+
+  void saveAll(List<InventoryCheckProductDetails> inventoryCheckProductDetails);
 }
