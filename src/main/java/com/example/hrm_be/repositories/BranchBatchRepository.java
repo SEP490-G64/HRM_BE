@@ -43,4 +43,6 @@ public interface BranchBatchRepository extends JpaRepository<BranchBatchEntity, 
       "SELECT b FROM BranchBatchEntity b WHERE b.branch.id = :branchId AND b.batch.product.id ="
           + " :productId")
   List<BranchBatchEntity> findByBranchIdAndProductId(Long branchId, Long productId);
+
+  List<BranchBatchEntity> findByBranch_Id(Long branchId);
 }

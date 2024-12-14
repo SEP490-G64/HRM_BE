@@ -125,4 +125,11 @@ public class BranchProductServiceImpl implements BranchProductService {
         .map(branchProductMapper::toDTO)
         .collect(Collectors.toList());
   }
+
+  @Override
+  public List<BranchProduct> getAllByBranchId(Long branchId) {
+    return branchProductRepository.findByBranch_Id(branchId).stream()
+            .map(branchProductMapper::toDTO)
+            .collect(Collectors.toList());
+  }
 }
