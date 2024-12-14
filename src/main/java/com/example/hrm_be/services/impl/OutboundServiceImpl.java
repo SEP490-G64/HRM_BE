@@ -170,29 +170,37 @@ public class OutboundServiceImpl implements OutboundService {
                           outboundEntity.getFromBranch().getId(),
                           outboundDetail.getBatch().getProduct().getId());
 
-                  if (productBaseDTO != null) {
-                    boolean includeAllBatches =
-                        outboundEntity.getOutboundType() == OutboundType.TRA_HANG
-                            || outboundEntity.getOutboundType() == OutboundType.HUY_HANG;
-                    List<Batch> filteredBatches;
+                  if (!(outboundEntity.getStatus() == OutboundStatus.KIEM_HANG)
+                          && !(outboundEntity.getStatus() == OutboundStatus.HOAN_THANH)) {
+                    if (productBaseDTO != null) {
+                      boolean includeAllBatches =
+                              outboundEntity.getOutboundType() == OutboundType.TRA_HANG
+                                      || outboundEntity.getOutboundType() == OutboundType.HUY_HANG; // Biến boolean để kiểm tra điều kiện
+                      List<Batch> filteredBatches;
 
-                    if (includeAllBatches) {
-                      filteredBatches = productBaseDTO.getBatches();
+                      if (includeAllBatches) {
+                        // Nếu biến boolean là true, lấy toàn bộ lô sản phẩm
+                        filteredBatches = productBaseDTO.getBatches();
+                      } else {
+                        // Nếu biến boolean là false, áp dụng bộ lọc
+                        filteredBatches =
+                                productBaseDTO.getBatches().stream()
+                                        .filter(
+                                                batch ->
+                                                        (batch.getExpireDate() != null
+                                                                && batch
+                                                                .getExpireDate()
+                                                                .isAfter(LocalDateTime.now()))
+                                                                && (batch.getQuantity() != null
+                                                                && batch.getQuantity().compareTo(BigDecimal.ZERO)
+                                                                > 0))
+                                        .collect(Collectors.toList());
+                      }
+
+                      productDTO.setBatches(filteredBatches);
                     } else {
-                      filteredBatches =
-                          productBaseDTO.getBatches().stream()
-                              .filter(
-                                  batch ->
-                                      batch.getExpireDate() != null
-                                          && batch.getExpireDate().isAfter(LocalDateTime.now())
-                                          && batch.getQuantity() != null
-                                          && batch.getQuantity().compareTo(BigDecimal.ZERO) > 0)
-                              .collect(Collectors.toList());
+                      productDTO.setBatches(null);
                     }
-
-                    productDTO.setBatches(filteredBatches);
-                  } else {
-                    productDTO.setBatches(null);
                   }
 
                   productWithBatchDetailDTO.setTaxRate(
