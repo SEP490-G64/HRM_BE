@@ -49,7 +49,8 @@ public interface InboundBatchDetailRepository
       "SELECT i FROM InboundBatchDetailEntity i "
           + "WHERE i.batch.product.id = :productId "
           + "AND i.inbound.createdDate BETWEEN :startDate AND :endDate "
-          + "AND i.inbound.status in :status")
+          + "AND i.inbound.status in :status "
+          + "AND i.quantity IS NOT NULL AND i.quantity > 0")
   List<InboundBatchDetailEntity> findInboundDetailsByProductIdAndPeriod(
       @Param("productId") Long productId,
       @Param("status") List<InboundStatus> status,
