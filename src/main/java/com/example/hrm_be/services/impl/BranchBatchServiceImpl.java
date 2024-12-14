@@ -113,16 +113,13 @@ public class BranchBatchServiceImpl implements BranchBatchService {
 
   @Override
   public List<BranchBatch> getAllByBranchId(Long branchId) {
-    return branchBatchRepository
-            .findByBranch_Id(branchId)
-            .stream()
-            .map(branchBatchMapper::toDTO)
-            .collect(Collectors.toList());
+    return branchBatchRepository.findByBranch_Id(branchId).stream()
+        .map(branchBatchMapper::toDTO)
+        .collect(Collectors.toList());
   }
 
   @Override
   public void saveAll(List<BranchBatch> branchBatches) {
-    branchBatchRepository.saveAll(branchBatches
-            .stream().map(branchBatchMapper::toEntity).toList());
+    branchBatchRepository.saveAll(branchBatches.stream().map(branchBatchMapper::toEntity).toList());
   }
 }

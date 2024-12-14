@@ -100,9 +100,9 @@ public class InventoryCheckDetailsServiceImpl implements InventoryCheckDetailsSe
 
   @Override
   public List<InventoryCheckDetails> findAllByCheckId(Long checkId) {
-    return inventoryCheckDetailsRepository
-            .findByInventoryCheck_Id(checkId)
-            .stream().map(inventoryCheckDetailsMapper::toDTO).toList();
+    return inventoryCheckDetailsRepository.findByInventoryCheck_Id(checkId).stream()
+        .map(inventoryCheckDetailsMapper::toDTO)
+        .toList();
   }
 
   @Override
@@ -131,7 +131,7 @@ public class InventoryCheckDetailsServiceImpl implements InventoryCheckDetailsSe
 
   @Override
   public void saveAll(List<InventoryCheckDetails> inventoryCheckDetails) {
-    inventoryCheckDetailsRepository.saveAll(inventoryCheckDetails
-            .stream().map(inventoryCheckDetailsMapper::toEntity).toList());
+    inventoryCheckDetailsRepository.saveAll(
+        inventoryCheckDetails.stream().map(inventoryCheckDetailsMapper::toEntity).toList());
   }
 }
