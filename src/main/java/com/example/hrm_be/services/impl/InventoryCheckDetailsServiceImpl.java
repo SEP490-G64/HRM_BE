@@ -8,6 +8,8 @@ import com.example.hrm_be.models.entities.InventoryCheckDetailsEntity;
 import com.example.hrm_be.repositories.InventoryCheckDetailsRepository;
 import com.example.hrm_be.services.InventoryCheckDetailsService;
 import io.micrometer.common.util.StringUtils;
+
+import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -97,6 +99,13 @@ public class InventoryCheckDetailsServiceImpl implements InventoryCheckDetailsSe
   }
 
   @Override
+  public List<InventoryCheckDetails> findAllByCheckId(Long checkId) {
+    return inventoryCheckDetailsRepository
+            .findByInventoryCheck_Id(checkId)
+            .stream().map(inventoryCheckDetailsMapper::toDTO).toList();
+  }
+
+  @Override
   public void deleteByInventoryCheckId(Long checkId) {
     inventoryCheckDetailsRepository.deleteByInventoryCheck_Id(checkId);
   }
@@ -118,5 +127,11 @@ public class InventoryCheckDetailsServiceImpl implements InventoryCheckDetailsSe
 
     // Delete the inventory check details
     inventoryCheckDetailsRepository.deleteById(id);
+  }
+
+  @Override
+  public void saveAll(List<InventoryCheckDetails> inventoryCheckDetails) {
+    inventoryCheckDetailsRepository.saveAll(inventoryCheckDetails
+            .stream().map(inventoryCheckDetailsMapper::toEntity).toList());
   }
 }

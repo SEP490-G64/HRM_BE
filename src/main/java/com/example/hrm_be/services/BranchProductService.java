@@ -28,4 +28,6 @@ public interface BranchProductService {
   List<BranchProduct> findBranchProductsWithQuantityBelowMin(Long branchId);
 
   List<BranchProduct> findBranchProductsWithQuantityIsZero(Long branchId);
+
+  List<BranchProduct> getAllByBranchId(Long branchId);
 }

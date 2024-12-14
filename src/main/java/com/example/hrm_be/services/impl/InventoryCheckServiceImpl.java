@@ -7,12 +7,7 @@ import com.example.hrm_be.commons.constants.HrmConstant.ERROR.BRANCHPRODUCT;
 import com.example.hrm_be.commons.constants.HrmConstant.ERROR.INVENTORY_CHECK;
 import com.example.hrm_be.commons.constants.HrmConstant.ERROR.PRODUCT;
 import com.example.hrm_be.commons.enums.*;
-import com.example.hrm_be.components.InboundBatchDetailMapper;
-import com.example.hrm_be.components.InboundDetailsMapper;
-import com.example.hrm_be.components.InventoryCheckMapper;
-import com.example.hrm_be.components.OutboundDetailMapper;
-import com.example.hrm_be.components.OutboundProductDetailMapper;
-import com.example.hrm_be.components.UserMapper;
+import com.example.hrm_be.components.*;
 import com.example.hrm_be.configs.exceptions.HrmCommonException;
 import com.example.hrm_be.models.dtos.*;
 import com.example.hrm_be.models.entities.*;
@@ -48,6 +43,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,16 +73,8 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
   private ExecutorService nonBlockingService = Executors.newCachedThreadPool();
   @Autowired private InventoryCheckRepository inventoryCheckRepository;
   @Autowired private InventoryCheckMapper inventoryCheckMapper;
-  @Autowired private InboundDetailsMapper inboundDetailsMapper;
-  @Autowired private InboundBatchDetailMapper inboundBatchDetailMapper;
-  @Autowired private OutboundProductDetailMapper outboundProductDetailMapper;
-  @Autowired private OutboundDetailMapper outboundDetailMapper;
   @Autowired private UserService userService;
   @Autowired private BranchBatchService branchBatchService;
-  @Autowired private InboundBatchDetailService inboundBatchDetailService;
-  @Autowired private InboundDetailsService inboundDetailsService;
-  @Autowired private OutboundDetailService outboundDetailService;
-  @Autowired private OutboundProductDetailService outboundProductDetailService;
   @Autowired private BranchProductService branchProductService;
   @Autowired private ProductService productService;
   @Autowired private NotificationService notificationService;
@@ -94,6 +82,7 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
   @Autowired private InventoryCheckDetailsService inventoryCheckDetailsService;
   @Autowired private InventoryCheckProductDetailsService inventoryCheckProductDetailsService;
   @Autowired private UserMapper userMapper;
+  @Autowired private BranchProductMapper branchProductMapper;
 
   private final SimpMessagingTemplate messagingTemplate;
 
@@ -398,139 +387,99 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
       throw new HrmCommonException(INVENTORY_CHECK.NOT_EXIST);
     }
 
-    // Delete existing details if any
+    // Xóa dữ liệu liên quan với batch delete
     inventoryCheckDetailsService.deleteByInventoryCheckId(request.getInventoryCheckId());
     inventoryCheckProductDetailsService.deleteByInventoryCheckId(request.getInventoryCheckId());
 
-    // Build the new InventoryCheck entity
-    InventoryCheck updatedInventoryCheck =
-        InventoryCheck.builder()
-            .id(unsavedInventoryCheck.getId()) // Retain the existing ID
+    // Cập nhật InventoryCheck entity
+    InventoryCheck updatedInventoryCheck = InventoryCheck.builder()
+            .id(unsavedInventoryCheck.getId())
             .code(request.getCode())
             .inventoryCheckType(request.getInventoryCheckType())
-            .createdDate(
-                request.getCreatedDate() != null ? request.getCreatedDate() : LocalDateTime.now())
-            .status(InventoryCheckStatus.DANG_KIEM) // Example status
+            .createdDate(request.getCreatedDate() != null ? request.getCreatedDate() : LocalDateTime.now())
+            .status(InventoryCheckStatus.DANG_KIEM)
             .createdBy(unsavedInventoryCheck.getCreatedBy())
-            .approvedBy(
-                unsavedInventoryCheck.getApprovedBy() != null
-                    ? unsavedInventoryCheck.getApprovedBy()
-                    : null) // Default to null for new checks
+            .approvedBy(unsavedInventoryCheck.getApprovedBy())
             .branch(unsavedInventoryCheck.getBranch())
             .isApproved(unsavedInventoryCheck.getIsApproved())
             .note(request.getNote())
             .build();
 
-    // Save the updated inventory check entity
-    InventoryCheckEntity updatedInventoryCheckEntity =
-        inventoryCheckRepository.save(inventoryCheckMapper.toEntity(updatedInventoryCheck));
+    InventoryCheckEntity updatedInventoryCheckEntity = inventoryCheckRepository.save(inventoryCheckMapper.toEntity(updatedInventoryCheck));
 
-    // Process each product or batch detail in the request
+    // Tải sẵn dữ liệu đã tồn tại để giảm truy vấn lặp
+    List<InventoryCheckDetails> existingBatchDetails = inventoryCheckDetailsService.findAllByCheckId(updatedInventoryCheckEntity.getId());
+    Map<Long, InventoryCheckDetails> batchDetailsMap = existingBatchDetails.stream()
+            .collect(Collectors.toMap(detail -> detail.getBatch().getId(), Function.identity()));
+
+    List<InventoryCheckProductDetails> existingProductDetails = inventoryCheckProductDetailsService.findAllByCheckId(updatedInventoryCheckEntity.getId());
+    Map<Long, InventoryCheckProductDetails> productDetailsMap = existingProductDetails.stream()
+            .collect(Collectors.toMap(detail -> detail.getProduct().getId(), Function.identity()));
+
+    // Chuẩn bị danh sách để batch insert/update
+    List<InventoryCheckDetails> batchDetailsToSave = new ArrayList<>();
+    List<InventoryCheckProductDetails> productDetailsToSave = new ArrayList<>();
+
+    // Xử lý từng productDetail
     for (InventoryCheckProductDetails productDetail : request.getInventoryCheckProductDetails()) {
-      Product product = productDetail.getProduct();
-      Batch batch = productDetail.getBatch();
+      if (productDetail.getBatch() != null) {
+        // Batch xử lý
+        Batch batch = batchService.getById(productDetail.getBatch().getId());
+        InventoryCheckDetails existingDetail = batchDetailsMap.get(batch.getId());
 
-      // Process as batch detail if batch information is provided
-      if (batch != null) {
-        Batch unsavedBatch = batchService.getById(batch.getId());
-
-        InventoryCheckDetails existingBatchDetail =
-            inventoryCheckDetailsService.findByCheckIdAndBatchId(
-                updatedInventoryCheckEntity.getId(), batch.getId());
-
-        InventoryCheckDetails inventoryCheckDetail;
-        if (existingBatchDetail != null) {
-          inventoryCheckDetail = existingBatchDetail;
-          inventoryCheckDetail.setReason(
-              productDetail.getReason() != null ? productDetail.getReason() : null);
-          inventoryCheckDetail.setSystemQuantity(
-              productDetail.getSystemQuantity() != null ? productDetail.getSystemQuantity() : null);
-          inventoryCheckDetail.setCountedQuantity(
-              productDetail.getCountedQuantity() != null
-                  ? productDetail.getCountedQuantity()
-                  : null);
-          inventoryCheckDetail.setDifference(
-              productDetail.getCountedQuantity() != null
+        if (existingDetail != null) {
+          existingDetail.setReason(productDetail.getReason());
+          existingDetail.setSystemQuantity(productDetail.getSystemQuantity());
+          existingDetail.setCountedQuantity(productDetail.getCountedQuantity());
+          existingDetail.setDifference(productDetail.getCountedQuantity() != null
                   ? productDetail.getSystemQuantity() - productDetail.getCountedQuantity()
                   : null);
-          // Update existing batch detail with new quantity
-          inventoryCheckDetailsService.update(inventoryCheckDetail);
+          batchDetailsToSave.add(existingDetail);
         } else {
-          // Create a new batch detail
-          inventoryCheckDetail =
-              InventoryCheckDetails.builder()
+          InventoryCheckDetails newDetail = InventoryCheckDetails.builder()
                   .inventoryCheck(unsavedInventoryCheck)
-                  .batch(unsavedBatch)
-                  .countedQuantity(
-                      productDetail.getCountedQuantity() != null
-                          ? productDetail.getCountedQuantity()
-                          : null)
-                  .systemQuantity(
-                      productDetail.getSystemQuantity() != null
-                          ? productDetail.getSystemQuantity()
-                          : null)
-                  .reason(productDetail.getReason() != null ? productDetail.getReason() : null)
-                  .difference(
-                      productDetail.getCountedQuantity() != null
+                  .batch(batch)
+                  .reason(productDetail.getReason())
+                  .systemQuantity(productDetail.getSystemQuantity())
+                  .countedQuantity(productDetail.getCountedQuantity())
+                  .difference(productDetail.getCountedQuantity() != null
                           ? productDetail.getSystemQuantity() - productDetail.getCountedQuantity()
                           : null)
                   .build();
-          inventoryCheckDetailsService.create(inventoryCheckDetail);
+          batchDetailsToSave.add(newDetail);
         }
-
       } else {
-        // Process as product detail if no batch is specified
-        Product unsavedProduct = productService.getById(product.getId());
+        // Product xử lý
+        Product product = productService.getById(productDetail.getProduct().getId());
+        InventoryCheckProductDetails existingDetail = productDetailsMap.get(product.getId());
 
-        if (unsavedProduct == null) {
-          throw new HrmCommonException(PRODUCT.NOT_EXIST);
-        }
-
-        InventoryCheckProductDetails existingProductDetail =
-            inventoryCheckProductDetailsService.findByCheckIdAndProductId(
-                updatedInventoryCheck.getId(), product.getId());
-
-        InventoryCheckProductDetails inventoryCheckProductDetail;
-        if (existingProductDetail != null) {
-          // Update existing product detail with new quantity
-          inventoryCheckProductDetail = existingProductDetail;
-          inventoryCheckProductDetail.setCountedQuantity(
-              productDetail.getCountedQuantity() != null
-                  ? productDetail.getCountedQuantity()
-                  : null);
-          inventoryCheckProductDetail.setSystemQuantity(
-              productDetail.getSystemQuantity() != null ? productDetail.getSystemQuantity() : null);
-          inventoryCheckProductDetail.setDifference(
-              productDetail.getCountedQuantity() != null
+        if (existingDetail != null) {
+          existingDetail.setReason(productDetail.getReason());
+          existingDetail.setSystemQuantity(productDetail.getSystemQuantity());
+          existingDetail.setCountedQuantity(productDetail.getCountedQuantity());
+          existingDetail.setDifference(productDetail.getCountedQuantity() != null
                   ? productDetail.getSystemQuantity() - productDetail.getCountedQuantity()
                   : null);
-          inventoryCheckProductDetail.setReason(
-              productDetail.getReason() != null ? productDetail.getReason() : null);
-          inventoryCheckProductDetailsService.update(inventoryCheckProductDetail);
+          productDetailsToSave.add(existingDetail);
         } else {
-          // Create a new product detail
-          inventoryCheckProductDetail =
-              InventoryCheckProductDetails.builder()
+          InventoryCheckProductDetails newDetail = InventoryCheckProductDetails.builder()
                   .inventoryCheck(unsavedInventoryCheck)
                   .product(product)
-                  .countedQuantity(
-                      productDetail.getCountedQuantity() != null
-                          ? productDetail.getCountedQuantity()
-                          : null)
-                  .systemQuantity(
-                      productDetail.getSystemQuantity() != null
-                          ? productDetail.getSystemQuantity()
-                          : null)
-                  .difference(
-                      productDetail.getDifference() != null
+                  .reason(productDetail.getReason())
+                  .systemQuantity(productDetail.getSystemQuantity())
+                  .countedQuantity(productDetail.getCountedQuantity())
+                  .difference(productDetail.getCountedQuantity() != null
                           ? productDetail.getSystemQuantity() - productDetail.getCountedQuantity()
                           : null)
-                  .reason(productDetail.getReason() != null ? productDetail.getReason() : null)
                   .build();
+          productDetailsToSave.add(newDetail);
         }
-        inventoryCheckProductDetailsService.create(inventoryCheckProductDetail);
       }
     }
+
+    // Batch lưu các thay đổi
+    inventoryCheckDetailsService.saveAll(batchDetailsToSave);
+    inventoryCheckProductDetailsService.saveAll(productDetailsToSave);
 
     return inventoryCheckMapper.toDTO(updatedInventoryCheckEntity);
   }
@@ -538,69 +487,86 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
   @Override
   public InventoryCheck submitInventoryCheckToSystem(Long id) {
     InventoryCheck unsavedInventoryCheck = getById(id);
+    if (unsavedInventoryCheck == null) {
+      throw new HrmCommonException(INVENTORY_CHECK.NOT_EXIST);
+    }
+
     LocalDateTime endDate = LocalDateTime.now();
     unsavedInventoryCheck.setEndDate(endDate);
     update(unsavedInventoryCheck);
 
-    if (unsavedInventoryCheck == null) {
-      throw new HrmCommonException(INVENTORY_CHECK.NOT_EXIST);
-    }
     Branch branch = unsavedInventoryCheck.getBranch();
-    // Process each InventoryCheckProductDetail
-    for (InventoryCheckProductDetails productDetail :
-        unsavedInventoryCheck.getInventoryCheckProductDetails()) {
-      Product product = productDetail.getProduct();
 
-      // Find the BranchProduct entity for this product and branch
-      BranchProduct branchProduct =
-          branchProductService.getByBranchIdAndProductId(branch.getId(), product.getId());
+    // Tải dữ liệu BranchProduct và BranchBatch trước
+    Map<Long, BranchProduct> branchProductMap = branchProductService
+            .getAllByBranchId(branch.getId())
+            .stream()
+            .collect(Collectors.toMap(bp -> bp.getProduct().getId(), Function.identity()));
+
+    Map<Long, BranchBatch> branchBatchMap = branchBatchService
+            .getAllByBranchId(branch.getId())
+            .stream()
+            .collect(Collectors.toMap(bb -> bb.getBatch().getId(), Function.identity()));
+
+    // Danh sách cập nhật batch
+    List<BranchProduct> branchProductsToUpdate = new ArrayList<>();
+    List<BranchBatch> branchBatchesToUpdate = new ArrayList<>();
+
+    // Xử lý InventoryCheckProductDetails
+    for (InventoryCheckProductDetails productDetail : unsavedInventoryCheck.getInventoryCheckProductDetails()) {
+      Product product = productDetail.getProduct();
+      BranchProduct branchProduct = branchProductMap.get(product.getId());
 
       if (branchProduct == null) {
         throw new HrmCommonException(BRANCHPRODUCT.NOT_EXIST);
       }
-      // Subtract the converted quantity
+
       branchProduct.setQuantity(
-          (branchProduct.getQuantity() == null ? BigDecimal.ZERO : branchProduct.getQuantity())
-              .subtract(BigDecimal.valueOf(productDetail.getDifference())));
-      branchProductService.save(branchProduct);
+              (branchProduct.getQuantity() == null ? BigDecimal.ZERO : branchProduct.getQuantity())
+                      .subtract(BigDecimal.valueOf(productDetail.getDifference()))
+      );
+      branchProductsToUpdate.add(branchProduct);
     }
 
-    // Process each OutboundDetail (for batches)
+    // Xử lý InventoryCheckDetails
     for (InventoryCheckDetails batchDetail : unsavedInventoryCheck.getInventoryCheckDetails()) {
       Batch batch = batchDetail.getBatch();
+      BranchBatch branchBatch = branchBatchMap.get(batch.getId());
 
-      // Find the BranchBatch for this batch and branch
-      BranchBatch branchBatch =
-          branchBatchService.getByBranchIdAndBatchId(branch.getId(), batch.getId());
       if (branchBatch == null) {
         throw new HrmCommonException(BRANCHBATCH.NOT_EXIST);
       }
-      // Subtract the quantity
-      branchBatch.setQuantity(
-          (branchBatch.getQuantity() == null ? BigDecimal.ZERO : branchBatch.getQuantity())
-              .subtract(BigDecimal.valueOf(batchDetail.getDifference())));
-      branchBatchService.save(branchBatch);
-    }
-    // Notification for Manager
 
-    String message =
-        "🔔 Thông báo: Phiều kiểm "
-            + unsavedInventoryCheck.getCode()
-            + " đã được thêm vào hệ"
-            + " "
-            + "thống "
-            + "bởi "
-            + unsavedInventoryCheck.getCreatedBy().getUserName();
+      branchBatch.setQuantity(
+              (branchBatch.getQuantity() == null ? BigDecimal.ZERO : branchBatch.getQuantity())
+                      .subtract(BigDecimal.valueOf(batchDetail.getDifference()))
+      );
+      branchBatchesToUpdate.add(branchBatch);
+    }
+
+    // Batch cập nhật vào cơ sở dữ liệu
+    branchProductService.saveAll(branchProductsToUpdate.stream().map(branchProductMapper::toEntity).toList());
+    branchBatchService.saveAll(branchBatchesToUpdate);
+
+    // Gửi thông báo cho quản lý
+    String message = String.format(
+            "🔔 Thông báo: Phiếu kiểm %s đã được thêm vào hệ thống bởi %s",
+            unsavedInventoryCheck.getCode(),
+            unsavedInventoryCheck.getCreatedBy().getUserName()
+    );
 
     Notification notification = new Notification();
     notification.setMessage(message);
     notification.setNotiName(NotificationType.NHAP_PHIEU_KIEM_VAO_HE_THONG.getDisplayName());
     notification.setNotiType(NotificationType.NHAP_PHIEU_KIEM_VAO_HE_THONG);
     notification.setCreatedDate(LocalDateTime.now());
+
     notificationService.sendNotification(
-        notification,
-        userService.findAllManagerByBranchId(unsavedInventoryCheck.getBranch().getId()));
-    return null;
+            notification,
+            userService.findAllManagerByBranchId(branch.getId())
+    );
+
+    return unsavedInventoryCheck;
   }
 
   @Override

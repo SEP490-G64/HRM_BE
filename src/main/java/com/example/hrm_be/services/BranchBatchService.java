@@ -23,4 +23,8 @@ public interface BranchBatchService {
   BigDecimal findQuantityByBatchIdAndBranchId(Long batchId, Long branchId);
 
   List<BranchBatch> findByProductAndBranchForSell(Long productId, Long branchId);
+
+  List<BranchBatch> getAllByBranchId(Long branchId);
+
+  void saveAll(List<BranchBatch> branchBatches);
 }
