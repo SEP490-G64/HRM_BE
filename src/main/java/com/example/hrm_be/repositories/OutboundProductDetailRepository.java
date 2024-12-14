@@ -33,7 +33,8 @@ public interface OutboundProductDetailRepository
       "SELECT i FROM OutboundProductDetailEntity i "
           + "WHERE i.product.id = :productId "
           + "AND i.outbound.createdDate BETWEEN :startDate AND :endDate "
-          + "AND i.outbound.status in :status")
+          + "AND i.outbound.status in :status "
+          + "AND i.outboundQuantity IS NOT NULL AND i.outboundQuantity > 0")
   List<OutboundProductDetailEntity> findInboundDetailsByProductIdAndPeriod(
       @Param("productId") Long productId,
       @Param("status") List<OutboundStatus> status,

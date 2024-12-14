@@ -159,7 +159,7 @@ public class InboundDetailsServiceImpl implements InboundDetailsService {
       Long productId, LocalDateTime startDate, LocalDateTime endDate) {
     return inboundDetailsRepository
         .findInboundDetailsByProductIdAndPeriod(
-            productId, List.of(InboundStatus.HOAN_THANH), startDate, endDate)
+            productId, List.of(InboundStatus.KIEM_HANG, InboundStatus.HOAN_THANH), startDate, endDate)
         .stream()
         .map(inboundDetailsMapper::toDTOWithInBoundDetails)
         .collect(Collectors.toList());
