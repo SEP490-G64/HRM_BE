@@ -40,11 +40,11 @@ public interface InboundDetailsRepository extends JpaRepository<InboundDetailsEn
           + "WHERE i.product.id = :productId "
           + "AND i.inbound.createdDate BETWEEN :startDate AND :endDate "
           + "AND i.inbound.status in :status "
-          + "AND i.receiveQuantity IS NOT NULL AND i.receiveQuantity > 0 " +
-             "AND NOT EXISTS (" +
-             "   SELECT 1 FROM InboundBatchDetailEntity ib " +
-             "   WHERE ib.inbound.id = i.inbound.id AND ib.batch.product.id = i.product.id" +
-             ")")
+          + "AND i.receiveQuantity IS NOT NULL AND i.receiveQuantity > 0 "
+          + "AND NOT EXISTS ("
+          + "   SELECT 1 FROM InboundBatchDetailEntity ib "
+          + "   WHERE ib.inbound.id = i.inbound.id AND ib.batch.product.id = i.product.id"
+          + ")")
   List<InboundDetailsEntity> findInboundDetailsByProductIdAndPeriod(
       @Param("productId") Long productId,
       @Param("status") List<InboundStatus> status,
