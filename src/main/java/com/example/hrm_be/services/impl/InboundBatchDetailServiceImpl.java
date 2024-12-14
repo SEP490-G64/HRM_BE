@@ -129,7 +129,10 @@ public class InboundBatchDetailServiceImpl implements InboundBatchDetailService 
       Long productId, LocalDateTime startDate, LocalDateTime endDate) {
     return inboundBatchDetailRepository
         .findInboundDetailsByProductIdAndPeriod(
-            productId, List.of(InboundStatus.HOAN_THANH), startDate, endDate)
+            productId,
+            List.of(InboundStatus.KIEM_HANG, InboundStatus.HOAN_THANH),
+            startDate,
+            endDate)
         .stream()
         .map(inboundBatchDetailMapper::convertToDTOWithBatchAndInbound)
         .collect(Collectors.toList());
