@@ -36,7 +36,8 @@ public interface OutboundDetailRepository extends JpaRepository<OutboundDetailEn
       "SELECT i FROM OutboundDetailEntity i "
           + "WHERE i.batch.product.id = :productId "
           + "AND i.outbound.createdDate BETWEEN :startDate AND :endDate "
-          + "AND i.outbound.status in :status")
+          + "AND i.outbound.status in :status "
+          + "AND i.quantity IS NOT NULL AND i.quantity > 0")
   List<OutboundDetailEntity> findOutboundDetailsByProductIdAndPeriod(
       @Param("productId") Long productId,
       @Param("status") List<OutboundStatus> status,

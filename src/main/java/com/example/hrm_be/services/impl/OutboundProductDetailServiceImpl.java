@@ -56,7 +56,7 @@ public class OutboundProductDetailServiceImpl implements OutboundProductDetailSe
       Long productId, LocalDateTime startDate, LocalDateTime endDate) {
     return outboundProductDetailRepository
         .findInboundDetailsByProductIdAndPeriod(
-            productId, List.of(OutboundStatus.HOAN_THANH), startDate, endDate)
+            productId, List.of(OutboundStatus.KIEM_HANG, OutboundStatus.HOAN_THANH), startDate, endDate)
         .stream()
         .map(outboundProductDetailMapper::toDTO)
         .collect(Collectors.toList());
