@@ -61,4 +61,6 @@ public interface BranchProductRepository
           + " bp.quantity DESC, bp.product.registrationCode ASC")
   Page<BranchProductEntity> findByBranchIdAndProductNameOrProductRegistrationCode(
       Long branchId, String keyword, Pageable pageable);
+
+  List<BranchProductEntity> findByBranch_Id(Long branchId);
 }
