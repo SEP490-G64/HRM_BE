@@ -1,6 +1,5 @@
 package com.example.hrm_be.repositories;
 
-import com.example.hrm_be.models.dtos.InventoryCheckDetails;
 import com.example.hrm_be.models.entities.InventoryCheckProductDetailsEntity;
 
 import java.util.List;
