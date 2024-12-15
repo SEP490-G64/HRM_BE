@@ -2010,7 +2010,8 @@ public class ProductServiceImplTest {
 
     // Create Pageable and Page mock
     Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "id"));
-    Page<ProductEntity> productEntityPage = new PageImpl<>(productEntities, pageable, productEntities.size());
+    Page<ProductEntity> productEntityPage =
+        new PageImpl<>(productEntities, pageable, productEntities.size());
 
     // Arrange
     String userEmail = "test@example.com";
@@ -2062,7 +2063,8 @@ public class ProductServiceImplTest {
 
     // Create Pageable and Page mock
     Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "id"));
-    Page<ProductEntity> productEntityPage = new PageImpl<>(productEntities, pageable, productEntities.size());
+    Page<ProductEntity> productEntityPage =
+        new PageImpl<>(productEntities, pageable, productEntities.size());
     when(productRepository.findByQuantityLessThanMinQuantityInBranch(eq(branchId)))
         .thenReturn(productEntities);
 
@@ -2109,7 +2111,8 @@ public class ProductServiceImplTest {
 
     // Create Pageable and Page mock
     Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "id"));
-    Page<ProductEntity> productEntityPage = new PageImpl<>(productEntities, pageable, productEntities.size());
+    Page<ProductEntity> productEntityPage =
+        new PageImpl<>(productEntities, pageable, productEntities.size());
 
     when(productRepository.findByQuantityInBranch(0, branchId)).thenReturn(productEntities);
     when(productMapper.convertToProductBaseDTO(any(ProductEntity.class)))
@@ -2157,12 +2160,10 @@ public class ProductServiceImplTest {
         .thenReturn(productEntities);
     when(productRepository.findByQuantityLessThanMinQuantityInBranch(anyLong()))
         .thenReturn(productEntities);
-    when(productRepository.findByQuantityInBranch(eq(0), anyLong()))
-        .thenReturn(productEntities);
+    when(productRepository.findByQuantityInBranch(eq(0), anyLong())).thenReturn(productEntities);
 
     // Mock mapper
-    when(productMapper.convertToProductBaseDTO(any(ProductEntity.class)))
-        .thenReturn(dto);
+    when(productMapper.convertToProductBaseDTO(any(ProductEntity.class))).thenReturn(dto);
 
     // Create Pageable
     Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "id"));
@@ -2179,12 +2180,9 @@ public class ProductServiceImplTest {
     // Verify service and repository interactions
     verify(userService, times(1)).getAuthenticatedUserEmail();
     verify(userService, times(1)).findBranchIdByUserEmail(userEmail);
-    verify(productRepository, times(1))
-        .findByQuantityLessThanEqualInBranch(anyInt(), anyLong());
-    verify(productRepository, times(1))
-        .findByQuantityLessThanMinQuantityInBranch(anyLong());
-    verify(productRepository, times(1))
-        .findByQuantityInBranch(eq(0), anyLong());
+    verify(productRepository, times(1)).findByQuantityLessThanEqualInBranch(anyInt(), anyLong());
+    verify(productRepository, times(1)).findByQuantityLessThanMinQuantityInBranch(anyLong());
+    verify(productRepository, times(1)).findByQuantityInBranch(eq(0), anyLong());
     verify(productMapper, times(3)).convertToProductBaseDTO(any(ProductEntity.class));
   }
 
