@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface ProductService {
@@ -57,8 +58,12 @@ public interface ProductService {
   List<ProductBaseDTO> getBranchProduct(
       Long branchId, String keyword, Boolean checkValid, Long supplierId, Boolean withSellprice);
 
-  List<ProductBaseDTO> filterProducts(
-      Boolean lessThanOrEqual, Integer quantity, Boolean warning, Boolean outOfStock);
+  Page<ProductBaseDTO> filterProducts(
+      Boolean lessThanOrEqual,
+      Integer quantity,
+      Boolean warning,
+      Boolean outOfStock,
+      Pageable pageable);
 
   List<ProductBaseDTO> getProductsWithLossOrNoSellPriceInBranch();
 

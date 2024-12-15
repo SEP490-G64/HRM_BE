@@ -25,6 +25,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -51,18 +54,33 @@ public class StaffProductController {
 
   @GetMapping("/filter")
   public ResponseEntity<BaseOutput<List<ProductBaseDTO>>> filterProducts(
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int size,
+      @RequestParam(required = false, defaultValue = "id") String sortBy,
+      @RequestParam(required = false, defaultValue = "ASC") String sortDirection,
       @RequestParam(required = false) Boolean lessThanOrEqual,
       @RequestParam(required = false) Integer quantity,
       @RequestParam(required = false) Boolean warning,
       @RequestParam(required = false) Boolean outOfStock) {
-    List<ProductBaseDTO> products =
-        productService.filterProducts(lessThanOrEqual, quantity, warning, outOfStock);
+
+    // Determine the sort direction
+    Sort.Direction direction =
+        sortDirection.equalsIgnoreCase("DESC") ? Sort.Direction.DESC : Sort.Direction.ASC;
+
+    // Create a Pageable object
+    Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
+
+    Page<ProductBaseDTO> products =
+        productService.filterProducts(lessThanOrEqual, quantity, warning, outOfStock, pageable);
 
     BaseOutput<List<ProductBaseDTO>> response =
         BaseOutput.<List<ProductBaseDTO>>builder()
+            .totalPages(products.getTotalPages())
+            .currentPage(page)
+            .pageSize(size)
+            .total(products.getTotalElements())
+            .data(products.getContent())
             .message(HttpStatus.OK.toString())
-            .total((long) products.size())
-            .data(products)
             .status(ResponseStatus.SUCCESS)
             .build();
     return ResponseEntity.ok(response);
