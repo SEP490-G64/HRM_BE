@@ -1993,8 +1993,6 @@ public class ProductServiceImplTest {
     verify(productRepository, times(1)).removeTypeFromProducts(typeId);
   }
 
-  // FilterProducts
-  // UTCID01: FilterProducts - Valid
   @Test
   public void UTCID01_testFilterProducts_LessThanOrEqual() {
     // Initialize ProductEntity
@@ -2009,6 +2007,11 @@ public class ProductServiceImplTest {
     dto.setProductName("Product 1");
     dto.setProductQuantity(BigDecimal.valueOf(5));
     productBaseDTOs.add(dto);
+
+    // Create Pageable and Page mock
+    Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "id"));
+    Page<ProductEntity> productEntityPage = new PageImpl<>(productEntities, pageable, productEntities.size());
+
     // Arrange
     String userEmail = "test@example.com";
     Long branchId = 1L;
@@ -2020,13 +2023,14 @@ public class ProductServiceImplTest {
     when(productMapper.convertToProductBaseDTO(any(ProductEntity.class)))
         .thenReturn(productBaseDTOs.get(0));
 
-    // Create Pageable and Page mock
-    Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "id"));
-    Page<ProductEntity> result = new PageImpl<>(productEntities, pageable, productEntities.size());
+    // Act
+    Page<ProductBaseDTO> result = productService.filterProducts(true, 10, false, false, pageable);
 
     // Assert
     assertNotNull(result);
-    assertEquals(productBaseDTOs.get(0), result.get());
+    assertEquals(1, result.getContent().size());
+    assertEquals(productBaseDTOs.get(0), result.getContent().get(0));
+    assertEquals(1, result.getTotalElements());
 
     verify(userService, times(1)).getAuthenticatedUserEmail();
     verify(userService, times(1)).findBranchIdByUserEmail(userEmail);
@@ -2049,29 +2053,34 @@ public class ProductServiceImplTest {
     dto.setProductName("Product 1");
     dto.setProductQuantity(BigDecimal.valueOf(5));
     productBaseDTOs.add(dto);
+
     // Arrange
     String userEmail = "test@example.com";
     Long branchId = 1L;
     when(userService.getAuthenticatedUserEmail()).thenReturn(userEmail);
     when(userService.findBranchIdByUserEmail(userEmail)).thenReturn(Optional.of(branchId));
 
-    when(productRepository.findByQuantityLessThanMinQuantityInBranch(anyLong()))
+    // Create Pageable and Page mock
+    Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "id"));
+    Page<ProductEntity> productEntityPage = new PageImpl<>(productEntities, pageable, productEntities.size());
+    when(productRepository.findByQuantityLessThanMinQuantityInBranch(eq(branchId)))
         .thenReturn(productEntities);
+
     when(productMapper.convertToProductBaseDTO(any(ProductEntity.class)))
         .thenReturn(productBaseDTOs.get(0));
 
-    // Create Pageable and Page mock
-    Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "id"));
-    Page<ProductEntity> result = new PageImpl<>(productEntities, pageable, productEntities.size());
+    // Act
+    Page<ProductBaseDTO> result = productService.filterProducts(false, null, true, false, pageable);
 
     // Assert
     assertNotNull(result);
-    assertEquals(1, result);
-    assertEquals(productBaseDTOs.get(0), result);
+    assertEquals(1, result.getContent().size());
+    assertEquals(productBaseDTOs.get(0), result.getContent().get(0));
+    assertEquals(1, result.getTotalElements());
 
     verify(userService, times(1)).getAuthenticatedUserEmail();
     verify(userService, times(1)).findBranchIdByUserEmail(userEmail);
-    verify(productRepository, times(1)).findByQuantityLessThanMinQuantityInBranch(anyLong());
+    verify(productRepository, times(1)).findByQuantityLessThanMinQuantityInBranch(eq(branchId));
     verify(productMapper, times(1)).convertToProductBaseDTO(any(ProductEntity.class));
   }
 
@@ -2089,30 +2098,35 @@ public class ProductServiceImplTest {
     ProductBaseDTO dto = new ProductBaseDTO();
     dto.setId(1L);
     dto.setProductName("Product 1");
-    dto.setProductQuantity(BigDecimal.valueOf(5));
+    dto.setProductQuantity(BigDecimal.ZERO); // Out of stock
     productBaseDTOs.add(dto);
+
     // Arrange
     String userEmail = "test@example.com";
     Long branchId = 1L;
     when(userService.getAuthenticatedUserEmail()).thenReturn(userEmail);
     when(userService.findBranchIdByUserEmail(userEmail)).thenReturn(Optional.of(branchId));
 
-    when(productRepository.findByQuantityInBranch(anyInt(), anyLong())).thenReturn(productEntities);
+    // Create Pageable and Page mock
+    Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "id"));
+    Page<ProductEntity> productEntityPage = new PageImpl<>(productEntities, pageable, productEntities.size());
+
+    when(productRepository.findByQuantityInBranch(0, branchId)).thenReturn(productEntities);
     when(productMapper.convertToProductBaseDTO(any(ProductEntity.class)))
         .thenReturn(productBaseDTOs.get(0));
 
-    // Create Pageable and Page mock
-    Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "id"));
-    Page<ProductEntity> result = new PageImpl<>(productEntities, pageable, productEntities.size());
+    // Act
+    Page<ProductBaseDTO> result = productService.filterProducts(false, null, false, true, pageable);
 
     // Assert
     assertNotNull(result);
-    assertEquals(1, result);
-    assertEquals(productBaseDTOs.get(0), result);
+    assertEquals(1, result.getContent().size());
+    assertEquals(productBaseDTOs.get(0), result.getContent().get(0));
+    assertEquals(1, result.getTotalElements());
 
     verify(userService, times(1)).getAuthenticatedUserEmail();
     verify(userService, times(1)).findBranchIdByUserEmail(userEmail);
-    verify(productRepository, times(1)).findByQuantityInBranch(anyInt(), anyLong());
+    verify(productRepository, times(1)).findByQuantityInBranch(0, branchId);
     verify(productMapper, times(1)).convertToProductBaseDTO(any(ProductEntity.class));
   }
 
@@ -2123,44 +2137,55 @@ public class ProductServiceImplTest {
     ProductEntity entity = new ProductEntity();
     entity.setId(1L);
     entity.setProductName("Product 1");
-    // entity.setProductQuantity(BigDecimal.valueOf(5));
     productEntities.add(entity);
 
     // Initialize ProductBaseDTO
     ProductBaseDTO dto = new ProductBaseDTO();
     dto.setId(1L);
     dto.setProductName("Product 1");
-    // dto.setProductQuantity(BigDecimal.valueOf(5));
     productBaseDTOs.add(dto);
+
     // Arrange
     String userEmail = "test@example.com";
     Long branchId = 1L;
+
     when(userService.getAuthenticatedUserEmail()).thenReturn(userEmail);
     when(userService.findBranchIdByUserEmail(userEmail)).thenReturn(Optional.of(branchId));
 
+    // Mock repository responses for all filters
     when(productRepository.findByQuantityLessThanEqualInBranch(anyInt(), anyLong()))
         .thenReturn(productEntities);
     when(productRepository.findByQuantityLessThanMinQuantityInBranch(anyLong()))
         .thenReturn(productEntities);
-    when(productRepository.findByQuantityInBranch(anyInt(), anyLong())).thenReturn(productEntities);
-    when(productMapper.convertToProductBaseDTO(any(ProductEntity.class)))
-        .thenReturn(productBaseDTOs.get(0));
+    when(productRepository.findByQuantityInBranch(eq(0), anyLong()))
+        .thenReturn(productEntities);
 
-    // Create Pageable and Page mock
+    // Mock mapper
+    when(productMapper.convertToProductBaseDTO(any(ProductEntity.class)))
+        .thenReturn(dto);
+
+    // Create Pageable
     Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "id"));
-    Page<ProductEntity> result = new PageImpl<>(productEntities, pageable, productEntities.size());
+
+    // Act
+    Page<ProductBaseDTO> result = productService.filterProducts(true, 10, true, true, pageable);
 
     // Assert
     assertNotNull(result);
-    assertEquals(1, result); // Only one unique product added despite multiple filters
+    assertEquals(1, result.getContent().size());
+    assertEquals(dto, result.getContent().get(0));
+    assertEquals(1, result.getTotalElements());
 
+    // Verify service and repository interactions
     verify(userService, times(1)).getAuthenticatedUserEmail();
     verify(userService, times(1)).findBranchIdByUserEmail(userEmail);
-    verify(productRepository, times(1)).findByQuantityLessThanEqualInBranch(anyInt(), anyLong());
-    verify(productRepository, times(1)).findByQuantityLessThanMinQuantityInBranch(anyLong());
-    verify(productRepository, times(1)).findByQuantityInBranch(anyInt(), anyLong());
-    verify(productMapper, times(3))
-        .convertToProductBaseDTO(any(ProductEntity.class)); // Expecting 3 calls
+    verify(productRepository, times(1))
+        .findByQuantityLessThanEqualInBranch(anyInt(), anyLong());
+    verify(productRepository, times(1))
+        .findByQuantityLessThanMinQuantityInBranch(anyLong());
+    verify(productRepository, times(1))
+        .findByQuantityInBranch(eq(0), anyLong());
+    verify(productMapper, times(3)).convertToProductBaseDTO(any(ProductEntity.class));
   }
 
   // GetProductsWithLossOrNoSellPriceInBranch
