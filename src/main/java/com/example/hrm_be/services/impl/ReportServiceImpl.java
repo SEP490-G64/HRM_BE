@@ -326,4 +326,83 @@ public class ReportServiceImpl implements ReportService {
     return new PageImpl<>(
         new ArrayList<>(productReportMap.values()), pageable, branchProducts.getTotalElements());
   }
+
+  @Override
+  public InboundOutboundProductReportPage getInboundOutboundReport(Long branchId, String keyword, int page, int size) {
+    List<Object[]> rawInboundOutboundProductReport = productRepository.getInboundOutboundProductReport(branchId, keyword, page, size);
+    List<InboundOutboundProductReport> reports =
+            rawInboundOutboundProductReport.stream()
+                    .map(
+                            row ->
+                                    new InboundOutboundProductReport(
+                                            row[0] != null ? (Long) row[0] : null,
+                                            row[3] != null ? row[3].toString() : null,
+                                            row[1] != null ? row[1].toString() : null,
+                                            row[2] != null ? row[2].toString() : null,
+                                            row[4] != null
+                                                    ? (row[4] instanceof Double
+                                                    ? BigDecimal.valueOf((Double) row[4])
+                                                    .setScale(2, RoundingMode.HALF_UP)
+                                                    : (BigDecimal) row[4])
+                                                    .setScale(2, RoundingMode.HALF_UP)
+                                                    : BigDecimal.ZERO,
+                                            row[5] != null
+                                                    ? (row[5] instanceof Double
+                                                    ? BigDecimal.valueOf((Double) row[5])
+                                                    .setScale(2, RoundingMode.HALF_UP)
+                                                    : (BigDecimal) row[5])
+                                                    .setScale(2, RoundingMode.HALF_UP)
+                                                    : BigDecimal.ZERO,
+                                            row[6] != null
+                                                    ? (row[6] instanceof Double
+                                                    ? BigDecimal.valueOf((Double) row[6])
+                                                    .setScale(2, RoundingMode.HALF_UP)
+                                                    : (BigDecimal) row[6])
+                                                    .setScale(2, RoundingMode.HALF_UP)
+                                                    : BigDecimal.ZERO,
+                                            row[7] != null
+                                                    ? (row[7] instanceof Double
+                                                    ? BigDecimal.valueOf((Double) row[7])
+                                                    .setScale(2, RoundingMode.HALF_UP)
+                                                    : (BigDecimal) row[7])
+                                                    .setScale(2, RoundingMode.HALF_UP)
+                                                    : BigDecimal.ZERO,
+                                            row[8] != null
+                                                    ? (row[8] instanceof Double
+                                                    ? BigDecimal.valueOf((Double) row[8])
+                                                    .setScale(2, RoundingMode.HALF_UP)
+                                                    : (BigDecimal) row[8])
+                                                    .setScale(2, RoundingMode.HALF_UP)
+                                                    : BigDecimal.ZERO,
+                                            row[9] != null
+                                                    ? (row[8] instanceof Double
+                                                    ? BigDecimal.valueOf((Double) row[9])
+                                                    .setScale(2, RoundingMode.HALF_UP)
+                                                    : (BigDecimal) row[9])
+                                                    .setScale(2, RoundingMode.HALF_UP)
+                                                    : BigDecimal.ZERO,
+                                            row[10] != null
+                                                    ? (row[8] instanceof Double
+                                                    ? BigDecimal.valueOf((Double) row[10])
+                                                    .setScale(2, RoundingMode.HALF_UP)
+                                                    : (BigDecimal) row[10])
+                                                    .setScale(2, RoundingMode.HALF_UP)
+                                                    : BigDecimal.ZERO,
+                                            row[11] != null
+                                                    ? (row[8] instanceof Double
+                                                    ? BigDecimal.valueOf((Double) row[11])
+                                                    .setScale(2, RoundingMode.HALF_UP)
+                                                    : (BigDecimal) row[11])
+                                                    .setScale(2, RoundingMode.HALF_UP)
+                                                    : BigDecimal.ZERO,
+                                            row[12] != null ? row[12].toString() : null))
+                    .collect(Collectors.toList());
+
+    InboundOutboundProductReportPage reportPage = InboundOutboundProductReportPage.builder()
+            .inboundOutboundProductReports(reports)
+            .totalPages(!rawInboundOutboundProductReport.isEmpty() ? (Integer) rawInboundOutboundProductReport.get(0)[13] : 0)
+            .totalElements(!rawInboundOutboundProductReport.isEmpty() ? (Long) rawInboundOutboundProductReport.get(0)[14] : 0)
+            .build();
+    return reportPage;
+  }
 }

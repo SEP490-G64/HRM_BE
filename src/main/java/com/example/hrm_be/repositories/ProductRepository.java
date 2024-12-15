@@ -221,4 +221,93 @@ public interface ProductRepository
               + "LIMIT 5;\n",
       nativeQuery = true)
   List<Object[]> getTopProduct(@Param("branchId") Long branchId);
+
+  @Query(
+          value =
+                  "WITH OutboundProduct AS (\n" +
+                          "    SELECT \n" +
+                          "        od.product_id,\n" +
+                          "        SUM(\n" +
+                          "            CASE \n" +
+                          "                -- Nếu đơn vị đo hiện tại là baseUnit, sử dụng trực tiếp\n" +
+                          "                WHEN od.unit_of_measurement_id = p.base_unit_id THEN od.outbound_quantity \n" +
+                          "                -- Nếu không, chuyển đổi qua factor_conversion\n" +
+                          "                ELSE od.outbound_quantity * uc.factor_conversion \n" +
+                          "            END\n" +
+                          "        ) AS outbound_quantity_converted,\n" +
+                          "        SUM(od.outbound_quantity * od.price) AS outbound_total\n" +
+                          "    FROM outbound_product_details od\n" +
+                          "    JOIN outbound o ON od.outbound_id = o.id\n" +
+                          "    JOIN product p ON od.product_id = p.id\n" +
+                          "    LEFT JOIN unit_conversion uc \n" +
+                          "        ON od.unit_of_measurement_id = uc.smaller_unit \n" +
+                          "        AND p.base_unit_id = uc.larger_unit\n" +
+                          "        AND uc.product_id = p.id -- Đảm bảo chỉ lấy conversion đúng cho sản phẩm\n" +
+                          "    WHERE (:branchId IS NULL OR o.from_branch_id = :branchId)\n" +
+                          "    GROUP BY od.product_id\n" +
+                          "),\n" +
+                          "OutboundBatchProduct AS (\n" +
+                          "    SELECT \n" +
+                          "        b.product_id, -- Sử dụng product_id từ bảng batch\n" +
+                          "        SUM(\n" +
+                          "            CASE \n" +
+                          "                -- Nếu đơn vị đo hiện tại là baseUnit, sử dụng trực tiếp\n" +
+                          "                WHEN od.unit_of_measurement_id = p.base_unit_id THEN od.quantity \n" +
+                          "                -- Nếu không, chuyển đổi qua factor_conversion\n" +
+                          "                ELSE od.quantity * COALESCE(uc.factor_conversion, 1) -- Sử dụng 1 nếu không có conversion\n" +
+                          "            END\n" +
+                          "        ) AS outbound_quantity_converted,\n" +
+                          "        SUM(od.quantity * od.price) AS outbound_total\n" +
+                          "    FROM outbound_details od\n" +
+                          "    JOIN outbound o ON od.outbound_id = o.id\n" +
+                          "    JOIN batch b ON od.batch_id = b.id -- Lấy product_id từ batch\n" +
+                          "    JOIN product p ON b.product_id = p.id -- Xác định sản phẩm liên quan\n" +
+                          "    LEFT JOIN unit_conversion uc \n" +
+                          "        ON od.unit_of_measurement_id = uc.smaller_unit \n" +
+                          "        AND p.base_unit_id = uc.larger_unit\n" +
+                          "        AND uc.product_id = p.id -- Chuyển đổi đúng sản phẩm\n" +
+                          "    WHERE (:branchId IS NULL OR o.from_branch_id = :branchId)\n" +
+                          "    GROUP BY b.product_id -- Gom theo product_id từ batch\n" +
+                          "),\n" +
+                          "InboundProduct AS (\n" +
+                          "    SELECT \n" +
+                          "        id.product_id, \n" +
+                          "        SUM(id.receive_quantity) AS inbound_quantity, \n" +
+                          "        SUM(id.receive_quantity * id.price) AS inbound_total\n" +
+                          "    FROM inbound_details id\n" +
+                          "    JOIN inbound i ON id.inbound_id = i.id\n" +
+                          "    WHERE (:branchId IS NULL OR i.to_branch_id = :branchId)\n" +
+                          "    GROUP BY id.product_id\n" +
+                          ")\n" +
+                          "SELECT \n" +
+                          "    DISTINCT p.id AS product_id,\n" +
+                          "\tp.registration_code,\n" +
+                          "    p.product_name,\n" +
+                          "    p.url_image,\n" +
+                          "\tp.inbound_price,\n" +
+                          "\tp.sell_price,\n" +
+                          "    COALESCE(ip.inbound_quantity, 0) as inbound_quantity,\n" +
+                          "    COALESCE(op.outbound_quantity_converted, 0) + COALESCE(obp.outbound_quantity_converted, 0) as outbound_quantity,\n" +
+                          "    COALESCE(ip.inbound_quantity, 0) - (COALESCE(op.outbound_quantity_converted, 0) + COALESCE(obp.outbound_quantity_converted, 0)) AS difference_quantity,\n" +
+                          "    COALESCE(ip.inbound_total, 0) AS inbound_value,\n" +
+                          "    COALESCE(op.outbound_total, 0) + COALESCE(obp.outbound_total, 0) AS outbound_value,\n" +
+                          "    COALESCE(ip.inbound_total, 0) - (COALESCE(op.outbound_total, 0) + COALESCE(obp.outbound_total, 0)) AS difference_value,\n" +
+                          "    uom.unit_name,\n" +
+                          "    COUNT(*) OVER () AS total_products,\n" +
+                          "\tCOUNT(*) OVER () / :size + 1 as total_pages\n" +
+                          "FROM product p\n" +
+                          "LEFT JOIN InboundProduct ip ON p.id = ip.product_id\n" +
+                          "LEFT JOIN OutboundProduct op ON p.id = op.product_id\n" +
+                          "LEFT JOIN OutboundBatchProduct obp ON p.id = obp.product_id\n" +
+                          "JOIN unit_of_measurement uom ON uom.id = p.base_unit_id\n" +
+                          "WHERE \n" +
+                          "    COALESCE(ip.inbound_quantity, 0) + COALESCE(op.outbound_quantity_converted, 0) + COALESCE(obp.outbound_quantity_converted, 0) > 0\n" +
+                          "    AND (:keyword IS NULL \n" +
+                          "         OR p.product_name ILIKE CONCAT('%', :keyword, '%') \n" +
+                          "         OR p.registration_code ILIKE CONCAT('%', :keyword, '%'))\n" +
+                          "ORDER BY difference_quantity DESC, difference_value DESC\n" +
+                          "LIMIT :size OFFSET :page * :size;\n",
+          nativeQuery = true)
+  List<Object[]> getInboundOutboundProductReport(@Param("branchId") Long branchId, @Param("keyword") String keyword,
+                                                 @Param("size") int size, @Param("page") int page);
 }

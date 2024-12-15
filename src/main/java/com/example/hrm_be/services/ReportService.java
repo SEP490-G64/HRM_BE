@@ -1,8 +1,6 @@
 package com.example.hrm_be.services;
 
-import com.example.hrm_be.models.dtos.Dashboard;
-import com.example.hrm_be.models.dtos.DashboardInboundOutboundStream;
-import com.example.hrm_be.models.dtos.StockProductReport;
+import com.example.hrm_be.models.dtos.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -16,4 +14,6 @@ public interface ReportService {
   List<DashboardInboundOutboundStream> getDashboardChart(Long branchId, String timeRange);
 
   Page<StockProductReport> getStockReport(Long branchId, String keyword, Pageable pageable);
+
+  InboundOutboundProductReportPage getInboundOutboundReport(Long branchId, String keyword, int page, int size);
 }

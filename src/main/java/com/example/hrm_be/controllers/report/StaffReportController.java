@@ -1,8 +1,6 @@
 package com.example.hrm_be.controllers.report;
 
-import com.example.hrm_be.models.dtos.Dashboard;
-import com.example.hrm_be.models.dtos.DashboardInboundOutboundStream;
-import com.example.hrm_be.models.dtos.StockProductReport;
+import com.example.hrm_be.models.dtos.*;
 import com.example.hrm_be.models.responses.BaseOutput;
 import com.example.hrm_be.services.ReportService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -88,6 +86,34 @@ public class StaffReportController {
                 com.example.hrm_be.commons.enums.ResponseStatus
                     .SUCCESS) // Set response status to SUCCESS
             .build();
+
+    // Return the response entity with a status of OK
+    return ResponseEntity.ok(response);
+  }
+
+  // GET: /api/v1/staff/report/inbound-outbound
+  @GetMapping("/inbound-outbound")
+  public ResponseEntity<BaseOutput<List<InboundOutboundProductReport>>> getInboundOutboundReport(
+          @RequestParam(required = false) Long branchId,
+          @RequestParam(defaultValue = "") String keyword,
+          @RequestParam(defaultValue = "0") int page,
+          @RequestParam(defaultValue = "20") int size) {
+    // Lấy báo cáo tồn kho
+    InboundOutboundProductReportPage report = reportService.getInboundOutboundReport(branchId, keyword, page, size);
+
+    // Create a response object containing the user data and metadata
+    BaseOutput<List<InboundOutboundProductReport>> response =
+            BaseOutput.<List<InboundOutboundProductReport>>builder()
+                    .message(HttpStatus.OK.toString()) // Set response message to OK
+                    .totalPages(report.getTotalPages()) // Total number of pages
+                    .currentPage(page) // Current page number
+                    .pageSize(size) // Size of the page
+                    .total(report.getTotalElements()) // Total number of users
+                    .data(report.getInboundOutboundProductReports()) // List of users in the current page
+                    .status(
+                            com.example.hrm_be.commons.enums.ResponseStatus
+                                    .SUCCESS) // Set response status to SUCCESS
+                    .build();
 
     // Return the response entity with a status of OK
     return ResponseEntity.ok(response);
