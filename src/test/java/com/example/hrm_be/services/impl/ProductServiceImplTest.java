@@ -2020,13 +2020,13 @@ public class ProductServiceImplTest {
     when(productMapper.convertToProductBaseDTO(any(ProductEntity.class)))
         .thenReturn(productBaseDTOs.get(0));
 
-    // Act
-    List<ProductBaseDTO> result = productService.filterProducts(true, 10, false, false);
+    // Create Pageable and Page mock
+    Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "id"));
+    Page<ProductEntity> result = new PageImpl<>(productEntities, pageable, productEntities.size());
 
     // Assert
     assertNotNull(result);
-    assertEquals(1, result.size());
-    assertEquals(productBaseDTOs.get(0), result.get(0));
+    assertEquals(productBaseDTOs.get(0), result.get());
 
     verify(userService, times(1)).getAuthenticatedUserEmail();
     verify(userService, times(1)).findBranchIdByUserEmail(userEmail);
@@ -2060,13 +2060,14 @@ public class ProductServiceImplTest {
     when(productMapper.convertToProductBaseDTO(any(ProductEntity.class)))
         .thenReturn(productBaseDTOs.get(0));
 
-    // Act
-    List<ProductBaseDTO> result = productService.filterProducts(false, null, true, false);
+    // Create Pageable and Page mock
+    Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "id"));
+    Page<ProductEntity> result = new PageImpl<>(productEntities, pageable, productEntities.size());
 
     // Assert
     assertNotNull(result);
-    assertEquals(1, result.size());
-    assertEquals(productBaseDTOs.get(0), result.get(0));
+    assertEquals(1, result);
+    assertEquals(productBaseDTOs.get(0), result);
 
     verify(userService, times(1)).getAuthenticatedUserEmail();
     verify(userService, times(1)).findBranchIdByUserEmail(userEmail);
@@ -2100,13 +2101,14 @@ public class ProductServiceImplTest {
     when(productMapper.convertToProductBaseDTO(any(ProductEntity.class)))
         .thenReturn(productBaseDTOs.get(0));
 
-    // Act
-    List<ProductBaseDTO> result = productService.filterProducts(false, null, false, true);
+    // Create Pageable and Page mock
+    Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "id"));
+    Page<ProductEntity> result = new PageImpl<>(productEntities, pageable, productEntities.size());
 
     // Assert
     assertNotNull(result);
-    assertEquals(1, result.size());
-    assertEquals(productBaseDTOs.get(0), result.get(0));
+    assertEquals(1, result);
+    assertEquals(productBaseDTOs.get(0), result);
 
     verify(userService, times(1)).getAuthenticatedUserEmail();
     verify(userService, times(1)).findBranchIdByUserEmail(userEmail);
@@ -2144,12 +2146,13 @@ public class ProductServiceImplTest {
     when(productMapper.convertToProductBaseDTO(any(ProductEntity.class)))
         .thenReturn(productBaseDTOs.get(0));
 
-    // Act
-    List<ProductBaseDTO> result = productService.filterProducts(true, 10, true, true);
+    // Create Pageable and Page mock
+    Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "id"));
+    Page<ProductEntity> result = new PageImpl<>(productEntities, pageable, productEntities.size());
 
     // Assert
     assertNotNull(result);
-    assertEquals(1, result.size()); // Only one unique product added despite multiple filters
+    assertEquals(1, result); // Only one unique product added despite multiple filters
 
     verify(userService, times(1)).getAuthenticatedUserEmail();
     verify(userService, times(1)).findBranchIdByUserEmail(userEmail);
