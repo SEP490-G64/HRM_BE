@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import jakarta.persistence.EntityManager;
@@ -489,26 +490,26 @@ public class OutboundServiceImpl implements OutboundService {
 
   @Override
   public Outbound saveOutboundForSell(CreateOutboundRequest request) {
-    // Retrieve and validate the OutboundEntity
-    OutboundEntity outboundEntity =
-        outboundRepository
+    // Lấy OutboundEntity và validate
+    OutboundEntity outboundEntity = outboundRepository
             .findById(request.getOutboundId())
             .orElseThrow(() -> new HrmCommonException(OUTBOUND.NOT_EXIST));
 
-    BranchEntity fromBranch =
-        branchMapper.toEntity(branchService.getById(request.getFromBranch().getId()));
+    BranchEntity fromBranch = branchMapper.toEntity(branchService.getById(request.getFromBranch().getId()));
 
-    // Delete existing outbound product and batch details
-    outboundProductDetailService.deleteByOutboundId(request.getOutboundId());
-    outboundDetailService.deleteByOutboundId(request.getOutboundId());
+    // Xóa dữ liệu cũ của Outbound
+    CompletableFuture<Void> deleteOutboundProductDetails = CompletableFuture.runAsync(() ->
+            outboundProductDetailService.deleteByOutboundId(request.getOutboundId()));
+    CompletableFuture<Void> deleteOutboundDetails = CompletableFuture.runAsync(() ->
+            outboundDetailService.deleteByOutboundId(request.getOutboundId()));
 
-    // Update the OutboundEntity with the new request details
-    Outbound updatedOutbound =
-        Outbound.builder()
+    CompletableFuture.allOf(deleteOutboundProductDetails, deleteOutboundDetails).join();
+
+    // Cập nhật OutboundEntity với dữ liệu mới
+    Outbound updatedOutbound = Outbound.builder()
             .id(outboundEntity.getId())
             .outboundCode(request.getOutboundCode())
-            .createdDate(
-                request.getCreatedDate() != null ? request.getCreatedDate() : LocalDateTime.now())
+            .createdDate(request.getCreatedDate() != null ? request.getCreatedDate() : LocalDateTime.now())
             .status(OutboundStatus.HOAN_THANH)
             .outboundType(OutboundType.BAN_HANG)
             .createdBy(request.getCreatedBy())
@@ -518,200 +519,103 @@ public class OutboundServiceImpl implements OutboundService {
             .note(request.getNote())
             .build();
 
-    // Save the updated OutboundEntity
-    OutboundEntity updatedOutboundEntity =
-        outboundRepository.save(outboundMapper.toEntity(updatedOutbound));
+    OutboundEntity updatedOutboundEntity = outboundRepository.save(outboundMapper.toEntity(updatedOutbound));
+
+    // Batch xử lý sản phẩm và batch chi tiết
     List<OutboundDetailEntity> outboundDetailEntities = new ArrayList<>();
     List<OutboundProductDetailEntity> outboundProductDetailEntities = new ArrayList<>();
+    Map<Long, BigDecimal> batchQuantityUpdates = new HashMap<>();
+    Map<Long, BigDecimal> productQuantityUpdates = new HashMap<>();
     BigDecimal totalPrice = BigDecimal.ZERO;
 
-    // Process each product or batch in the request
+    Map<Long, List<BranchBatch>> branchBatchCache = branchBatchService
+            .getAllByBranchId(fromBranch.getId())
+            .stream()
+            .collect(Collectors.groupingBy(batch -> batch.getBatch().getProduct().getId()));
+
     for (OutboundProductDetail productDetail : request.getOutboundProductDetails()) {
-      Product product = productDetail.getProduct();
-      ProductEntity productEntity = productMapper.toEntity(productService.getById(product.getId()));
+      ProductEntity productEntity = productMapper.toEntity(productService.getById(productDetail.getProduct().getId()));
 
-      BranchProduct branchProduct =
-          branchProductService.getByBranchIdAndProductId(fromBranch.getId(), product.getId());
+      BigDecimal outboundQuantity = productDetail.getOutboundQuantity();
+      BigDecimal convertedQuantity = unitConversionService.convertToUnit(
+              productEntity.getId(),
+              productEntity.getBaseUnit().getId(),
+              outboundQuantity,
+              productDetail.getTargetUnit(),
+              true);
 
-      if (branchProduct != null) {
-        BigDecimal productPrice = productEntity.getSellPrice();
-        BigDecimal pricePerUnit =
-            unitConversionService.convertToUnit(
-                product.getId(),
-                productEntity.getBaseUnit().getId(),
-                productPrice != null ? productPrice : BigDecimal.ZERO,
-                productDetail.getTargetUnit(),
-                true);
+      // Kiểm tra tồn kho và xử lý xuất kho
+      List<BranchBatch> productBatches = branchBatchCache.getOrDefault(productEntity.getId(), new ArrayList<>());
+      BigDecimal remainingQuantity = convertedQuantity;
 
-        BigDecimal outboundQuantity = productDetail.getOutboundQuantity();
-        BigDecimal convertedQuantity =
-            unitConversionService.convertToUnit(
-                productEntity.getId(),
-                productEntity.getBaseUnit().getId(),
-                outboundQuantity,
-                productDetail.getTargetUnit(),
-                true);
+      for (BranchBatch branchBatch : productBatches) {
+        if (remainingQuantity.compareTo(BigDecimal.ZERO) <= 0) break;
+        if (branchBatch.getQuantity().compareTo(BigDecimal.ZERO) > 0) {
+          BigDecimal batchDeduction = branchBatch.getQuantity().min(remainingQuantity);
+          BigDecimal pricePerUnit = productEntity.getSellPrice();
+          BigDecimal priceOutboundDetail = batchDeduction.multiply(pricePerUnit);
 
-        // Get all batches of product then check quantity to see which batch will be out
-        List<BranchBatch> productBranchBatches =
-            branchBatchService.findByProductAndBranchForSell(product.getId(), fromBranch.getId());
+          outboundDetailEntities.add(createOutboundDetailEntity(
+                  updatedOutboundEntity, branchBatch.getBatch(), batchDeduction, pricePerUnit, productDetail));
 
-        if (!productBranchBatches.isEmpty()) {
-          BigDecimal availableForSell =
-              productBranchBatches.stream()
-                  .map(BranchBatch::getQuantity)
-                  .reduce(BigDecimal.ZERO, BigDecimal::add);
-          // Compare outbound quantity to product quantity in branch
-          if (availableForSell.compareTo(convertedQuantity) < 0) {
-            throw new HrmCommonException(
-                "Số lượng hiện tại trong kho của sản phẩm "
-                    + productEntity.getProductName()
-                    + " chỉ còn "
-                    + availableForSell
-                    + ", vui lòng nhập số lượng nhỏ hơn.");
-          }
-
-          BigDecimal remainingQuantity = convertedQuantity;
-
-          // For product have batch
-          // Iterate through each batch to issue stock in order of earliest expiry date
-          for (BranchBatch branchBatch : productBranchBatches) {
-            Batch batchDTO = batchService.getById(branchBatch.getBatch().getId());
-
-            if (!Objects.equals(branchBatch.getQuantity(), BigDecimal.ZERO)) {
-              // Check if the current batch has enough quantity to meet the remaining requirement
-              if (branchBatch.getQuantity().compareTo(remainingQuantity) < 0) {
-                // If the current batch is insufficient, issue all of it and update the remaining
-                // quantity
-                BigDecimal priceOutboundDetail = branchBatch.getQuantity().multiply(productPrice);
-                this.addOutboundDetailForSell(
-                    updatedOutboundEntity,
-                    batchDTO,
-                    unitConversionService.convertToUnit(
-                        product.getId(),
-                        productEntity.getBaseUnit().getId(),
-                        branchBatch.getQuantity(),
-                        productDetail.getTargetUnit(),
-                        false),
-                    pricePerUnit,
-                    productDetail.getTargetUnit(),
-                    outboundDetailEntities);
-
-                totalPrice = totalPrice.add(priceOutboundDetail);
-                remainingQuantity = remainingQuantity.subtract(branchBatch.getQuantity());
-                branchBatch.setQuantity(BigDecimal.ZERO);
-                branchBatch.setLastUpdated(LocalDateTime.now());
-                branchBatchService.save(branchBatch);
-              } else {
-                BigDecimal priceOutboundDetail = remainingQuantity.multiply(productPrice);
-                // Issue only the required quantity and deduct it from the batch
-                this.addOutboundDetailForSell(
-                    updatedOutboundEntity,
-                    batchDTO,
-                    unitConversionService.convertToUnit(
-                        product.getId(),
-                        productEntity.getBaseUnit().getId(),
-                        remainingQuantity,
-                        productDetail.getTargetUnit(),
-                        false),
-                    pricePerUnit,
-                    productDetail.getTargetUnit(),
-                    outboundDetailEntities);
-
-                totalPrice = totalPrice.add(priceOutboundDetail);
-                branchBatch.setQuantity(branchBatch.getQuantity().subtract(remainingQuantity));
-                branchBatch.setLastUpdated(LocalDateTime.now());
-                remainingQuantity = BigDecimal.ZERO;
-                branchBatchService.save(branchBatch);
-                break;
-              }
-            }
-          }
-        } else {
-          // Compare outbound quantity to product quantity in branch
-          if (branchProduct.getQuantity().compareTo(convertedQuantity) < 0) {
-            throw new HrmCommonException(
-                "Số lượng hiện tại trong kho của sản phẩm "
-                    + productEntity.getProductName()
-                    + " chỉ còn "
-                    + branchProduct.getQuantity()
-                    + ", vui lòng nhập số lượng nhỏ hơn.");
-          }
-
-          BigDecimal priceOutboundProductDetail = convertedQuantity.multiply(productPrice);
-          OutboundProductDetailEntity outboundProductDetail =
-              OutboundProductDetailEntity.builder()
-                  .outbound(updatedOutboundEntity)
-                  .product(productEntity)
-                  .outboundQuantity(outboundQuantity)
-                  .price(pricePerUnit)
-                  .unitOfMeasurement(
-                      productDetail.getTargetUnit() != null
-                          ? unitOfMeasurementMapper.toEntity(productDetail.getTargetUnit())
-                          : productEntity.getBaseUnit())
-                  .taxRate(productEntity.getCategory().getTaxRate())
-                  .build();
-          totalPrice = totalPrice.add(priceOutboundProductDetail);
-          outboundProductDetailEntities.add(outboundProductDetail);
+          totalPrice = totalPrice.add(priceOutboundDetail);
+          batchQuantityUpdates.merge(branchBatch.getId(), batchDeduction.negate(), BigDecimal::add);
+          remainingQuantity = remainingQuantity.subtract(batchDeduction);
         }
+      }
 
-        // save BranchProduct
-        branchProduct.setQuantity(branchProduct.getQuantity().subtract(convertedQuantity));
-        branchProduct.setProduct(product);
-        branchProduct.setLastUpdated(LocalDateTime.now());
-        branchProductService.save(branchProduct);
-      } else {
-        throw new HrmCommonException(HrmConstant.ERROR.BRANCHPRODUCT.NOT_EXIST);
+      if (remainingQuantity.compareTo(BigDecimal.ZERO) > 0) {
+        BranchProduct branchProduct = branchProductService.getByBranchIdAndProductId(fromBranch.getId(), productEntity.getId());
+        if (branchProduct == null || branchProduct.getQuantity().compareTo(remainingQuantity) < 0) {
+          throw new HrmCommonException("Không đủ tồn kho cho sản phẩm: " + productEntity.getProductName());
+        }
+        BigDecimal priceOutboundProductDetail = remainingQuantity.multiply(productEntity.getSellPrice());
+        totalPrice = totalPrice.add(priceOutboundProductDetail);
+
+        outboundProductDetailEntities.add(createOutboundProductDetailEntity(
+                updatedOutboundEntity, productEntity, remainingQuantity, productDetail));
+
+        productQuantityUpdates.merge(productEntity.getId(), remainingQuantity.negate(), BigDecimal::add);
       }
     }
 
-    // Save all outbound details to the repositories
-    List<OutboundProductDetailEntity> finalOutboundProductDetailEntities =
-        outboundProductDetailService.saveAll(outboundProductDetailEntities).stream()
-            .map(outboundProductDetailMapper::toEntity)
-            .collect(Collectors.toList());
-    List<OutboundDetailEntity> finalOutboundDetailEntities =
-        outboundDetailService.saveAll(outboundDetailEntities).stream()
-            .map(outboundDetailMapper::toEntity)
-            .collect(Collectors.toList());
+    // Cập nhật batch tồn kho
+    branchBatchService.batchUpdateQuantities(batchQuantityUpdates);
+    branchProductService.batchUpdateQuantities(productQuantityUpdates);
+
+    // Lưu tất cả outbound details và product details
+    outboundDetailService.saveAll(outboundDetailEntities);
     outboundProductDetailService.saveAll(outboundProductDetailEntities);
 
-    // Extract all product IDs from finalOutboundProductDetailEntities
-    Set<Long> allProductIds =
-        finalOutboundProductDetailEntities.stream()
-            .map(e -> e.getProduct().getId()) // Replace with the actual field/method for product ID
-            .collect(Collectors.toSet());
-
-    // Extract all batch IDs from finalOutboundProductDetailEntities or finalOutboundDetailEntities
-    // as needed
-    Set<Long> allBatchIds =
-        finalOutboundDetailEntities.stream()
-            .map(e -> e.getBatch().getId()) // Replace with the actual field/method for batch ID
-            .collect(Collectors.toSet());
-
-    Set<Long> allProductBatchIds =
-        finalOutboundDetailEntities.stream()
-            .map(
-                e ->
-                    e.getBatch()
-                        .getProduct()
-                        .getId()) // Replace with the actual field/method for batch ID
-            .collect(Collectors.toSet());
-
-    allProductIds.addAll(allProductBatchIds);
-
+    // Gửi thông báo cập nhật tồn kho
     inventoryCheckService.broadcastInventoryCheckUpdates(
-        allProductIds, allBatchIds, fromBranch.getId());
+            productQuantityUpdates.keySet(), batchQuantityUpdates.keySet(), fromBranch.getId());
 
-    // Update the Outbound status and save it
-    updatedOutboundEntity.setOutboundProductDetails(finalOutboundProductDetailEntities);
-    updatedOutboundEntity.setOutboundDetails(finalOutboundDetailEntities);
-    updatedOutboundEntity.setStatus(OutboundStatus.KIEM_HANG);
+    // Cập nhật trạng thái outbound và trả về DTO
     updatedOutboundEntity.setTotalPrice(totalPrice);
-    OutboundEntity finalOutboundEntity = outboundRepository.save(updatedOutboundEntity);
+    updatedOutboundEntity.setStatus(OutboundStatus.KIEM_HANG);
+    return outboundMapper.toDTO(outboundRepository.save(updatedOutboundEntity));
+  }
 
-    // Convert and return the Outbound DTO
-    return outboundMapper.toDTO(finalOutboundEntity);
+  private OutboundDetailEntity createOutboundDetailEntity(OutboundEntity outbound, Batch batch, BigDecimal quantity, BigDecimal pricePerUnit, OutboundProductDetail detail) {
+    return OutboundDetailEntity.builder()
+            .outbound(outbound)
+            .batch(batchMapper.toEntity(batch))
+            .quantity(quantity)
+            .price(pricePerUnit)
+            .unitOfMeasurement(unitOfMeasurementMapper.toEntity(detail.getTargetUnit()))
+            .build();
+  }
+
+  private OutboundProductDetailEntity createOutboundProductDetailEntity(OutboundEntity outbound, ProductEntity product, BigDecimal quantity, OutboundProductDetail detail) {
+    return OutboundProductDetailEntity.builder()
+            .outbound(outbound)
+            .product(product)
+            .outboundQuantity(quantity)
+            .price(product.getSellPrice())
+            .unitOfMeasurement(unitOfMeasurementMapper.toEntity(detail.getTargetUnit()))
+            .taxRate(product.getCategory().getTaxRate())
+            .build();
   }
 
   @Override
