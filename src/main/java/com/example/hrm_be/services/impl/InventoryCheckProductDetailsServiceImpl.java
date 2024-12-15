@@ -103,14 +103,14 @@ public class InventoryCheckProductDetailsServiceImpl
 
   @Override
   public List<InventoryCheckProductDetails> findAllByCheckId(Long checkId) {
-    return inventoryCheckProductDetailsRepository
-            .findByInventoryCheck_Id(checkId)
-            .stream().map(inventoryCheckDetailsMapper::toDTO).toList();
+    return inventoryCheckProductDetailsRepository.findByInventoryCheck_Id(checkId).stream()
+        .map(inventoryCheckDetailsMapper::toDTO)
+        .toList();
   }
 
   @Override
   public void saveAll(List<InventoryCheckProductDetails> inventoryCheckProductDetails) {
-    inventoryCheckProductDetailsRepository.saveAll(inventoryCheckProductDetails
-            .stream().map(inventoryCheckDetailsMapper::toEntity).toList());
+    inventoryCheckProductDetailsRepository.saveAll(
+        inventoryCheckProductDetails.stream().map(inventoryCheckDetailsMapper::toEntity).toList());
   }
 }

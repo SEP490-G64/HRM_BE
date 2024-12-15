@@ -129,7 +129,7 @@ public class BranchProductServiceImpl implements BranchProductService {
   @Override
   public List<BranchProduct> getAllByBranchId(Long branchId) {
     return branchProductRepository.findByBranch_Id(branchId).stream()
-            .map(branchProductMapper::toDTO)
-            .collect(Collectors.toList());
+        .map(branchProductMapper::toDTO)
+        .collect(Collectors.toList());
   }
 }
