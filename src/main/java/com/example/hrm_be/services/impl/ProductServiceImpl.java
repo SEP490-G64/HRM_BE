@@ -990,7 +990,10 @@ public class ProductServiceImpl implements ProductService {
   }
 
   public Page<ProductBaseDTO> filterProducts(
-      Boolean lessThanOrEqual, Integer quantity, Boolean warning, Boolean outOfStock,
+      Boolean lessThanOrEqual,
+      Integer quantity,
+      Boolean warning,
+      Boolean outOfStock,
       Pageable pageable) {
     Set<ProductBaseDTO> resultSet = new HashSet<>();
     String userEmail = userService.getAuthenticatedUserEmail();

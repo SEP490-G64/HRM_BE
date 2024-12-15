@@ -59,7 +59,11 @@ public interface ProductService {
       Long branchId, String keyword, Boolean checkValid, Long supplierId, Boolean withSellprice);
 
   Page<ProductBaseDTO> filterProducts(
-      Boolean lessThanOrEqual, Integer quantity, Boolean warning, Boolean outOfStock, Pageable pageable);
+      Boolean lessThanOrEqual,
+      Integer quantity,
+      Boolean warning,
+      Boolean outOfStock,
+      Pageable pageable);
 
   List<ProductBaseDTO> getProductsWithLossOrNoSellPriceInBranch();
 
