@@ -64,14 +64,14 @@ public class StaffProductController {
       @RequestParam(required = false) Boolean outOfStock) {
 
     // Determine the sort direction
-    Sort.Direction direction = sortDirection.equalsIgnoreCase("DESC") ? Sort.Direction.DESC : Sort.Direction.ASC;
+    Sort.Direction direction =
+        sortDirection.equalsIgnoreCase("DESC") ? Sort.Direction.DESC : Sort.Direction.ASC;
 
     // Create a Pageable object
     Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
 
-
     Page<ProductBaseDTO> products =
-        productService.filterProducts(lessThanOrEqual, quantity, warning, outOfStock,pageable);
+        productService.filterProducts(lessThanOrEqual, quantity, warning, outOfStock, pageable);
 
     BaseOutput<List<ProductBaseDTO>> response =
         BaseOutput.<List<ProductBaseDTO>>builder()
