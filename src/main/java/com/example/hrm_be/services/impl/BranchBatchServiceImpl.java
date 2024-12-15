@@ -126,7 +126,8 @@ public class BranchBatchServiceImpl implements BranchBatchService {
 
   @Override
   public void batchUpdateQuantities(Map<Long, BigDecimal> batchQuantityUpdates) {
-    List<BranchBatchEntity> branchBatches = branchBatchRepository.findAllById(batchQuantityUpdates.keySet());
+    List<BranchBatchEntity> branchBatches =
+        branchBatchRepository.findAllById(batchQuantityUpdates.keySet());
     for (BranchBatchEntity branchBatch : branchBatches) {
       BigDecimal adjustment = batchQuantityUpdates.get(branchBatch.getId());
       branchBatch.setQuantity(branchBatch.getQuantity().add(adjustment));

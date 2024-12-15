@@ -136,7 +136,8 @@ public class BranchProductServiceImpl implements BranchProductService {
 
   @Override
   public void batchUpdateQuantities(Map<Long, BigDecimal> productQuantityUpdates) {
-    List<BranchProductEntity> branchProducts = branchProductRepository.findAllById(productQuantityUpdates.keySet());
+    List<BranchProductEntity> branchProducts =
+        branchProductRepository.findAllById(productQuantityUpdates.keySet());
     for (BranchProductEntity branchProduct : branchProducts) {
       BigDecimal adjustment = productQuantityUpdates.get(branchProduct.getId());
       branchProduct.setQuantity(branchProduct.getQuantity().add(adjustment));
