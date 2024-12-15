@@ -519,7 +519,8 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
     List<BranchBatch> branchBatchesToUpdate = new ArrayList<>();
 
     // Xử lý InventoryCheckProductDetails
-    for (InventoryCheckProductDetails productDetail : unsavedInventoryCheck.getInventoryCheckProductDetails()) {
+    for (InventoryCheckProductDetails productDetail :
+        unsavedInventoryCheck.getInventoryCheckProductDetails()) {
       if (productDetail.getDifference() != 0) {
         Product product = productDetail.getProduct();
         BranchProduct branchProduct = branchProductMap.get(product.getId());
@@ -529,9 +530,8 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
         }
 
         branchProduct.setQuantity(
-                (branchProduct.getQuantity() == null ? BigDecimal.ZERO : branchProduct.getQuantity())
-                        .subtract(BigDecimal.valueOf(productDetail.getDifference()))
-        );
+            (branchProduct.getQuantity() == null ? BigDecimal.ZERO : branchProduct.getQuantity())
+                .subtract(BigDecimal.valueOf(productDetail.getDifference())));
         branchProductsToUpdate.add(branchProduct);
       }
     }
@@ -539,18 +539,17 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
     // Xử lý InventoryCheckDetails
     for (InventoryCheckDetails batchDetail : unsavedInventoryCheck.getInventoryCheckDetails()) {
       if (batchDetail.getDifference() != 0) {
-          Batch batch = batchDetail.getBatch();
-          BranchBatch branchBatch = branchBatchMap.get(batch.getId());
+        Batch batch = batchDetail.getBatch();
+        BranchBatch branchBatch = branchBatchMap.get(batch.getId());
 
-          if (branchBatch == null) {
-              throw new HrmCommonException(BRANCHBATCH.NOT_EXIST);
-          }
+        if (branchBatch == null) {
+          throw new HrmCommonException(BRANCHBATCH.NOT_EXIST);
+        }
 
-          branchBatch.setQuantity(
-                  (branchBatch.getQuantity() == null ? BigDecimal.ZERO : branchBatch.getQuantity())
-                          .subtract(BigDecimal.valueOf(batchDetail.getDifference()))
-          );
-          branchBatchesToUpdate.add(branchBatch);
+        branchBatch.setQuantity(
+            (branchBatch.getQuantity() == null ? BigDecimal.ZERO : branchBatch.getQuantity())
+                .subtract(BigDecimal.valueOf(batchDetail.getDifference())));
+        branchBatchesToUpdate.add(branchBatch);
       }
     }
 
