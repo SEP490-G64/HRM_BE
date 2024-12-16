@@ -14,6 +14,9 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -95,38 +98,52 @@ public class StaffBatchController {
   // Handles GET requests to retrieve a single Batch by ID
   @GetMapping("/expired-batch-days")
   protected ResponseEntity<BaseOutput<List<Batch>>> getByExpiredBatchInDays(
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int size,
+      @RequestParam(defaultValue = "id") String sortBy,
+      @RequestParam(defaultValue = "ASC") String sortDirection,
       @RequestParam(defaultValue = "0") Long days) {
 
     LocalDateTime now = LocalDateTime.now();
+    Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortDirection), sortBy));
+
     // Retrieve Batch by ID
-    List<Batch> list = batchService.getExpiredBatchesInDays(now, days);
+    Page<Batch> list = batchService.getExpiredBatchesInDays(now, days,pageable);
 
     // Building success response
-    BaseOutput<List<Batch>> response =
-        BaseOutput.<List<Batch>>builder()
-            .message(HttpStatus.OK.toString())
-            .data(list)
-            .status(com.example.hrm_be.commons.enums.ResponseStatus.SUCCESS)
-            .build();
+    BaseOutput<List<Batch>> response = BaseOutput.<List<Batch>>builder()
+        .totalPages(list.getTotalPages())
+        .currentPage(page)
+        .pageSize(size)
+        .total(list.getTotalElements())
+        .data(list.getContent())
+        .message(HttpStatus.OK.toString())
+        .status(com.example.hrm_be.commons.enums.ResponseStatus.SUCCESS)
+        .build();
     return ResponseEntity.ok(response);
   }
 
   // Handles GET requests to retrieve a single Batch by ID
   @GetMapping("/expired-batch")
   protected ResponseEntity<BaseOutput<List<Batch>>> getByExpiredBatch(
-      @RequestParam(defaultValue = "0") Long days) {
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int size,
+      @RequestParam(defaultValue = "id") String sortBy,
+      @RequestParam(defaultValue = "ASC") String sortDirection) {
 
     LocalDateTime now = LocalDateTime.now();
+    Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortDirection), sortBy));
     // Retrieve Batch by ID
-    List<Batch> list = batchService.getExpiredBatches(now);
-
-    // Building success response
-    BaseOutput<List<Batch>> response =
-        BaseOutput.<List<Batch>>builder()
-            .message(HttpStatus.OK.toString())
-            .data(list)
-            .status(com.example.hrm_be.commons.enums.ResponseStatus.SUCCESS)
-            .build();
+    Page<Batch> batches = batchService.getExpiredBatches(now, pageable);
+    BaseOutput<List<Batch>> response = BaseOutput.<List<Batch>>builder()
+        .totalPages(batches.getTotalPages())
+        .currentPage(page)
+        .pageSize(size)
+        .total(batches.getTotalElements())
+        .data(batches.getContent())
+        .message(HttpStatus.OK.toString())
+        .status(com.example.hrm_be.commons.enums.ResponseStatus.SUCCESS)
+        .build();
     return ResponseEntity.ok(response);
   }
 

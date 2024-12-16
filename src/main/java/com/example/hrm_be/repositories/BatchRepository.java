@@ -7,6 +7,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
@@ -38,14 +40,15 @@ public interface BatchRepository
   void updateBatchStatus(@Param("status") BatchStatus status, @Param("id") Long id);
 
   @Query("SELECT b FROM BatchEntity b WHERE b.expireDate < :today")
-  List<BatchEntity> findExpiredBatches(@Param("today") LocalDateTime today);
+  Page<BatchEntity> findExpiredBatches(@Param("today") LocalDateTime today,Pageable pageable);
 
   @Query(
       "SELECT b FROM BatchEntity b LEFT JOIN FETCH b.branchBatches brb WHERE b.expireDate  "
           + "BETWEEN :today "
           + "AND :inDays AND brb.branch.id = :id")
-  List<BatchEntity> findBatchesExpiringInDays(
+  Page<BatchEntity> findBatchesExpiringInDays(
       @Param("today") LocalDateTime today,
       @Param("inDays") LocalDateTime inDays,
-      @Param("id") Long id);
+      @Param("id") Long id
+      , Pageable pageable);
 }

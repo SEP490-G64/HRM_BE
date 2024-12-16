@@ -281,26 +281,25 @@ public class BatchServiceImpl implements BatchService {
   }
 
   @Override
-  public List<Batch> getExpiredBatches(LocalDateTime now) {
+  public Page<Batch> getExpiredBatches(LocalDateTime now, Pageable pageable) {
     String userEmail = userService.getAuthenticatedUserEmail();
     Long branchId = userService.findBranchIdByUserEmail(userEmail).orElse(null);
-    return batchRepository.findExpiredBatches(now).stream()
+    return batchRepository.findExpiredBatches(now, pageable)
         .map(batch -> batchMapper.convertToDtoBasicInfoWithProductBaseDto(batch, branchId))
-        .collect(Collectors.toList());
+        ;
   }
 
   @Override
-  public List<Batch> getExpiredBatchesInDays(LocalDateTime now, Long days) {
+  public Page<Batch> getExpiredBatchesInDays(LocalDateTime now, Long days,Pageable pageable) {
     // Calculate the end date for the expiry range
     LocalDateTime expiryDate = now.plusDays(days);
     String userEmail = userService.getAuthenticatedUserEmail();
     Long branchId = userService.findBranchIdByUserEmail(userEmail).orElse(null);
     // Query the repository to find batches that expire within the specified range
-    return batchRepository.findBatchesExpiringInDays(now, expiryDate, branchId).stream()
+    return batchRepository.findBatchesExpiringInDays(now, expiryDate, branchId, pageable)
         // Map each BatchEntity to the corresponding Product object
         // Convert the Product to the ProductBaseDTO using the mapper
         .map(batch -> batchMapper.convertToDtoBasicInfoWithProductBaseDto(batch, branchId))
-        // Collect the results into a List
-        .collect(Collectors.toList());
+      ;
   }
 }
