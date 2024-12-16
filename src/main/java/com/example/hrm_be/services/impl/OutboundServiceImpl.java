@@ -607,9 +607,13 @@ public class OutboundServiceImpl implements OutboundService {
     outboundDetailService.saveAll(outboundDetailEntities);
     outboundProductDetailService.saveAll(outboundProductDetailEntities);
 
+    Set<Long> productIdsFromRequest =
+        request.getOutboundProductDetails().stream()
+            .map(productDetail -> productDetail.getProduct().getId())
+            .collect(Collectors.toSet());
     // Gửi thông báo cập nhật tồn kho
     inventoryCheckService.broadcastInventoryCheckUpdates(
-        productQuantityUpdates.keySet(), batchQuantityUpdates.keySet(), fromBranch.getId());
+        productIdsFromRequest, batchQuantityUpdates.keySet(), fromBranch.getId());
 
     // Cập nhật trạng thái outbound và trả về DTO
     updatedOutboundEntity.setTotalPrice(totalPrice);
