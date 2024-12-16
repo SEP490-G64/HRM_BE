@@ -11,6 +11,7 @@ import com.example.hrm_be.services.BranchProductService;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
@@ -131,5 +132,17 @@ public class BranchProductServiceImpl implements BranchProductService {
     return branchProductRepository.findByBranch_Id(branchId).stream()
         .map(branchProductMapper::toDTO)
         .collect(Collectors.toList());
+  }
+
+  @Override
+  public void batchUpdateQuantities(Map<Long, BigDecimal> productQuantityUpdates) {
+    List<BranchProductEntity> branchProducts =
+        branchProductRepository.findAllById(productQuantityUpdates.keySet());
+    for (BranchProductEntity branchProduct : branchProducts) {
+      BigDecimal adjustment = productQuantityUpdates.get(branchProduct.getId());
+      branchProduct.setQuantity(branchProduct.getQuantity().add(adjustment));
+      branchProduct.setLastUpdated(LocalDateTime.now());
+    }
+    branchProductRepository.saveAll(branchProducts);
   }
 }

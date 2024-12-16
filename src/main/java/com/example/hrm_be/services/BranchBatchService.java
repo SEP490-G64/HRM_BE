@@ -6,6 +6,8 @@ import com.example.hrm_be.models.entities.BranchBatchEntity;
 import com.example.hrm_be.models.entities.BranchEntity;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
+
 import org.springframework.stereotype.Service;
 
 @Service
@@ -27,4 +29,6 @@ public interface BranchBatchService {
   List<BranchBatch> getAllByBranchId(Long branchId);
 
   void saveAll(List<BranchBatch> branchBatches);
+
+  void batchUpdateQuantities(Map<Long, BigDecimal> batchQuantityUpdates);
 }

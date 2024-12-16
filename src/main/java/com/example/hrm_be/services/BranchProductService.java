@@ -6,6 +6,8 @@ import com.example.hrm_be.models.entities.BranchProductEntity;
 import com.example.hrm_be.models.entities.ProductEntity;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
+
 import org.springframework.stereotype.Service;
 
 @Service
@@ -30,4 +32,6 @@ public interface BranchProductService {
   List<BranchProduct> findBranchProductsWithQuantityIsZero(Long branchId);
 
   List<BranchProduct> getAllByBranchId(Long branchId);
+
+  void batchUpdateQuantities(Map<Long, BigDecimal> productQuantityUpdates);
 }

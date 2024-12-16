@@ -50,6 +50,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -988,8 +989,12 @@ public class ProductServiceImpl implements ProductService {
     productRepository.removeTypeFromProducts(typeId);
   }
 
-  public List<ProductBaseDTO> filterProducts(
-      Boolean lessThanOrEqual, Integer quantity, Boolean warning, Boolean outOfStock) {
+  public Page<ProductBaseDTO> filterProducts(
+      Boolean lessThanOrEqual,
+      Integer quantity,
+      Boolean warning,
+      Boolean outOfStock,
+      Pageable pageable) {
     Set<ProductBaseDTO> resultSet = new HashSet<>();
     String userEmail = userService.getAuthenticatedUserEmail();
     Long branchId = userService.findBranchIdByUserEmail(userEmail).orElse(null);
@@ -1020,8 +1025,12 @@ public class ProductServiceImpl implements ProductService {
       resultSet.addAll(outOfStockProducts);
     }
 
-    // Convert the Set to List to remove duplicates
-    return new ArrayList<>(resultSet);
+    List<ProductBaseDTO> resultList = new ArrayList<>(resultSet);
+    int start = (int) pageable.getOffset();
+    int end = Math.min((start + pageable.getPageSize()), resultList.size());
+    List<ProductBaseDTO> pageContent = resultList.subList(start, end);
+
+    return new PageImpl<>(pageContent, pageable, resultList.size());
   }
 
   @Override

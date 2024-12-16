@@ -13,6 +13,7 @@ import com.example.hrm_be.services.BranchBatchService;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
@@ -121,5 +122,17 @@ public class BranchBatchServiceImpl implements BranchBatchService {
   @Override
   public void saveAll(List<BranchBatch> branchBatches) {
     branchBatchRepository.saveAll(branchBatches.stream().map(branchBatchMapper::toEntity).toList());
+  }
+
+  @Override
+  public void batchUpdateQuantities(Map<Long, BigDecimal> batchQuantityUpdates) {
+    List<BranchBatchEntity> branchBatches =
+        branchBatchRepository.findAllById(batchQuantityUpdates.keySet());
+    for (BranchBatchEntity branchBatch : branchBatches) {
+      BigDecimal adjustment = batchQuantityUpdates.get(branchBatch.getId());
+      branchBatch.setQuantity(branchBatch.getQuantity().add(adjustment));
+      branchBatch.setLastUpdated(LocalDateTime.now());
+    }
+    branchBatchRepository.saveAll(branchBatches);
   }
 }
