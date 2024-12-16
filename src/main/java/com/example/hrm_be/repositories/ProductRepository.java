@@ -110,7 +110,7 @@ public interface ProductRepository
 
   // Condition for quantity less than or equal
   @Query(
-      "SELECT p FROM ProductEntity p left join fetch p.branchProducs bp WHERE :quantity >"
+      "SELECT p FROM ProductEntity p left join fetch p.branchProducs bp WHERE :quantity >="
           + " bp.quantity AND bp.branch.id = :id")
   List<ProductEntity> findByQuantityLessThanEqualInBranch(
       @Param("quantity") Integer quantity, @Param("id") Long id);
