@@ -257,8 +257,14 @@ public class NotificationServiceImpl implements NotificationService {
   }
 
   public NotificationAlertResponse createAlertProductNotification(Long branchId) {
-    int nearlyExpiredCount = batchService.getExpiredBatches(LocalDateTime.now()).size();
-    int expiredCount = batchService.getExpiredBatchesInDays(LocalDateTime.now(), 30l).size(); //
+    int nearlyExpiredCount =
+        batchService
+            .getExpiredBatches(LocalDateTime.now(), Pageable.unpaged())
+            .getNumberOfElements();
+    int expiredCount =
+        batchService
+            .getExpiredBatchesInDays(LocalDateTime.now(), 30l, Pageable.unpaged())
+            .getNumberOfElements(); //
     // Assuming zero
     // quantity represents expired
     int underThresholdCount =
