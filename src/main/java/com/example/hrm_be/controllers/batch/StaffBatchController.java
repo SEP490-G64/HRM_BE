@@ -105,21 +105,23 @@ public class StaffBatchController {
       @RequestParam(defaultValue = "0") Long days) {
 
     LocalDateTime now = LocalDateTime.now();
-    Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortDirection), sortBy));
+    Pageable pageable =
+        PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortDirection), sortBy));
 
     // Retrieve Batch by ID
-    Page<Batch> list = batchService.getExpiredBatchesInDays(now, days,pageable);
+    Page<Batch> list = batchService.getExpiredBatchesInDays(now, days, pageable);
 
     // Building success response
-    BaseOutput<List<Batch>> response = BaseOutput.<List<Batch>>builder()
-        .totalPages(list.getTotalPages())
-        .currentPage(page)
-        .pageSize(size)
-        .total(list.getTotalElements())
-        .data(list.getContent())
-        .message(HttpStatus.OK.toString())
-        .status(com.example.hrm_be.commons.enums.ResponseStatus.SUCCESS)
-        .build();
+    BaseOutput<List<Batch>> response =
+        BaseOutput.<List<Batch>>builder()
+            .totalPages(list.getTotalPages())
+            .currentPage(page)
+            .pageSize(size)
+            .total(list.getTotalElements())
+            .data(list.getContent())
+            .message(HttpStatus.OK.toString())
+            .status(com.example.hrm_be.commons.enums.ResponseStatus.SUCCESS)
+            .build();
     return ResponseEntity.ok(response);
   }
 
@@ -132,18 +134,20 @@ public class StaffBatchController {
       @RequestParam(defaultValue = "ASC") String sortDirection) {
 
     LocalDateTime now = LocalDateTime.now();
-    Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortDirection), sortBy));
+    Pageable pageable =
+        PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortDirection), sortBy));
     // Retrieve Batch by ID
     Page<Batch> batches = batchService.getExpiredBatches(now, pageable);
-    BaseOutput<List<Batch>> response = BaseOutput.<List<Batch>>builder()
-        .totalPages(batches.getTotalPages())
-        .currentPage(page)
-        .pageSize(size)
-        .total(batches.getTotalElements())
-        .data(batches.getContent())
-        .message(HttpStatus.OK.toString())
-        .status(com.example.hrm_be.commons.enums.ResponseStatus.SUCCESS)
-        .build();
+    BaseOutput<List<Batch>> response =
+        BaseOutput.<List<Batch>>builder()
+            .totalPages(batches.getTotalPages())
+            .currentPage(page)
+            .pageSize(size)
+            .total(batches.getTotalElements())
+            .data(batches.getContent())
+            .message(HttpStatus.OK.toString())
+            .status(com.example.hrm_be.commons.enums.ResponseStatus.SUCCESS)
+            .build();
     return ResponseEntity.ok(response);
   }
 

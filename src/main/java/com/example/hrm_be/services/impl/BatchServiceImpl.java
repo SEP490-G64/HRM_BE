@@ -21,7 +21,6 @@ import java.util.Objects;
 import java.util.Optional;
 
 import jakarta.persistence.criteria.Predicate;
-import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -284,22 +283,22 @@ public class BatchServiceImpl implements BatchService {
   public Page<Batch> getExpiredBatches(LocalDateTime now, Pageable pageable) {
     String userEmail = userService.getAuthenticatedUserEmail();
     Long branchId = userService.findBranchIdByUserEmail(userEmail).orElse(null);
-    return batchRepository.findExpiredBatches(now, pageable)
-        .map(batch -> batchMapper.convertToDtoBasicInfoWithProductBaseDto(batch, branchId))
-        ;
+    return batchRepository
+        .findExpiredBatches(now, pageable)
+        .map(batch -> batchMapper.convertToDtoBasicInfoWithProductBaseDto(batch, branchId));
   }
 
   @Override
-  public Page<Batch> getExpiredBatchesInDays(LocalDateTime now, Long days,Pageable pageable) {
+  public Page<Batch> getExpiredBatchesInDays(LocalDateTime now, Long days, Pageable pageable) {
     // Calculate the end date for the expiry range
     LocalDateTime expiryDate = now.plusDays(days);
     String userEmail = userService.getAuthenticatedUserEmail();
     Long branchId = userService.findBranchIdByUserEmail(userEmail).orElse(null);
     // Query the repository to find batches that expire within the specified range
-    return batchRepository.findBatchesExpiringInDays(now, expiryDate, branchId, pageable)
+    return batchRepository
+        .findBatchesExpiringInDays(now, expiryDate, branchId, pageable)
         // Map each BatchEntity to the corresponding Product object
         // Convert the Product to the ProductBaseDTO using the mapper
-        .map(batch -> batchMapper.convertToDtoBasicInfoWithProductBaseDto(batch, branchId))
-      ;
+        .map(batch -> batchMapper.convertToDtoBasicInfoWithProductBaseDto(batch, branchId));
   }
 }
