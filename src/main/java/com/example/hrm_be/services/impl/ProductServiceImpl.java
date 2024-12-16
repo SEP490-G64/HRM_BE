@@ -720,8 +720,10 @@ public class ProductServiceImpl implements ProductService {
       errors.add("Failed to parse Excel file: " + e.getMessage());
     }
     // Save all valid products to the database if no errors occurred
+    log.debug("This is custom debug: " + productsToSave.size());
     try {
       for (Product product : productsToSave) {
+        log.debug("This is custom debug for branch product: " + product.getBranchProducts().size());
         // Convert product to entity and save it
         product.setStatus(ProductStatus.CON_HANG);
         ProductEntity savedProduct = productRepository.save(productMapper.toEntity(product));
@@ -730,6 +732,7 @@ public class ProductServiceImpl implements ProductService {
         String email = userService.getAuthenticatedUserEmail();
         Branch userBranch = userService.findLoggedInfoByEmail(email).getBranch();
         if (userBranch == null) {
+          log.debug("This is custom debug for branch: yes");
           throw new HrmCommonException(HrmConstant.ERROR.BRANCH.NOT_EXIST);
         }
 
@@ -763,8 +766,8 @@ public class ProductServiceImpl implements ProductService {
       }
     } catch (Exception e) {
       errors.add("Error saving products: " + e.getMessage());
-      throw new RuntimeException(
-          "Transaction failed, rolling back due to error.", e); // Marks transaction for rollback
+//      throw new RuntimeException(
+//          "Transaction failed, rolling back due to error.", e); // Marks transaction for rollback
     }
 
     return errors; // Return the list of errors
