@@ -2194,35 +2194,44 @@ public class ProductServiceImplTest {
     ProductEntity entity = new ProductEntity();
     entity.setId(1L);
     entity.setProductName("Product 1");
-    productEntities.add(entity);
+    List<ProductEntity> productEntities = Collections.singletonList(entity);
 
     // Initialize ProductBaseDTO
     ProductBaseDTO dto = new ProductBaseDTO();
     dto.setId(1L);
     dto.setProductName("Product 1");
-    productBaseDTOs.add(dto);
+    List<ProductBaseDTO> productBaseDTOs = Collections.singletonList(dto);
+
+    // Mock Pageable and Page
+    Pageable pageable = PageRequest.of(0, 10);
+    Page<ProductEntity> page = new PageImpl<>(productEntities, pageable, productEntities.size());
+
     // Arrange
     String userEmail = "test@example.com";
     Long branchId = 1L;
     when(userService.getAuthenticatedUserEmail()).thenReturn(userEmail);
     when(userService.findBranchIdByUserEmail(userEmail)).thenReturn(Optional.of(branchId));
-
-    when(productRepository.findProductsWithLossOrNoSellPriceInBranch(anyLong()))
-        .thenReturn(productEntities);
-    when(productMapper.convertToProductBaseDTO(any(ProductEntity.class)))
-        .thenReturn(productBaseDTOs.get(0));
+    when(productRepository.findProductsWithLossOrNoSellPriceInBranch(
+            anyLong(), any(Pageable.class)))
+        .thenReturn(page);
+    when(productMapper.convertToProductBaseDTO(any(ProductEntity.class))).thenReturn(dto);
 
     // Act
-    List<ProductBaseDTO> result = productService.getProductsWithLossOrNoSellPriceInBranch();
+    Page<ProductBaseDTO> result = productService.getProductsWithLossOrNoSellPriceInBranch(pageable);
 
     // Assert
     assertNotNull(result);
-    assertEquals(1, result.size());
-    assertEquals(productBaseDTOs.get(0), result.get(0));
+    assertEquals(1, result.getContent().size());
+    assertEquals(dto, result.getContent().get(0));
+    assertEquals(1, result.getTotalElements());
+    assertEquals(1, result.getTotalPages());
+    assertEquals(0, result.getNumber());
+    assertEquals(10, result.getSize());
 
     verify(userService, times(1)).getAuthenticatedUserEmail();
     verify(userService, times(1)).findBranchIdByUserEmail(userEmail);
-    verify(productRepository, times(1)).findProductsWithLossOrNoSellPriceInBranch(anyLong());
+    verify(productRepository, times(1))
+        .findProductsWithLossOrNoSellPriceInBranch(anyLong(), any(Pageable.class));
     verify(productMapper, times(1)).convertToProductBaseDTO(any(ProductEntity.class));
   }
 
@@ -2235,14 +2244,19 @@ public class ProductServiceImplTest {
     entity.setId(1L);
     entity.setProductName("Product 1");
     entity.setSellPrice(BigDecimal.valueOf(50));
-    productEntities.add(entity);
+    List<ProductEntity> productEntities = Collections.singletonList(entity);
 
     // Initialize ProductBaseDTO
     ProductBaseDTO dto = new ProductBaseDTO();
     dto.setId(1L);
     dto.setProductName("Product 1");
     dto.setSellPrice(BigDecimal.valueOf(50));
-    productBaseDTOs.add(dto);
+    List<ProductBaseDTO> productBaseDTOs = Collections.singletonList(dto);
+
+    // Mock Pageable and Page
+    Pageable pageable = PageRequest.of(0, 10);
+    Page<ProductEntity> page = new PageImpl<>(productEntities, pageable, productEntities.size());
+
     // Arrange
     String userEmail = "test@example.com";
     Long branchId = 1L;
@@ -2250,22 +2264,24 @@ public class ProductServiceImplTest {
 
     when(userService.getAuthenticatedUserEmail()).thenReturn(userEmail);
     when(userService.findBranchIdByUserEmail(userEmail)).thenReturn(Optional.of(branchId));
-    when(productRepository.findProductsBySellPrice(sellPrice, branchId))
-        .thenReturn(productEntities);
-    when(productMapper.convertToProductBaseDTO(any(ProductEntity.class)))
-        .thenReturn(productBaseDTOs.get(0));
+    when(productRepository.findProductsBySellPrice(sellPrice, branchId, pageable)).thenReturn(page);
+    when(productMapper.convertToProductBaseDTO(any(ProductEntity.class))).thenReturn(dto);
 
     // Act
-    List<ProductBaseDTO> result = productService.getProductsBySellPrice(sellPrice);
+    Page<ProductBaseDTO> result = productService.getProductsBySellPrice(sellPrice, pageable);
 
     // Assert
     assertNotNull(result);
-    assertEquals(1, result.size());
-    assertEquals(productBaseDTOs.get(0), result.get(0));
+    assertEquals(1, result.getContent().size());
+    assertEquals(dto, result.getContent().get(0));
+    assertEquals(1, result.getTotalElements());
+    assertEquals(1, result.getTotalPages());
+    assertEquals(0, result.getNumber());
+    assertEquals(10, result.getSize());
 
     verify(userService, times(1)).getAuthenticatedUserEmail();
     verify(userService, times(1)).findBranchIdByUserEmail(userEmail);
-    verify(productRepository, times(1)).findProductsBySellPrice(sellPrice, branchId);
+    verify(productRepository, times(1)).findProductsBySellPrice(sellPrice, branchId, pageable);
     verify(productMapper, times(1)).convertToProductBaseDTO(any(ProductEntity.class));
   }
 

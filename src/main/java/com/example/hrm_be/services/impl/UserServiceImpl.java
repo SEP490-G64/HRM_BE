@@ -641,6 +641,7 @@ public class UserServiceImpl implements UserService {
       for (User user : usersToSave) {
         if (user != null) {
           user.setStatus(UserStatusType.ACTIVATE);
+          create(user);
         } else {
           System.out.println("Found null UserEntity in list.");
         }
