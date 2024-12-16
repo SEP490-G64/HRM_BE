@@ -766,8 +766,9 @@ public class ProductServiceImpl implements ProductService {
       }
     } catch (Exception e) {
       errors.add("Error saving products: " + e.getMessage());
-//      throw new RuntimeException(
-//          "Transaction failed, rolling back due to error.", e); // Marks transaction for rollback
+      //      throw new RuntimeException(
+      //          "Transaction failed, rolling back due to error.", e); // Marks transaction for
+      // rollback
     }
 
     return errors; // Return the list of errors
