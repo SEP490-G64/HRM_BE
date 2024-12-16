@@ -86,31 +86,65 @@ public class StaffProductController {
     return ResponseEntity.ok(response);
   }
 
-  @GetMapping("/sell-price-equal-zero")
-  public ResponseEntity<BaseOutput<List<ProductBaseDTO>>> getProductsBySellPriceEqualZero() {
-    List<ProductBaseDTO> products = productService.getProductsBySellPrice(BigDecimal.ZERO);
+  @GetMapping("/sell-price")
+  public ResponseEntity<BaseOutput<List<ProductBaseDTO>>> getProductsBySellPriceEqualZero(
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int size,
+      @RequestParam(required = false, defaultValue = "id") String sortBy,
+      @RequestParam(required = false, defaultValue = "ASC") String sortDirection,
+      @RequestParam(required = false) BigDecimal price) {
 
+    BigDecimal sellPrice = price == null ? BigDecimal.ZERO : price;
+    Sort.Direction direction =
+        sortDirection.equalsIgnoreCase("DESC") ? Sort.Direction.DESC : Sort.Direction.ASC;
+
+    // Create a Pageable object
+    Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
+    Page<ProductBaseDTO> products = productService.getProductsBySellPrice(sellPrice,pageable);
+
+    // Build the response
     BaseOutput<List<ProductBaseDTO>> response =
         BaseOutput.<List<ProductBaseDTO>>builder()
+            .totalPages(products.getTotalPages())
+            .currentPage(page)
+            .pageSize(size)
+            .total(products.getTotalElements())
+            .data(products.getContent())
             .message(HttpStatus.OK.toString())
-            .total((long) products.size())
-            .data(products)
             .status(ResponseStatus.SUCCESS)
             .build();
     return ResponseEntity.ok(response);
   }
 
   @GetMapping("/loss-price")
-  public ResponseEntity<BaseOutput<List<ProductBaseDTO>>>
-      getProductsWithLossOrNoSellPriceInBranch() {
-    List<ProductBaseDTO> products = productService.getProductsWithLossOrNoSellPriceInBranch();
+  public ResponseEntity<BaseOutput<List<ProductBaseDTO>>> getProductsWithLossOrNoSellPriceInBranch(
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int size,
+      @RequestParam(defaultValue = "id") String sortBy,
+      @RequestParam(defaultValue = "ASC") String sortDirection
+  ) {
+    // Determine the sort direction
+    Sort.Direction direction =
+        sortDirection.equalsIgnoreCase("DESC") ? Sort.Direction.DESC : Sort.Direction.ASC;
 
+    // Create a Pageable object
+    Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
+
+    // Fetch paginated results from the service
+    Page<ProductBaseDTO> products = productService.getProductsWithLossOrNoSellPriceInBranch(pageable);
+
+    // Build the response
     BaseOutput<List<ProductBaseDTO>> response =
         BaseOutput.<List<ProductBaseDTO>>builder()
             .message(HttpStatus.OK.toString())
-            .data(products)
+            .totalPages(products.getTotalPages())
+            .currentPage(page)
+            .pageSize(size)
+            .total(products.getTotalElements())
+            .data(products.getContent())
             .status(ResponseStatus.SUCCESS)
             .build();
+
     return ResponseEntity.ok(response);
   }
 

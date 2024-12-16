@@ -65,9 +65,9 @@ public interface ProductService {
       Boolean outOfStock,
       Pageable pageable);
 
-  List<ProductBaseDTO> getProductsWithLossOrNoSellPriceInBranch();
+  Page<ProductBaseDTO> getProductsWithLossOrNoSellPriceInBranch(Pageable pageable);
 
-  List<ProductBaseDTO> getProductsBySellPrice(BigDecimal sellPrice);
+  Page<ProductBaseDTO> getProductsBySellPrice(BigDecimal sellPrice,Pageable pageable);
 
   List<ProductBaseDTO> getByKeyword(String keyword);
 

@@ -1034,23 +1034,21 @@ public class ProductServiceImpl implements ProductService {
   }
 
   @Override
-  public List<ProductBaseDTO> getProductsWithLossOrNoSellPriceInBranch() {
+  public Page<ProductBaseDTO> getProductsWithLossOrNoSellPriceInBranch(Pageable pageable) {
     String userEmail = userService.getAuthenticatedUserEmail();
     Long branchId = userService.findBranchIdByUserEmail(userEmail).orElse(null);
 
-    return productRepository.findProductsWithLossOrNoSellPriceInBranch(branchId).stream()
-        .map(productMapper::convertToProductBaseDTO)
-        .collect(Collectors.toList());
+    return productRepository.findProductsWithLossOrNoSellPriceInBranch(branchId,pageable)
+        .map(productMapper::convertToProductBaseDTO);
   }
 
   @Override
-  public List<ProductBaseDTO> getProductsBySellPrice(BigDecimal sellPrice) {
+  public Page<ProductBaseDTO> getProductsBySellPrice(BigDecimal sellPrice,Pageable pageable) {
     String userEmail = userService.getAuthenticatedUserEmail();
     Long branchId = userService.findBranchIdByUserEmail(userEmail).orElse(null);
 
-    return productRepository.findProductsBySellPrice(sellPrice, branchId).stream()
-        .map(productMapper::convertToProductBaseDTO)
-        .collect(Collectors.toList());
+    return productRepository.findProductsBySellPrice(sellPrice, branchId, pageable)
+        .map(productMapper::convertToProductBaseDTO);
   }
 
   @Override
