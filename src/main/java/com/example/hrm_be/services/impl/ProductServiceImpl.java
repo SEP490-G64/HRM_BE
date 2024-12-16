@@ -645,6 +645,7 @@ public class ProductServiceImpl implements ProductService {
             product.setBranchProducts(Collections.singletonList(branchProduct));
 
           } catch (Exception e) {
+            log.debug("This is custom log for parsing row: " + e.getMessage());
             throw new RuntimeException("Error parsing row: " + e.getMessage(), e);
           }
           return product;
