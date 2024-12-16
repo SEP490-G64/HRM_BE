@@ -136,8 +136,8 @@ public interface ProductRepository
           + "LEFT JOIN FETCH p.branchProducs bp "
           + "WHERE (p.sellPrice < p.inboundPrice OR p.sellPrice IS NULL OR p.sellPrice = 0) "
           + "AND bp.branch.id = :id")
-  Page<ProductEntity> findProductsWithLossOrNoSellPriceInBranch(@Param("id") Long id,
-      Pageable pageable);
+  Page<ProductEntity> findProductsWithLossOrNoSellPriceInBranch(
+      @Param("id") Long id, Pageable pageable);
 
   @Query(
       "SELECT p FROM ProductEntity p "

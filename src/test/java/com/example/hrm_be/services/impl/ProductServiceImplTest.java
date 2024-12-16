@@ -2211,7 +2211,8 @@ public class ProductServiceImplTest {
     Long branchId = 1L;
     when(userService.getAuthenticatedUserEmail()).thenReturn(userEmail);
     when(userService.findBranchIdByUserEmail(userEmail)).thenReturn(Optional.of(branchId));
-    when(productRepository.findProductsWithLossOrNoSellPriceInBranch(anyLong(), any(Pageable.class)))
+    when(productRepository.findProductsWithLossOrNoSellPriceInBranch(
+            anyLong(), any(Pageable.class)))
         .thenReturn(page);
     when(productMapper.convertToProductBaseDTO(any(ProductEntity.class))).thenReturn(dto);
 
@@ -2263,8 +2264,7 @@ public class ProductServiceImplTest {
 
     when(userService.getAuthenticatedUserEmail()).thenReturn(userEmail);
     when(userService.findBranchIdByUserEmail(userEmail)).thenReturn(Optional.of(branchId));
-    when(productRepository.findProductsBySellPrice(sellPrice, branchId, pageable))
-        .thenReturn(page);
+    when(productRepository.findProductsBySellPrice(sellPrice, branchId, pageable)).thenReturn(page);
     when(productMapper.convertToProductBaseDTO(any(ProductEntity.class))).thenReturn(dto);
 
     // Act
@@ -2281,8 +2281,7 @@ public class ProductServiceImplTest {
 
     verify(userService, times(1)).getAuthenticatedUserEmail();
     verify(userService, times(1)).findBranchIdByUserEmail(userEmail);
-    verify(productRepository, times(1))
-        .findProductsBySellPrice(sellPrice, branchId, pageable);
+    verify(productRepository, times(1)).findProductsBySellPrice(sellPrice, branchId, pageable);
     verify(productMapper, times(1)).convertToProductBaseDTO(any(ProductEntity.class));
   }
 

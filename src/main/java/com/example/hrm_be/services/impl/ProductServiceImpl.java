@@ -1038,16 +1038,18 @@ public class ProductServiceImpl implements ProductService {
     String userEmail = userService.getAuthenticatedUserEmail();
     Long branchId = userService.findBranchIdByUserEmail(userEmail).orElse(null);
 
-    return productRepository.findProductsWithLossOrNoSellPriceInBranch(branchId,pageable)
+    return productRepository
+        .findProductsWithLossOrNoSellPriceInBranch(branchId, pageable)
         .map(productMapper::convertToProductBaseDTO);
   }
 
   @Override
-  public Page<ProductBaseDTO> getProductsBySellPrice(BigDecimal sellPrice,Pageable pageable) {
+  public Page<ProductBaseDTO> getProductsBySellPrice(BigDecimal sellPrice, Pageable pageable) {
     String userEmail = userService.getAuthenticatedUserEmail();
     Long branchId = userService.findBranchIdByUserEmail(userEmail).orElse(null);
 
-    return productRepository.findProductsBySellPrice(sellPrice, branchId, pageable)
+    return productRepository
+        .findProductsBySellPrice(sellPrice, branchId, pageable)
         .map(productMapper::convertToProductBaseDTO);
   }
 

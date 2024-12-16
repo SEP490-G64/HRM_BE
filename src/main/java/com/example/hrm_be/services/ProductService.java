@@ -67,7 +67,7 @@ public interface ProductService {
 
   Page<ProductBaseDTO> getProductsWithLossOrNoSellPriceInBranch(Pageable pageable);
 
-  Page<ProductBaseDTO> getProductsBySellPrice(BigDecimal sellPrice,Pageable pageable);
+  Page<ProductBaseDTO> getProductsBySellPrice(BigDecimal sellPrice, Pageable pageable);
 
   List<ProductBaseDTO> getByKeyword(String keyword);
 

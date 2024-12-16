@@ -100,7 +100,7 @@ public class StaffProductController {
 
     // Create a Pageable object
     Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
-    Page<ProductBaseDTO> products = productService.getProductsBySellPrice(sellPrice,pageable);
+    Page<ProductBaseDTO> products = productService.getProductsBySellPrice(sellPrice, pageable);
 
     // Build the response
     BaseOutput<List<ProductBaseDTO>> response =
@@ -121,8 +121,7 @@ public class StaffProductController {
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size,
       @RequestParam(defaultValue = "id") String sortBy,
-      @RequestParam(defaultValue = "ASC") String sortDirection
-  ) {
+      @RequestParam(defaultValue = "ASC") String sortDirection) {
     // Determine the sort direction
     Sort.Direction direction =
         sortDirection.equalsIgnoreCase("DESC") ? Sort.Direction.DESC : Sort.Direction.ASC;
@@ -131,7 +130,8 @@ public class StaffProductController {
     Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
 
     // Fetch paginated results from the service
-    Page<ProductBaseDTO> products = productService.getProductsWithLossOrNoSellPriceInBranch(pageable);
+    Page<ProductBaseDTO> products =
+        productService.getProductsWithLossOrNoSellPriceInBranch(pageable);
 
     // Build the response
     BaseOutput<List<ProductBaseDTO>> response =
