@@ -47,6 +47,14 @@ public interface BranchProductRepository
   @Query("UPDATE BranchProductEntity i SET i.productStatus = :status WHERE i.id = :id")
   void updateBranchProductStatus(@Param("status") ProductStatus status, @Param("id") Long id);
 
+  @Modifying
+  @Transactional
+  @Query("UPDATE BranchProductEntity i " +
+      "SET i.lastUpdated = CURRENT_TIMESTAMP " +
+      "WHERE i.branch.id = :branchId AND i.product.id = :productId")
+  void updateBranchProductLastUpdated(@Param("branchId") Long branchId, @Param("productId") Long productId);
+
+
   @Query(
       "SELECT bp.lastUpdated FROM BranchProductEntity bp WHERE bp.branch.id = :branchId AND bp"
           + ".product.id ="

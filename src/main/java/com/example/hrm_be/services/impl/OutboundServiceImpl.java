@@ -19,6 +19,7 @@ import com.example.hrm_be.models.entities.OutboundProductDetailEntity;
 import com.example.hrm_be.models.entities.ProductEntity;
 import com.example.hrm_be.models.entities.UserEntity;
 import com.example.hrm_be.models.requests.CreateOutboundRequest;
+import com.example.hrm_be.repositories.BranchProductRepository;
 import com.example.hrm_be.repositories.OutboundRepository;
 import com.example.hrm_be.services.*;
 import com.example.hrm_be.utils.PDFUtil;
@@ -74,6 +75,7 @@ public class OutboundServiceImpl implements OutboundService {
   @Autowired private NotificationService notificationService;
   @Autowired private UnitConversionService unitConversionService;
   @Autowired private InventoryCheckService inventoryCheckService;
+  @Autowired private BranchProductRepository branchProductRepository;
 
   @Override
   public Outbound getById(Long id) {
@@ -542,7 +544,7 @@ public class OutboundServiceImpl implements OutboundService {
     for (OutboundProductDetail productDetail : request.getOutboundProductDetails()) {
       ProductEntity productEntity =
           productMapper.toEntity(productService.getById(productDetail.getProduct().getId()));
-
+      branchProductRepository.updateBranchProductLastUpdated(fromBranch.getId(),productDetail.getProduct().getId());
       BigDecimal outboundQuantity = productDetail.getOutboundQuantity();
       BigDecimal convertedQuantity =
           unitConversionService.convertToUnit(
