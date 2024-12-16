@@ -40,7 +40,7 @@ public interface BatchRepository
   void updateBatchStatus(@Param("status") BatchStatus status, @Param("id") Long id);
 
   @Query("SELECT b FROM BatchEntity b WHERE b.expireDate < :today")
-  Page<BatchEntity> findExpiredBatches(@Param("today") LocalDateTime today,Pageable pageable);
+  Page<BatchEntity> findExpiredBatches(@Param("today") LocalDateTime today, Pageable pageable);
 
   @Query(
       "SELECT b FROM BatchEntity b LEFT JOIN FETCH b.branchBatches brb WHERE b.expireDate  "
@@ -49,6 +49,6 @@ public interface BatchRepository
   Page<BatchEntity> findBatchesExpiringInDays(
       @Param("today") LocalDateTime today,
       @Param("inDays") LocalDateTime inDays,
-      @Param("id") Long id
-      , Pageable pageable);
+      @Param("id") Long id,
+      Pageable pageable);
 }
