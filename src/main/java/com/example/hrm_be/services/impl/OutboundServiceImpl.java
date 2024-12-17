@@ -544,7 +544,8 @@ public class OutboundServiceImpl implements OutboundService {
     for (OutboundProductDetail productDetail : request.getOutboundProductDetails()) {
       ProductEntity productEntity =
           productMapper.toEntity(productService.getById(productDetail.getProduct().getId()));
-      branchProductRepository.updateBranchProductLastUpdated(fromBranch.getId(),productDetail.getProduct().getId());
+      branchProductRepository.updateBranchProductLastUpdated(
+          fromBranch.getId(), productDetail.getProduct().getId());
       BigDecimal outboundQuantity = productDetail.getOutboundQuantity();
       BigDecimal convertedQuantity =
           unitConversionService.convertToUnit(
