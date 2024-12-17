@@ -516,8 +516,7 @@ public class OutboundServiceImpl implements OutboundService {
         Outbound.builder()
             .id(outboundEntity.getId())
             .outboundCode(request.getOutboundCode())
-            .createdDate(
-                request.getCreatedDate() != null ? request.getCreatedDate() : LocalDateTime.now())
+            .createdDate(LocalDateTime.now())
             .status(OutboundStatus.HOAN_THANH)
             .outboundType(OutboundType.BAN_HANG)
             .createdBy(request.getCreatedBy())
